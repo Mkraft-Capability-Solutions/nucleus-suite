@@ -914,8 +914,9 @@
 .scopeBar,.pageHeader,.widgetCard,.kpiTile{border-color:var(--line);box-shadow:var(--shadow-surface)}
 .aiNarrativeCard{background:var(--agent-wash);box-shadow:var(--shadow-surface)}
 .kpiValue{color:var(--text);background:none;-webkit-text-fill-color:currentColor;filter:none}
-.narrativeBadge,.narrativeBtn{color:var(--agent)}
-.narrativeBtnPrimary{color:#fff;background:#6d28d9}
+.narrativeBadge{color:var(--text)}
+.narrativeBtn{color:var(--text);background:var(--card);border-color:var(--line)}
+.narrativeBtnPrimary{color:var(--on-signal);background:var(--signal);border-color:var(--signal)}
 .scopeBar>*,.scopeLeft>*,.pageHeader>*,.cardTitleRow>*,.cardHeader>*,.narrativeBody>*{min-width:0;max-width:100%}
 .kpiValueRow,.cardTitleRow,.cardHeader,.scopeMetadata,.anomalyRibbon,.narrativeFooter{flex-wrap:wrap;gap:10px}
 .kpiValueRow>*{min-width:0;overflow-wrap:anywhere}
@@ -934,3 +935,8 @@
  .scopeBar,.pageHeader{padding:16px}
  .scopeBar button,.pageHeader button,.narrativeBtn{white-space:normal}
 }
+
+/* Unavailable preview actions stay legible without implying interactivity. */
+.narrativeBtnPrimary:hover:not(:disabled) { background: var(--signal-ink); border-color: var(--signal-ink); color: var(--on-signal); }
+.narrativeBtn:disabled { opacity: 1; color: var(--text-2); background: var(--card-2); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; }
+.narrativeBtn:not(.narrativeBtnPrimary):not(:disabled):hover { color: var(--signal-ink); background: var(--signal-wash); border-color: var(--signal); }

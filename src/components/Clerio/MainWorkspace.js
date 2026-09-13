@@ -360,17 +360,7 @@ const MainWorkspace = ({
 
                 {/* 2. DEDICATED SUPER ADMIN & EXECUTIVE WORKFORCE FILTERS SECTION (4 REQUIRED FILTERS) */}
                 {(isExecutive || currentRole === 'SUPER_ADMIN') && (
-                    <div style={{
-                        background: 'linear-gradient(145deg, rgba(14, 29, 48, 0.95) 0%, rgba(10, 20, 35, 0.98) 100%)',
-                        border: '1px solid var(--line-glow)',
-                        borderRadius: '12px',
-                        padding: '1.1rem 1.35rem',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '0.95rem',
-                        position: 'relative'
-                    }}>
+                    <div className={styles.workforceFilters}>
                         {/* Section Header */}
                         <div style={{
                             display: 'flex',
@@ -379,7 +369,7 @@ const MainWorkspace = ({
                             flexWrap: 'wrap',
                             gap: '0.6rem',
                             paddingBottom: '0.75rem',
-                            borderBottom: '1px solid rgba(255, 255, 255, 0.07)'
+                            borderBottom: '1px solid var(--line)'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                                 <div style={{
@@ -397,7 +387,7 @@ const MainWorkspace = ({
                                 </div>
                                 <div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
-                                        <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 700, color: '#F1F5F9', letterSpacing: '0.02em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_52")}</h3>
+                                        <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 700, color: 'var(--text)', letterSpacing: '0.02em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_52")}</h3>
                                         <span style={{
                                             fontSize: '0.65rem',
                                             padding: '0.12rem 0.48rem',
@@ -409,7 +399,7 @@ const MainWorkspace = ({
                                             border: '1px solid var(--line-glow)'
                                         }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_53")}</span>
                                     </div>
-                                    <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_54")}</span>
+                                    <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_54")}</span>
                                 </div>
                             </div>
 
@@ -417,17 +407,17 @@ const MainWorkspace = ({
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                                 <span style={{
                                     fontSize: '0.72rem',
-                                    color: '#CAD6DD',
-                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    color: 'var(--text-2)',
+                                    background: 'var(--card-2)',
                                     padding: '0.28rem 0.65rem',
                                     borderRadius: '6px',
-                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    border: '1px solid var(--line)',
                                     fontWeight: 600
                                 }}>
                                     {activeFilterCount > 0 ? (
                                         <span style={{ color: 'var(--signal)' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_55")}{activeFilterCount}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_56")}{activeFilterCount > 1 ? readData("components.Clerio.MainWorkspace", "display_11") : ''}</span>
                                     ) : (
-                                        <span style={{ color: '#94A3B8' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_57")}</span>
+                                        <span style={{ color: 'var(--text-2)' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_57")}</span>
                                     )}
                                 </span>
 
@@ -439,9 +429,9 @@ const MainWorkspace = ({
                                         gap: '0.35rem',
                                         padding: '0.28rem 0.7rem',
                                         borderRadius: '6px',
-                                        background: 'rgba(255, 255, 255, 0.04)',
-                                        border: '1px solid rgba(255, 255, 255, 0.14)',
-                                        color: '#94A3B8',
+                                        background: 'var(--card-2)',
+                                        border: '1px solid var(--line)',
+                                        color: 'var(--text-2)',
                                         fontSize: '0.72rem',
                                         fontWeight: 600,
                                         cursor: 'pointer',
@@ -454,30 +444,26 @@ const MainWorkspace = ({
                         </div>
 
                         {/* 4 Dedicated Filter Cards Grid */}
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
-                            gap: '0.85rem'
-                        }}>
+                        <div className={styles.workforceFilterGrid}>
                             {/* FILTER 1: LOCATION */}
                             <div style={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.35rem',
-                                background: 'rgba(0, 0, 0, 0.22)',
-                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                background: 'var(--card-2)',
+                                border: '1px solid var(--line)',
                                 borderRadius: '8px',
                                 padding: '0.65rem 0.85rem'
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <MapPin size={14} color="#4FB6F5" />
-                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#4FB6F5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_60")}</span>
+                                        <MapPin size={14} color="var(--info)" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--info)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_60")}</span>
                                     </div>
                                     {filterLocation !== 'All Locations' && (
                                         <button
                                             onClick={() => { setFilterLocation('All Locations'); showToast(translateText("components.Clerio.MainWorkspace","text_c703f4b6e8"),translateText("components.Clerio.MainWorkspace","text_c8e9ccf8d2"), 'info'); }}
-                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_61")}
                                         >
                                             <X size={12} />
@@ -492,11 +478,11 @@ const MainWorkspace = ({
                                     }}
                                     style={{
                                         width: '100%',
-                                        background: '#060D18',
-                                        border: '1px solid rgba(79, 182, 245, 0.35)',
+                                        background: 'var(--card)',
+                                        border: '1px solid var(--line)',
                                         borderRadius: '6px',
                                         padding: '0.42rem 0.65rem',
-                                        color: '#E6EDF6',
+                                        color: 'var(--text)',
                                         fontSize: '0.78rem',
                                         fontWeight: 600,
                                         outline: 'none',
@@ -519,8 +505,8 @@ const MainWorkspace = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.35rem',
-                                background: 'rgba(0, 0, 0, 0.22)',
-                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                background: 'var(--card-2)',
+                                border: '1px solid var(--line)',
                                 borderRadius: '8px',
                                 padding: '0.65rem 0.85rem'
                             }}>
@@ -532,7 +518,7 @@ const MainWorkspace = ({
                                     {filterDepartment !== 'All Departments' && (
                                         <button
                                             onClick={() => { setFilterDepartment('All Departments'); showToast(translateText("components.Clerio.MainWorkspace","text_13eb4bfef2"),translateText("components.Clerio.MainWorkspace","text_487a9562cf"), 'info'); }}
-                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_71")}
                                         >
                                             <X size={12} />
@@ -547,11 +533,11 @@ const MainWorkspace = ({
                                     }}
                                     style={{
                                         width: '100%',
-                                        background: '#060D18',
+                                        background: 'var(--card)',
                                         border: '1px solid var(--line-glow)',
                                         borderRadius: '6px',
                                         padding: '0.42rem 0.65rem',
-                                        color: '#E6EDF6',
+                                        color: 'var(--text)',
                                         fontSize: '0.78rem',
                                         fontWeight: 600,
                                         outline: 'none',
@@ -574,17 +560,17 @@ const MainWorkspace = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.35rem',
-                                background: 'rgba(0, 0, 0, 0.22)',
-                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                background: 'var(--card-2)',
+                                border: '1px solid var(--line)',
                                 borderRadius: '8px',
                                 padding: '0.65rem 0.85rem'
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <CalendarDays size={14} color="#F2A93B" />
-                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#F2A93B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_80")}</span>
+                                        <CalendarDays size={14} color="var(--pending)" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--pending)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_80")}</span>
                                     </div>
-                                    <span style={{ fontSize: '0.66rem', color: '#94A3B8' }}>
+                                    <span style={{ fontSize: '0.66rem', color: 'var(--text-2)' }}>
                                         {isCustomCalendarOpen ? readData("components.Clerio.MainWorkspace", "display_12") : filterTenure}
                                     </span>
                                 </div>
@@ -606,9 +592,9 @@ const MainWorkspace = ({
                                                     fontSize: '0.72rem',
                                                     fontWeight: isSelected ? 700 : 500,
                                                     cursor: 'pointer',
-                                                    background: isSelected ? 'rgba(242, 169, 59, 0.2)' : '#060D18',
-                                                    border: isSelected ? '1px solid #F2A93B' : '1px solid rgba(28, 52, 80, 0.8)',
-                                                    color: isSelected ? '#F2A93B' : '#CAD6DD',
+                                                    background: isSelected ? 'var(--pending-wash)' : 'var(--card)',
+                                                    border: isSelected ? '1px solid var(--pending)' : '1px solid var(--line)',
+                                                    color: isSelected ? 'var(--pending)' : 'var(--text-2)',
                                                     transition: 'all 0.12s ease',
                                                     textAlign: 'center'
                                                 }}
@@ -626,9 +612,9 @@ const MainWorkspace = ({
                                             fontSize: '0.72rem',
                                             fontWeight: isCustomCalendarOpen ? 700 : 600,
                                             cursor: 'pointer',
-                                            background: isCustomCalendarOpen ? 'var(--signal-wash)' : 'rgba(255, 255, 255, 0.04)',
-                                            border: isCustomCalendarOpen ? '1px solid var(--signal)' : '1px solid rgba(255, 255, 255, 0.12)',
-                                            color: isCustomCalendarOpen ? 'var(--signal)' : '#E6EDF6',
+                                            background: isCustomCalendarOpen ? 'var(--signal-wash)' : 'var(--card-2)',
+                                            border: isCustomCalendarOpen ? '1px solid var(--signal)' : '1px solid var(--line)',
+                                            color: isCustomCalendarOpen ? 'var(--signal)' : 'var(--text)',
                                             display: 'inline-flex',
                                             alignItems: 'center',
                                             gap: '0.25rem'
@@ -646,20 +632,20 @@ const MainWorkspace = ({
                                 display: 'flex',
                                 flexDirection: 'column',
                                 gap: '0.35rem',
-                                background: 'rgba(0, 0, 0, 0.22)',
-                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                background: 'var(--card-2)',
+                                border: '1px solid var(--line)',
                                 borderRadius: '8px',
                                 padding: '0.65rem 0.85rem'
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <Building2 size={14} color="#9B8CFF" />
-                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#9B8CFF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_84")}</span>
+                                        <Building2 size={14} color="var(--signal-ink)" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--signal-ink)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_84")}</span>
                                     </div>
                                     {filterBranch !== 'All Branches' && (
                                         <button
                                             onClick={() => { setFilterBranch('All Branches'); showToast(translateText("components.Clerio.MainWorkspace","text_5d7dc5a35f"),translateText("components.Clerio.MainWorkspace","text_f82b3856b4"), 'info'); }}
-                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_85")}
                                         >
                                             <X size={12} />
@@ -674,11 +660,11 @@ const MainWorkspace = ({
                                     }}
                                     style={{
                                         width: '100%',
-                                        background: '#060D18',
-                                        border: '1px solid rgba(155, 140, 255, 0.35)',
+                                        background: 'var(--card)',
+                                        border: '1px solid var(--line)',
                                         borderRadius: '6px',
                                         padding: '0.42rem 0.65rem',
-                                        color: '#E6EDF6',
+                                        color: 'var(--text)',
                                         fontSize: '0.78rem',
                                         fontWeight: 600,
                                         outline: 'none',
@@ -699,7 +685,7 @@ const MainWorkspace = ({
                         {isCustomCalendarOpen && (
                             <div style={{
                                 padding: '0.75rem 1rem',
-                                background: 'rgba(6, 13, 24, 0.85)',
+                                background: 'var(--card-2)',
                                 border: '1px solid var(--line-glow)',
                                 borderRadius: '8px',
                                 display: 'flex',
@@ -711,17 +697,17 @@ const MainWorkspace = ({
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <span style={{ fontSize: '0.72rem', color: '#93A6BF', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_92")}</span>
+                                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_92")}</span>
                                         <input
                                             type="date"
                                             value={customStartDate}
                                             onChange={(e) => setCustomStartDate(e.target.value)}
                                             style={{
-                                                background: '#0E1D30',
-                                                border: '1px solid #1C3450',
+                                                background: 'var(--card)',
+                                                border: '1px solid var(--line)',
                                                 borderRadius: '5px',
                                                 padding: '0.35rem 0.55rem',
-                                                color: '#F1F5F9',
+                                                color: 'var(--text)',
                                                 fontSize: '0.76rem',
                                                 fontWeight: 600
                                             }}
@@ -729,17 +715,17 @@ const MainWorkspace = ({
                                     </div>
 
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                        <span style={{ fontSize: '0.72rem', color: '#93A6BF', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_93")}</span>
+                                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_93")}</span>
                                         <input
                                             type="date"
                                             value={customEndDate}
                                             onChange={(e) => setCustomEndDate(e.target.value)}
                                             style={{
-                                                background: '#0E1D30',
-                                                border: '1px solid #1C3450',
+                                                background: 'var(--card)',
+                                                border: '1px solid var(--line)',
                                                 borderRadius: '5px',
                                                 padding: '0.35rem 0.55rem',
-                                                color: '#F1F5F9',
+                                                color: 'var(--text)',
                                                 fontSize: '0.76rem',
                                                 fontWeight: 600
                                             }}
@@ -756,7 +742,7 @@ const MainWorkspace = ({
                                             background: 'var(--signal)',
                                             border: 'none',
                                             borderRadius: '5px',
-                                            color: '#060D18',
+                                            color: 'var(--on-signal)',
                                             fontSize: '0.74rem',
                                             fontWeight: 700,
                                             cursor: 'pointer'
@@ -769,7 +755,7 @@ const MainWorkspace = ({
                                     </span>
                                     <button
                                         onClick={() => setIsCustomCalendarOpen(false)}
-                                        style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '0.2rem' }}
+                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: '0.2rem' }}
                                         title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_97")}
                                     >
                                         <X size={14} />
@@ -786,46 +772,46 @@ const MainWorkspace = ({
                             flexWrap: 'wrap',
                             gap: '0.5rem',
                             paddingTop: '0.45rem',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                            borderTop: '1px solid var(--card-2)',
                             fontSize: '0.72rem'
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
-                                <span style={{ color: '#94A3B8', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_98")}</span>
+                                <span style={{ color: 'var(--text-2)', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_98")}</span>
                                 <span style={{
                                     padding: '0.15rem 0.5rem',
                                     borderRadius: '4px',
-                                    background: filterLocation === 'All Locations' ? 'rgba(255,255,255,0.04)' : 'rgba(79, 182, 245, 0.15)',
-                                    color: filterLocation === 'All Locations' ? '#94A3B8' : '#4FB6F5',
-                                    border: filterLocation === 'All Locations' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(79, 182, 245, 0.3)'
+                                    background: filterLocation === 'All Locations' ? 'var(--card-2)' : 'var(--info-wash)',
+                                    color: filterLocation === 'All Locations' ? 'var(--text-2)' : 'var(--info)',
+                                    border: '1px solid var(--line)'
                                 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_99")}{filterLocation}
                                 </span>
                                 <span style={{
                                     padding: '0.15rem 0.5rem',
                                     borderRadius: '4px',
-                                    background: filterDepartment === 'All Departments' ? 'rgba(255,255,255,0.04)' : 'var(--signal-wash)',
-                                    color: filterDepartment === 'All Departments' ? '#94A3B8' : 'var(--signal)',
-                                    border: filterDepartment === 'All Departments' ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--line-glow)'
+                                    background: filterDepartment === 'All Departments' ? 'var(--card-2)' : 'var(--signal-wash)',
+                                    color: filterDepartment === 'All Departments' ? 'var(--text-2)' : 'var(--signal)',
+                                    border: filterDepartment === 'All Departments' ? '1px solid var(--line)' : '1px solid var(--line-glow)'
                                 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_100")}{filterDepartment}
                                 </span>
                                 <span style={{
                                     padding: '0.15rem 0.5rem',
                                     borderRadius: '4px',
-                                    background: 'rgba(242, 169, 59, 0.15)',
-                                    color: '#F2A93B',
-                                    border: '1px solid rgba(242, 169, 59, 0.3)'
+                                    background: 'var(--pending-wash)',
+                                    color: 'var(--pending)',
+                                    border: '1px solid var(--line)'
                                 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_101")}{isCustomCalendarOpen ?translateText("components.Clerio.MainWorkspace","text_4aa0a8bf87", {value1: String(customStartDate), value2: String(customEndDate)}) : filterTenure}
                                 </span>
                                 <span style={{
                                     padding: '0.15rem 0.5rem',
                                     borderRadius: '4px',
-                                    background: filterBranch === 'All Branches' ? 'rgba(255,255,255,0.04)' : 'rgba(155, 140, 255, 0.15)',
-                                    color: filterBranch === 'All Branches' ? '#94A3B8' : '#9B8CFF',
-                                    border: filterBranch === 'All Branches' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(155, 140, 255, 0.3)'
+                                    background: filterBranch === 'All Branches' ? 'var(--card-2)' : 'var(--agent-wash)',
+                                    color: filterBranch === 'All Branches' ? 'var(--text-2)' : 'var(--agent)',
+                                    border: '1px solid var(--line)'
                                 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_102")}{filterBranch}
                                 </span>
                             </div>
 
-                            <span style={{ color: '#5F7691', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_103")}</span>
+                            <span style={{ color: 'var(--text-3)', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_103")}</span>
                         </div>
                     </div>
                 )}
