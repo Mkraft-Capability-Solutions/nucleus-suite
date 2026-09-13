@@ -16,8 +16,6 @@ import ChevronDown from '@mui/icons-material/ExpandMore';
 import Check from '@mui/icons-material/Check';
 import Users from '@mui/icons-material/GroupsOutlined';
 import LogOut from '@mui/icons-material/Logout';
-import Sun from '@mui/icons-material/LightModeOutlined';
-import Moon from '@mui/icons-material/DarkModeOutlined';
 import PanelRight from '@mui/icons-material/VerticalSplitOutlined';
 import LayoutGrid from '@mui/icons-material/DashboardOutlined';
 import LayoutDashboard from '@mui/icons-material/SpaceDashboardOutlined';
@@ -25,6 +23,7 @@ import ShieldCheck from '@mui/icons-material/VerifiedUserOutlined';
 import { useAuth } from '@/context/AuthContext';
 import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
+import AppearanceToggle from '@/components/AppearanceToggle';
 
 const ROLE_TO_DEFAULT_CONSOLE = readData("components.Clerio.TopNav", "ROLE_TO_DEFAULT_CONSOLE_1");
 
@@ -45,7 +44,7 @@ const TopNav = ({
     onSelectConsole
 }) => {
     const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
-    const { showToast, theme, toggleTheme } = useHRMS();
+    const { showToast } = useHRMS();
     const userRole = user?.role || readData("components.Clerio.TopNav", "fallback_1");
 
     // Role-Based Access Control (RBAC) filtering for consoles
@@ -106,7 +105,7 @@ const TopNav = ({
     return (
         <header className={styles.headerNav} role="banner">
             {/* Left: Global Search Bar + Dual-Pane Modules Launcher */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, maxWidth: '460px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 0, maxWidth: '460px' }}>
                 <div className={styles.searchBarWrapper} style={{ flex: 1 }}>
                     <Search sx={{ fontSize: 16 }} className={styles.searchIcon} />
                     <input
@@ -228,22 +227,7 @@ const TopNav = ({
                     </button>
                 )}
 
-                {/* Theme Toggle */}
-                <button
-                    className={styles.iconBtn}
-                    onClick={() => {
-                        toggleTheme();
-                        showToast(
-                            'Appearance',
-                            `${theme === 'light' ? readData("components.Clerio.TopNav", "display_4") : readData("components.Clerio.TopNav", "display_5")} Mode enabled.`,
-                            'info'
-                        );
-                    }}
-                    title={theme === 'dark' ? readData("components.Clerio.TopNav", "display_6") : readData("components.Clerio.TopNav", "display_7")}
-                    aria-label={readData("components.Clerio.TopNav", "TopNav_aria-label_27")}
-                >
-                    {theme === 'dark' ? <Sun sx={{ fontSize: 18 }} /> : <Moon sx={{ fontSize: 18 }} />}
-                </button>
+                <AppearanceToggle />
                 {/* Quick Action (+) */}
                 {quickActions.length > 0 && <div ref={quickActionsRef} style={{ position: 'relative' }}>
                     <button

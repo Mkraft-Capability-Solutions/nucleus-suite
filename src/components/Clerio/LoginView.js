@@ -2,6 +2,7 @@
 import { readData } from '../../services/workspace-data.mjs';
 
 import Link from 'next/link';
+import AppearanceToggle from '@/components/AppearanceToggle';
 import BrandLogo from '@/components/BrandLogo';
 import React, { useState } from 'react';
 import styles from './LoginView.module.css';
@@ -34,8 +35,8 @@ const LoginView = () => {
             <div className={`${styles.orb} ${styles.orb1}`}></div>
             <div className={`${styles.orb} ${styles.orb2}`}></div>
 
-            <div className={styles.loginCard}>
-                <Link href="/" style={{ color: 'var(--signal)', fontSize: 14 }}>← Back to Nucleus</Link>
+            <header className={styles.loginHeader}><Link href="/" className={styles.homeLink}><BrandLogo size={44} /><span>Nucleus</span></Link><AppearanceToggle /></header>
+            <main className={styles.loginCard}>
                 <div className={styles.brand}>
                     <BrandLogo size={160} />
                     <div className={styles.title}>{readData("components.Clerio.LoginView", "LoginView_text_3")}</div>
@@ -43,7 +44,7 @@ const LoginView = () => {
                 </div>
 
                 {/* Error Message */}
-                {error && <div role="alert" style={{ color: '#fda4af', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
+                {error && <div role="alert" style={{ color: 'var(--flag)', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
 
                 <form className={styles.inputGroup} onSubmit={handleLogin}>
                     <input
@@ -76,7 +77,7 @@ const LoginView = () => {
                 </form>
 
                 <p role="note">{readData("components.Clerio.LoginView", "demoNotice")}</p>
-            </div>
+            </main>
 
         </div>
     );

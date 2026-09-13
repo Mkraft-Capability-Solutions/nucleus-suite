@@ -160,7 +160,8 @@ test('pointer and touch handles reorder widgets without changing source content'
 
 test('widget editor stays readable after switching the workspace to dark mode', async ({ page }) => {
     await login(page);
-    await page.getByTitle('Switch to Dark Mode', { exact: true }).click();
+    await page.getByRole('button', { name: 'Choose theme' }).click();
+    await page.getByRole('menuitemradio', { name: 'Graphite night' }).click();
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
     await page.getByRole('button', { name: 'Customize', exact: true }).click();
     await page.getByRole('button', { name: 'Add widgets', exact: true }).click();

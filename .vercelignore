@@ -13,3 +13,7 @@
 /tests
 *.log
 *.tsbuildinfo
+
+# Local agent configuration
+/.codex/
+/.agents/

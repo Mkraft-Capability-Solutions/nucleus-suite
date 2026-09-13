@@ -405,7 +405,7 @@ th { color: var(--text-2); }
 }
 
 /* Native controls and solid surfaces follow the workspace theme, including portals. */
-:root { color-scheme: light; --card-hover: #f8fafa; --glass-border-hover: #bbc7cf; --shadow-hover: var(--shadow-raise); }
+:root:not([data-theme="dark"]) { color-scheme: light; --card-hover: var(--card-2); --glass-border-hover: #bbc7cf; --shadow-hover: var(--shadow-raise); }
 [data-theme="dark"] { color-scheme: dark; --card: #122431; --card-2: #0f1e29; }
 input, select, textarea { background-color: var(--card); }
 @media (pointer: coarse) {

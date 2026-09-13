@@ -14,6 +14,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward';
 import AutoAwesomeOutlined from '@mui/icons-material/AutoAwesomeOutlined';
 import { getPublicContent, type PublicPageKey } from '@/services/public-content';
 import ContactForm from './ContactForm';
+import AppearanceToggle from '@/components/AppearanceToggle';
 import styles from './Website.module.css';
 const icons = { people: PeopleOutline, clock: AccessTime, insights: Insights, layers: LayersOutlined, shield: ShieldOutlined, wallet: AccountBalanceWalletOutlined, school: SchoolOutlined, dashboard: DashboardCustomizeOutlined, keyboard: KeyboardOutlined, check: CheckCircleOutline };
 
@@ -25,7 +26,7 @@ export default async function PublicPage({ pageKey }: { pageKey: PublicPageKey }
         <a className={styles.skip} href="#main-content">Skip to content</a>
         <header className={styles.header}>
             <Link className={styles.brand} href="/" aria-label="Nucleus home"><Image src="/images/logo.png" alt="" width={64} height={64} priority />{content.brand}</Link>
-            {nav}<details className={styles.mobileMenu}><summary>Menu</summary>{nav}</details>
+            {nav}<AppearanceToggle /><details className={styles.mobileMenu}><summary>Menu</summary>{nav}</details>
         </header>
         <main id="main-content" className={styles.main}>
             <section className={pageKey === 'home' ? styles.hero : styles.innerHero}>

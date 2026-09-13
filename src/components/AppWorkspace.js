@@ -18,7 +18,6 @@ import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import styles from '@/app/page.module.css';
 import { useScrollableTables } from '@/hooks/useScrollableTables';
-import WorkspaceTheme from '@/components/WorkspaceTheme';
 import Toast from '@/components/Clerio/Toast';
 import toastStyles from '@/components/Clerio/Toast.module.css';
 
@@ -392,7 +391,7 @@ export default function Home() {
   const { user } = useAuth();
   return (
     <HRMSProvider key={user?.email || readData("components.AppWorkspace", "fallback_1")}>
-      <WorkspaceTheme><AppContent /></WorkspaceTheme>
+      <AppContent />
     </HRMSProvider>
   );
 }

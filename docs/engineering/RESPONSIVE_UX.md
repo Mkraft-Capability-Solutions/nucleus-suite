@@ -12,12 +12,20 @@ The application is a responsive web preview. Screen size changes presentation, n
 | Tables and calendar | Horizontal scrolling inside the data region; no omitted columns; focusable overflowing table wrappers | Full-width tables as space permits |
 | Project boards | Horizontally scrollable columns | Multiple visible columns |
 | Assistant and messages | Compact labeled-by-accessible-name buttons and viewport-bounded drawers | Expanded buttons and side drawers |
-| Appearance | Semantic light/dark tokens, theme-aware MUI portals and native fields | Same |
+| Appearance | Four shared palettes, theme-aware MUI portals and native fields | Same |
 
-Daily attendance, leave, payslip review, profile, tasks, requests and approvals should remain available on phones when permitted. Bulk imports, payroll comparisons, workflow design and extensive permission editing are more comfortable on a large screen, but are not artificially blocked on phones. Existing prototype/service limitations apply equally to all devices. Printed document previews intentionally retain a light paper palette; public pages have a consistent light brand palette independent of the workspace preference.
+Daily attendance, leave, payslip review, profile, tasks, requests and approvals should remain available on phones when permitted. Bulk imports, payroll comparisons, workflow design and extensive permission editing are more comfortable on a large screen, but are not artificially blocked on phones. Existing prototype/service limitations apply equally to all devices. Printed document previews intentionally retain a light paper palette; the public website, login and workspace share the same selected appearance.
 
 Use container queries for internal workspace layouts because the available width also depends on open navigation. Use dynamic viewport units for shells and dialogs. Do not mask layout errors with page-wide clipping, remove data columns, or hide essential actions solely to make an overflow test pass.
 
-Regression checks: `e2e/responsive-audit.spec.ts` checks all 69 module entry views and ten dashboard consoles in both themes at 320, 390, 768 and 1440 CSS pixels. `e2e/responsive-interactions.spec.ts` covers public routes, short-height login, and all five role entry flows with dark widget dialogs. Existing workspace and customization tests cover the ten consoles, navigation and editing interactions. Screenshots and runtime checks are evidence for the tested states, not a guarantee for every possible device or nested workflow.
+Regression checks: `e2e/responsive-audit.spec.ts` checks all 69 module entry views and ten dashboard consoles in light and dark modes at 320, 390, 768 and 1440 CSS pixels. `e2e/responsive-interactions.spec.ts` covers public routes, short-height login, and all five role entry flows with dark widget dialogs. Existing workspace and customization tests cover the ten consoles, navigation and editing interactions. Screenshots and runtime checks are evidence for the tested states, not a guarantee for every possible device or nested workflow.
 
 To test an already running local server, set `E2E_BASE_URL=http://localhost:3000`. Without this variable, Playwright starts its isolated server on port 3100. Keep credentials in `.env.local` or the CI secret store.
+
+## Shared appearance
+
+Use the palette icon in any public, login or workspace header to choose Pearl violet, Graphite night, Slate blue or Sage teal. Graphite night retains the existing dark colors. The other palettes pair violet/teal, cobalt/slate and teal/blue with readable neutral surfaces. Theme choice does not change role permissions.
+
+`src/data/appearance.json` owns palette tokens. The root `AppearanceProvider` and MUI theme survive route and authentication transitions. A pre-paint script restores the browser preference before rendering, migrates the previous `nucleus_theme` setting, and synchronizes other tabs. If storage is blocked, the current tab still supports switching. Dashboard-specific accent overrides remain personal layout preferences.
+
+`e2e/appearance.spec.ts` verifies all four palettes across public routes, login, workspace, logout and reload on desktop and mobile, plus cross-tab synchronization and blocked storage. Palette contrast tests cover primary, secondary and muted text against the common surfaces and primary action labels.

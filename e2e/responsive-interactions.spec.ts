@@ -11,7 +11,8 @@ test('public pages and login fit narrow and short screens in either inherited th
   await page.setViewportSize({width,height:568});
   for(const theme of ['light','dark']){
    for(const path of ['/','/about','/features','/why-nucleus','/docs','/contact','/login']){
-    await page.goto(path);await page.evaluate(t=>document.documentElement.setAttribute('data-theme',t),theme);
+    await page.goto(path);
+    if(await page.locator('html').getAttribute('data-theme')!==theme){await page.getByRole('button',{name:'Choose theme'}).click();await page.getByRole('menuitemradio',{name:theme==='dark'?'Graphite night':'Pearl violet'}).click();}
     await expect(page.getByRole('main').or(page.locator('input[type=email]')).first()).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`${path} ${width} ${theme}`).toBe(true);
     if(path==='/login'){await page.getByRole('button',{name:'Sign In',exact:true}).scrollIntoViewIfNeeded();await expect(page.getByRole('button',{name:'Sign In',exact:true})).toBeInViewport();}
@@ -27,9 +28,9 @@ test('mobile role dashboards, theme dialogs and navigation remain usable',async(
  for(const role of ['employee','hr','superadmin','manager','admin']){
   await login(page,role);
   await expect(page.locator('[data-workspace-module]')).toBeVisible();
-  const themeButton=page.getByRole('button',{name:'Toggle Appearance'});
+  const themeButton=page.getByRole('button',{name:'Choose theme'});
   // The persisted theme must also drive MUI portal colors.
-  if(await page.locator('html').getAttribute('data-theme')!=='dark')await themeButton.click();
+  if(await page.locator('html').getAttribute('data-theme')!=='dark'){await themeButton.click();await page.getByRole('menuitemradio',{name:'Graphite night'}).click();}
   if(['employee','hr','superadmin'].includes(role)){
    await page.getByRole('button',{name:'Customize',exact:true}).click();
    await page.getByRole('button',{name:'Add widgets',exact:true}).click();
@@ -48,7 +49,7 @@ test('mobile role dashboards, theme dialogs and navigation remain usable',async(
 test('semantic text and primary controls meet contrast in both themes',async({page})=>{
  await login(page);
  for(const theme of ['light','dark']){
-  if(await page.locator('html').getAttribute('data-theme')!==theme)await page.getByRole('button',{name:'Toggle Appearance'}).click();
+  if(await page.locator('html').getAttribute('data-theme')!==theme){await page.getByRole('button',{name:'Choose theme'}).click();await page.getByRole('menuitemradio',{name:theme==='dark'?'Graphite night':'Pearl violet'}).click();}
   const ratios=await page.evaluate(()=>{
    const probe=document.createElement('span');document.body.append(probe);
    const luminance=(token:string)=>{probe.style.color=`var(${token})`;const rgb=getComputedStyle(probe).color.match(/[\d.]+/g)!.slice(0,3).map(Number).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4;});return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722;};

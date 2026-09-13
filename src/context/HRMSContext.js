@@ -2,7 +2,8 @@
 import { readData } from '../services/workspace-data.mjs';
 
 import { useAuth } from './AuthContext';
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAppearance } from './AppearanceContext';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { WORKER_CATEGORIES, WORK_CALENDARS, resolveDayType, isOTEligible } from '@/services/workCalendarService';
 import {
     SHIFT_RULES, RULESET_VERSION, computeAttendanceDay, pairPunches,
@@ -44,23 +45,11 @@ export const useHRMS = () => useContext(HRMSContext);
 
 export const HRMSProvider = ({ children }) => {
     const { user: authenticatedUser } = useAuth();
-    // --- 0. THEME MANAGEMENT (Light / Dark Mode) ---
-    const [theme, setTheme] = useState(() => {
-        try { return localStorage.getItem('nucleus_theme') === 'dark' ? 'dark' : 'light'; }
-        catch { return 'light'; }
-    });
-    useEffect(() => { document.documentElement.setAttribute('data-theme', theme); }, [theme]);
-
-    const toggleTheme = () => {
-        setTheme(prev => {
-            const next = prev === 'light' ? 'dark' : 'light';
-            if (typeof window !== 'undefined') {
-                try { localStorage.setItem('nucleus_theme', next); } catch { /* Theme remains usable when storage is blocked. */ }
-                document.documentElement.setAttribute('data-theme', next);
-            }
-            return next;
-        });
-    };
+    // Appearance belongs to the root provider, so auth and route changes cannot reset it.
+    const { appearance, setAppearance } = useAppearance();
+    const theme = appearance.mode;
+    const setTheme = setAppearance;
+    const toggleTheme = () => setAppearance(theme === 'dark' ? 'light' : 'dark');
 
     // --- TOAST NOTIFICATIONS ---
     const [toasts, setToasts] = useState([]);

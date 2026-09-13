@@ -175,3 +175,7 @@ Public website content and dashboard definitions are JSON-backed through separat
 ## Responsive interface
 
 The workspace adapts to phone, tablet and desktop widths while preserving role permissions. Mobile navigation uses the labeled Modules menu; dashboards stack, forms reflow, and wide tables remain scrollable with keyboard access. Light/dark workspace colors also apply to MUI dialogs and controls. See [device behavior and verification](docs/engineering/RESPONSIVE_UX.md).
+
+### Appearance across the application
+
+Choose the palette icon in the public, login or workspace header: **Pearl violet**, **Graphite night** (the preserved dark palette), **Slate blue**, or **Sage teal**. The selection persists across navigation, sign-in, sign-out and browser reloads, and synchronizes across tabs. Shared semantic tokens keep page surfaces, text, inputs and MUI dialogs coordinated. See [responsive and appearance guidance](docs/engineering/RESPONSIVE_UX.md).

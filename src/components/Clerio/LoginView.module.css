@@ -204,7 +204,7 @@
     font-size: 0.8rem;
     font-weight: 500;
 }
-.loginWrapper{position:relative;min-height:100dvh;height:auto;width:100%;overflow:hidden;padding:32px 16px;color-scheme:dark;--signal:#93c5fd;--signal-ink:#bfdbfe}
+.loginWrapper{position:relative;min-height:100dvh;height:auto;width:100%;overflow:hidden;padding:32px 16px;color-scheme:dark}
 .loginCard{margin:auto;max-width:440px;padding:clamp(20px,5vw,48px)}
 .loginBtn{background:#2563eb;color:white}
 .loginBtn:hover{background:#1d4ed8}
@@ -213,3 +213,17 @@
 /* Reflow within the available workspace width, including an open navigation panel. */
 @container (max-width: 760px){
 }
+
+/* The sign-in route uses the same palette and header control as the website. */
+.loginWrapper{background:var(--bg);color:var(--text);color-scheme:inherit;display:flex;flex-direction:column;justify-content:flex-start;padding:0 16px 32px}
+.loginHeader{width:min(1180px,100%);min-height:80px;display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 auto 24px;position:relative;z-index:1;flex-shrink:0}
+.homeLink{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:800;color:var(--text)}
+.loginCard{background:var(--card);color:var(--text);border-color:var(--line);box-shadow:var(--shadow-surface);backdrop-filter:none;margin:16px auto;gap:24px}
+.title{color:var(--text)}
+.subtitle,.loginCard p{color:var(--text-2)}
+.inputField,.inputField:focus{background:var(--card-2);color:var(--text);border-color:var(--line)}
+.inputField::placeholder{color:var(--text-2);opacity:1}
+.inputField:focus{border-color:var(--signal);box-shadow:0 0 0 3px var(--signal-wash)}
+.loginBtn,.loginBtn:hover{background:var(--signal);color:var(--on-signal)}
+.orb{display:none}
+@media(max-height:650px){.loginHeader{margin-bottom:0;min-height:64px}.loginCard{margin-top:8px}}

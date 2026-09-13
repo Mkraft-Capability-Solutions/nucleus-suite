@@ -1,4 +1,5 @@
 import './globals.css';
+import { appearanceBootstrap, appearances } from '@/lib/appearance';
 
 export const metadata = {
   title: 'Nucleus AI | HRMS',
@@ -17,7 +18,8 @@ import { Providers } from '../components/Providers';
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="light" data-appearance="light" style={appearances[0].tokens} suppressHydrationWarning>
+      <head><script id="nucleus-appearance" dangerouslySetInnerHTML={{ __html: appearanceBootstrap }} /></head>
       <body suppressHydrationWarning={true}>
         <Providers>{children}</Providers>
       </body>

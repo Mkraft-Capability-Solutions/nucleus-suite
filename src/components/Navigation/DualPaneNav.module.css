@@ -675,3 +675,12 @@
  .subCard{white-space:normal;overflow-wrap:anywhere}
  .header{flex-wrap:wrap;gap:8px}
 }
+
+@media(max-width:720px){
+ .subCard{flex-direction:column;gap:8px}
+ .subCardBody{width:100%}
+ .subCardTitleRow{flex-wrap:wrap;align-items:flex-start}
+ .subCardTitle{white-space:normal;overflow:visible;overflow-wrap:anywhere}
+ .subCardDesc{display:block;-webkit-line-clamp:unset;overflow:visible}
+ .paneHeader{flex-wrap:wrap;gap:8px}
+}

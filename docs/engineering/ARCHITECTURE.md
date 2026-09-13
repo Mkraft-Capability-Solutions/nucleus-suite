@@ -37,3 +37,5 @@ Plan capacity using measured record counts and latency budgets, then evaluate a 
 ## Public and workspace routes
 
 Public pages use `src/components/Website` and the async server-only `public-content` adapter. They do not depend on the demo HR snapshot. `/login` and `/workspace` share the `(workspace)` route-group layout so in-memory identity survives sign-in navigation. A browser reload requires sign-in again, and logout returns to the public Home page.
+
+Appearance is owned above both route groups by `src/context/AppearanceContext.tsx`. Its static JSON palette catalog contains design tokens only. `src/lib/appearance.ts` shares the same catalog between pre-paint preference restoration and interactive updates; `WorkspaceTheme` supplies matching MUI portal styles across the entire app. HRMS state exposes legacy mode aliases for existing charts, but does not reset or persist a separate theme.

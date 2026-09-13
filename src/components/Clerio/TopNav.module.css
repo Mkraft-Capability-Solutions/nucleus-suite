@@ -316,7 +316,7 @@
 .searchBarWrapper {
     flex: 1;
     max-width: 440px;
-    min-width: 260px;
+    min-width: 120px;
     position: relative;
     display: flex;
     align-items: center;

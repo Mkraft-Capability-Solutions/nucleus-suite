@@ -1,0 +1,7 @@
+.trigger{display:inline-flex;align-items:center;justify-content:center;width:44px;min-width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);cursor:pointer;flex-shrink:0}
+.trigger:hover{background:var(--signal-wash);color:var(--signal-ink)}
+.trigger:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.swatch{display:flex;align-items:center;gap:3px;padding:5px;border:2px solid;border-radius:9px;flex-shrink:0}
+.swatch span{display:block;width:9px;height:18px;border-radius:3px}
+.copy{display:grid;gap:4px;min-width:0;white-space:normal;overflow:visible}
+.copy strong{font-size:14px}.copy small{font-size:12px;line-height:1.45;color:var(--text-2)}
