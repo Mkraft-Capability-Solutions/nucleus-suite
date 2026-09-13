@@ -1,8 +1,8 @@
 "use client";
 import { readData } from '../../services/workspace-data.mjs';
 
-import Link from 'next/link';
-import AppearanceToggle from '@/components/AppearanceToggle';
+import PublicHeader from '@/components/Website/PublicHeader';
+import websiteStyles from '@/components/Website/Website.module.css';
 import BrandLogo from '@/components/BrandLogo';
 import React, { useState } from 'react';
 import styles from './LoginView.module.css';
@@ -31,12 +31,12 @@ const LoginView = () => {
     };
 
     return (
-        <div className={styles.loginWrapper}>
+        <div className={`${styles.loginWrapper} ${websiteStyles.site}`}>
             <div className={`${styles.orb} ${styles.orb1}`}></div>
             <div className={`${styles.orb} ${styles.orb2}`}></div>
 
-            <header className={styles.loginHeader}><Link href="/" className={styles.homeLink}><BrandLogo size={44} /><span>Nucleus</span></Link><AppearanceToggle /></header>
-            <main className={styles.loginCard}>
+            <PublicHeader />
+            <main id="main-content" className={styles.loginCard}>
                 <div className={styles.brand}>
                     <BrandLogo size={160} />
                     <div className={styles.title}>{readData("components.Clerio.LoginView", "LoginView_text_3")}</div>

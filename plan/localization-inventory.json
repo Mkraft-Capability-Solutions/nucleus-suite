@@ -29864,6 +29864,22 @@
     "classification": "requires-classification"
   },
   {
+    "namespace": "components.Clerio.OperationalModuleView",
+    "key": "decreaseDays",
+    "sourceFile": "src/data/ui/components.Clerio.OperationalModuleView.json",
+    "sourcePointer": "/decreaseDays",
+    "sourceHash": "f2e402a9afd7e29180aad967d8a6ce5662c25685b17c33ce877602e1549aac64",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "components.Clerio.OperationalModuleView",
+    "key": "increaseDays",
+    "sourceFile": "src/data/ui/components.Clerio.OperationalModuleView.json",
+    "sourcePointer": "/increaseDays",
+    "sourceHash": "da2bee1bd3cef489fe2a5b7d680e2dbffd8d29f6c9fed312523052e42bade0e8",
+    "classification": "requires-classification"
+  },
+  {
     "namespace": "components.Clerio.PayrollView",
     "key": "blob_1/type",
     "sourceFile": "src/data/ui/components.Clerio.PayrollView.json",
@@ -86177,6 +86193,14 @@
   },
   {
     "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/2/defaultValue",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/2/defaultValue",
+    "sourceHash": "92135a0bf009ebabf01414e498c31793ade22145e56b3a745976f8a04784c132",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
     "key": "modules/37/fields/3/key",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/3/key",
@@ -86201,10 +86225,18 @@
   },
   {
     "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/3/defaultValue",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/3/defaultValue",
+    "sourceHash": "92135a0bf009ebabf01414e498c31793ade22145e56b3a745976f8a04784c132",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
     "key": "modules/37/fields/4/key",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/4/key",
-    "sourceHash": "8fcfccf675b1f0bfd39dcbb13015052fe82bc51c003c165a410945c913dbb2be",
+    "sourceHash": "1c143ca9a724eb77c7abaf35250c73b37eebd931fc91427094bb578d6a35b0eb",
     "classification": "requires-classification"
   },
   {
@@ -86212,7 +86244,7 @@
     "key": "modules/37/fields/4/label",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/4/label",
-    "sourceHash": "f81ab834de5f84918dc040b884267c2b61cb1a52d46442de10e97f35a94d0500",
+    "sourceHash": "8ac75d98360cfde1fcfa46a43486e129f9a7e574a9c82d30a470179ddc597764",
     "classification": "requires-classification"
   },
   {
@@ -86220,7 +86252,31 @@
     "key": "modules/37/fields/4/type",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/4/type",
-    "sourceHash": "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1",
+    "sourceHash": "12886f9d00055adf24c40579e22d31b2b45f2023f892954ffd5567beb60825f8",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/4/derive/kind",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/4/derive/kind",
+    "sourceHash": "fcf048ba548b494fbb605bab46b519dd4ca4a40fdc818822bd9c6e90e7a96574",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/4/derive/from",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/4/derive/from",
+    "sourceHash": "e6e1e8b65f6a430c9ffac635378dec9da0f2323f1b7579ac4375edadaeab6432",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/4/derive/to",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/4/derive/to",
+    "sourceHash": "e7dcef14808902066a338ebe0368e40dc40693bacd5ae71aa46f269310b62f95",
     "classification": "requires-classification"
   },
   {
@@ -86228,7 +86284,7 @@
     "key": "modules/37/fields/5/key",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/5/key",
-    "sourceHash": "093e7d5fdbaacfa92448861b11075b3fba532a07d945b49a44919252f5e830ad",
+    "sourceHash": "8fcfccf675b1f0bfd39dcbb13015052fe82bc51c003c165a410945c913dbb2be",
     "classification": "requires-classification"
   },
   {
@@ -86236,7 +86292,7 @@
     "key": "modules/37/fields/5/label",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/5/label",
-    "sourceHash": "ac1cedb797fd74c37e0e657a417f9d59487cff6ed070c4d798f953e8555da58c",
+    "sourceHash": "f81ab834de5f84918dc040b884267c2b61cb1a52d46442de10e97f35a94d0500",
     "classification": "requires-classification"
   },
   {
@@ -86244,6 +86300,30 @@
     "key": "modules/37/fields/5/type",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/5/type",
+    "sourceHash": "ee67f93d65ceec713d4284bd691dbf74a330bf415b8d3a62b1225d15754fc7d1",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/6/key",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/6/key",
+    "sourceHash": "093e7d5fdbaacfa92448861b11075b3fba532a07d945b49a44919252f5e830ad",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/6/label",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/6/label",
+    "sourceHash": "ac1cedb797fd74c37e0e657a417f9d59487cff6ed070c4d798f953e8555da58c",
+    "classification": "requires-classification"
+  },
+  {
+    "namespace": "lib.operational-module-registry",
+    "key": "modules/37/fields/6/type",
+    "sourceFile": "src/data/ui/lib.operational-module-registry.json",
+    "sourcePointer": "/modules/37/fields/6/type",
     "sourceHash": "f4313db688f3f006050627de322e91718c211df16f74f53888c4aa109ef3ac58",
     "classification": "requires-classification"
   },

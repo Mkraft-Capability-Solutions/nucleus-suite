@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import PeopleOutline from '@mui/icons-material/PeopleOutline';
 import AccessTime from '@mui/icons-material/AccessTime';
 import Insights from '@mui/icons-material/Insights';
@@ -14,20 +13,16 @@ import ArrowForward from '@mui/icons-material/ArrowForward';
 import AutoAwesomeOutlined from '@mui/icons-material/AutoAwesomeOutlined';
 import { getPublicContent, type PublicPageKey } from '@/services/public-content';
 import ContactForm from './ContactForm';
-import AppearanceToggle from '@/components/AppearanceToggle';
+import PublicHeader from './PublicHeader';
 import styles from './Website.module.css';
 const icons = { people: PeopleOutline, clock: AccessTime, insights: Insights, layers: LayersOutlined, shield: ShieldOutlined, wallet: AccountBalanceWalletOutlined, school: SchoolOutlined, dashboard: DashboardCustomizeOutlined, keyboard: KeyboardOutlined, check: CheckCircleOutline };
 
 export default async function PublicPage({ pageKey }: { pageKey: PublicPageKey }) {
     const content = await getPublicContent();
     const page = content.pages[pageKey];
-    const nav = <nav className={styles.nav} aria-label="Main navigation">{content.nav.map(item => <Link key={item.href} href={item.href} aria-current={(item.href === '/' ? pageKey === 'home' : item.href === `/${pageKey}`) ? 'page' : undefined}>{item.label}</Link>)}<Link className={styles.login} href="/login">{content.login}</Link></nav>;
     return <div className={styles.site}>
         <a className={styles.skip} href="#main-content">Skip to content</a>
-        <header className={styles.header}>
-            <Link className={styles.brand} href="/" aria-label="Nucleus home"><Image src="/images/logo.png" alt="" width={64} height={64} priority />{content.brand}</Link>
-            {nav}<AppearanceToggle /><details className={styles.mobileMenu}><summary>Menu</summary>{nav}</details>
-        </header>
+        <PublicHeader content={content} currentPath={pageKey === 'home' ? '/' : `/${pageKey}`} />
         <main id="main-content" className={styles.main}>
             <section className={pageKey === 'home' ? styles.hero : styles.innerHero}>
                 <div><div className={styles.eyebrow}>{page.eyebrow}</div><h1>{page.title}</h1><p>{page.description}</p>

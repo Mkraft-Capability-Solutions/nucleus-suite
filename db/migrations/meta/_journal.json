@@ -134,6 +134,13 @@
       "when": 1789103160000,
       "tag": "0019_runtime_policy_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789272000000,
+      "tag": "0020_india_payroll_default",
+      "breakpoints": true
     }
   ]
 }

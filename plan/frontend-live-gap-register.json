@@ -1,7 +1,7 @@
 {
   "status": "not-refactored",
   "scope": "Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.",
-  "snapshotReads": 4576,
+  "snapshotReads": 4578,
   "directLabelLocations": 99,
   "files": [
     {
@@ -174,7 +174,7 @@
     },
     {
       "path": "src/components/Clerio/OperationalModuleView.js",
-      "snapshotReads": 31,
+      "snapshotReads": 33,
       "hardcodedLabelLocations": []
     },
     {

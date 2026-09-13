@@ -26,7 +26,7 @@ export function validateForm(fields:FormField[],values:FormValues):Record<string
   if(empty){if(field.required)errors[field.key]=`${field.label} is required.`;continue;}
   if(field.type==='number'){
    const number=Number(raw),step=field.step??1,min=field.min??0,max=field.max??Number.MAX_SAFE_INTEGER;
-   if(!Number.isFinite(number)||number<min||number>max)errors[field.key]=`${field.label} must be between ${min} and ${max}.`;
+   if(!/^-?(?:\d+\.?\d*|\.\d+)$/.test(String(raw))||!Number.isFinite(number)||number<min||number>max)errors[field.key]=`${field.label} must be between ${min} and ${max}.`;
    else if(Math.abs((number-min)/step-Math.round((number-min)/step))>1e-7)errors[field.key]=`${field.label} must use increments of ${step}.`;
   }
   if(field.type==='date'&&dateDay(raw)===null)errors[field.key]=`${field.label} must be a valid date.`;
@@ -34,7 +34,8 @@ export function validateForm(fields:FormField[],values:FormValues):Record<string
   if(field.options?.length&&!field.options.some(option=>(typeof option==='string'?option:option.value)===raw))errors[field.key]=`${field.label} must be selected from the available options.`;
  }
  for(const [from,to]of [['fromDate','toDate'],['startDate','endDate'],['issuedOn','expiresOn']]){
-  if(values[from]&&values[to]&&dateDay(values[from])!==null&&dateDay(values[to])!==null&&dateDay(values[to])!<dateDay(values[from])!)errors[to]='End date must not be before start date.';
+  const start=dateDay(values[from]), end=dateDay(values[to]);
+  if(start!==null&&end!==null&&end<start)errors[to]='End date must not be before start date.';
  }
  if(values.fromTime&&values.toTime&&String(values.toTime)<=String(values.fromTime))errors.toTime='End time must be after start time; overnight intervals require explicit dates.';
  return errors;

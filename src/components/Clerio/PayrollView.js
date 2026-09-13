@@ -334,16 +334,17 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                     <Zap size={24} color="var(--pending)" />
                                 </div>
                                 <p style={{ fontSize: '0.85rem', opacity: 0.85, margin: '0.75rem 0' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_44")}</p>
-                                <div className={styles.ewaInputGroup}>
+                                <form className={styles.ewaInputGroup} onSubmit={handleEWASubmit}>
                                     <input
                                         type="number"
+                                        min="0.01" max="999999999.99" step="0.01" required
                                         value={ewaAmount}
                                         onChange={(e) => setEwaAmount(e.target.value)}
                                         className={styles.ewaInput}
                                         placeholder={readData("components.Clerio.PayrollView", "PayrollView_placeholder_45")}
                                     />
-                                    <button className={styles.btnPrimary} style={{ background: '#ffffff', color: 'var(--signal-ink)' }} onClick={handleEWASubmit}>{readData("components.Clerio.PayrollView", "PayrollView_text_46")}</button>
-                                </div>
+                                    <button className={styles.btnPrimary} style={{ background: '#ffffff', color: 'var(--signal-ink)' }} type="submit">{readData("components.Clerio.PayrollView", "PayrollView_text_46")}</button>
+                                </form>
 
                                 {ewaTransactions && ewaTransactions.length > 0 && (
                                     <div style={{ marginTop: '1.25rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.75rem' }}>
@@ -989,7 +990,8 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                 </div>
                                 <input
                                     type="number"
-                                    value={loanAmount}
+                                    min="0.01" max={isManagementOverride ? 999999999.99 : applicantMaxCeiling} step="0.01"
+                                        value={loanAmount}
                                     onChange={(e) => setLoanAmount(e.target.value)}
                                     className={styles.formInput}
                                     placeholder={readData("components.Clerio.PayrollView", "PayrollView_placeholder_208")}
@@ -1006,6 +1008,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                     <label>{readData("components.Clerio.PayrollView", "PayrollView_text_210")}</label>
                                     <input
                                         type="number"
+                                        step="1"
                                         value={loanTenure}
                                         onChange={(e) => setLoanTenure(e.target.value)}
                                         className={styles.formInput}

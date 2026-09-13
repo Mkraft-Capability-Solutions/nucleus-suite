@@ -1,12 +1,14 @@
 {
   "status": "passed",
-  "migrations": 19,
-  "tables": 331,
+  "migrations": 20,
+  "tables": 332,
   "checks": [
+    "India is the initial enabled payroll default",
     "Typed configuration rejects invalid values",
     "Overlapping payroll effective dates rejected",
     "Payroll profile cannot reference another tenant employee",
     "Non-owner role sees only its tenant and cannot write another tenant",
+    "Tenant runtime cannot change global payroll countries",
     "Runtime role cannot update, delete or truncate audit events"
   ],
   "fixtures": "All verification records rolled back; no synthetic HR records persisted."

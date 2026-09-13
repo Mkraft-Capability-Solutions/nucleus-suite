@@ -22,3 +22,9 @@
 The database checks insert synthetic records inside a transaction and roll them back. The fresh-install verifier creates only a randomly named local test database, runs migrations twice and the security checks, then removes that database. The separately created development database remains available through ignored `.env.enterprise.local`; it contains schema and unpublished translation candidates, not seeded personnel data.
 
 Not verified or complete: all legacy business tables in 3NF, elimination of all snapshot/inline data, database-driven translation hooks on every page, persistent-session UI cutover, complete live domain workflow integration, jurisdiction-approved payroll/statutory calculations, or customer production readiness. The preview workspace remains on its existing provider. These are open acceptance gates, not passing checks.
+
+## Follow-up form and India default verification
+
+See [FORM_VALIDATION_AUDIT.md](FORM_VALIDATION_AUDIT.md) for the 13 September form sweep. Final lint and production build passed; unit suite 748 passed / 21 skipped, UI contracts 32 passed, SCR-030 desktop/mobile 2 passed, final targeted suite 16 passed. Migration 0020 applied locally (20 migrations / 332 tables); India default and denied tenant-runtime country writes verified. Country administration UI and statutory rule implementation remain open.
+
+Login header follow-up: shared public header and mobile menu verified with the public/login header regression and SCR-030 regression (4 desktop/mobile tests passed). Lint passed. Production build verification precedes the local commit.

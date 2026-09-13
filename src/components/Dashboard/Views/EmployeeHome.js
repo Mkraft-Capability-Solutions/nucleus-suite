@@ -1022,6 +1022,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_192")}</label>
                                     <input
                                         type="number"
+                                        required
                                         step="0.5"
                                         min="0.5"
                                         max="16"

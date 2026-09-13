@@ -1795,7 +1795,7 @@
           "label": "Attendance variance",
           "required": true,
           "type": "number",
-          "min": -999999999.99,
+          "min": -1000000,
           "max": 1000000,
           "step": 1
         },

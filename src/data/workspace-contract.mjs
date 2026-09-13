@@ -2008,7 +2008,9 @@ export const workspaceContract = {
     "fallback_3",
     "fallback_4",
     "fallback_5",
-    "fallback_6"
+    "fallback_6",
+    "decreaseDays",
+    "increaseDays"
   ],
   "components.Clerio.PayrollView": [
     "blob_1",

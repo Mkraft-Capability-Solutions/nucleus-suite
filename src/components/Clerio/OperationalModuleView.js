@@ -1,4 +1,9 @@
 "use client";
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { initialFormValues, updateDerivedFields, validateForm } from '@/lib/form-validation';
 import ProcessGuide from './ProcessGuide';
 import { readData } from '../../services/workspace-data.mjs';
 
@@ -22,6 +27,13 @@ function fallbackRows(module) {
 
 function recordValue(record, column) {
     if (record?._cells) return workbookRecordCellValue(record, column);
+    if (record?.values) {
+        if (column === 'Employee') return record.values.employee || record.id;
+        if (column === 'Leave type') return record.values.leaveType;
+        if (column === 'Dates') return `${record.values.fromDate} – ${record.values.toDate} (${record.values.numberOfDays})`;
+        const fieldKey = column.charAt(0).toLowerCase() + column.slice(1).replaceAll(' ', '');
+        if (record.values[fieldKey] !== undefined) return record.values[fieldKey];
+    }
     if (column === 'Employee') {
         const name = [record?.firstName, record?.lastName].filter(Boolean).join(' ');
         return [record?.employeeCode, name].filter(Boolean).join(' · ') || record?.id || readData("components.Clerio.OperationalModuleView", "fallback_1");
@@ -41,6 +53,10 @@ export default function OperationalModuleView({ module, onNavigate }) {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [values, setValues] = useState({});
     const [notice, setNotice] = useState('');
+    const [formErrors, setFormErrors] = useState({});
+    const formFields = module.fields.map(field => ({ ...field, options: getWorkbookFieldOptions(field.key) }));
+    const openCreate = () => { setValues(initialFormValues(formFields)); setFormErrors({}); setIsCreateOpen(true); };
+    const updateField = (key, value) => { setValues(current => updateDerivedFields(formFields, current, key, value)); setFormErrors({}); };
 
     const selectedRecord = useMemo(() => selected || records[0] || null, [records, selected]);
     useEffect(() => {
@@ -67,11 +83,9 @@ export default function OperationalModuleView({ module, onNavigate }) {
 
     const submit = (event) => {
         event.preventDefault();
-        const missing = module.fields.find((item) => item.required && !values[item.key]);
-        if (missing) {
-            setNotice(`${missing.label} is required before this record can be created.`);
-            return;
-        }
+        const errors = validateForm(formFields, values);
+        setFormErrors(errors);
+        if (Object.keys(errors).length) return;
         const newRecord = {
             id: `${module.id}-${Date.now()}`,
             reference: `${module.screenId}-${String(records.length + 1).padStart(3, '0')}`,
@@ -106,7 +120,7 @@ export default function OperationalModuleView({ module, onNavigate }) {
                 </div>
                 <div className={styles.headerActions}>
                     <button className={styles.secondaryButton} type="button" onClick={reload} disabled={loading}><RefreshCw size={15} className={loading ? styles.spin : ''} />{readData("components.Clerio.OperationalModuleView", "content_text_6")}</button>
-                    <button className={styles.primaryButton} type="button" onClick={() => setIsCreateOpen(true)}><Plus size={15} /> {module.actions[0]}</button>
+                    <button className={styles.primaryButton} type="button" onClick={openCreate}><Plus size={15} /> {module.actions[0]}</button>
                 </div>
             </header>
             <ProcessGuide screenId={module.screenId} />
@@ -138,7 +152,27 @@ export default function OperationalModuleView({ module, onNavigate }) {
                 </aside>
             </div>
 
-            {isCreateOpen && <div className={styles.overlay} role="presentation" onMouseDown={() => setIsCreateOpen(false)}><form className={styles.formDialog} onSubmit={submit} onMouseDown={(event) => event.stopPropagation()}><header><div><span>{module.screenId}</span><h2>{module.actions[0]}</h2></div><button type="button" onClick={() => setIsCreateOpen(false)}>{readData("components.Clerio.OperationalModuleView", "content_text_20")}</button></header><div className={styles.formGrid}>{module.fields.map((item) => { const options = getWorkbookFieldOptions(item.key); return <label key={item.key}><span>{item.label}{item.required && <b>{readData("components.Clerio.OperationalModuleView", "content_text_21")}</b>}</span>{item.type === 'file' ? <input type="file" onChange={(event) => setValues((current) => ({ ...current, [item.key]: event.target.files?.[0]?.name || '' }))} required={item.required} /> : options.length ? <select required={item.required} value={values[item.key] || ''} onChange={(event) => setValues((current) => ({ ...current, [item.key]: event.target.value }))}><option value="">{readData("components.Clerio.OperationalModuleView", "content_text_22")}{item.label}</option>{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select> : <input type={item.type} required={item.required} value={values[item.key] || ''} onChange={(event) => setValues((current) => ({ ...current, [item.key]: event.target.value }))} />}</label>; })}</div><footer><p>{readData("components.Clerio.OperationalModuleView", "content_text_23")}</p><div><button type="button" className={styles.secondaryButton} onClick={() => setIsCreateOpen(false)}>{readData("components.Clerio.OperationalModuleView", "content_text_24")}</button><button className={styles.primaryButton} type="submit">{readData("components.Clerio.OperationalModuleView", "content_text_25")}</button></div></footer></form></div>}
+            <Dialog open={isCreateOpen} onClose={() => setIsCreateOpen(false)} aria-labelledby="operational-form-title" maxWidth="sm" fullWidth>
+                <form className={styles.formDialog} onSubmit={submit} noValidate>
+                    <header><div><span>{module.screenId}</span><h2 id="operational-form-title">{module.actions[0]}</h2></div><button type="button" onClick={() => setIsCreateOpen(false)}>{readData("components.Clerio.OperationalModuleView", "content_text_20")}</button></header>
+                    {Object.keys(formErrors).length > 0 && <div role="alert" className={styles.error}>{Object.values(formErrors).join(' ')}</div>}
+                    <div className={styles.formGrid}>{formFields.map(item => {
+                        const props = { id: `record-${item.key}`, name: item.key, required: item.required, value: values[item.key] ?? '', 'aria-invalid': Boolean(formErrors[item.key]), onChange: event => updateField(item.key, event.target.value) };
+                        return <label key={item.key} htmlFor={props.id}><span>{item.label}{item.required && <b>{readData("components.Clerio.OperationalModuleView", "content_text_21")}</b>}</span>
+                            {item.type === 'file' ? <input id={props.id} type="file" required={item.required} onChange={event => updateField(item.key, event.target.files?.[0]?.name || '')} />
+                                : item.options.length ? <select {...props}><option value="">{readData("components.Clerio.OperationalModuleView", "content_text_22")}{item.label}</option>{item.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
+                                : item.derive?.kind === 'inclusiveDays' ? <span className={styles.stepControl}>
+                                    <IconButton type="button" aria-label={readData('components.Clerio.OperationalModuleView', 'decreaseDays')} disabled={!Number.isFinite(Number(values[item.key])) || Number(values[item.key]) <= item.min} onClick={() => updateField(item.key, Math.max(item.min, Number(values[item.key]) - item.step))}><RemoveIcon /></IconButton>
+                                    <input {...props} type="number" min={item.min} max={item.max} step={item.step} />
+                                    <IconButton type="button" aria-label={readData('components.Clerio.OperationalModuleView', 'increaseDays')} disabled={Number(values[item.key]) >= item.max} onClick={() => updateField(item.key, Math.min(item.max, (Number(values[item.key]) || 0) + item.step))}><AddIcon /></IconButton>
+                                </span>
+                                : item.type === 'textarea' ? <textarea {...props} rows={3} />
+                                : <input {...props} type={item.type} min={item.min} max={item.max} step={item.step} />}
+                        </label>;
+                    })}</div>
+                    <footer><p>{readData("components.Clerio.OperationalModuleView", "content_text_23")}</p><div><button type="button" className={styles.secondaryButton} onClick={() => setIsCreateOpen(false)}>{readData("components.Clerio.OperationalModuleView", "content_text_24")}</button><button className={styles.primaryButton} type="submit">{readData("components.Clerio.OperationalModuleView", "content_text_25")}</button></div></footer>
+                </form>
+            </Dialog>
         </section>
     );
 }

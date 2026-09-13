@@ -261,6 +261,7 @@
     "src/components/Dashboard/Views/PeopleCommandCentre.js",
     "src/components/Dashboard/Views/PerformanceTalent.js",
     "src/components/Dashboard/Views/TalentAcquisition.js",
+    "src/components/FormValidationBoundary.tsx",
     "src/components/Navigation/DualPaneNav.js",
     "src/components/Providers.js",
     "src/components/Website/ContactForm.tsx",
@@ -1418,7 +1419,7 @@
     },
     {
       "path": "src/data/ui/components.Clerio.OperationalModuleView.json",
-      "stringValues": 34
+      "stringValues": 36
     },
     {
       "path": "src/data/ui/components.Clerio.PayrollView.json",
@@ -1574,7 +1575,7 @@
     },
     {
       "path": "src/data/ui/lib.operational-module-registry.json",
-      "stringValues": 1653
+      "stringValues": 1661
     },
     {
       "path": "src/data/ui/navigation.catalog.json",
@@ -5029,7 +5030,8 @@
       "db/migrations/0016_localization_configuration.sql",
       "db/migrations/0017_payroll_profiles.sql",
       "db/migrations/0018_payroll_profile_integrity.sql",
-      "db/migrations/0019_runtime_policy_schema.sql"
+      "db/migrations/0019_runtime_policy_schema.sql",
+      "db/migrations/0020_india_payroll_default.sql"
     ],
     "journalEntries": [
       "0000_greedy_invaders",
@@ -5050,7 +5052,8 @@
       "0016_localization_configuration",
       "0017_payroll_profiles",
       "0018_payroll_profile_integrity",
-      "0019_runtime_policy_schema"
+      "0019_runtime_policy_schema",
+      "0020_india_payroll_default"
     ],
     "unjournaled": []
   }

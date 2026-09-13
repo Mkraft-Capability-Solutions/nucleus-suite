@@ -191,6 +191,7 @@ const ComplianceView = () => {
                                     type="range"
                                     min="20"
                                     max="60"
+                                    step="1"
                                     value={basicPercent}
                                     onChange={(e) => setBasicPercent(Number(e.target.value))}
                                     className={styles.rangeInput}
@@ -206,6 +207,7 @@ const ComplianceView = () => {
                                     type="range"
                                     min="0"
                                     max="20"
+                                    step="1"
                                     value={daPercent}
                                     onChange={(e) => setDaPercent(Number(e.target.value))}
                                     className={styles.rangeInput}
@@ -221,6 +223,7 @@ const ComplianceView = () => {
                                     type="range"
                                     min="10"
                                     max="50"
+                                    step="1"
                                     value={hraPercent}
                                     onChange={(e) => setHraPercent(Number(e.target.value))}
                                     className={styles.rangeInput}
@@ -236,6 +239,7 @@ const ComplianceView = () => {
                                     type="range"
                                     min="0"
                                     max="50"
+                                    step="1"
                                     value={specialPercent}
                                     onChange={(e) => setSpecialPercent(Number(e.target.value))}
                                     className={styles.rangeInput}
@@ -1245,6 +1249,7 @@ changelog: "Central Rules notified; overtime allowance confirmed within 50% wage
                                         type="number"
                                         min="1"
                                         style={{ width: '100%', padding: '0.5rem', borderRadius: '4px', border: '1px solid var(--line)', background: 'var(--card)' }}
+                                        step="0.5" max="1000000"
                                         value={accidentForm.lostWorkdays}
                                         onChange={(e) => setAccidentForm({ ...accidentForm, lostWorkdays: e.target.value })}
                                         required

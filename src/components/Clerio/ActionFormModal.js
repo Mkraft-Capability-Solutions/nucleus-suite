@@ -1,4 +1,5 @@
 "use client";
+import { validateForm, updateDerivedFields } from '@/lib/form-validation';
 import { readData } from '../../services/workspace-data.mjs';
 
 
@@ -17,6 +18,8 @@ export default function ActionFormModal({ request, onClose, onComplete }) {
     const initialValues = useMemo(() => action ? fieldInitials(action.fields, request.context) : {}, [action, request]);
     const [values, setValues] = useState(initialValues);
     const modalRef = useRef(null);
+    const [errors, setErrors] = useState({});
+    const fields = action?.fields.map(([key, label, type, required, options, constraints]) => ({key,label,type,required,options,...constraints})) || [];
     useEffect(() => {
         if (!action || !modalRef.current) return;
         const previous = document.activeElement;
@@ -37,13 +40,17 @@ export default function ActionFormModal({ request, onClose, onComplete }) {
 
     useEffect(() => {
         setValues(initialValues);
+        setErrors({});
     }, [initialValues]);
 
     if (!action) return null;
 
-    const update = (key, value) => setValues(current => ({ ...current, [key]: value }));
+    const update = (key, value) => { setValues(current => updateDerivedFields(fields, current, key, value)); setErrors({}); };
     const submit = (event) => {
         event.preventDefault();
+        const invalid = validateForm(fields, values);
+        setErrors(invalid);
+        if (Object.keys(invalid).length) return;
         onComplete({ action: request.action, title: action.title, values, context: request.context || {} });
         onClose();
     };
@@ -58,14 +65,15 @@ export default function ActionFormModal({ request, onClose, onComplete }) {
                     </div>
                     <button className={styles.close} onClick={onClose} type="button" aria-label={readData("components.Clerio.ActionFormModal", "content_aria-label_3")}><X size={19} /></button>
                 </header>
-                <form onSubmit={submit} className={styles.form}>
-                    {action.fields.map(([key, label, type, required, options]) => (
+                <form onSubmit={submit} className={styles.form} noValidate>
+                    {Object.keys(errors).length > 0 && <p role="alert">{Object.values(errors).join(" ")}</p>}
+                    {action.fields.map(([key, label, type, required, options, constraints]) => (
                         <label className={`${styles.field} ${type === 'textarea' ? styles.wide : ''}`} key={key}>
                             <span>{label}{required && <b>{readData("components.Clerio.ActionFormModal", "content_text_4")}</b>}</span>
                             {type === 'textarea' ? <textarea value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} rows="3" />
                                 : type === 'select' ? <select value={values[key]} required={required} onChange={(event) => update(key, event.target.value)}><option value="">{readData("components.Clerio.ActionFormModal", "content_text_5")}</option>{options.map(option => <option key={option}>{option}</option>)}</select>
                                     : type === 'file' ? <input type="file" required={required} onChange={(event) => update(key, event.target.files?.[0]?.name || '')} />
-                                        : <input type={type} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} />}
+                                        : <input type={type} {...constraints} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} />}
                         </label>
                     ))}
                     <footer className={styles.footer}>

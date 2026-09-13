@@ -110,3 +110,7 @@ This does **not** complete Phase 3. A database inspection identified 288 JSON co
 Phase 4 remains pending these data/normalization gates; no global `t()` refactor, live workspace provider or production session cutover has been claimed. Phase 5 has verified the new foundation and existing preview, not a fully database-driven workspace. Keeping that distinction explicit follows the instruction not to bypass verification.
 
 Authoritative implementation references: [PostgreSQL row security](https://www.postgresql.org/docs/15/ddl-rowsecurity.html) and [Drizzle PostgreSQL drivers](https://orm.drizzle.team/docs/get-started-postgresql). Non-owner role checks are essential because superusers bypass RLS even on tables with FORCE enabled.
+
+## Payroll jurisdiction decision — 13 September 2026
+
+India (IN / INR) is the initial default. Migration 0020 stores the enabled default country in a relational configuration catalog. No Indian state was selected; employer establishment state, employee work location and effective-dated statutory rules must be explicit before statutory payroll execution. Future countries are managed by a privileged, audited Superadmin configuration service, with country-specific policy validation before activation. The catalog supports additional countries; the all-country administration UI and statutory adapters remain pending. No payroll rates or legal compliance are inferred from the country default.

@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import styles from './LeaveView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
+import { inclusiveDays } from '@/lib/form-validation';
 import { launchAction } from '@/lib/action-launcher';
 
 const LeaveApplicationModal = ({ isOpen, onClose, onSubmit, leaveTypeCode, setLeaveTypeCode, startDate, setStartDate, endDate, setEndDate, sandwichEnabled, setSandwichEnabled, reason, setReason }) => {
@@ -22,9 +23,9 @@ const LeaveApplicationModal = ({ isOpen, onClose, onSubmit, leaveTypeCode, setLe
                 </header>
                 <div className={styles.alertBox}><AlertCircle size={19} /><span><strong>{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_5")}</strong>{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_6")}</span></div>
                 <form onSubmit={onSubmit} className={styles.formGrid}>
-                    <div className={styles.formGroup}><label className={styles.formLabel} htmlFor="leave-type">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_7")}</label><select id="leave-type" className={styles.formSelect} value={leaveTypeCode} onChange={(event) => setLeaveTypeCode(event.target.value)}><option value="PRIVILEGE">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_8")}</option><option value="COMP_OFF">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_9")}</option><option value="CASUAL">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_10")}</option><option value="SICK">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_11")}</option><option value="WELLNESS">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_12")}</option><option value="LOP">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_13")}</option></select></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel} htmlFor="leave-type">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_7")}</label><select id="leave-type" required className={styles.formSelect} value={leaveTypeCode} onChange={(event) => setLeaveTypeCode(event.target.value)}><option value="PRIVILEGE">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_8")}</option><option value="COMP_OFF">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_9")}</option><option value="CASUAL">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_10")}</option><option value="SICK">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_11")}</option><option value="WELLNESS">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_12")}</option><option value="LOP">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_13")}</option></select></div>
                     <div className={styles.formGroup}><label className={styles.formLabel} htmlFor="leave-start-date">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_14")}</label><input id="leave-start-date" type="date" className={styles.formInput} value={startDate} onChange={(event) => setStartDate(event.target.value)} required /></div>
-                    <div className={styles.formGroup}><label className={styles.formLabel} htmlFor="leave-end-date">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_15")}</label><input id="leave-end-date" type="date" className={styles.formInput} value={endDate} onChange={(event) => setEndDate(event.target.value)} required /></div>
+                    <div className={styles.formGroup}><label className={styles.formLabel} htmlFor="leave-end-date">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_15")}</label><input id="leave-end-date" type="date" min={startDate || undefined} className={styles.formInput} value={endDate} onChange={(event) => setEndDate(event.target.value)} required /></div>
                     <label className={`${styles.formGroup} ${styles.modalWide}`}><span className={styles.checkboxLabel}><input type="checkbox" checked={sandwichEnabled} onChange={(event) => setSandwichEnabled(event.target.checked)} />{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_16")}</span></label>
                     <div className={`${styles.formGroup} ${styles.modalWide}`}><label className={styles.formLabel} htmlFor="leave-reason">{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_17")}</label><textarea id="leave-reason" className={styles.formTextarea} value={reason} onChange={(event) => setReason(event.target.value)} required /></div>
                     <footer className={`${styles.modalFooter} ${styles.modalWide}`}><button type="button" className={styles.btnSecondary} onClick={onClose}>{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_18")}</button><button type="submit" className={styles.btnPrimary}>{readData("components.Clerio.LeaveView", "LeaveApplicationModal_text_19")}</button></footer>
@@ -62,6 +63,7 @@ const LeaveView = () => {
 
     const handleApplyWorkflow = (e) => {
         e.preventDefault();
+        if (!e.currentTarget.reportValidity() || inclusiveDays(startDate, endDate) === null) return;
         const res = applyLeaveWithWorkflow({
             leaveTypeCode,
             startDateStr: startDate,

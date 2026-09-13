@@ -17,6 +17,9 @@ async function rejectsSql(sql: string, values: unknown[], code: string) {
 }
 try {
  await client.query('begin');
+ const country = (await client.query("select country_code,default_jurisdiction_code from payroll_country_configuration where is_default and enabled")).rows;
+ assert.deepEqual(country, [{country_code:'IN',default_jurisdiction_code:'IN'}]);
+ checks.push('India is the initial enabled payroll default');
  const tenant = randomUUID(), otherTenant = randomUUID(), actor = randomUUID(), membership = randomUUID();
  await client.query('insert into tenants(id,name,slug) values ($1,$2,$3),($4,$5,$6)', [tenant,'Verification A',tenant,otherTenant,'Verification B',otherTenant]);
  await client.query('insert into "user"(id,name,email) values($1,$2,$3)', [actor,'Verification',`${actor}@invalid.example`]);
@@ -43,6 +46,8 @@ try {
  assert.deepEqual(visible, [{tenant_id:tenant,value:'1'}]);
  await rejectsSql("insert into tenant_configuration_values(tenant_id,key,value) values($1,'verification.integer','3')", [otherTenant], '42501');
  checks.push('Non-owner role sees only its tenant and cannot write another tenant');
+ await rejectsSql("update payroll_country_configuration set enabled=false where country_code='IN'", [], '42501');
+ checks.push('Tenant runtime cannot change global payroll countries');
  const audit = (await client.query("select has_table_privilege(current_user,'audit_events','UPDATE') as update, has_table_privilege(current_user,'audit_events','DELETE') as delete, has_table_privilege(current_user,'audit_events','TRUNCATE') as truncate")).rows[0];
  assert.deepEqual(audit, {update:false,delete:false,truncate:false});
  checks.push('Runtime role cannot update, delete or truncate audit events');

@@ -665,6 +665,7 @@ const OnboardingView = () => {
                                     <label>{readData("components.Clerio.OnboardingView", "OnboardingView_text_128")}</label>
                                     <input
                                         type="number"
+                                        min="0" max="999999999.99" step="0.01"
                                         value={assetValue}
                                         onChange={(e) => setAssetValue(e.target.value)}
                                         className={styles.formInput}
@@ -738,6 +739,7 @@ const OnboardingView = () => {
                                     <label>{readData("components.Clerio.OnboardingView", "OnboardingView_text_143")}</label>
                                     <input
                                         type="number"
+                                        min="0" max="999999999.99" step="0.01"
                                         value={awardPrize}
                                         onChange={(e) => setAwardPrize(e.target.value)}
                                         className={styles.formInput}
