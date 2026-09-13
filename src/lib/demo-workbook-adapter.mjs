@@ -47,6 +47,55 @@ const designations = new Map(validRows('05_Designations').map((row) => [row['Des
 
 const option = (value, label) => ({ value: String(value), label: String(label) });
 const uniqueOptions = (values) => Array.from(new Map(values.filter((value) => value?.value && value?.label).map((value) => [value.value, value])).values());
+const picklistCatalog = readData('picklists.catalog');
+
+const picklistOptionsMap = new Map(
+  (picklistCatalog?.picklists || []).map((pl) => [
+    pl.code,
+    pl.values.map((v) => ({ value: v, label: v })),
+  ])
+);
+
+const fieldToPicklistKeyMap = {
+  gender: 'PL_GENDER',
+  salutation: 'PL_SALUTATION',
+  maritalStatus: 'PL_MARITAL_STATUS',
+  bloodGroup: 'PL_BLOOD_GROUP',
+  religion: 'PL_RELIGION',
+  socialCategory: 'PL_SOCIAL_CATEGORY',
+  disabilityType: 'PL_DISABILITY_TYPE',
+  relation: 'PL_RELATION',
+  relationship: 'PL_RELATION',
+  educationLevel: 'PL_EDUCATION_LEVEL',
+  employmentType: 'PL_EMPLOYMENT_TYPE',
+  documentClass: 'PL_DOCUMENT_CLASS',
+  accountType: 'PL_ACCOUNT_TYPE',
+  taxRegime: 'PL_TAX_REGIME',
+  entityType: 'PL_ENTITY_TYPE',
+  locationType: 'PL_LOCATION_TYPE',
+  estbType: 'PL_ESTB_TYPE',
+  registrationStatus: 'PL_REGISTRATION_STATUS',
+  attendanceMode: 'PL_ATTENDANCE_MODE',
+  attendanceStatus: 'PL_ATTENDANCE_STATUS',
+  role: 'PL_ROLE',
+  approvalStatus: 'PL_APPROVAL_STATUS',
+  ticketCategory: 'PL_TICKET_CATEGORY',
+  ticketStatus: 'PL_TICKET_STATUS',
+  assetType: 'PL_ASSET_TYPE',
+  assetCondition: 'PL_ASSET_CONDITION',
+  claimType: 'PL_CLAIM_TYPE',
+  candidateStage: 'PL_CANDIDATE_STAGE',
+  interviewRound: 'PL_INTERVIEW_ROUND',
+  interviewVerdict: 'PL_INTERVIEW_VERDICT',
+  letterType: 'PL_LETTER_TYPE',
+  exitReason: 'PL_EXIT_REASON',
+  exitType: 'PL_EXIT_TYPE',
+  paymentMode: 'PL_PAYMENT_MODE',
+  bankFormat: 'PL_BANK_FORMAT',
+  state: 'PL_STATE',
+  country: 'PL_COUNTRY',
+};
+
 const employeeOptions = uniqueOptions(employeeRows.map((row) => option(row['Employee code'], `${row['Employee code']} · ${row['Full name']}`)));
 const entityOptions = uniqueOptions(validRows('02_Legal_Entities').map((row) => option(row['Entity code'], `${row['Entity code']} · ${row['Registered name']}`)));
 const locationOptions = uniqueOptions(validRows('03_Locations').map((row) => option(row['Location code'], `${row['Location code']} · ${row['Location name']}`)));
@@ -158,7 +207,15 @@ export function recordCellValue(record, column) {
 }
 
 export function getWorkbookFieldOptions(fieldKey) {
-  return fieldOptionSets[fieldKey] || [];
+  if (fieldOptionSets[fieldKey]) return fieldOptionSets[fieldKey];
+  const mappedPicklistKey = fieldToPicklistKeyMap[fieldKey];
+  if (mappedPicklistKey && picklistOptionsMap.has(mappedPicklistKey)) {
+    return picklistOptionsMap.get(mappedPicklistKey);
+  }
+  if (picklistOptionsMap.has(fieldKey)) {
+    return picklistOptionsMap.get(fieldKey);
+  }
+  return [];
 }
 
 export function workbookNavigationCounts() {

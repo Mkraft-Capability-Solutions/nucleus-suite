@@ -14,7 +14,7 @@ test('the module registry includes each currently missing workbook screen', () =
     assert.match(source, new RegExp(screen));
   }
   const workbookScreenIds = new Set(source.match(/SCR-\d{3}/g));
-  assert.equal(workbookScreenIds.size, 49);
+  assert.equal(workbookScreenIds.size, 51);
 });
 
 test('the workspace can render registered operational modules', () => {

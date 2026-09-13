@@ -171,6 +171,22 @@
           "heading": "People & lifecycle",
           "items": [
             {
+              "id": "legal_entity",
+              "label": "Legal entity master",
+              "targetTab": "legal_entity",
+              "icon": "Building2",
+              "desc": "Manage corporate legal entities, incorporation details, and tax registrations.",
+              "tag": "SCR-001"
+            },
+            {
+              "id": "location_master",
+              "label": "Location / Work site master",
+              "targetTab": "location_master",
+              "icon": "MapPin",
+              "desc": "Manage physical locations, plant sites, holiday calendars, shift groups and geofencing.",
+              "tag": "SCR-002"
+            },
+            {
               "id": "access_scope",
               "label": "Access scope administration",
               "targetTab": "access_scope",

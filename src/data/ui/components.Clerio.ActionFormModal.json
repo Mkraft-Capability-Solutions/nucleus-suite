@@ -53,6 +53,31 @@
         ]
       ]
     },
+    "legal_entity": {
+      "title": "Create legal entity (SCR-001)",
+      "submit": "Create legal entity",
+      "fields": [
+        ["entityCode", "Entity code", "text", true],
+        ["registeredName", "Registered name", "text", true],
+        ["entityType", "Entity type", "select", true, ["Private Limited", "Public Limited", "LLP", "Partnership"]],
+        ["cinLlpin", "CIN / LLPIN", "text", true],
+        ["entityPan", "PAN", "text", true],
+        ["tan", "TAN", "text", true],
+        ["effectiveFrom", "Effective from", "date", true]
+      ]
+    },
+    "location": {
+      "title": "Create location master (SCR-002)",
+      "submit": "Create location",
+      "fields": [
+        ["locationCode", "Location code", "text", true],
+        ["locationName", "Location name", "text", true],
+        ["entityCode", "Legal entity", "text", true],
+        ["locationType", "Location type", "select", true, ["Plant", "Corporate Office", "Branch Office", "Warehouse"]],
+        ["stateCode", "State", "select", true, ["KA", "MH", "DL", "TN"]],
+        ["timeZone", "Time zone", "select", true, ["Asia/Kolkata", "UTC"]]
+      ]
+    },
     "position": {
       "title": "Create position slot",
       "submit": "Create slot",

@@ -1,6 +1,49 @@
 {
   "modules": [
     {
+      "id": "legal_entity",
+      "screenId": "SCR-001",
+      "title": "Legal entity master",
+      "primary": "plt_platform",
+      "endpoint": "/api/v1/organization/entities",
+      "fields": [
+        { "key": "entityCode", "label": "Entity code", "required": true, "type": "text" },
+        { "key": "registeredName", "label": "Registered name", "required": true, "type": "text" },
+        { "key": "entityType", "label": "Entity type", "required": true, "type": "text" },
+        { "key": "cinLlpin", "label": "CIN / LLPIN", "required": true, "type": "text" },
+        { "key": "entityPan", "label": "PAN", "required": true, "type": "text" },
+        { "key": "tan", "label": "TAN", "required": true, "type": "text" },
+        { "key": "effectiveFrom", "label": "Effective from", "required": true, "type": "date" }
+      ],
+      "description": "Manage corporate legal entities, incorporation details, and tax registrations.",
+      "stateLabel": "Status",
+      "states": ["Active", "Inactive"],
+      "actions": ["Create entity", "Edit entity"],
+      "columns": ["Entity code", "Registered name", "Type", "PAN", "Status"],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "location_master",
+      "screenId": "SCR-002",
+      "title": "Location / Work site master",
+      "primary": "plt_platform",
+      "endpoint": "/api/v1/organization/locations",
+      "fields": [
+        { "key": "locationCode", "label": "Location code", "required": true, "type": "text" },
+        { "key": "locationName", "label": "Location name", "required": true, "type": "text" },
+        { "key": "entityCode", "label": "Legal entity", "required": true, "type": "text" },
+        { "key": "locationType", "label": "Location type", "required": true, "type": "text" },
+        { "key": "stateCode", "label": "State", "required": true, "type": "text" },
+        { "key": "timeZone", "label": "Time zone", "required": true, "type": "text" }
+      ],
+      "description": "Manage physical locations, plant sites, holiday calendars, shift groups and geofencing.",
+      "stateLabel": "Status",
+      "states": ["Active", "Inactive"],
+      "actions": ["Create location", "Edit location"],
+      "columns": ["Location code", "Location name", "Legal entity", "State", "Status"],
+      "apiMethod": "GET"
+    },
+    {
       "id": "access_scope",
       "screenId": "SCR-005",
       "title": "Access scope administration",

@@ -9,12 +9,18 @@ import { readData } from '../../services/workspace-data.mjs';
 import React, { useMemo, useState } from 'react';
 import {
     Users, Network, FileText, History, Layers, ShieldCheck,
-    Search, Plus, Filter, Download, ArrowUpRight, CheckCircle2, AlertCircle
+    Search, Plus, Filter, Download, ArrowUpRight, CheckCircle2, AlertCircle,
+    Building2, MapPin, UploadCloud
 } from 'lucide-react';
 import styles from './PeopleCoreView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 import { getWorkbookRowsForModule, recordCellValue } from '@/lib/demo-workbook-adapter.mjs';
+import EmployeeCreationWizard from './EmployeeCreationWizard';
+import BulkOnboardingModal from './BulkOnboardingModal';
+import LegalEntityModal from './LegalEntityModal';
+import LocationMasterModal from './LocationMasterModal';
+import { downloadCSV } from '@/utils/exportUtils';
 
 const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
     const {t: translateText}=useTranslation();
@@ -26,6 +32,24 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
     const [selectedNewManager, setSelectedNewManager] = useState('');
     const [managerOverrides, setManagerOverrides] = useState({});
 
+    // Modal Visibility States
+    const [isWizardOpen, setIsWizardOpen] = useState(false);
+    const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
+    const [isEntityModalOpen, setIsEntityModalOpen] = useState(false);
+    const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+
+    // Dynamic UI Master Datasets (Client-side state)
+    const [customEmployees, setCustomEmployees] = useState([]);
+    const [entitiesList, setEntitiesList] = useState([
+        { entityCode: 'ENT-NUC', registeredName: 'Nucleus HR Solutions India Pvt Ltd', entityType: 'Private Limited', cinLlpin: 'U72900KA2024PTC123456', entityPan: 'AAACN1234F', tan: 'BLRN12345E', status: 'Active', effectiveFrom: '2024-04-01' },
+        { entityCode: 'ENT-GLB', registeredName: 'Nucleus Global Holdings Inc', entityType: 'Public Limited', cinLlpin: 'U72900DL2022PLC998877', entityPan: 'BBBCN9988G', tan: 'DELN99887F', status: 'Active', effectiveFrom: '2022-01-15' }
+    ]);
+    const [locationsList, setLocationsList] = useState([
+        { locationCode: 'LOC-BLR-01', locationName: 'Bangalore Electronic City Plant 1', entityCode: 'ENT-NUC', locationType: 'Plant', stateCode: 'KA', timeZone: 'Asia/Kolkata', status: 'Active' },
+        { locationCode: 'LOC-MUM-01', locationName: 'Mumbai BKC Corporate HQ', entityCode: 'ENT-NUC', locationType: 'Corporate Office', stateCode: 'MH', timeZone: 'Asia/Kolkata', status: 'Active' },
+        { locationCode: 'LOC-DEL-01', locationName: 'Delhi Logistics & Warehouse Hub', entityCode: 'ENT-GLB', locationType: 'Warehouse', stateCode: 'DL', timeZone: 'Asia/Kolkata', status: 'Active' }
+    ]);
+
     const workbookEmployees = useMemo(() => getWorkbookRowsForModule('person_record').map((record) => ({
         id: record.source['Employee code'],
         name: record.source['Full name'],
@@ -36,12 +60,53 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
         status: recordCellValue(record, 'Status'),
         band: record.source['Worker class'] || readData("components.Clerio.PeopleCoreView", "fallback_2"),
     })), []);
-    const directoryEmployees = workbookEmployees.map((employee) => ({ ...employee, manager: managerOverrides[employee.id] || employee.manager }));
+
+    const directoryEmployees = useMemo(() => [
+        ...customEmployees,
+        ...workbookEmployees.map((employee) => ({ ...employee, manager: managerOverrides[employee.id] || employee.manager }))
+    ], [customEmployees, workbookEmployees, managerOverrides]);
+
     const filteredEmployees = directoryEmployees.filter(emp =>
         emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emp.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
         emp.role.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    // Export Handlers
+    const exportDirectoryCSV = () => {
+        const headers = ['Employee Code', 'Full Name', 'Position / Role', 'Department', 'Reporting Manager', 'Location', 'Status', 'Worker Class'];
+        const rows = directoryEmployees.map(emp => [emp.id, emp.name, emp.role, emp.dept, emp.manager, emp.location, emp.status, emp.band]);
+        downloadCSV('nucleus_employee_directory.csv', headers, rows);
+        showToast('Export Complete', 'Employee Directory CSV downloaded.', 'success');
+    };
+
+    const exportEntitiesCSV = () => {
+        const headers = ['Entity Code', 'Registered Name', 'Entity Type', 'CIN / LLPIN', 'PAN', 'TAN', 'Status', 'Effective From'];
+        const rows = entitiesList.map(e => [e.entityCode, e.registeredName, e.entityType, e.cinLlpin, e.entityPan, e.tan, e.status, e.effectiveFrom]);
+        downloadCSV('nucleus_legal_entities.csv', headers, rows);
+        showToast('Export Complete', 'Legal Entities CSV downloaded.', 'success');
+    };
+
+    const exportLocationsCSV = () => {
+        const headers = ['Location Code', 'Location Name', 'Legal Entity', 'Location Type', 'State', 'Time Zone', 'Status'];
+        const rows = locationsList.map(l => [l.locationCode, l.locationName, l.entityCode, l.locationType, l.stateCode, l.timeZone, l.status]);
+        downloadCSV('nucleus_locations_master.csv', headers, rows);
+        showToast('Export Complete', 'Locations Master CSV downloaded.', 'success');
+    };
+
+    const exportPositionsCSV = () => {
+        const headers = ['Position Code', 'Position Title', 'Department', 'Open Slots', 'Filled', 'Budget', 'Status'];
+        const rows = positions.map(p => [p.id, p.title, p.dept, p.openSlots, p.filled, p.budget, p.status]);
+        downloadCSV('nucleus_positions_register.csv', headers, rows);
+        showToast('Export Complete', 'Positions CSV downloaded.', 'success');
+    };
+
+    const exportDocumentsCSV = () => {
+        const headers = ['Document Title', 'Category', 'Verification Status', 'Expiry Date', 'Access Scope'];
+        const rows = documents.map(d => [d.title, d.type, d.ocrStatus, d.expiry, 'HR Only']);
+        downloadCSV('nucleus_document_vault.csv', headers, rows);
+        showToast('Export Complete', 'Document Vault CSV downloaded.', 'success');
+    };
 
     return (
         <div className={styles.container}>
@@ -72,10 +137,15 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <ShieldCheck size={15} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_4")}</button>
                     )}
-                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.PeopleCoreView","text_dfc8f0d02f"),translateText("components.Clerio.PeopleCoreView","text_b64285281e"), 'info')}>
-                        <Download size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_5")}</button>
-                    <button className={styles.btnPrimary} onClick={() => launchAction('employee')}>
-                        <Plus size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_6")}</button>
+                    <button className={styles.btnSecondary} onClick={() => setIsBulkImportOpen(true)} title="Bulk employee import & template download">
+                        <UploadCloud size={16} /> Bulk Onboarding
+                    </button>
+                    <button className={styles.btnSecondary} onClick={exportDirectoryCSV} title="Export directory to CSV">
+                        <Download size={16} /> Export CSV
+                    </button>
+                    <button className={styles.btnPrimary} onClick={() => setIsWizardOpen(true)} title="Add employee wizard (117 fields)">
+                        <Plus size={16} /> Add Employee
+                    </button>
                 </div>
             </div>
 
@@ -85,27 +155,44 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                     className={`${styles.tabBtn} ${activeSection === 'directory' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('directory')}
                 >
-                    <Users size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_7")}</button>
+                    <Users size={16} /> Employee Directory
+                </button>
+                <button
+                    className={`${styles.tabBtn} ${activeSection === 'entities' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveSection('entities')}
+                >
+                    <Building2 size={16} /> Legal Entities (SCR-001)
+                </button>
+                <button
+                    className={`${styles.tabBtn} ${activeSection === 'locations' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveSection('locations')}
+                >
+                    <MapPin size={16} /> Locations (SCR-002)
+                </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'orgchart' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('orgchart')}
                 >
-                    <Network size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_8")}</button>
+                    <Network size={16} /> Org Chart
+                </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'positions' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('positions')}
                 >
-                    <Layers size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_9")}</button>
+                    <Layers size={16} /> Positions (SCR-012)
+                </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'documents' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('documents')}
                 >
-                    <FileText size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_10")}</button>
+                    <FileText size={16} /> Document Vault (SCR-014)
+                </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'audit' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('audit')}
                 >
-                    <History size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_11")}</button>
+                    <History size={16} /> Audit Trail
+                </button>
             </div>
 
             {/* Metrics Row */}
@@ -279,9 +366,15 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
             {activeSection === 'positions' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Layers size={20} color="#2563eb" />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_50")}</h3>
-                        <button className={styles.btnPrimary} onClick={() => launchAction('position')}>
-                            <Plus size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_51")}</button>
+                        <h3><Layers size={20} color="#2563eb" /> Position Register (SCR-012)</h3>
+                        <div style={{ display: 'flex', gap: '0.65rem' }}>
+                            <button className={styles.btnSecondary} onClick={exportPositionsCSV}>
+                                <Download size={15} /> Export Positions CSV
+                            </button>
+                            <button className={styles.btnPrimary} onClick={() => launchAction('position')}>
+                                <Plus size={16} /> New Position Slot
+                            </button>
+                        </div>
                     </div>
 
                     <div className={styles.tableWrapper}>
@@ -323,9 +416,15 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
             {activeSection === 'documents' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><FileText size={20} color="var(--info)" />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_59")}</h3>
-                        <button className={styles.btnPrimary} onClick={() => launchAction('document')}>
-                            <Plus size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_60")}</button>
+                        <h3><FileText size={20} color="var(--info)" /> Document Vault (SCR-014)</h3>
+                        <div style={{ display: 'flex', gap: '0.65rem' }}>
+                            <button className={styles.btnSecondary} onClick={exportDocumentsCSV}>
+                                <Download size={15} /> Export Vault CSV
+                            </button>
+                            <button className={styles.btnPrimary} onClick={() => launchAction('document')}>
+                                <Plus size={16} /> Upload Document
+                            </button>
+                        </div>
                     </div>
 
                     <div className={styles.tableWrapper}>
@@ -406,6 +505,98 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                 </div>
             )}
 
+            {/* Section: Legal Entities Master (SCR-001) */}
+            {activeSection === 'entities' && (
+                <div className={styles.card}>
+                    <div className={styles.cardHeader}>
+                        <h3><Building2 size={20} color="#38bdf8" /> Legal Entity Master (SCR-001)</h3>
+                        <div style={{ display: 'flex', gap: '0.65rem' }}>
+                            <button className={styles.btnSecondary} onClick={exportEntitiesCSV}>
+                                <Download size={15} /> Export Entities CSV
+                            </button>
+                            <button className={styles.btnPrimary} onClick={() => setIsEntityModalOpen(true)}>
+                                <Plus size={16} /> Add Legal Entity
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Entity Code</th>
+                                    <th>Registered Name</th>
+                                    <th>Entity Type</th>
+                                    <th>CIN / LLPIN</th>
+                                    <th>PAN</th>
+                                    <th>TAN</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {entitiesList.map((ent) => (
+                                    <tr key={ent.entityCode}>
+                                        <td><strong>{ent.entityCode}</strong></td>
+                                        <td><strong>{ent.registeredName}</strong></td>
+                                        <td>{ent.entityType}</td>
+                                        <td><code>{ent.cinLlpin}</code></td>
+                                        <td><code>{ent.entityPan}</code></td>
+                                        <td><code>{ent.tan}</code></td>
+                                        <td><span className={`${styles.badge} ${styles.badgeActive}`}>{ent.status}</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
+            {/* Section: Location / Work Site Master (SCR-002) */}
+            {activeSection === 'locations' && (
+                <div className={styles.card}>
+                    <div className={styles.cardHeader}>
+                        <h3><MapPin size={20} color="#38bdf8" /> Location / Work Site Master (SCR-002)</h3>
+                        <div style={{ display: 'flex', gap: '0.65rem' }}>
+                            <button className={styles.btnSecondary} onClick={exportLocationsCSV}>
+                                <Download size={15} /> Export Locations CSV
+                            </button>
+                            <button className={styles.btnPrimary} onClick={() => setIsLocationModalOpen(true)}>
+                                <Plus size={16} /> Add Location Master
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
+                            <thead>
+                                <tr>
+                                    <th>Location Code</th>
+                                    <th>Location Name</th>
+                                    <th>Legal Entity</th>
+                                    <th>Type</th>
+                                    <th>State</th>
+                                    <th>Time Zone</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {locationsList.map((loc) => (
+                                    <tr key={loc.locationCode}>
+                                        <td><strong>{loc.locationCode}</strong></td>
+                                        <td><strong>{loc.locationName}</strong></td>
+                                        <td>{loc.entityCode}</td>
+                                        <td>{loc.locationType}</td>
+                                        <td>{loc.stateCode}</td>
+                                        <td>{loc.timeZone}</td>
+                                        <td><span className={`${styles.badge} ${styles.badgeActive}`}>{loc.status}</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
             {/* Reassign Reporting Manager Modal */}
             {reassignTarget && (
                 <Dialog open onClose={() => setReassignTarget(null)} aria-labelledby="reassign-manager-title" fullWidth maxWidth="sm">
@@ -468,6 +659,31 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                     </div>
                 </Dialog>
             )}
+
+            {/* Modal Wizards & Dialogs */}
+            <EmployeeCreationWizard
+                isOpen={isWizardOpen}
+                onClose={() => setIsWizardOpen(false)}
+                onSave={(newEmp) => setCustomEmployees(prev => [newEmp, ...prev])}
+            />
+
+            <BulkOnboardingModal
+                isOpen={isBulkImportOpen}
+                onClose={() => setIsBulkImportOpen(false)}
+                onIngest={(batch) => setCustomEmployees(prev => [...batch, ...prev])}
+            />
+
+            <LegalEntityModal
+                isOpen={isEntityModalOpen}
+                onClose={() => setIsEntityModalOpen(false)}
+                onSave={(ent) => setEntitiesList(prev => [ent, ...prev])}
+            />
+
+            <LocationMasterModal
+                isOpen={isLocationModalOpen}
+                onClose={() => setIsLocationModalOpen(false)}
+                onSave={(loc) => setLocationsList(prev => [loc, ...prev])}
+            />
         </div>
     );
 };

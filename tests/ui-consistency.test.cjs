@@ -50,3 +50,19 @@ test('top-level actions are filtered by permission and do not switch a signed-in
     assert.doesNotMatch(source, /switchRole\(/);
     assert.doesNotMatch(source, /Switch Persona/);
 });
+
+test('picklists catalog contains 119 seeded picklists and is mounted in SettingsView', () => {
+    const catalog = JSON.parse(read('src/data/ui/picklists.catalog.json'));
+    assert.equal(catalog.picklists.length, 119);
+    const codes = new Set(catalog.picklists.map(p => p.code));
+    assert.ok(codes.has('PL_ENTITY_TYPE'));
+    assert.ok(codes.has('PL_EMPLOYMENT_TYPE'));
+    assert.ok(codes.has('PL_GENDER'));
+    assert.ok(codes.has('PL_ATTENDANCE_MODE'));
+    assert.ok(codes.has('PL_ROLE'));
+    
+    const settingsSource = read('src/components/Clerio/SettingsView.js');
+    assert.match(settingsSource, /Picklists Catalog/);
+    assert.match(settingsSource, /searchPicklists/);
+});
+

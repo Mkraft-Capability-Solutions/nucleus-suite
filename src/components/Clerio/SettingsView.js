@@ -8,12 +8,17 @@ import {
     User, Bell, Shield, Lock, Globe, Building2,
     Key, CheckCircle2, Save, RotateCcw, Laptop,
     ShieldCheck, Sparkles, Smartphone, Eye,
-    Users, CreditCard, Briefcase
+import {
+    User, Bell, Shield, Lock, Globe, Building2,
+    Key, CheckCircle2, Save, RotateCcw, Laptop,
+    ShieldCheck, Sparkles, Smartphone, Eye,
+    Users, CreditCard, Briefcase, List, Search
 } from 'lucide-react';
 import styles from './SettingsView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import { launchAction } from '@/lib/action-launcher';
+import { getAllPicklists, searchPicklists } from '@/lib/picklist-catalog';
 
 const SettingsView = ({ onNavigate, onSelectConsole }) => {
     const {t: translateText}=useTranslation();
@@ -22,6 +27,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
     const { user: authUser, openAccessControl, modulePermissions, consolePermissions, switchRole } = useAuth();
     const userRole = authUser?.role || readData("components.Clerio.SettingsView", "fallback_1");
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.SettingsView", "initialState_1"));
+    const [picklistSearch, setPicklistSearch] = useState('');
 
     // Local form states
     const [formData, setFormData] = useState({
@@ -112,6 +118,11 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                     onClick={() => setActiveTab('permissions')}
                 >
                     <ShieldCheck size={16} />{readData("components.Clerio.SettingsView", "SettingsView_text_15")}</button>
+                <button
+                    className={`${styles.tabBtn} ${activeTab === 'picklists' ? styles.tabActive : ''}`}
+                    onClick={() => setActiveTab('picklists')}
+                >
+                    <List size={16} />Picklists Catalog</button>
             </div>
 
             {/* TAB 1: PROFILE & PERSONAL */}
@@ -599,6 +610,83 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                             </div>
                             <p style={{ fontSize: '0.76rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_131")}</p>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* TAB 7: PICKLISTS & MASTER LOOKUP CATALOG */}
+            {activeTab === 'picklists' && (
+                <div className={styles.sectionCard}>
+                    <div className={styles.sectionHeader}>
+                        <div className={styles.sectionIcon} style={{ background: 'rgba(45, 212, 168, 0.12)' }}><List size={20} color="#2DD4A8" /></div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem', flexWrap: 'wrap' }}>
+                            <div>
+                                <h3 style={{ margin: 0 }}>System & Config Picklists Catalog</h3>
+                                <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>Standardized master dropdown catalogs, statutory classifications, and lookup value sets across all 11 HRMS modules (118 Seeded Picklists).</p>
+                            </div>
+                            <div style={{ position: 'relative', width: '280px' }}>
+                                <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-2)' }} />
+                                <input
+                                    type="text"
+                                    placeholder="Search picklist code, name, value..."
+                                    className={styles.input}
+                                    style={{ paddingLeft: '2.1rem', height: '36px', fontSize: '0.8rem' }}
+                                    value={picklistSearch}
+                                    onChange={(e) => setPicklistSearch(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className={styles.tableWrapper} style={{ marginTop: '1rem', maxHeight: '520px', overflowY: 'auto' }}>
+                        <table className={styles.auditTable}>
+                            <thead>
+                                <tr>
+                                    <th>Picklist Code</th>
+                                    <th>Name</th>
+                                    <th>Seeded By</th>
+                                    <th>Values Count</th>
+                                    <th>Value Set Preview</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {searchPicklists(picklistSearch).map((pl) => (
+                                    <tr key={pl.code}>
+                                        <td><code style={{ background: 'var(--card-2)', padding: '2px 6px', borderRadius: '4px', color: '#4FB6F5', fontSize: '0.8rem', fontWeight: 600 }}>{pl.code}</code></td>
+                                        <td><strong style={{ fontSize: '0.85rem' }}>{pl.name}</strong></td>
+                                        <td>
+                                            <span style={{
+                                                display: 'inline-block',
+                                                padding: '2px 8px',
+                                                borderRadius: '12px',
+                                                fontSize: '0.72rem',
+                                                fontWeight: 700,
+                                                background: pl.seededBy === 'System' ? 'rgba(79, 182, 245, 0.15)' : 'rgba(155, 140, 255, 0.15)',
+                                                color: pl.seededBy === 'System' ? '#4FB6F5' : '#9B8CFF',
+                                                border: pl.seededBy === 'System' ? '1px solid rgba(79, 182, 245, 0.3)' : '1px solid rgba(155, 140, 255, 0.3)'
+                                            }}>
+                                                {pl.seededBy}
+                                            </span>
+                                        </td>
+                                        <td><strong style={{ fontSize: '0.85rem' }}>{pl.values.length}</strong></td>
+                                        <td>
+                                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', maxWidth: '480px' }}>
+                                                {pl.values.slice(0, 5).map((val, idx) => (
+                                                    <span key={idx} style={{ background: 'var(--card-2)', border: '1px solid var(--line)', padding: '2px 6px', borderRadius: '4px', fontSize: '0.72rem', color: 'var(--text-2)' }}>
+                                                        {val}
+                                                    </span>
+                                                ))}
+                                                {pl.values.length > 5 && (
+                                                    <span style={{ fontSize: '0.72rem', color: 'var(--text-2)', alignSelf: 'center', fontWeight: 600 }}>
+                                                        +{pl.values.length - 5} more
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             )}
