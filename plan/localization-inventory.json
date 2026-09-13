@@ -86140,7 +86140,7 @@
     "key": "modules/37/fields/0/type",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/0/type",
-    "sourceHash": "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1",
+    "sourceHash": "b1a36d25d9633ed2ac04939fcb614ccb2b513243c148f18694592ae037f9d35f",
     "classification": "requires-classification"
   },
   {
@@ -86164,7 +86164,7 @@
     "key": "modules/37/fields/1/type",
     "sourceFile": "src/data/ui/lib.operational-module-registry.json",
     "sourcePointer": "/modules/37/fields/1/type",
-    "sourceHash": "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1",
+    "sourceHash": "b1a36d25d9633ed2ac04939fcb614ccb2b513243c148f18694592ae037f9d35f",
     "classification": "requires-classification"
   },
   {

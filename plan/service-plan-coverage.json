@@ -1,0 +1,2809 @@
+{
+  "status": "planned-not-implemented",
+  "navigation": [
+    {
+      "id": "s1",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s2",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s3",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s4",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s5",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s6",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s7",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s8",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s9",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "s10",
+      "targetTab": "dashboard",
+      "owner": "dashboard"
+    },
+    {
+      "id": "core_people",
+      "targetTab": "people_core",
+      "owner": "organization"
+    },
+    {
+      "id": "core_attendance",
+      "targetTab": "attendance",
+      "owner": "attendance"
+    },
+    {
+      "id": "core_leaves",
+      "targetTab": "leaves",
+      "owner": "leave"
+    },
+    {
+      "id": "core_onboarding",
+      "targetTab": "onboarding",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "core_org",
+      "targetTab": "team",
+      "owner": "organization"
+    },
+    {
+      "id": "core_workforce",
+      "targetTab": "contract_workforce",
+      "owner": "contractors"
+    },
+    {
+      "id": "core_operations",
+      "targetTab": "helpdesk",
+      "owner": "ops"
+    },
+    {
+      "id": "core_compliance",
+      "targetTab": "compliance",
+      "owner": "compliance"
+    },
+    {
+      "id": "access_scope",
+      "targetTab": "access_scope",
+      "owner": "platform"
+    },
+    {
+      "id": "person_record",
+      "targetTab": "person_record",
+      "owner": "organization"
+    },
+    {
+      "id": "assignment_admin",
+      "targetTab": "assignment_admin",
+      "owner": "organization"
+    },
+    {
+      "id": "position_register",
+      "targetTab": "position_register",
+      "owner": "organization"
+    },
+    {
+      "id": "sanctioned_strength",
+      "targetTab": "sanctioned_strength",
+      "owner": "organization"
+    },
+    {
+      "id": "document_vault",
+      "targetTab": "document_vault",
+      "owner": "documents"
+    },
+    {
+      "id": "joining_chain",
+      "targetTab": "joining_chain",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "clearance_board",
+      "targetTab": "clearance_board",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "asset_register",
+      "targetTab": "asset_register",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "letters_register",
+      "targetTab": "letters_register",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "policy_acknowledgements",
+      "targetTab": "policy_acknowledgements",
+      "owner": "documents"
+    },
+    {
+      "id": "employee_home",
+      "targetTab": "employee_home",
+      "owner": "dashboard"
+    },
+    {
+      "id": "check_in_out",
+      "targetTab": "check_in_out",
+      "owner": "attendance"
+    },
+    {
+      "id": "my_attendance",
+      "targetTab": "my_attendance",
+      "owner": "attendance"
+    },
+    {
+      "id": "attendance_detail",
+      "targetTab": "attendance_detail",
+      "owner": "attendance"
+    },
+    {
+      "id": "gate_passes",
+      "targetTab": "gate_passes",
+      "owner": "attendance"
+    },
+    {
+      "id": "overtime_register",
+      "targetTab": "overtime_register",
+      "owner": "attendance"
+    },
+    {
+      "id": "attendance_exceptions",
+      "targetTab": "attendance_exceptions",
+      "owner": "attendance"
+    },
+    {
+      "id": "recompute_monitor",
+      "targetTab": "recompute_monitor",
+      "owner": "attendance"
+    },
+    {
+      "id": "team_history",
+      "targetTab": "team_history",
+      "owner": "attendance"
+    },
+    {
+      "id": "leave_requests",
+      "targetTab": "leave_requests",
+      "owner": "leave"
+    },
+    {
+      "id": "leave_ledger",
+      "targetTab": "leave_ledger",
+      "owner": "leave"
+    },
+    {
+      "id": "leave_policy_admin",
+      "targetTab": "leave_policy_admin",
+      "owner": "leave"
+    },
+    {
+      "id": "talent_ats",
+      "targetTab": "recruitment",
+      "owner": "talent"
+    },
+    {
+      "id": "talent_performance",
+      "targetTab": "performance",
+      "owner": "performance"
+    },
+    {
+      "id": "talent_learning",
+      "targetTab": "learning",
+      "owner": "learning"
+    },
+    {
+      "id": "talent_skills",
+      "targetTab": "experience",
+      "owner": "skills"
+    },
+    {
+      "id": "talent_succession",
+      "targetTab": "performance",
+      "owner": "performance"
+    },
+    {
+      "id": "talent_mobility",
+      "targetTab": "recruitment",
+      "owner": "talent"
+    },
+    {
+      "id": "talent_recognition",
+      "targetTab": "experience",
+      "owner": "engagement"
+    },
+    {
+      "id": "requisitions",
+      "targetTab": "requisitions",
+      "owner": "talent"
+    },
+    {
+      "id": "referrals",
+      "targetTab": "referrals",
+      "owner": "talent"
+    },
+    {
+      "id": "learning_paths",
+      "targetTab": "learning_paths",
+      "owner": "learning"
+    },
+    {
+      "id": "recognition_register",
+      "targetTab": "recognition_register",
+      "owner": "engagement"
+    },
+    {
+      "id": "announcement_management",
+      "targetTab": "announcement_management",
+      "owner": "notifications"
+    },
+    {
+      "id": "payroll_global",
+      "targetTab": "payroll",
+      "owner": "payroll"
+    },
+    {
+      "id": "payroll_comp",
+      "targetTab": "compensation",
+      "owner": "compensation"
+    },
+    {
+      "id": "payroll_claims",
+      "targetTab": "payroll",
+      "owner": "ops"
+    },
+    {
+      "id": "payroll_ewa",
+      "targetTab": "payroll",
+      "owner": "advances"
+    },
+    {
+      "id": "payroll_tax",
+      "targetTab": "compliance",
+      "owner": "compliance"
+    },
+    {
+      "id": "payroll_accounting",
+      "targetTab": "payroll",
+      "owner": "exports"
+    },
+    {
+      "id": "payroll_fnf",
+      "targetTab": "onboarding",
+      "owner": "payroll"
+    },
+    {
+      "id": "payroll_runs",
+      "targetTab": "payroll_runs",
+      "owner": "payroll"
+    },
+    {
+      "id": "pre_payroll_audit",
+      "targetTab": "pre_payroll_audit",
+      "owner": "payroll"
+    },
+    {
+      "id": "salary_simulator",
+      "targetTab": "salary_simulator",
+      "owner": "compensation"
+    },
+    {
+      "id": "payslips",
+      "targetTab": "payslips",
+      "owner": "payroll"
+    },
+    {
+      "id": "tax_declarations",
+      "targetTab": "tax_declarations",
+      "owner": "compliance"
+    },
+    {
+      "id": "bank_disbursement",
+      "targetTab": "bank_disbursement",
+      "owner": "exports"
+    },
+    {
+      "id": "full_and_final",
+      "targetTab": "full_and_final",
+      "owner": "payroll"
+    },
+    {
+      "id": "gl_mapping",
+      "targetTab": "gl_mapping",
+      "owner": "exports"
+    },
+    {
+      "id": "reconciliation",
+      "targetTab": "reconciliation",
+      "owner": "exports"
+    },
+    {
+      "id": "loans_advances",
+      "targetTab": "loans_advances",
+      "owner": "loans"
+    },
+    {
+      "id": "ops_rosters",
+      "targetTab": "attendance",
+      "owner": "attendance"
+    },
+    {
+      "id": "ops_projects",
+      "targetTab": "projects",
+      "owner": "ops"
+    },
+    {
+      "id": "ops_field",
+      "targetTab": "attendance",
+      "owner": "attendance"
+    },
+    {
+      "id": "ops_contract",
+      "targetTab": "contract_workforce",
+      "owner": "contractors"
+    },
+    {
+      "id": "ops_assets",
+      "targetTab": "onboarding",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "ops_travel",
+      "targetTab": "payroll",
+      "owner": "ops"
+    },
+    {
+      "id": "ops_timesheets",
+      "targetTab": "projects",
+      "owner": "ops"
+    },
+    {
+      "id": "approval_inbox",
+      "targetTab": "approval_inbox",
+      "owner": "governance"
+    },
+    {
+      "id": "contractor_reconciliation",
+      "targetTab": "contractor_reconciliation",
+      "owner": "contractors"
+    },
+    {
+      "id": "analytics_exec",
+      "targetTab": "dashboard",
+      "owner": "analytics"
+    },
+    {
+      "id": "analytics_people",
+      "targetTab": "analytics",
+      "owner": "analytics"
+    },
+    {
+      "id": "analytics_workforce",
+      "targetTab": "analytics",
+      "owner": "analytics"
+    },
+    {
+      "id": "analytics_payroll",
+      "targetTab": "analytics",
+      "owner": "analytics"
+    },
+    {
+      "id": "analytics_talent",
+      "targetTab": "analytics",
+      "owner": "analytics"
+    },
+    {
+      "id": "analytics_copilot",
+      "targetTab": "dashboard",
+      "owner": "ai"
+    },
+    {
+      "id": "analytics_custom",
+      "targetTab": "analytics",
+      "owner": "analytics"
+    },
+    {
+      "id": "assistant_helpdesk",
+      "targetTab": "assistant_helpdesk",
+      "owner": "ai"
+    },
+    {
+      "id": "agent_ledger",
+      "targetTab": "agent_ledger",
+      "owner": "ai"
+    },
+    {
+      "id": "operational_reports",
+      "targetTab": "operational_reports",
+      "owner": "analytics"
+    },
+    {
+      "id": "platform_integrations",
+      "targetTab": "integrations",
+      "owner": "integrations"
+    },
+    {
+      "id": "platform_workflows",
+      "targetTab": "onboarding",
+      "owner": "governance"
+    },
+    {
+      "id": "platform_roles",
+      "targetTab": "access_control",
+      "owner": "platform"
+    },
+    {
+      "id": "platform_settings",
+      "targetTab": "settings",
+      "owner": "admin"
+    },
+    {
+      "id": "platform_security",
+      "targetTab": "settings",
+      "owner": "platform"
+    },
+    {
+      "id": "platform_notifications",
+      "targetTab": "settings",
+      "owner": "notifications"
+    },
+    {
+      "id": "platform_audit",
+      "targetTab": "settings",
+      "owner": "governance"
+    },
+    {
+      "id": "rule_pack_manager",
+      "targetTab": "rule_pack_manager",
+      "owner": "compliance"
+    },
+    {
+      "id": "golden_case_library",
+      "targetTab": "golden_case_library",
+      "owner": "compliance"
+    },
+    {
+      "id": "obligation_calendar",
+      "targetTab": "obligation_calendar",
+      "owner": "compliance"
+    },
+    {
+      "id": "statutory_register",
+      "targetTab": "statutory_register",
+      "owner": "compliance"
+    },
+    {
+      "id": "integration_config",
+      "targetTab": "integration_config",
+      "owner": "integrations"
+    },
+    {
+      "id": "sync_monitor",
+      "targetTab": "sync_monitor",
+      "owner": "integrations"
+    }
+  ],
+  "operationalScreens": [
+    {
+      "id": "access_scope",
+      "screenId": "SCR-005"
+    },
+    {
+      "id": "person_record",
+      "screenId": "SCR-010"
+    },
+    {
+      "id": "assignment_admin",
+      "screenId": "SCR-011"
+    },
+    {
+      "id": "position_register",
+      "screenId": "SCR-012"
+    },
+    {
+      "id": "sanctioned_strength",
+      "screenId": "SCR-013"
+    },
+    {
+      "id": "document_vault",
+      "screenId": "SCR-014"
+    },
+    {
+      "id": "attendance_detail",
+      "screenId": "SCR-022"
+    },
+    {
+      "id": "overtime_register",
+      "screenId": "SCR-024"
+    },
+    {
+      "id": "attendance_exceptions",
+      "screenId": "SCR-025"
+    },
+    {
+      "id": "recompute_monitor",
+      "screenId": "SCR-026"
+    },
+    {
+      "id": "team_history",
+      "screenId": "SCR-027"
+    },
+    {
+      "id": "leave_policy_admin",
+      "screenId": "SCR-032"
+    },
+    {
+      "id": "tax_declarations",
+      "screenId": "SCR-054"
+    },
+    {
+      "id": "bank_disbursement",
+      "screenId": "SCR-055"
+    },
+    {
+      "id": "policy_acknowledgements",
+      "screenId": "SCR-062"
+    },
+    {
+      "id": "rule_pack_manager",
+      "screenId": "SCR-070"
+    },
+    {
+      "id": "golden_case_library",
+      "screenId": "SCR-071"
+    },
+    {
+      "id": "sync_monitor",
+      "screenId": "SCR-101"
+    },
+    {
+      "id": "gl_mapping",
+      "screenId": "SCR-102"
+    },
+    {
+      "id": "reconciliation",
+      "screenId": "SCR-103"
+    },
+    {
+      "id": "approval_inbox",
+      "screenId": "SCR-040"
+    },
+    {
+      "id": "joining_chain",
+      "screenId": "SCR-060"
+    },
+    {
+      "id": "clearance_board",
+      "screenId": "SCR-061"
+    },
+    {
+      "id": "asset_register",
+      "screenId": "SCR-064"
+    },
+    {
+      "id": "recognition_register",
+      "screenId": "SCR-065"
+    },
+    {
+      "id": "letters_register",
+      "screenId": "SCR-067"
+    },
+    {
+      "id": "statutory_register",
+      "screenId": "SCR-073"
+    },
+    {
+      "id": "loans_advances",
+      "screenId": "SCR-080"
+    },
+    {
+      "id": "requisitions",
+      "screenId": "SCR-090"
+    },
+    {
+      "id": "referrals",
+      "screenId": "SCR-091"
+    },
+    {
+      "id": "contractor_reconciliation",
+      "screenId": "SCR-095"
+    },
+    {
+      "id": "integration_config",
+      "screenId": "SCR-100"
+    },
+    {
+      "id": "agent_ledger",
+      "screenId": "SCR-110"
+    },
+    {
+      "id": "operational_reports",
+      "screenId": "SCR-111"
+    },
+    {
+      "id": "check_in_out",
+      "screenId": "SCR-020"
+    },
+    {
+      "id": "my_attendance",
+      "screenId": "SCR-021"
+    },
+    {
+      "id": "gate_passes",
+      "screenId": "SCR-023"
+    },
+    {
+      "id": "leave_requests",
+      "screenId": "SCR-030"
+    },
+    {
+      "id": "leave_ledger",
+      "screenId": "SCR-031"
+    },
+    {
+      "id": "payroll_runs",
+      "screenId": "SCR-050"
+    },
+    {
+      "id": "pre_payroll_audit",
+      "screenId": "SCR-051"
+    },
+    {
+      "id": "salary_simulator",
+      "screenId": "SCR-052"
+    },
+    {
+      "id": "payslips",
+      "screenId": "SCR-053"
+    },
+    {
+      "id": "full_and_final",
+      "screenId": "SCR-056"
+    },
+    {
+      "id": "assistant_helpdesk",
+      "screenId": "SCR-041"
+    },
+    {
+      "id": "employee_home",
+      "screenId": "SCR-042"
+    },
+    {
+      "id": "learning_paths",
+      "screenId": "SCR-063"
+    },
+    {
+      "id": "announcement_management",
+      "screenId": "SCR-066"
+    },
+    {
+      "id": "obligation_calendar",
+      "screenId": "SCR-072"
+    }
+  ],
+  "actions": [
+    {
+      "id": "employee",
+      "owner": "organization"
+    },
+    {
+      "id": "position",
+      "owner": "organization"
+    },
+    {
+      "id": "document",
+      "owner": "documents"
+    },
+    {
+      "id": "invite",
+      "owner": "platform"
+    },
+    {
+      "id": "oneOnOne",
+      "owner": "performance"
+    },
+    {
+      "id": "feedback360",
+      "owner": "performance"
+    },
+    {
+      "id": "okr",
+      "owner": "performance"
+    },
+    {
+      "id": "wellbeing",
+      "owner": "engagement"
+    },
+    {
+      "id": "compCycle",
+      "owner": "compensation"
+    },
+    {
+      "id": "offCycleOt",
+      "owner": "payroll"
+    },
+    {
+      "id": "arrears",
+      "owner": "payroll"
+    },
+    {
+      "id": "contractor",
+      "owner": "contractors"
+    },
+    {
+      "id": "debitNote",
+      "owner": "exports"
+    },
+    {
+      "id": "filing",
+      "owner": "compliance"
+    },
+    {
+      "id": "inspector",
+      "owner": "compliance"
+    },
+    {
+      "id": "apiKey",
+      "owner": "integrations"
+    },
+    {
+      "id": "connector",
+      "owner": "integrations"
+    },
+    {
+      "id": "learningPath",
+      "owner": "learning"
+    },
+    {
+      "id": "focusBlock",
+      "owner": "ops"
+    },
+    {
+      "id": "photo",
+      "owner": "documents"
+    },
+    {
+      "id": "biometric",
+      "owner": "privacy"
+    },
+    {
+      "id": "returnPlan",
+      "owner": "leave"
+    },
+    {
+      "id": "kudos",
+      "owner": "engagement"
+    },
+    {
+      "id": "probation",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "widget",
+      "owner": "dashboard"
+    },
+    {
+      "id": "twoFactor",
+      "owner": "platform"
+    },
+    {
+      "id": "passwordReset",
+      "owner": "platform"
+    },
+    {
+      "id": "growthAction",
+      "owner": "performance"
+    },
+    {
+      "id": "ticket",
+      "owner": "ops"
+    },
+    {
+      "id": "reply",
+      "owner": "ops"
+    },
+    {
+      "id": "settings",
+      "owner": "admin"
+    },
+    {
+      "id": "password",
+      "owner": "platform"
+    },
+    {
+      "id": "assetReturn",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "clearance",
+      "owner": "lifecycle"
+    },
+    {
+      "id": "roster",
+      "owner": "attendance"
+    },
+    {
+      "id": "leaveDecision",
+      "owner": "leave"
+    },
+    {
+      "id": "benefitLock",
+      "owner": "benefits"
+    },
+    {
+      "id": "payrollPreview",
+      "owner": "payroll"
+    },
+    {
+      "id": "payrollRelease",
+      "owner": "payroll"
+    },
+    {
+      "id": "actionReversal",
+      "owner": "ai"
+    },
+    {
+      "id": "anomalyReview",
+      "owner": "ai"
+    }
+  ],
+  "widgets": [
+    "governance",
+    "access",
+    "connectors",
+    "platform-checklist",
+    "hr-priorities",
+    "hr-pipeline",
+    "hr-approvals",
+    "hr-actions",
+    "learning",
+    "hr-payroll",
+    "my-day",
+    "my-leave",
+    "my-learning",
+    "my-actions",
+    "recognition",
+    "my-documents",
+    "support"
+  ],
+  "routes": [
+    {
+      "file": "src/app/api/agent/route.js",
+      "methods": [
+        "POST"
+      ],
+      "owners": []
+    },
+    {
+      "file": "src/app/api/workspace-data/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "workspace"
+      ]
+    },
+    {
+      "file": "src/app/api/auth/login/route.js",
+      "methods": [
+        "POST"
+      ],
+      "owners": []
+    },
+    {
+      "file": "src/app/api/auth/[...all]/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": []
+    },
+    {
+      "file": "src/app/api/v1/attendance/days/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/attendance/punches/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/attendance/team-summary/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "attendance",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/coff-grants/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "leave"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/interview-scores/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/attendance/days/[id]/recompute/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/enrollments/[id]/complete/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "learning"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/enrollments/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "learning"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/attendance/days/[id]/trace/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/offers/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/organization/positions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/candidates/[id]/resume/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/candidates/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/offers/[id]/transition/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/[id]/repay/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/home/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "engagement",
+        "talent",
+        "interviews",
+        "leave",
+        "notifications",
+        "organization",
+        "payroll",
+        "compliance",
+        "attendance",
+        "skills",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/[id]/consent/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/organization/tree/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/interview-plans/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/succession-plans/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/[id]/disburse/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/attendance/days/[id]/transition/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/loans/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "loans"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/organization/departments/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/tenant/settings/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/workspace/bootstrap/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "admin",
+        "identity",
+        "platform-admin",
+        "notifications",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/people/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/people/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/documents/[id]/download/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/contractors/agencies/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "contractors"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/audit-events/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/people/import-apply/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/documents/[id]/scan/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/documents/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/contractors/contracts/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "contractors"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payslips/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/interview-sessions/[id]/scores/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/platform/tenants/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform-admin",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/contractors/invoices/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "contractors"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/people/import-preview/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/interview-sessions/[id]/debrief/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/job-postings/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/interview-sessions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "interviews"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/contractors/assignments/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "contractors"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/requisitions/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/requisitions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/benefits/claims/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "benefits"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/platform/tenants/[tenantId]/users/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform-admin",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/platform/tenants/[tenantId]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "owners": [
+        "platform-admin",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/key-results/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/benefits/plans/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "benefits"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/integrations/connections/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/invitations/[id]/revoke/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/invitations/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/wage-simulations/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/benefits/enrollments/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "benefits"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/integrations/catalog/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/calibration-sessions/[id]/adjust/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/calibration-sessions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-inputs/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-anomalies/[id]/resolve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-anomalies/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/deliveries/[id]/replay/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/deliveries/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/memberships/roles/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/offboarding/items/[id]/clear/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/benefits/options/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "benefits"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/auth/registration-state/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "identity"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/reports/team-history/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "vp"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/learning-paths/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "learning"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/referrals/[id]/award/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/inbound/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/checkins/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/scheduled-tasks/[id]/cancel/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/scheduled-tasks/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "jobs",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/delegations/[id]/revoke/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "delegation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/delegations/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "delegation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/finalize/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/secrets/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/access-events/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/regularizations/[id]/decide/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/regularizations/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/offboarding/cases/[id]/settle/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/offboarding/cases/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/announcements/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/job-descriptions/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/job-descriptions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/endpoints/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/review-cycles/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/survey-runs/[id]/results/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/survey-runs/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/reviews/[id]/decide/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/calculate/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/reviews/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/subscriptions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/exports/[id]/build/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "exports"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/exports/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "exports"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/exports/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "exports"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/roles/[id]/permissions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/roles/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "admin"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/employee-skills/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "skills"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/correct/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/outbox/[id]/retry/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/webhooks/inbound/[connectionId]/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "integrations"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/objectives/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ops/outbox/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ops"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/search/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "organization"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/salary-advances/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "advances"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/payroll-runs/[id]/journal/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "payroll"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/runs/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/runs/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/analytics/metrics/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "analytics"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/surveys/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/salary-advances/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "advances"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/feedback/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/analytics/capability-index/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "analytics"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/analytics/capability-index/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "analytics"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/analytics/metric-snapshots/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "analytics"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/salary-advances/[id]/pay/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "advances"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/feedback/entries/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/salary-advances/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "advances"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": []
+    },
+    {
+      "file": "src/app/api/v1/leave-balances/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "leave"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/referrals/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/notifications/[id]/read/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "notifications"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/notifications/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "notifications"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/review-participants/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/notifications/preferences/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "notifications"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/fx/rates/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "fx"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/courses/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "learning"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/applications/[id]/dispose/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/actions/[id]/execute/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/identity/memberships/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "identity",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/applications/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/actions/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/survey-responses/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/shift-swaps/[id]/decide/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/shift-swaps/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/applications/[id]/score/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/onboarding/instances/[id]/readiness/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/onboarding/instances/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/actions/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/identity/context/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "identity",
+        "platform"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/applications/[id]/advance/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/recognition-events/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "engagement"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/review-responses/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "performance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/skill-evidence/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "skills"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/gate-passes/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/actions/[id]/reverse/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/actions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/onboarding/templates/[id]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/onboarding/templates/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compliance/obligations/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compliance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/leave-requests/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "leave"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compliance/evidence/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compliance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/leave-requests/[id]/early-return/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "leave"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/knowledge/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/skill-evidence/[id]/verify/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "skills"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compensation/proposals/[id]/approve/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compensation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/leave-requests/[id]/decide/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "leave"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compensation/proposals/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compensation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/gate-passes/[id]/decide/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "attendance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/privacy/requests/[id]/close/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "privacy"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/privacy/requests/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "privacy"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/applications/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "talent"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/privacy/holds/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "privacy"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compliance/forms/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "compliance"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/privacy/holds/[id]/release/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "privacy"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compensation/bands/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compensation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/feedback/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compensation/budgets/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compensation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/compensation/cycles/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "compensation"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/evals/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/onboarding/tasks/[id]/complete/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "lifecycle"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/vp/readiness/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "owners": [
+        "platform",
+        "vp"
+      ]
+    },
+    {
+      "file": "src/app/api/v1/ai/evals/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "owners": [
+        "platform",
+        "ai"
+      ]
+    }
+  ],
+  "pages": [
+    "src/app/page.js",
+    "src/app/(website)/docs/page.tsx",
+    "src/app/(website)/about/page.tsx",
+    "src/app/(website)/features/page.tsx",
+    "src/app/(website)/why-nucleus/page.tsx",
+    "src/app/(website)/contact/page.tsx",
+    "src/app/(workspace)/login/page.tsx",
+    "src/app/(workspace)/workspace/page.tsx"
+  ],
+  "inputs": [
+    {
+      "path": "src/data/ui/navigation.catalog.json",
+      "sha256": "85a53980bb1ec45ab91396fc202c9a9e7dcf2770a5425bfbd251ec9b4a0edbc9"
+    },
+    {
+      "path": "src/data/ui/lib.operational-module-registry.json",
+      "sha256": "60def93906e5500198a62d974ff70396513f081582cfa13be50580d1580ffe6d"
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ActionFormModal.json",
+      "sha256": "6f8f7f0d00f9df0e7a1e658810df67e3225923d0fc50754820f9bf1d9f351610"
+    },
+    {
+      "path": "src/data/ui/dashboard.widgets.json",
+      "sha256": "4d66476e72da9664356f6605830b099637beabd3b72aedf3c7ce6a55b8147656"
+    }
+  ]
+}

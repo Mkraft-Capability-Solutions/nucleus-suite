@@ -13,7 +13,12 @@ function fieldInitials(fields, context) {
     return Object.fromEntries(fields.map(([key]) => [key, context?.[key] ?? '']));
 }
 
-export default function ActionFormModal({ request, onClose, onComplete }) {
+export default function ActionFormModal(props) {
+    if (!props.request || !common[props.request.action]) return null;
+    return <ActionFormContent key={JSON.stringify(props.request)} {...props} />;
+}
+
+function ActionFormContent({ request, onClose, onComplete }) {
     const action = request?.action ? common[request.action] : null;
     const initialValues = useMemo(() => action ? fieldInitials(action.fields, request.context) : {}, [action, request]);
     const [values, setValues] = useState(initialValues);
@@ -37,11 +42,6 @@ export default function ActionFormModal({ request, onClose, onComplete }) {
         modal.addEventListener('keydown', onKey);
         return () => { modal.removeEventListener('keydown', onKey); if (previous?.isConnected) previous.focus(); };
     }, [action, onClose]);
-
-    useEffect(() => {
-        setValues(initialValues);
-        setErrors({});
-    }, [initialValues]);
 
     if (!action) return null;
 

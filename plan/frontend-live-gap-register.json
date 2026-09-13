@@ -2,7 +2,7 @@
   "status": "not-refactored",
   "scope": "Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.",
   "snapshotReads": 4578,
-  "directLabelLocations": 99,
+  "directLabelLocations": 98,
   "files": [
     {
       "path": "src/components/AppWorkspace.js",
@@ -145,12 +145,7 @@
     {
       "path": "src/components/Clerio/LoginView.js",
       "snapshotReads": 10,
-      "hardcodedLabelLocations": [
-        {
-          "line": 38,
-          "kind": "jsx-text"
-        }
-      ]
+      "hardcodedLabelLocations": []
     },
     {
       "path": "src/components/Clerio/MainWorkspace.js",
@@ -694,46 +689,52 @@
       ]
     },
     {
+      "path": "src/components/Website/PublicHeader.tsx",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 13,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 18,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 19,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
       "path": "src/components/Website/PublicPage.tsx",
       "snapshotReads": 0,
       "hardcodedLabelLocations": [
         {
           "line": 24,
-          "kind": "jsx-attribute",
-          "attribute": "aria-label"
-        },
-        {
-          "line": 26,
           "kind": "jsx-text"
-        },
-        {
-          "line": 28,
-          "kind": "jsx-attribute",
-          "attribute": "aria-label"
         },
         {
           "line": 29,
           "kind": "jsx-text"
         },
         {
-          "line": 34,
-          "kind": "jsx-text"
-        },
-        {
-          "line": 37,
+          "line": 32,
           "kind": "jsx-attribute",
           "attribute": "aria-label"
+        },
+        {
+          "line": 42,
+          "kind": "jsx-text"
         },
         {
           "line": 47,
           "kind": "jsx-text"
         },
         {
-          "line": 52,
-          "kind": "jsx-text"
-        },
-        {
-          "line": 52,
+          "line": 47,
           "kind": "jsx-text"
         }
       ]

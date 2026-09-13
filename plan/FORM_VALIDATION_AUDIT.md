@@ -29,3 +29,7 @@ This is a heuristic audit, not proof that every possible dynamic workflow is cor
 India/INR is the initial relational payroll default. No state has been selected. An audited Superadmin country management API/UI and country-specific statutory adapters remain pending; the schema can hold additional countries. All-country availability is not equivalent to compliant payroll support.
 
 The broader database-driven localization, full normalization and live workspace workflow migration remain open as described in ENTERPRISE_HRMS_PLAN.md. Operational record creation in this audit is still a browser preview and is not durably saved.
+
+## Follow-up closure
+
+`node scripts/audit-forms.mjs` now reproduces the sweep across 440 source files, 22 native forms, 13 numeric/range controls and 22 metadata numeric fields. No missing numeric constraints or directly adjacent required-label mismatches were found. SCR-030 employee/type controls remain dropdowns when options are unavailable and reject stale selections. Shared validation rejects malformed clock values. The global boundary re-evaluates programmatically corrected values without retaining stale errors. Shared action dialogs reset through a keyed request lifecycle rather than effect-driven state resets.

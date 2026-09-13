@@ -29,9 +29,10 @@ export function validateForm(fields:FormField[],values:FormValues):Record<string
    if(!/^-?(?:\d+\.?\d*|\.\d+)$/.test(String(raw))||!Number.isFinite(number)||number<min||number>max)errors[field.key]=`${field.label} must be between ${min} and ${max}.`;
    else if(Math.abs((number-min)/step-Math.round((number-min)/step))>1e-7)errors[field.key]=`${field.label} must use increments of ${step}.`;
   }
+  if(field.type==='time'&&!/^([01]\d|2[0-3]):[0-5]\d$/.test(String(raw)))errors[field.key]=`${field.label} must be a valid time.`;
   if(field.type==='date'&&dateDay(raw)===null)errors[field.key]=`${field.label} must be a valid date.`;
   if(field.type==='email'&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(raw)))errors[field.key]=`${field.label} must be a valid email address.`;
-  if(field.options?.length&&!field.options.some(option=>(typeof option==='string'?option:option.value)===raw))errors[field.key]=`${field.label} must be selected from the available options.`;
+  if((field.type==='select'||field.options?.length)&&!(field.options??[]).some(option=>(typeof option==='string'?option:option.value)===raw))errors[field.key]=`${field.label} must be selected from the available options.`;
  }
  for(const [from,to]of [['fromDate','toDate'],['startDate','endDate'],['issuedOn','expiresOn']]){
   const start=dateDay(values[from]), end=dateDay(values[to]);

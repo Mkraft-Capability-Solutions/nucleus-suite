@@ -1,7 +1,7 @@
 import { describe,it,expect } from 'vitest';
 import {inclusiveDays,initialFormValues,updateDerivedFields,validateForm,type FormField} from './form-validation';
 import registry from '../data/ui/lib.operational-module-registry.json';
-const fields=registry.modules.find(module=>module.screenId==='SCR-030')!.fields as FormField[];
+const fields=registry.modules.find(module=>module.screenId==='SCR-030')!.fields.map(field => ({...field, ...(field.key === 'employee' ? {options:['a']} : field.key === 'leaveType' ? {options:['sick']} : {})})) as FormField[];
 describe('derived dates and strict form validation',()=>{
  it('calculates inclusive calendar days across leap days, DST and year boundaries',()=>{
   expect(inclusiveDays('2026-09-13','2026-09-13')).toBe(1);
@@ -29,9 +29,13 @@ describe('derived dates and strict form validation',()=>{
   const fields:FormField[]=[{key:'name',label:'Name',type:'text',required:true},{key:'count',label:'Count',type:'number',required:true,min:0,max:10,step:1},{key:'person',label:'Person',type:'select',options:['valid'],required:true}];
   expect(validateForm(fields,{name:'   ',count:0,person:'stale'})).toEqual({name:'Name is required.',person:'Person must be selected from the available options.'});
  });
+ it('rejects unavailable select options and invalid clock values',()=>{
+  expect(validateForm([{key:'employee',label:'Employee',type:'select',required:true,options:[]}],{employee:'stale'}).employee).toBeTruthy();
+  expect(validateForm([{key:'time',label:'Time',type:'time'}],{time:'29:90'}).time).toBeTruthy();
+ });
  it('requires complete numeric constraints on every operational numeric field',()=>{
-  for(const module of registry.modules)for(const field of module.fields as FormField[])if(field.type==='number'){
-   expect(Number.isFinite(field.min),module.id+'.'+field.key).toBe(true);expect(Number.isFinite(field.max)).toBe(true);expect(field.step).toBeGreaterThan(0);
+  for(const entry of registry.modules)for(const field of entry.fields as FormField[])if(field.type==='number'){
+   expect(Number.isFinite(field.min),entry.id+'.'+field.key).toBe(true);expect(Number.isFinite(field.max)).toBe(true);expect(field.step).toBeGreaterThan(0);
   }
  });
 });

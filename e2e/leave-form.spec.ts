@@ -20,3 +20,39 @@ test('SCR-030 derives days, preserves half-day overrides and rejects invalid wor
  await dialog.getByRole('button',{name:'Create record',exact:true}).click();await expect(dialog).toBeHidden();
  await page.getByRole('button',{name:'Apply for leave',exact:true}).click();await expect(page.getByRole('spinbutton',{name:'Number of Days'})).toHaveValue('1');
 });
+
+test('global preflight rejects whitespace and accepts corrected programmatic values', async ({page}) => {
+ await page.goto('/login');
+ await expect(page.getByLabel('Email Address')).toBeVisible();
+ const result = await page.evaluate(() => {
+  const form = document.createElement('form');
+  const input = document.createElement('input');
+  input.required = true; input.value = '   '; form.append(input); document.body.append(form);
+  let executions = 0;
+  form.addEventListener('submit', event => {event.preventDefault(); executions++;});
+  form.dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}));
+  const blocked = executions === 0;
+  input.value = 'Corrected without input event';
+  form.dispatchEvent(new Event('submit', {bubbles:true,cancelable:true}));
+  form.remove();
+  return {blocked,executions};
+ });
+ expect(result).toEqual({blocked:true,executions:1});
+});
+
+test('shared action dialog resets safely between requests', async ({page}) => {
+ await page.goto('/login');
+ await page.getByLabel('Email Address').fill('superadmin@nucleus.com');
+ await page.getByLabel('Password',{exact:true}).fill(process.env.DEMO_TEST_PASSWORD!);
+ await page.getByRole('button',{name:'Sign In',exact:true}).click();
+ await expect(page).toHaveURL(/\/workspace$/);
+ await page.evaluate(() => window.dispatchEvent(new CustomEvent('nucleus:open-action',{detail:{action:'employee',context:{firstName:'Initial'}}})));
+ const dialog=page.getByRole('dialog',{name:'Add employee'});
+ await expect(dialog.getByLabel('First name')).toHaveValue('Initial');
+ await dialog.getByLabel('First name').fill('Changed');
+ await dialog.getByRole('button',{name:'Create employee',exact:true}).click();
+ await expect(dialog).toBeVisible();
+ await dialog.getByRole('button',{name:'Cancel',exact:true}).click();
+ await page.evaluate(() => window.dispatchEvent(new CustomEvent('nucleus:open-action',{detail:{action:'employee',context:{firstName:'Next request'}}})));
+ await expect(page.getByRole('dialog',{name:'Add employee'}).getByLabel('First name')).toHaveValue('Next request');
+});

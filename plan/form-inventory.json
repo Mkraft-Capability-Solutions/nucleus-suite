@@ -1,0 +1,415 @@
+{
+  "scope": "Static intrinsic forms/numeric inputs and both shared metadata engines; click-only domain commands require separate validation contracts.",
+  "filesScanned": 440,
+  "forms": [
+    {
+      "file": "src/components/Website/ContactForm.tsx",
+      "line": 18,
+      "submit": "{download}"
+    },
+    {
+      "file": "src/components/Clerio/ActionFormModal.js",
+      "line": 68,
+      "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Clerio/LeaveView.js",
+      "line": 25,
+      "submit": "{onSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/CMSModal.js",
+      "line": 128,
+      "submit": "{handlePublishAnnouncement}"
+    },
+    {
+      "file": "src/components/Clerio/CMSModal.js",
+      "line": 250,
+      "submit": "{handleUploadPolicy}"
+    },
+    {
+      "file": "src/components/Clerio/ProjectView.js",
+      "line": 678,
+      "submit": "{handleCreateTask}"
+    },
+    {
+      "file": "src/components/Clerio/ProjectView.js",
+      "line": 908,
+      "submit": "{handleCreateProject}"
+    },
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 156,
+      "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 599,
+      "submit": "{handleAssetSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 710,
+      "submit": "{handleAwardSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 337,
+      "submit": "{handleEWASubmit}"
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 968,
+      "submit": "{handleLoanSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/ChatPanel.js",
+      "line": 140,
+      "submit": "{handleSend}"
+    },
+    {
+      "file": "src/components/Clerio/RecruitmentView.js",
+      "line": 495,
+      "submit": "{handleRequisitionSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/RecruitmentView.js",
+      "line": 660,
+      "submit": "{handleReferralSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/AttendanceView.js",
+      "line": 583,
+      "submit": "{handleCreateGatePass}"
+    },
+    {
+      "file": "src/components/Clerio/ExperienceView.js",
+      "line": 177,
+      "submit": "{handleShareKudos}"
+    },
+    {
+      "file": "src/components/Clerio/WorkflowBuilderModal.js",
+      "line": 323,
+      "submit": "{handleSaveNodeEdits}"
+    },
+    {
+      "file": "src/components/Clerio/LoginView.js",
+      "line": 49,
+      "submit": "{handleLogin}"
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 1190,
+      "submit": "{(e) => {\n                            e.preventDefault();\n                            reportFactoryAccidentForm18(accidentForm);\n                            setShowAccidentModal(false);\n                        }}"
+    },
+    {
+      "file": "src/components/Dashboard/Views/EmployeeHome.js",
+      "line": 971,
+      "submit": "{handleAddLog}"
+    },
+    {
+      "file": "src/components/Dashboard/Modals/ApprovalActionModal.js",
+      "line": 134,
+      "submit": "{handleSubmit}"
+    }
+  ],
+  "numeric": [
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 166,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 666,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 740,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 338,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 991,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 1009,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 174,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 190,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 206,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 222,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 238,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 1248,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Dashboard/Views/EmployeeHome.js",
+      "line": 1023,
+      "type": "\"number\"",
+      "missing": []
+    }
+  ],
+  "metadataNumeric": [
+    {
+      "owner": "position_register",
+      "key": "headcount",
+      "label": "Approved headcount",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 1000000,
+      "step": 1
+    },
+    {
+      "owner": "sanctioned_strength",
+      "key": "sanctioned",
+      "label": "Sanctioned strength",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 1000000,
+      "step": 1
+    },
+    {
+      "owner": "overtime_register",
+      "key": "minutes",
+      "label": "Approved overtime minutes",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 1000000,
+      "step": 1
+    },
+    {
+      "owner": "leave_policy_admin",
+      "key": "carryForward",
+      "label": "Carry-forward cap",
+      "required": false,
+      "type": "number",
+      "min": 0,
+      "max": 1000000,
+      "step": 0.5
+    },
+    {
+      "owner": "tax_declarations",
+      "key": "amount",
+      "label": "Declared amount",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "reconciliation",
+      "key": "variance",
+      "label": "Variance amount",
+      "required": true,
+      "type": "number",
+      "min": -999999999.99,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "clearance_board",
+      "key": "recoveryAmount",
+      "label": "Recovery amount",
+      "required": false,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "recognition_register",
+      "key": "awardValue",
+      "label": "Award value",
+      "required": false,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "loans_advances",
+      "key": "principal",
+      "label": "Principal amount",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "loans_advances",
+      "key": "tenureMonths",
+      "label": "Tenure in months",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 1000000,
+      "step": 1
+    },
+    {
+      "owner": "contractor_reconciliation",
+      "key": "variance",
+      "label": "Attendance variance",
+      "required": true,
+      "type": "number",
+      "min": -1000000,
+      "max": 1000000,
+      "step": 1
+    },
+    {
+      "owner": "agent_ledger",
+      "key": "approvalThreshold",
+      "label": "Approval threshold",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "leave_requests",
+      "key": "numberOfDays",
+      "label": "Number of Days",
+      "type": "number",
+      "required": true,
+      "min": 0.5,
+      "max": 1000000,
+      "step": 0.5,
+      "derive": {
+        "kind": "inclusiveDays",
+        "from": "fromDate",
+        "to": "toDate"
+      }
+    },
+    {
+      "owner": "salary_simulator",
+      "key": "basic",
+      "label": "Basic pay",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "salary_simulator",
+      "key": "hra",
+      "label": "HRA",
+      "required": true,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "salary_simulator",
+      "key": "specialAllowance",
+      "label": "Special allowance",
+      "required": false,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "full_and_final",
+      "key": "recoveryAmount",
+      "label": "Recovery amount",
+      "required": false,
+      "type": "number",
+      "min": 0,
+      "max": 999999999.99,
+      "step": 0.01
+    },
+    {
+      "owner": "position",
+      "key": "headcount",
+      "required": true,
+      "min": 0,
+      "max": 999999999,
+      "step": 1
+    },
+    {
+      "owner": "okr",
+      "key": "weight",
+      "required": true,
+      "min": 0,
+      "max": 100,
+      "step": 0.01
+    },
+    {
+      "owner": "compCycle",
+      "key": "budget",
+      "required": true,
+      "min": 0,
+      "max": 999999999,
+      "step": 0.01
+    },
+    {
+      "owner": "debitNote",
+      "key": "amount",
+      "required": true,
+      "min": 0,
+      "max": 999999999,
+      "step": 0.01
+    },
+    {
+      "owner": "benefitLock",
+      "key": "enrollmentYear",
+      "required": true,
+      "min": 1,
+      "max": 9999,
+      "step": 1
+    }
+  ],
+  "requiredCandidates": [],
+  "metadataGaps": []
+}

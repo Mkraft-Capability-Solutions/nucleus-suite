@@ -265,6 +265,7 @@
     "src/components/Navigation/DualPaneNav.js",
     "src/components/Providers.js",
     "src/components/Website/ContactForm.tsx",
+    "src/components/Website/PublicHeader.tsx",
     "src/components/Website/PublicPage.tsx",
     "src/components/WorkspaceDataBoundary.js",
     "src/components/WorkspaceEntry.tsx",
@@ -276,7 +277,8 @@
   "providers": [
     "src/context/AppearanceContext.tsx",
     "src/context/AuthContext.js",
-    "src/context/HRMSContext.js"
+    "src/context/HRMSContext.js",
+    "src/context/PublicSiteContext.tsx"
   ],
   "services": [
     "src/server/admin/service.ts",

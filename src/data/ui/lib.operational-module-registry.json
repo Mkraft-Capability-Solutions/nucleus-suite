@@ -2184,13 +2184,13 @@
           "key": "employee",
           "label": "Employee",
           "required": true,
-          "type": "text"
+          "type": "select"
         },
         {
           "key": "leaveType",
           "label": "Leave type",
           "required": true,
-          "type": "text"
+          "type": "select"
         },
         {
           "key": "fromDate",

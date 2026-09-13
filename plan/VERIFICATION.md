@@ -28,3 +28,14 @@ Not verified or complete: all legacy business tables in 3NF, elimination of all 
 See [FORM_VALIDATION_AUDIT.md](FORM_VALIDATION_AUDIT.md) for the 13 September form sweep. Final lint and production build passed; unit suite 748 passed / 21 skipped, UI contracts 32 passed, SCR-030 desktop/mobile 2 passed, final targeted suite 16 passed. Migration 0020 applied locally (20 migrations / 332 tables); India default and denied tenant-runtime country writes verified. Country administration UI and statutory rule implementation remain open.
 
 Login header follow-up: shared public header and mobile menu verified with the public/login header regression and SCR-030 regression (4 desktop/mobile tests passed). Lint passed. Production build verification precedes the local commit.
+
+## Architecture and validation closure
+
+- Login/public header and leave regressions: 4 desktop/mobile tests passed before commit d6b3845.
+- Follow-up leave, global preflight and action-dialog lifecycle regressions: 6 desktop/mobile tests passed.
+- Unit suite: 749 passed, 21 skipped; the skipped database-dependent cases remain unverified.
+- Production build including TypeScript passed after the shared-dialog lifecycle fix.
+- Repeatable form audit: 440 source files, 22 native forms, 13 numeric/range controls, 22 metadata numeric fields; no missing constraints or adjacent required-label mismatches found.
+- Service plan coverage: all 102 navigation entries, 49 screens, 41 actions, 17 widgets, 185 API handlers and eight page entrypoints accounted for. This verifies plan coverage, not implementation.
+- Architecture and feature/service designs now live in plan/. The root blueprint is a compatibility index.
+- Final standalone typecheck and lint passed; `git diff --check` passed before the follow-up commit.
