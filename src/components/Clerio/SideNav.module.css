@@ -193,7 +193,7 @@
 
 .punchBtn {
     background: var(--signal, #0F6E5C);
-    color: white;
+    color: var(--on-signal);
     border: none;
     padding: 0.45rem;
     border-radius: var(--r-control, 5px);

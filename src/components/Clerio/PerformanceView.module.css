@@ -179,7 +179,7 @@
 
 .btnPrimary {
     background: var(--signal, #0F6E5C);
-    color: #FFFFFF;
+    color: var(--on-signal);
     padding: 0.5rem 1.1rem;
     border-radius: var(--r-control, 5px);
     border: 1px solid var(--signal-ink, #0A5546);
@@ -211,4 +211,11 @@
 .btnSecondary:hover {
     background: var(--card-2, #F6F8F6);
     border-color: var(--slate-2, #8395A1);
+}
+/* Reflow within the available workspace width, including an open navigation panel. */
+.tabNav{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tabNav > *{flex-shrink:0}
+@container (max-width: 760px){
+.cardHeader, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.cardHeader > *, .headerRow > *{min-width:0;max-width:100%}
 }

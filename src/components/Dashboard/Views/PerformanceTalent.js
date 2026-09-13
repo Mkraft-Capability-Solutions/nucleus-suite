@@ -71,7 +71,7 @@ export default function PerformanceTalent({ onNavigate }) {
                     <div className={shared.badgeRow}>
                         <span className={`${shared.badge} ${shared.badgeTeal}`}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_31")}</span>
                         <span className={`${shared.badge} ${shared.badgeSky}`}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_32")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_33")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_33")}</span>
                     </div>
                     <h1 className={shared.screenTitle}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_34")}</h1>
                 </div>
@@ -94,7 +94,7 @@ export default function PerformanceTalent({ onNavigate }) {
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_39")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_40")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_41")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_41")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_42")}</div>
@@ -109,7 +109,7 @@ export default function PerformanceTalent({ onNavigate }) {
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_48")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_49")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_50")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.PerformanceTalent", "content_text_50")}</div>
                 </div>
             </div>
 
@@ -147,7 +147,7 @@ export default function PerformanceTalent({ onNavigate }) {
                                 <div style={{ fontSize: '1.25rem', fontWeight: 700, color: cell.color }}>
                                     {cell.count}
                                 </div>
-                                <div style={{ fontSize: '0.74rem', color: '#E6EDF6', fontWeight: 600, marginTop: '0.2rem' }}>
+                                <div style={{ fontSize: '0.74rem', color: 'var(--text)', fontWeight: 600, marginTop: '0.2rem' }}>
                                     {cell.name}
                                 </div>
                                 <div style={{ fontSize: '0.65rem', color: '#5C7896', marginTop: '0.1rem' }}>
@@ -159,7 +159,7 @@ export default function PerformanceTalent({ onNavigate }) {
                     <div style={{
                         marginTop: '0.85rem',
                         fontSize: '0.7rem',
-                        color: '#93A6BF',
+                        color: 'var(--text-2)',
                         display: 'flex',
                         justifyContent: 'space-between'
                     }}>
@@ -209,7 +209,7 @@ export default function PerformanceTalent({ onNavigate }) {
                         {readData("components.Dashboard.Views.PerformanceTalent", "content_64").map((flag, idx) => (
                             <div key={idx} style={{
                                 padding: '0.65rem 0.75rem',
-                                background: 'rgba(0,0,0,0.2)',
+                                background: 'var(--card-2)',
                                 border: '1px solid rgba(155, 140, 255, 0.25)',
                                 borderRadius: '6px',
                                 display: 'flex',
@@ -217,8 +217,8 @@ export default function PerformanceTalent({ onNavigate }) {
                                 alignItems: 'center'
                             }}>
                                 <div>
-                                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#E6EDF6' }}>{flag.title}</div>
-                                    <div style={{ fontSize: '0.7rem', color: '#93A6BF', marginTop: '0.2rem' }}>{flag.text}</div>
+                                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text)' }}>{flag.title}</div>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '0.2rem' }}>{flag.text}</div>
                                 </div>
                                 <button className={shared.textBtn} style={{ fontSize: '0.72rem', color: '#9B8CFF', whiteSpace: 'nowrap' }}>
                                     {flag.action}{readData("components.Dashboard.Views.PerformanceTalent", "content_text_65")}</button>

@@ -107,7 +107,7 @@ export default function TalentAcquisition({ onNavigate }) {
                     <div className={shared.badgeRow}>
                         <span className={`${shared.badge} ${shared.badgeTeal}`}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_42")}</span>
                         <span className={`${shared.badge} ${shared.badgeSky}`}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_43")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_44")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_44")}</span>
                     </div>
                     <h1 className={shared.screenTitle}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_45")}</h1>
                 </div>
@@ -131,7 +131,7 @@ export default function TalentAcquisition({ onNavigate }) {
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_51")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_52")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_53")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_53")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_54")}</div>
@@ -196,13 +196,13 @@ export default function TalentAcquisition({ onNavigate }) {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: stage.color, flexShrink: 0 }} />
-                                            <span style={{ color: '#E2E8F0', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <span style={{ color: 'var(--text)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {stage.name}
                                             </span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
                                             <strong style={{ color: '#FFFFFF', fontSize: '0.76rem' }}>{stage.value.toLocaleString()}</strong>
-                                            <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_72")}{stage.rate}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_73")}</span>
+                                            <span style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_72")}{stage.rate}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_73")}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -220,7 +220,7 @@ export default function TalentAcquisition({ onNavigate }) {
                             fontSize: '0.72rem',
                             marginTop: 'auto'
                         }}>
-                            <span style={{ color: '#94A3B8' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_74")}</span>
+                            <span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_74")}</span>
                             <span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_75")}</span>
                         </div>
                     </div>
@@ -243,8 +243,8 @@ export default function TalentAcquisition({ onNavigate }) {
                         ].map((src, idx) => (
                             <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem' }}>
-                                    <span style={{ color: '#E6EDF6', fontWeight: 600 }}>{src.name}</span>
-                                    <span style={{ color: '#93A6BF' }}>{src.hires}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_88")}{src.cost}</span>
+                                    <span style={{ color: 'var(--text)', fontWeight: 600 }}>{src.name}</span>
+                                    <span style={{ color: 'var(--text-2)' }}>{src.hires}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_88")}{src.cost}</span>
                                 </div>
                                 <div style={{ height: 6, background: '#14263D', borderRadius: 3, overflow: 'hidden' }}>
                                     <div style={{ width: `${src.pct}%`, height: '100%', background: src.color }} />
@@ -266,7 +266,7 @@ export default function TalentAcquisition({ onNavigate }) {
                         {readData("components.Dashboard.Views.TalentAcquisition", "content_92").map((c, i) => (
                             <div key={i} style={{
                                 padding: '0.5rem 0.65rem',
-                                background: 'rgba(0,0,0,0.2)',
+                                background: 'var(--card-2)',
                                 border: '1px solid rgba(28, 52, 80, 0.45)',
                                 borderRadius: '6px',
                                 display: 'flex',
@@ -274,8 +274,8 @@ export default function TalentAcquisition({ onNavigate }) {
                                 alignItems: 'center'
                             }}>
                                 <div>
-                                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#E6EDF6' }}>{c.name}</div>
-                                    <div style={{ fontSize: '0.68rem', color: '#93A6BF' }}>{c.role}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_93")}{c.match}</div>
+                                    <div style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text)' }}>{c.name}</div>
+                                    <div style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{c.role}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_93")}{c.match}</div>
                                 </div>
                                 <div style={{
                                     fontSize: '0.82rem',
@@ -349,7 +349,7 @@ export default function TalentAcquisition({ onNavigate }) {
                                 <td><strong>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_124")}</strong></td>
                                 <td>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_125")}</td>
                                 <td>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_126")}</td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_127")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_127")}</span></td>
                                 <td>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_128")}</td>
                                 <td>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_129")}</td>
                                 <td>{readData("components.Dashboard.Views.TalentAcquisition", "content_text_130")}</td>

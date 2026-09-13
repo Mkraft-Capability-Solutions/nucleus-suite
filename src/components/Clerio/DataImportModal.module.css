@@ -128,7 +128,7 @@
 
 .stepItem.active .stepNumber {
     background: var(--signal, #0F6E5C);
-    color: #ffffff;
+    color: var(--on-signal);
 }
 
 .stepItem.completed .stepNumber {
@@ -403,7 +403,7 @@
     background: var(--signal, #0F6E5C);
     font-size: 0.82rem;
     font-weight: 600;
-    color: #ffffff;
+    color: var(--on-signal);
     cursor: pointer;
     display: inline-flex;
     align-items: center;

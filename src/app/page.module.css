@@ -109,7 +109,7 @@
 /* Team Messages FAB */
 .messagesFab {
   background: var(--signal);
-  color: #ffffff;
+  color: var(--on-signal);
   box-shadow: 0 4px 16px rgba(15, 110, 92, 0.35);
 }
 
@@ -201,3 +201,16 @@
 
 /* Keep the layout editor clear of floating operational shortcuts. */
 .mainContainer:has([data-dashboard-editing="true"]) .fabStack { display: none; }
+
+/* Size the shell to the visible viewport, not the space behind browser chrome. */
+.mainContainer { height:100dvh; width:100%; }
+.mainColumn { height:100%; }
+.workspaceZone { container-type:inline-size; }
+@media(max-width:640px){
+ .workspaceZone{padding:12px 12px 120px}
+ .fabStack{left:auto;right:12px;bottom:calc(32px + env(safe-area-inset-bottom));flex-direction:row;gap:8px}
+ .fabBtn{width:44px;height:44px;padding:0;justify-content:center}
+ .fabLabel{display:none}
+ .demoNotice{padding-bottom:env(safe-area-inset-bottom);font-size:10px;line-height:16px}
+ .mainContainer{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+}

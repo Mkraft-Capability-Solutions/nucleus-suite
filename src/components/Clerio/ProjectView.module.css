@@ -278,7 +278,7 @@
 
 .btnPrimary {
     background: var(--signal, #0F6E5C);
-    color: white;
+    color: var(--on-signal);
     border: none;
     padding: 0.75rem 1.5rem;
     border-radius: var(--r-control, 5px);
@@ -292,3 +292,11 @@
     background: var(--signal-ink, #0A5546);
     box-shadow: 0 4px 12px rgba(15, 110, 92, 0.25);
 }
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+.headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.headerRow > *{min-width:0;max-width:100%}
+.mainLayout, .projectGrid{grid-template-columns:minmax(0,1fr)}
+}
+
+.kanbanBoard{overflow-x:auto;grid-template-columns:repeat(4,minmax(220px,1fr));max-width:100%}

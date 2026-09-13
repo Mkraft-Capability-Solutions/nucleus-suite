@@ -81,7 +81,7 @@
     border-radius: var(--r-control, 5px);
     border: 1px solid var(--signal-ink, #0A5546);
     background: var(--signal, #0F6E5C);
-    color: white;
+    color: var(--on-signal);
     font-size: 0.82rem;
     font-weight: 600;
     cursor: pointer;

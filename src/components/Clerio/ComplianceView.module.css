@@ -73,7 +73,7 @@
     gap: 0.5rem;
     padding: 0.55rem 1.15rem;
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     font-weight: 600;
     font-size: var(--t-small);
     border-radius: var(--r-control);
@@ -420,7 +420,7 @@
 .filterBtnActive {
     padding: 0.35rem 0.75rem;
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     border-radius: var(--r-control);
     font-size: var(--t-micro);
@@ -526,7 +526,7 @@
 .btnTableActionPrimary {
     padding: 0.35rem 0.75rem;
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     border-radius: var(--r-control);
     font-size: var(--t-micro);
@@ -708,7 +708,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     padding: 0.15rem 0.45rem;
     border-radius: var(--r-data);
     font-weight: 600;
@@ -795,7 +795,7 @@
 
 .statGrid4 {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -971,7 +971,7 @@
 
 .incidentMeta {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
     gap: 0.75rem;
     background: var(--card-2);
     padding: 0.85rem 1rem;
@@ -1120,7 +1120,7 @@
 /* ERP Matrix & GL Queue */
 .connectorGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -1201,3 +1201,18 @@
     color: var(--text);
 }
 
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+.tabsRow{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tabsRow > *{flex-shrink:0}
+@container (max-width: 760px){
+.header{flex-wrap:wrap;gap:12px;min-width:0}
+.header > *{min-width:0;max-width:100%}
+.simGrid{grid-template-columns:minmax(0,1fr)}
+}
+
+@container(max-width:600px){.metricComparison{flex-wrap:wrap;gap:16px}.metricComparison>*{min-width:0;max-width:100%}}
+
+@container(max-width:500px){.metricComparison{flex-direction:column;align-items:stretch}.compBlock{flex:auto;width:100%}}
+
+.modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}

@@ -37,7 +37,7 @@
 
 .statsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 1.25rem;
 }
 
@@ -146,7 +146,7 @@
 
 .btnPrimary {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     padding: 0.55rem 1.15rem;
     border-radius: var(--r-control);
     border: none;
@@ -243,7 +243,7 @@
 
 .btnImport {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     padding: 0.5rem 1rem;
     border-radius: var(--r-control);
     border: none;
@@ -391,4 +391,12 @@
     font-size: var(--t-small);
     color: var(--text-2);
     border-radius: 0 0 var(--r-control) var(--r-control);
+}
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+.tabNav{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tabNav > *{flex-shrink:0}
+@container (max-width: 760px){
+.cardHeader, .filterBar, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.cardHeader > *, .filterBar > *, .headerRow > *{min-width:0;max-width:100%}
 }

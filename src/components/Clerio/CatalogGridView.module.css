@@ -39,7 +39,7 @@
 
 .filterPillActive {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border-color: var(--signal);
     font-weight: 600;
 }
@@ -47,7 +47,7 @@
 .filterPillActive:hover {
     background: var(--signal-ink);
     border-color: var(--signal-ink);
-    color: #ffffff;
+    color: var(--on-signal);
 }
 
 .countText {
@@ -144,3 +144,7 @@
 }
 
 .cardItem { text-align: left; font: inherit; color: inherit; }
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+}

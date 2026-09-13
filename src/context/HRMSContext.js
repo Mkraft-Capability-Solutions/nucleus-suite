@@ -55,7 +55,7 @@ export const HRMSProvider = ({ children }) => {
         setTheme(prev => {
             const next = prev === 'light' ? 'dark' : 'light';
             if (typeof window !== 'undefined') {
-                localStorage.setItem('nucleus_theme', next);
+                try { localStorage.setItem('nucleus_theme', next); } catch { /* Theme remains usable when storage is blocked. */ }
                 document.documentElement.setAttribute('data-theme', next);
             }
             return next;

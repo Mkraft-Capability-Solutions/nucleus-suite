@@ -221,7 +221,7 @@
 
 .btnPrimary {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     padding: 0.6rem 1.25rem;
     border-radius: var(--r-control);
@@ -357,7 +357,7 @@
 
 .compOffGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 1rem;
 }
 
@@ -514,4 +514,11 @@
     overflow: auto;
     padding: 1.25rem;
     box-shadow: var(--shadow-overlay);
+}
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+.cardHeader, .engineBanner, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.cardHeader > *, .engineBanner > *, .headerRow > *{min-width:0;max-width:100%}
+.balanceRow, .mainGrid{grid-template-columns:minmax(0,1fr)}
 }

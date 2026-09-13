@@ -190,7 +190,7 @@ export default function EmployeeHome({ onNavigate }) {
                         borderRadius: '8px',
                         background: 'rgba(155, 140, 255, 0.12)',
                         border: '1px solid rgba(155, 140, 255, 0.35)',
-                        color: '#C4B5FD',
+                        color: 'var(--agent)',
                         fontSize: '0.76rem',
                         fontWeight: 700,
                         cursor: 'pointer'
@@ -208,7 +208,7 @@ export default function EmployeeHome({ onNavigate }) {
                         borderRadius: '8px',
                         background: 'rgba(242, 169, 59, 0.12)',
                         border: '1px solid rgba(242, 169, 59, 0.35)',
-                        color: '#F2A93B',
+                        color: 'var(--pending)',
                         fontSize: '0.76rem',
                         fontWeight: 700,
                         cursor: 'pointer'
@@ -226,7 +226,7 @@ export default function EmployeeHome({ onNavigate }) {
                         borderRadius: '8px',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
-                        color: '#E2E8F0',
+                        color: 'var(--text)',
                         fontSize: '0.76rem',
                         fontWeight: 600,
                         cursor: 'pointer'
@@ -244,7 +244,7 @@ export default function EmployeeHome({ onNavigate }) {
                         borderRadius: '8px',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
-                        color: '#E2E8F0',
+                        color: 'var(--text)',
                         fontSize: '0.76rem',
                         fontWeight: 600,
                         cursor: 'pointer'
@@ -262,7 +262,7 @@ export default function EmployeeHome({ onNavigate }) {
                         borderRadius: '8px',
                         background: 'rgba(255, 255, 255, 0.05)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
-                        color: '#E2E8F0',
+                        color: 'var(--text)',
                         fontSize: '0.76rem',
                         fontWeight: 600,
                         cursor: 'pointer'
@@ -294,12 +294,12 @@ export default function EmployeeHome({ onNavigate }) {
                             justifyContent: 'center',
                             margin: '0.75rem 0'
                         }}>
-                            <span style={{ fontSize: '1.45rem', fontWeight: 800, color: '#E6EDF6' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_52")}</span>
+                            <span style={{ fontSize: '1.45rem', fontWeight: 800, color: 'var(--text)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_52")}</span>
                             <span style={{ fontSize: '0.7rem', color: '#05CD99', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_53")}</span>
                         </div>
-                        <div style={{ fontSize: '0.74rem', color: '#93A6BF', marginTop: '0.25rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_54")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_55")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_56")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_57")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_58")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_59")}</strong>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-2)', marginTop: '0.25rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_54")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_55")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_56")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_57")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_58")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_59")}</strong>
                         </div>
-                        <div style={{ fontSize: '0.72rem', color: '#5F7691', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_60")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_61")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_62")}</div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-3)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_60")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_61")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_62")}</div>
                     </div>
                 </div>
 
@@ -354,22 +354,22 @@ export default function EmployeeHome({ onNavigate }) {
                     </div>
                     <div className={shared.cardBody} style={{ gap: '0.65rem' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                            <span style={{ color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_71")}</span>
+                            <span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_71")}</span>
                             <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_72")}</strong>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem' }}>
-                            <span style={{ color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_73")}</span>
+                            <span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_73")}</span>
                             <strong style={{ color: '#F2647E' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_74")}</strong>
                         </div>
                         <div style={{ height: 1, background: '#1C3450', margin: '0.25rem 0' }} />
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1rem', fontWeight: 800 }}>
-                            <span style={{ color: '#E6EDF6' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_75")}</span>
+                            <span style={{ color: 'var(--text)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_75")}</span>
                             <strong style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_76")}</strong>
                         </div>
                         <div style={{
                             marginTop: '0.5rem',
                             padding: '0.55rem 0.75rem',
-                            background: 'rgba(0,0,0,0.22)',
+                            background: 'var(--card-2)',
                             borderRadius: '6px',
                             border: '1px solid #1C3450',
                             fontSize: '0.72rem',
@@ -398,7 +398,7 @@ export default function EmployeeHome({ onNavigate }) {
                             background: '#060D18',
                             border: '1px solid #1C3450',
                             borderRadius: '6px',
-                            color: '#E6EDF6',
+                            color: 'var(--text)',
                             fontSize: '0.82rem'
                         }}
                     />
@@ -408,7 +408,7 @@ export default function EmployeeHome({ onNavigate }) {
                 {showPolicyAnswer && (
                     <div style={{ marginTop: '0.4rem' }}>
                         <p className={shared.narrativeBody} style={{ margin: 0 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_86")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_87")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_88")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_89")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_90")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_91")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_92")}</p>
-                        <div style={{ fontSize: '0.72rem', color: '#93A6BF', marginTop: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_93")}<em>{readData("components.Dashboard.Views.EmployeeHome", "content_text_94")}</em>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-2)', marginTop: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_93")}<em>{readData("components.Dashboard.Views.EmployeeHome", "content_text_94")}</em>
                         </div>
                         <div className={shared.narrativeFooter}>
                             <button
@@ -467,7 +467,7 @@ export default function EmployeeHome({ onNavigate }) {
                             display: 'grid',
                             gridTemplateColumns: 'repeat(5, 1fr)',
                             gap: '0.5rem',
-                            background: 'rgba(0, 0, 0, 0.22)',
+                            background: 'var(--card-2)',
                             padding: '0.65rem',
                             borderRadius: '10px',
                             border: '1px solid rgba(255, 255, 255, 0.06)'
@@ -494,7 +494,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     }}
                                 >
                                     <span style={{ fontSize: '0.68rem', fontWeight: 700, color: d.status === 'active' ? '#05CD99' : '#94A3B8' }}>{d.day.toUpperCase()}</span>
-                                    <span style={{ fontSize: '1rem', fontWeight: 800, color: '#F1F5F9' }}>{d.hours.toFixed(1)}{readData("components.Dashboard.Views.EmployeeHome", "content_text_110")}</span>
+                                    <span style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text)' }}>{d.hours.toFixed(1)}{readData("components.Dashboard.Views.EmployeeHome", "content_text_110")}</span>
                                     <span style={{ fontSize: '0.62rem', color: d.status === 'active' ? '#05CD99' : '#4FB6F5', fontWeight: 600 }}>
                                         {d.status === 'active' ? readData("components.Dashboard.Views.EmployeeHome", "display_4") : readData("components.Dashboard.Views.EmployeeHome", "display_5")}
                                     </span>
@@ -517,19 +517,19 @@ export default function EmployeeHome({ onNavigate }) {
                                 <tbody>
                                     {dailyEntries.map(e => (
                                         <tr key={e.id}>
-                                            <td style={{ fontSize: '0.74rem', color: '#93A6BF' }}>
+                                            <td style={{ fontSize: '0.74rem', color: 'var(--text-2)' }}>
                                                 <strong>{e.day}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_116")}{e.date}
                                             </td>
                                             <td>
-                                                <div style={{ fontWeight: 600, color: '#E6EDF6', fontSize: '0.8rem' }}>{e.project}</div>
-                                                <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>{e.task}</div>
+                                                <div style={{ fontWeight: 600, color: 'var(--text)', fontSize: '0.8rem' }}>{e.project}</div>
+                                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{e.task}</div>
                                             </td>
                                             <td>
                                                 <span className={`${shared.pillBadge} ${e.billable ? shared.pillTeal : shared.pillSlate}`} style={{ fontSize: '0.65rem' }}>
                                                     {e.billable ? readData("components.Dashboard.Views.EmployeeHome", "display_6") : readData("components.Dashboard.Views.EmployeeHome", "display_7")}
                                                 </span>
                                             </td>
-                                            <td style={{ textAlign: 'right', fontWeight: 700, color: '#F1F5F9' }}>
+                                            <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--text)' }}>
                                                 {e.hours.toFixed(1)}{readData("components.Dashboard.Views.EmployeeHome", "content_text_117")}</td>
                                             <td style={{ textAlign: 'right' }}>
                                                 <span className={`${shared.pillBadge} ${e.status === 'Approved' ? shared.pillTeal : shared.pillSky}`} style={{ fontSize: '0.65rem' }}>
@@ -554,12 +554,12 @@ export default function EmployeeHome({ onNavigate }) {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
                                 <div>
-                                    <span style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_118")}</span>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_118")}</span>
                                     <strong style={{ fontSize: '0.9rem', color: '#05CD99' }}>{totalHours.toFixed(1)}{readData("components.Dashboard.Views.EmployeeHome", "content_text_119")}</strong>
-                                    <span style={{ fontSize: '0.7rem', color: '#5F7691' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_120")}</span>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-3)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_120")}</span>
                                 </div>
                                 <div>
-                                    <span style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_121")}</span>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_121")}</span>
                                     <strong style={{ fontSize: '0.9rem', color: '#4FB6F5' }}>{billableHours.toFixed(1)}{readData("components.Dashboard.Views.EmployeeHome", "content_text_122")}{billablePercent}{readData("components.Dashboard.Views.EmployeeHome", "content_text_123")}</strong>
                                 </div>
                             </div>
@@ -573,7 +573,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         padding: '0.4rem 0.8rem',
                                         background: 'rgba(255, 255, 255, 0.05)',
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
-                                        color: '#E6EDF6',
+                                        color: 'var(--text)',
                                         fontSize: '0.76rem',
                                         fontWeight: 600
                                     }}
@@ -629,48 +629,48 @@ export default function EmployeeHome({ onNavigate }) {
                         {/* Allocation Progress Bars */}
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
-                                <span style={{ color: '#E6EDF6', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_130")}</span>
+                                <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_130")}</span>
                                 <strong style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_131")}</strong>
                             </div>
                             <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '63%', height: '100%', background: '#05CD99' }} />
                             </div>
-                            <div style={{ fontSize: '0.68rem', color: '#93A6BF', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_132")}</div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_132")}</div>
                         </div>
 
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
-                                <span style={{ color: '#E6EDF6', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_133")}</span>
+                                <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_133")}</span>
                                 <strong style={{ color: '#4FB6F5' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_134")}</strong>
                             </div>
                             <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '22%', height: '100%', background: '#4FB6F5' }} />
                             </div>
-                            <div style={{ fontSize: '0.68rem', color: '#93A6BF', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_135")}</div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_135")}</div>
                         </div>
 
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', marginBottom: '0.3rem' }}>
-                                <span style={{ color: '#E6EDF6', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_136")}</span>
+                                <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_136")}</span>
                                 <strong style={{ color: '#9B8CFF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_137")}</strong>
                             </div>
                             <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '15%', height: '100%', background: '#9B8CFF' }} />
                             </div>
-                            <div style={{ fontSize: '0.68rem', color: '#93A6BF', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_138")}</div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_138")}</div>
                         </div>
 
                         {/* Sign-off & Policy Box */}
                         <div style={{
                             padding: '0.75rem',
-                            background: 'rgba(0, 0, 0, 0.22)',
+                            background: 'var(--card-2)',
                             borderRadius: '8px',
                             border: '1px solid rgba(28, 52, 80, 0.6)',
                             marginTop: '0.25rem'
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', fontWeight: 700, color: '#F1F5F9' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.75rem', fontWeight: 700, color: 'var(--text)' }}>
                                 <UserCheck size={14} color="#05CD99" />{readData("components.Dashboard.Views.EmployeeHome", "content_text_139")}</div>
-                            <div style={{ fontSize: '0.7rem', color: '#93A6BF', marginTop: '0.25rem', lineHeight: 1.4 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_140")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_141")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_142")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_143")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_144")}</div>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '0.25rem', lineHeight: 1.4 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_140")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_141")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_142")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_143")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_144")}</div>
                         </div>
                     </div>
                 </div>
@@ -746,7 +746,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_157")}</strong>
-                                        <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_158")}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_158")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <span className={`${shared.pillBadge} ${shared.pillCoral}`}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_159")}</span>
@@ -755,7 +755,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_160")}</strong>
-                                        <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_161")}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_161")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <span className={`${shared.pillBadge} ${shared.pillTeal}`}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_162")}</span>
@@ -764,7 +764,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_163")}</strong>
-                                        <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_164")}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_164")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <span className={`${shared.pillBadge} ${shared.pillViolet}`}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_165")}</span>
@@ -792,7 +792,7 @@ export default function EmployeeHome({ onNavigate }) {
                             style={{
                                 background: 'rgba(155, 140, 255, 0.12)',
                                 border: '1px solid rgba(155, 140, 255, 0.35)',
-                                color: '#C4B5FD',
+                                color: 'var(--agent)',
                                 borderRadius: '6px',
                                 padding: '0.3rem 0.75rem',
                                 fontSize: '0.74rem',
@@ -809,7 +809,7 @@ export default function EmployeeHome({ onNavigate }) {
                             style={{
                                 background: 'rgba(255, 255, 255, 0.05)',
                                 border: '1px solid rgba(255, 255, 255, 0.12)',
-                                color: '#E2E8F0',
+                                color: 'var(--text)',
                                 borderRadius: '6px',
                                 padding: '0.3rem 0.75rem',
                                 fontSize: '0.74rem',
@@ -830,14 +830,14 @@ export default function EmployeeHome({ onNavigate }) {
                         {/* Reporting Chain */}
                         <div style={{
                             padding: '1rem',
-                            background: 'rgba(0, 0, 0, 0.2)',
+                            background: 'var(--card-2)',
                             borderRadius: '10px',
                             border: '1px solid rgba(255, 255, 255, 0.06)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0.85rem'
                         }}>
-                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_170")}</span>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_170")}</span>
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                                 <NextImage unoptimized width={48} height={48}
@@ -847,18 +847,18 @@ export default function EmployeeHome({ onNavigate }) {
                                 />
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
-                                        <strong style={{ color: '#F1F5F9', fontSize: '0.9rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_172")}</strong>
+                                        <strong style={{ color: 'var(--text)', fontSize: '0.9rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_172")}</strong>
                                         <span style={{ fontSize: '0.68rem', padding: '0.1rem 0.4rem', borderRadius: 4, background: 'rgba(45, 212, 168, 0.15)', color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_173")}</span>
                                     </div>
-                                    <span style={{ fontSize: '0.76rem', color: '#94A3B8' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_174")}</span>
-                                    <span style={{ fontSize: '0.7rem', color: '#64748B' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_175")}</span>
+                                    <span style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_174")}</span>
+                                    <span style={{ fontSize: '0.7rem', color: 'var(--text-3)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_175")}</span>
                                 </div>
                             </div>
 
                             <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.06)' }} />
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: '#94A3B8' }}>
-                                <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_176")}<strong style={{ color: '#F1F5F9' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_177")}</strong></span>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: 'var(--text-2)' }}>
+                                <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_176")}<strong style={{ color: 'var(--text)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_177")}</strong></span>
                                 <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_178")}<strong style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_179")}</strong></span>
                             </div>
                         </div>
@@ -866,22 +866,22 @@ export default function EmployeeHome({ onNavigate }) {
                         {/* Pod Colleagues */}
                         <div style={{
                             padding: '1rem',
-                            background: 'rgba(0, 0, 0, 0.2)',
+                            background: 'var(--card-2)',
                             borderRadius: '10px',
                             border: '1px solid rgba(255, 255, 255, 0.06)',
                             display: 'flex',
                             flexDirection: 'column',
                             gap: '0.85rem'
                         }}>
-                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_180")}</span>
+                            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_180")}</span>
 
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
                                 {readData("components.Dashboard.Views.EmployeeHome", "content_181").map((tm) => (
                                     <div key={tm.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.78rem' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                                             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#05CD99' }} />
-                                            <span style={{ color: '#F1F5F9', fontWeight: 600 }}>{tm.name}</span>
-                                            <span style={{ color: '#64748B', fontSize: '0.72rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_182")}{tm.role}</span>
+                                            <span style={{ color: 'var(--text)', fontWeight: 600 }}>{tm.name}</span>
+                                            <span style={{ color: 'var(--text-3)', fontSize: '0.72rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_182")}{tm.role}</span>
                                         </div>
                                         <span style={{ color: '#4FB6F5', fontSize: '0.7rem' }}>{tm.pod}</span>
                                     </div>
@@ -944,8 +944,8 @@ export default function EmployeeHome({ onNavigate }) {
                                     <Clock size={18} />
                                 </div>
                                 <div>
-                                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#F1F5F9' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_183")}</h3>
-                                    <div style={{ fontSize: '0.74rem', color: '#94A3B8', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_184")}</div>
+                                    <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_183")}</h3>
+                                    <div style={{ fontSize: '0.74rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_184")}</div>
                                 </div>
                             </div>
                             <button
@@ -959,7 +959,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'center',
-                                    color: '#94A3B8',
+                                    color: 'var(--text-2)',
                                     cursor: 'pointer'
                                 }}
                             >
@@ -971,7 +971,7 @@ export default function EmployeeHome({ onNavigate }) {
                         <form onSubmit={handleAddLog} style={{ padding: '1.35rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
                             {/* Project Select */}
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_185")}</label>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_185")}</label>
                                 <select
                                     value={newLogProject}
                                     onChange={e => setNewLogProject(e.target.value)}
@@ -980,7 +980,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.82rem',
                                         width: '100%',
                                         boxSizing: 'border-box'
@@ -995,7 +995,7 @@ export default function EmployeeHome({ onNavigate }) {
 
                             {/* Task Description */}
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_190")}</label>
+                                <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_190")}</label>
                                 <textarea
                                     rows={3}
                                     value={newLogTask}
@@ -1006,7 +1006,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.82rem',
                                         width: '100%',
                                         boxSizing: 'border-box',
@@ -1019,7 +1019,7 @@ export default function EmployeeHome({ onNavigate }) {
                             {/* Hours and Billable Row */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.85rem' }}>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_192")}</label>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_192")}</label>
                                     <input
                                         type="number"
                                         step="0.5"
@@ -1032,7 +1032,7 @@ export default function EmployeeHome({ onNavigate }) {
                                             border: '1px solid rgba(255, 255, 255, 0.12)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.82rem',
                                             width: '100%',
                                             boxSizing: 'border-box'
@@ -1040,7 +1040,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     />
                                 </div>
                                 <div>
-                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#E2E8F0', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_193")}</label>
+                                    <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text)', marginBottom: '0.4rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_193")}</label>
                                     <div
                                         onClick={() => setNewLogBillable(!newLogBillable)}
                                         style={{
@@ -1093,7 +1093,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRadius: 8,
                                         padding: '0.55rem 1.1rem',
-                                        color: '#94A3B8',
+                                        color: 'var(--text-2)',
                                         fontSize: '0.8rem',
                                         fontWeight: 600,
                                         cursor: 'pointer'

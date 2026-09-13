@@ -109,7 +109,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                     <div className={shared.badgeRow}>
                         <span className={`${shared.badge} ${shared.badgeTeal}`}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_57")}</span>
                         <span className={`${shared.badge} ${shared.badgeSky}`}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_58")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_59")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_59")}</span>
                     </div>
                     <h1 className={shared.screenTitle}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_60")}</h1>
                 </div>
@@ -161,12 +161,12 @@ export default function AttendanceIntelligence({ onNavigate }) {
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_70")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_71")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_72")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_72")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_73")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_74")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_75")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_75")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_76")}</div>
@@ -228,15 +228,15 @@ export default function AttendanceIntelligence({ onNavigate }) {
                         <div
                             key={idx}
                             style={{
-                                background: 'rgba(0,0,0,0.25)',
+                                background: 'var(--card-2)',
                                 border: slot.gap < 0 ? '1px solid #F2647E' : '1px solid #1C3450',
                                 borderRadius: '6px',
                                 padding: '0.6rem 0.4rem',
                                 textAlign: 'center'
                             }}
                         >
-                            <div style={{ fontSize: '0.7rem', color: '#93A6BF', fontWeight: 600 }}>{slot.time}</div>
-                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#E6EDF6', marginTop: '0.25rem' }}>
+                            <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', fontWeight: 600 }}>{slot.time}</div>
+                            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text)', marginTop: '0.25rem' }}>
                                 {slot.ros} <span style={{ fontSize: '0.68rem', color: '#5C7896' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_85")}{slot.req}</span>
                             </div>
                             <div style={{
@@ -294,7 +294,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                     borderRadius: '9999px',
                                     background: 'rgba(155, 140, 255, 0.15)',
                                     border: '1px solid rgba(155, 140, 255, 0.35)',
-                                    color: '#C4B5FD',
+                                    color: 'var(--agent)',
                                     fontSize: '0.7rem',
                                     fontWeight: 700,
                                     letterSpacing: '0.02em',
@@ -317,7 +317,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                 <strong style={{ fontSize: '0.78rem', color: '#F2647E' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_94")}</strong>
                                 <button className={shared.textBtn} style={{ fontSize: '0.7rem', color: '#F2647E' }} onClick={() => launchAction('anomalyReview', readData("components.Dashboard.Views.AttendanceIntelligence", "content_95"))}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_96")}</button>
                             </div>
-                            <p style={{ fontSize: '0.72rem', color: '#E6EDF6', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_97")}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text)', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_97")}</p>
                         </div>
 
                         <div style={{
@@ -327,10 +327,10 @@ export default function AttendanceIntelligence({ onNavigate }) {
                             borderRadius: '6px'
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <strong style={{ fontSize: '0.78rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_98")}</strong>
-                                <button className={shared.textBtn} style={{ fontSize: '0.7rem', color: '#F2A93B' }} onClick={() => launchAction('roster', readData("components.Dashboard.Views.AttendanceIntelligence", "content_99"))}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_100")}</button>
+                                <strong style={{ fontSize: '0.78rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_98")}</strong>
+                                <button className={shared.textBtn} style={{ fontSize: '0.7rem', color: 'var(--pending)' }} onClick={() => launchAction('roster', readData("components.Dashboard.Views.AttendanceIntelligence", "content_99"))}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_100")}</button>
                             </div>
-                            <p style={{ fontSize: '0.72rem', color: '#E6EDF6', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_101")}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text)', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_101")}</p>
                         </div>
 
                         <div style={{
@@ -343,7 +343,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                 <strong style={{ fontSize: '0.78rem', color: '#9B8CFF' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_102")}</strong>
                                 <button className={shared.textBtn} style={{ fontSize: '0.7rem', color: '#9B8CFF' }} onClick={() => launchAction('wellbeing')}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_103")}</button>
                             </div>
-                            <p style={{ fontSize: '0.72rem', color: '#E6EDF6', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_104")}</p>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text)', margin: '0.3rem 0 0' }}>{readData("components.Dashboard.Views.AttendanceIntelligence", "content_text_104")}</p>
                         </div>
                     </div>
                 </div>
@@ -454,7 +454,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                 <tr key={entry.id}>
                                     <td>
                                         <strong>{entry.employee_name}</strong>
-                                        <div style={{ fontSize: '0.68rem', color: '#93A6BF' }}>{entry.designation}</div>
+                                        <div style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{entry.designation}</div>
                                     </td>
                                     <td>
                                         <span className={`${shared.badge} ${entry.worker_category_code === 'CONTRACT' ? shared.badgeAmber : entry.worker_category_code.startsWith('THIRD_PARTY') ? shared.badgeViolet : shared.badgeSky}`}>
@@ -492,7 +492,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                         <span className={`${shared.badge} ${entry.status === 'present' ? shared.badgeTeal : shared.badgeCoral}`}>
                                             {entry.status.toUpperCase()}
                                         </span>
-                                        <div style={{ fontSize: '0.68rem', color: '#E6EDF6', marginTop: 3, maxWidth: 220 }}>
+                                        <div style={{ fontSize: '0.68rem', color: 'var(--text)', marginTop: 3, maxWidth: 220 }}>
                                             {entry.status_reason}
                                         </div>
                                     </td>

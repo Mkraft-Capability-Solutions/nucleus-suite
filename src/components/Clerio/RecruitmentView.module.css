@@ -38,7 +38,7 @@
 
 .statsGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
     gap: 1rem;
 }
 
@@ -212,7 +212,7 @@
 
 .btnPrimary {
     background: var(--signal, #0F6E5C);
-    color: #FFFFFF;
+    color: var(--on-signal);
     padding: 0.5rem 1.1rem;
     border-radius: var(--r-control, 5px);
     border: 1px solid var(--signal-ink, #0A5546);
@@ -249,7 +249,7 @@
 /* --- Sprint 4: Establishment & Manpower Styles --- */
 .establishmentGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1.25rem;
 }
 
@@ -382,3 +382,13 @@
     border-color: var(--signal);
 }
 
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+.tabNav{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tabNav > *{flex-shrink:0}
+@container (max-width: 760px){
+.headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.headerRow > *{min-width:0;max-width:100%}
+}
+
+.modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}

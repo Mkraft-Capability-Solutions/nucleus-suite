@@ -106,7 +106,7 @@ export default function ManagerCockpit({ onNavigate }) {
                     background: '#14263D',
                     border: '1px solid #05CD99',
                     borderRadius: '6px',
-                    color: '#E6EDF6',
+                    color: 'var(--text)',
                     fontSize: '0.8rem',
                     display: 'flex',
                     alignItems: 'center',
@@ -179,7 +179,7 @@ export default function ManagerCockpit({ onNavigate }) {
                     </div>
                     <div className={shared.cardBody}>
                         {approvals.length === 0 ? (
-                            <div style={{ textAlign: 'center', padding: '2rem 0', color: '#93A6BF', fontSize: '0.8rem' }}>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_60")}</div>
+                            <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-2)', fontSize: '0.8rem' }}>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_60")}</div>
                         ) : (
                             <table className={shared.dataTable}>
                                 <tbody>
@@ -187,7 +187,7 @@ export default function ManagerCockpit({ onNavigate }) {
                                         <tr key={a.id}>
                                             <td>
                                                 <div style={{ fontWeight: 600 }}>{a.name}</div>
-                                                <div style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{a.type}</div>
+                                                <div style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{a.type}</div>
                                             </td>
                                             <td style={{ textAlign: 'right' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem', flexWrap: 'wrap' }}>
@@ -221,7 +221,7 @@ export default function ManagerCockpit({ onNavigate }) {
                                                     <button
                                                         className={shared.btnRowAction}
                                                         style={{
-                                                            color: '#C4B5FD',
+                                                            color: 'var(--agent)',
                                                             borderColor: 'rgba(155, 140, 255, 0.35)',
                                                             background: 'rgba(155, 140, 255, 0.08)',
                                                             fontSize: '0.7rem',
@@ -296,7 +296,7 @@ export default function ManagerCockpit({ onNavigate }) {
                                 <td><span className={`${shared.pillBadge} ${shared.pillTeal}`}>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_83")}</span></td>
                                 <td>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_84")}</td>
                                 <td>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_85")}</td>
-                                <td><span style={{ color: '#93A6BF' }}>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_86")}</span></td>
+                                <td><span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_86")}</span></td>
                             </tr>
                             <tr>
                                 <td><strong>{readData("components.Dashboard.Views.ManagerCockpit", "content_text_87")}</strong></td>

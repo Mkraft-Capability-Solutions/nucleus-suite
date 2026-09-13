@@ -171,3 +171,7 @@ The public website provides Home (`/`), About (`/about`), Features (`/features`)
 Superadmin, HR Manager and Employee can customize their starting dashboards: drag with pointer/touch/keyboard, add or remove permitted widgets, edit titles and sizes, change density and colours, undo/redo, apply presets and save up to six named layouts. Import/export contains presentation settings only. Layouts persist on the current browser per account/role/console; operational records remain temporary. See [dashboard customization](docs/engineering/DASHBOARD_CUSTOMIZATION.md) for the complete behavior and limitations.
 
 Public website content and dashboard definitions are JSON-backed through separate async adapters. No live backend, database or contact integration is added by these features.
+
+## Responsive interface
+
+The workspace adapts to phone, tablet and desktop widths while preserving role permissions. Mobile navigation uses the labeled Modules menu; dashboards stack, forms reflow, and wide tables remain scrollable with keyboard access. Light/dark workspace colors also apply to MUI dialogs and controls. See [device behavior and verification](docs/engineering/RESPONSIVE_UX.md).

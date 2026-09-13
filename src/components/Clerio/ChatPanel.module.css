@@ -50,7 +50,7 @@
     height: 34px;
     border-radius: var(--r-control, 6px);
     background: var(--signal, #0F6E5C);
-    color: #ffffff;
+    color: var(--on-signal);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -240,7 +240,7 @@
 
 .messageRow.isOwn .messageContent {
     background: var(--signal, #0F6E5C);
-    color: #FFFFFF;
+    color: var(--on-signal);
     border-color: var(--signal-ink, #0A5546);
     box-shadow: 0 2px 6px rgba(15, 110, 92, 0.2);
 }
@@ -280,7 +280,7 @@
 
 .sendBtn {
     background: var(--signal, #0F6E5C);
-    color: #FFFFFF;
+    color: var(--on-signal);
     border: none;
     width: 34px;
     height: 34px;
@@ -301,3 +301,5 @@
     opacity: 0.45;
     cursor: not-allowed;
 }
+
+@media(max-width:640px){.floatingChatContainer{inset:8px 8px auto;width:auto;max-width:none;height:calc(100dvh - 100px - env(safe-area-inset-bottom));max-height:none}}

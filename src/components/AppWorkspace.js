@@ -3,7 +3,7 @@ import { readData } from '@/services/workspace-data.mjs';
 
 import { navigationDomains } from '@/lib/workspace-navigation';
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, MessageSquare } from 'lucide-react';
 import LeftDock from '@/components/Clerio/LeftDock';
 import TopNav from '@/components/Clerio/TopNav';
@@ -17,11 +17,15 @@ import { HRMSProvider, useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import styles from '@/app/page.module.css';
+import { useScrollableTables } from '@/hooks/useScrollableTables';
+import WorkspaceTheme from '@/components/WorkspaceTheme';
 import Toast from '@/components/Clerio/Toast';
 import toastStyles from '@/components/Clerio/Toast.module.css';
 
 const AppContent = () => {
   const { user, isLoading, isModuleAllowed } = useAuth();
+  const workspaceRef = useRef(null);
+  useScrollableTables(workspaceRef, Boolean(user));
   const { toasts, removeToast, showToast } = useHRMS();
 
   // Active navigation states
@@ -31,6 +35,12 @@ const AppContent = () => {
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);
   const [searchQuery, setSearchQuery] = useState('');
+  useEffect(() => {
+    const compact = window.matchMedia('(max-width: 960px)');
+    const closeOnCompact = () => { if (compact.matches) setIsRightNavOpen(false); };
+    compact.addEventListener('change', closeOnCompact);
+    return () => compact.removeEventListener('change', closeOnCompact);
+  }, []);
   
   // Mutually exclusive drawer manager ('ai' | 'chat' | null)
   const [activeFloatingDrawer, setActiveFloatingDrawer] = useState(null);
@@ -221,7 +231,7 @@ const AppContent = () => {
   const isDashboard = activeTab === 'dashboard';
 
   return (
-    <div className={styles.mainContainer} data-workspace-module={activeTab} data-workspace-console={activeConsole}>
+    <div ref={workspaceRef} className={styles.mainContainer} data-workspace-module={activeTab} data-workspace-console={activeConsole}>
       <div className={styles.demoNotice} role="note">{readData("components.AppWorkspace", "demoNotice")}</div>
       {/* 1. Sleek Left Vertical Icon Dock (Side Nav - Always Present) */}
       <LeftDock
@@ -293,7 +303,7 @@ const AppContent = () => {
           <RightSubNav
             activeDomain={activeDomain}
             activeSubFeature={activeSubFeature}
-            onSelectSubFeature={handleSelectSubFeature}
+            onSelectSubFeature={(id) => { handleSelectSubFeature(id); if (window.matchMedia('(max-width: 960px)').matches) setIsRightNavOpen(false); }}
             isOpen={isRightNavOpen}
             onClose={() => setIsRightNavOpen(false)}
           />
@@ -382,7 +392,7 @@ export default function Home() {
   const { user } = useAuth();
   return (
     <HRMSProvider key={user?.email || readData("components.AppWorkspace", "fallback_1")}>
-      <AppContent />
+      <WorkspaceTheme><AppContent /></WorkspaceTheme>
     </HRMSProvider>
   );
 }

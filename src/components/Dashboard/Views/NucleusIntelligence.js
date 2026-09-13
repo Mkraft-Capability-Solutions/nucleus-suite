@@ -52,7 +52,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                     <div className={shared.badgeRow}>
                         <span className={`${shared.badge} ${shared.badgeViolet}`}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_15")}</span>
                         <span className={`${shared.badge} ${shared.badgeTeal}`}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_16")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_17")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_17")}</span>
                     </div>
                     <h1 className={shared.screenTitle}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_18")}</h1>
                 </div>
@@ -105,7 +105,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                             border: '1px solid #1C3450',
                             borderRadius: '6px',
                             padding: '0.6rem 0.85rem',
-                            color: '#E6EDF6',
+                            color: 'var(--text)',
                             fontSize: '0.85rem',
                             fontWeight: 500
                         }}
@@ -120,11 +120,11 @@ export default function NucleusIntelligence({ onNavigate }) {
                     padding: '0.85rem 1rem',
                     borderRadius: '0 6px 6px 0'
                 }}>
-                    <p style={{ fontSize: '0.8rem', color: '#E6EDF6', lineHeight: 1.55, margin: 0 }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_23")}<strong>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_24")}</strong>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_25")}<em>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_26")}</em>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_27")}</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text)', lineHeight: 1.55, margin: 0 }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_23")}<strong>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_24")}</strong>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_25")}<em>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_26")}</em>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_27")}</p>
                     <div style={{
                         marginTop: '0.65rem',
                         fontSize: '0.7rem',
-                        color: '#93A6BF',
+                        color: 'var(--text-2)',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center'
@@ -133,7 +133,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button onClick={() => launchAction('widget')} className={shared.textBtn} style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_31")}</button>
                             <button className={shared.textBtn} style={{ color: '#4FB6F5' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_32")}</button>
-                            <button className={shared.textBtn} style={{ color: '#93A6BF' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_33")}</button>
+                            <button className={shared.textBtn} style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.NucleusIntelligence", "content_text_33")}</button>
                         </div>
                     </div>
                 </div>
@@ -171,7 +171,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                         ].map((f, i) => (
                             <div key={i} style={{
                                 padding: '0.5rem 0.65rem',
-                                background: 'rgba(0,0,0,0.2)',
+                                background: 'var(--card-2)',
                                 border: '1px solid rgba(28, 52, 80, 0.45)',
                                 borderRadius: '6px',
                                 display: 'flex',
@@ -180,7 +180,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                             }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <span className={`${shared.badge} ${f.badge}`} style={{ fontSize: '0.62rem' }}>{f.sev}</span>
-                                    <span style={{ fontSize: '0.74rem', color: '#E6EDF6' }}>{f.text}</span>
+                                    <span style={{ fontSize: '0.74rem', color: 'var(--text)' }}>{f.text}</span>
                                 </div>
                                 <span style={{ fontSize: '0.68rem', color: '#5C7896' }}>{f.domain}</span>
                             </div>

@@ -292,7 +292,7 @@
 
 .btnPrimary {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: var(--r-control);
@@ -413,7 +413,7 @@
 
 .quotaGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: 1rem;
     margin-bottom: 1.25rem;
 }
@@ -445,7 +445,7 @@
 
 .categoryGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 1rem;
 }
 
@@ -558,4 +558,13 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
-}
+}
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+.cardHeader, .engineBanner, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.cardHeader > *, .engineBanner > *, .headerRow > *{min-width:0;max-width:100%}
+.mainGrid{grid-template-columns:minmax(0,1fr)}
+}
+
+.calendarGrid{overflow-x:auto;grid-template-columns:repeat(7,minmax(64px,1fr));max-width:100%}

@@ -41,7 +41,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: var(--on-signal);
     font-weight: 700;
     font-size: 1.15rem;
     box-shadow: 0 2px 8px rgba(15, 110, 92, 0.35);
@@ -263,3 +263,8 @@
 
 .logoWrapper { border: 0; background: transparent; font: inherit; color: inherit; text-align: left; }
 .logoMark { background: #fff; border-radius: 8px; box-shadow: none; }
+
+/* Modules in the header provide the complete, labeled mobile navigation. */
+@media(max-width:640px){.dockContainer{display:none}}
+
+.logoMark img{width:100%;height:100%;object-fit:contain}

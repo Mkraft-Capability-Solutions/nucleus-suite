@@ -37,7 +37,7 @@
 
 .statsRow {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 1.25rem;
 }
 
@@ -173,7 +173,7 @@
 
 .btnPrimary {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     padding: 0.55rem 1.15rem;
     border-radius: var(--r-control);
@@ -367,7 +367,7 @@
 
 .noDuesGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: 1rem;
     margin-top: 1rem;
 }
@@ -450,3 +450,11 @@
 .formInput:focus {
     border-color: var(--signal);
 }
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+.cardHeader, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
+.cardHeader > *, .headerRow > *{min-width:0;max-width:100%}
+.mainGrid{grid-template-columns:minmax(0,1fr)}
+}
+
+.modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}

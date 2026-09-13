@@ -610,7 +610,7 @@
 
 .btnPrimary {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     box-shadow: 0 2px 6px rgba(15, 110, 92, 0.25);
 }
 
@@ -984,4 +984,15 @@
     .cardRight { min-width: 0; padding: 1rem; }
     .locWeather { flex-wrap: wrap; }
     .metricsRow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+}
+
+.workspace{width:100%;min-width:0;padding:0}
+.workspace :global(div:has(> table)){max-width:100%;overflow-x:auto}
+.workspace :global(table){min-width:100%}
+.workspace :global(input),.workspace :global(select),.workspace :global(textarea){max-width:100%;min-width:0}
+.workspace :global([style*="grid-template-columns"]){min-width:0}
+.workspace :global([style*="grid-template-columns"] > *){min-width:0}
+.breadcrumbBar{flex-wrap:wrap}
+@container(max-width:600px){
+ .workspace :global([style*="grid-template-columns"]){grid-template-columns:minmax(0,1fr)!important}
 }

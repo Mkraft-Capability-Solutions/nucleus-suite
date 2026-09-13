@@ -6,3 +6,9 @@
 @media(max-width:700px){.header{padding:10px 20px;min-height:80px}.header>.nav{display:none}.mobileMenu{display:block;position:relative}.mobileMenu summary{padding:12px;border:1px solid #e0d9ef;border-radius:10px;cursor:pointer;list-style:none;font-weight:700}.mobileMenu nav{position:absolute;right:0;top:55px;background:white;padding:22px;width:220px;border:1px solid #e7e1f0;border-radius:16px;z-index:5;box-shadow:0 10px 35px #24133120;display:flex;flex-direction:column;align-items:stretch}.main{padding:0 22px}.hero{grid-template-columns:1fr;padding:45px 0 60px;gap:40px}.hero h1,.innerHero h1{letter-spacing:-1.5px}.hero p,.innerHero p{font-size:16px}.showcase{padding:24px}.grid{grid-template-columns:1fr}.section{padding:36px 0 50px}.closing{flex-direction:column;align-items:flex-start;padding:28px;margin-bottom:40px}.closing h2{font-size:25px}.footer{flex-direction:column;padding:28px 22px}.innerHero{padding:45px 0 35px}.contact{padding:22px}.brand{font-size:21px}.brand img{width:55px;height:55px}}
 /* Public pages retain their own palette after a workspace theme change. */
 .site h1,.site h2,.site h3{color:#182335}.site .closing h2{color:#fff}
+
+.site{color-scheme:light;--text:#182335;--text-2:#606679;--signal:#5934cc;--signal-ink:#5934cc}
+.hero>*,.innerHero,.card,.previewCard>div{min-width:0;overflow-wrap:anywhere}
+.mobileMenu nav{max-height:calc(100dvh - 110px);overflow-y:auto;max-width:calc(100vw - 40px)}
+.mobileMenu nav a{min-height:44px;display:flex;align-items:center}
+@media(max-width:380px){.main{padding-inline:16px}.showcase{padding:16px}.tabs{flex-wrap:wrap}.tabs span{padding:8px 10px}.previewCard{padding:14px}.actions a{width:100%}}

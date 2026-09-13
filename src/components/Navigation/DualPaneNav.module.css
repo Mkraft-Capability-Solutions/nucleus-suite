@@ -664,3 +664,14 @@
 }
 
 .subCard { width: 100%; text-align: left; font: inherit; color: inherit; }
+
+@media(max-width:720px){
+ .leftColumn{width:112px;flex-shrink:0}
+ .moduleItem{flex-direction:column;gap:4px;white-space:normal}
+ .moduleTextCol{display:block;font-size:11px;text-align:center}
+ .moduleMeta{display:none}
+ .moduleName{display:block;font-size:11px;white-space:normal;overflow-wrap:anywhere}
+ .rightColumn{min-width:0}
+ .subCard{white-space:normal;overflow-wrap:anywhere}
+ .header{flex-wrap:wrap;gap:8px}
+}

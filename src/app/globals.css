@@ -9,7 +9,7 @@
   --ink: #10222F;
   --ink-2: #1B3444;
   --slate: #5A6B78;
-  --slate-2: #8395A1;
+  --slate-2: #637582;
   --paper: #F3F5F4;
   --surface: #FFFFFF;
   --surface-2: #F8FAFA;
@@ -121,7 +121,7 @@
   --card-raised: rgba(16, 28, 42, 0.75);
   --text: #F1F5F9;
   --text-2: #94A3B8;
-  --text-3: #64748B;
+  --text-3: #94A3B8;
   --rule: rgba(255, 255, 255, 0.08);
   --rule-2: rgba(255, 255, 255, 0.04);
   --line: rgba(255, 255, 255, 0.08);
@@ -135,8 +135,8 @@
   --rail-active: #FFFFFF;
 
   /* Calibrated Semantic Status Tokens */
-  --signal: #38BDF8;
-  --signal-ink: #38BDF8;
+  --signal: #60A5FA;
+  --signal-ink: #7DD3FC;
   --signal-wash: rgba(56, 189, 248, 0.12);
   --status-ok: #10B981;
   --status-ok-ink: #34D399;
@@ -231,7 +231,7 @@ button:disabled, [role="button"][aria-disabled="true"] {
 }
 
 a {
-  color: var(--signal);
+  color: var(--signal-ink);
   text-decoration: none;
 }
 
@@ -403,3 +403,14 @@ th { color: var(--text-2); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* Native controls and solid surfaces follow the workspace theme, including portals. */
+:root { color-scheme: light; --card-hover: #f8fafa; --glass-border-hover: #bbc7cf; --shadow-hover: var(--shadow-raise); }
+[data-theme="dark"] { color-scheme: dark; --card: #122431; --card-2: #0f1e29; }
+input, select, textarea { background-color: var(--card); }
+@media (pointer: coarse) {
+  button, [role="button"], select { min-height: 44px; }
+}
+
+:root{--on-signal:#fff}
+[data-theme="dark"]{--on-signal:#10222f}

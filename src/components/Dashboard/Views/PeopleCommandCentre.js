@@ -294,11 +294,11 @@ export default function PeopleCommandCentre({ onNavigate }) {
                     gap: '1.25rem',
                     flexWrap: 'wrap'
                 }}>
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1, minWidth: '280px' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: '1 1 280px', minWidth: 0 }}>
                         <div className={shared.kpiIconSquircle} style={{
                             background: 'rgba(155, 140, 255, 0.15)',
                             borderColor: 'rgba(155, 140, 255, 0.3)',
-                            color: '#C4B5FD',
+                            color: 'var(--agent)',
                             width: 42,
                             height: 42,
                             flexShrink: 0
@@ -335,7 +335,7 @@ export default function PeopleCommandCentre({ onNavigate }) {
                     <div style={{
                         marginTop: '0.5rem',
                         padding: '0.75rem',
-                        background: 'rgba(0,0,0,0.3)',
+                        background: 'var(--card-2)',
                         borderRadius: '6px',
                         border: '1px solid rgba(155, 140, 255, 0.2)',
                         fontSize: '0.76rem',

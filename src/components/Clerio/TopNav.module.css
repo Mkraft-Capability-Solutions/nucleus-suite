@@ -416,7 +416,7 @@
 
 .quickActionBtn {
     background: var(--signal);
-    color: #ffffff;
+    color: var(--on-signal);
     border: none;
     width: 34px;
     height: 34px;
@@ -784,4 +784,9 @@
     .headerNav { height: auto; min-height: 60px; flex-wrap: wrap; padding-block: 0.4rem; }
     .rightActions { width: 100%; min-width: 0; justify-content: space-between; gap: 0.25rem; }
     .rightActions .iconBtn > span { display: none; }
+}
+
+@media(max-width:640px){
+ .consoleDropdownMenu{left:8px;right:8px;top:56px}
+ .profileDropdown{position:fixed;left:8px;right:8px;width:auto;max-width:none;max-height:calc(100dvh - 120px);overflow-y:auto}
 }

@@ -234,7 +234,7 @@ export default function HROpsConsole({ onNavigate }) {
                                     <tr key={app.id}>
                                         <td>
                                             <div style={{ fontWeight: 600 }}>{app.name}</div>
-                                            <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{app.type}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{app.type}</div>
                                         </td>
                                         <td style={{ textAlign: 'right' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.35rem', flexWrap: 'wrap' }}>
@@ -268,7 +268,7 @@ export default function HROpsConsole({ onNavigate }) {
                                                 <button
                                                     className={shared.btnRowAction}
                                                     style={{
-                                                        color: '#C4B5FD',
+                                                        color: 'var(--agent)',
                                                         borderColor: 'rgba(155, 140, 255, 0.35)',
                                                         background: 'rgba(155, 140, 255, 0.08)',
                                                         fontSize: '0.7rem',
@@ -319,13 +319,13 @@ export default function HROpsConsole({ onNavigate }) {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: stage.color, flexShrink: 0 }} />
-                                            <span style={{ color: '#E2E8F0', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <span style={{ color: 'var(--text)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {stage.name}
                                             </span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
                                             <strong style={{ color: '#FFFFFF', fontSize: '0.76rem' }}>{stage.value}</strong>
-                                            <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_103")}{stage.rate}{readData("components.Dashboard.Views.HROpsConsole", "content_text_104")}</span>
+                                            <span style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_103")}{stage.rate}{readData("components.Dashboard.Views.HROpsConsole", "content_text_104")}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -343,7 +343,7 @@ export default function HROpsConsole({ onNavigate }) {
                             fontSize: '0.72rem',
                             marginTop: 'auto'
                         }}>
-                            <span style={{ color: '#94A3B8' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_105")}</span>
+                            <span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_105")}</span>
                             <span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_106")}</span>
                         </div>
                     </div>
@@ -361,7 +361,7 @@ export default function HROpsConsole({ onNavigate }) {
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_109")}</span>
-                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_110")}<span style={{ color: '#93A6BF', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_111")}</span></strong>
+                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_110")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_111")}</span></strong>
                             </div>
                             <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '82%', height: '100%', background: '#F2A93B' }} />
@@ -371,7 +371,7 @@ export default function HROpsConsole({ onNavigate }) {
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_112")}</span>
-                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_113")}<span style={{ color: '#93A6BF', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_114")}</span></strong>
+                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_113")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_114")}</span></strong>
                             </div>
                             <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '94%', height: '100%', background: '#05CD99' }} />
@@ -381,7 +381,7 @@ export default function HROpsConsole({ onNavigate }) {
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_115")}</span>
-                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_116")}<span style={{ color: '#93A6BF', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_117")}</span></strong>
+                                <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_116")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_117")}</span></strong>
                             </div>
                             <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '6%', height: '100%', background: '#F2647E' }} />
@@ -481,7 +481,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_147")}</strong>
-                                        <div style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_148")}</div>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_148")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <button className={shared.btnRowAction} onClick={() => launchAction('kudos', readData("components.Dashboard.Views.HROpsConsole", "content_149"))}>
@@ -491,7 +491,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_151")}</strong>
-                                        <div style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_152")}</div>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_152")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <button className={shared.btnRowAction} onClick={() => launchAction('probation', readData("components.Dashboard.Views.HROpsConsole", "content_153"))}>
@@ -501,7 +501,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_155")}</strong>
-                                        <div style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_156")}</div>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_156")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <button className={shared.btnRowAction} onClick={() => launchAction('returnPlan', readData("components.Dashboard.Views.HROpsConsole", "content_157"))}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_158")}</button>
@@ -510,7 +510,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <tr>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_159")}</strong>
-                                        <div style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_160")}</div>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_160")}</div>
                                     </td>
                                     <td style={{ textAlign: 'right' }}>
                                         <span className={`${shared.pillBadge} ${shared.pillTeal}`}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_161")}</span>

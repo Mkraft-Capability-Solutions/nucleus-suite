@@ -51,7 +51,7 @@
 
 .btnPrimary {
     background: var(--signal, #0F6E5C);
-    color: #ffffff;
+    color: var(--on-signal);
     border: 1px solid var(--signal-ink, #0A5546);
     padding: 0.5rem 1.1rem;
     border-radius: var(--r-control, 5px);
@@ -400,4 +400,9 @@
     color: var(--pending, #8A6416);
     font-weight: 700;
     font-size: 0.72rem;
+}
+/* Reflow within the available workspace width, including an open navigation panel. */
+@container (max-width: 760px){
+.avatarStrip, .headerRow, .sectionHeader{flex-wrap:wrap;gap:12px;min-width:0}
+.avatarStrip > *, .headerRow > *, .sectionHeader > *{min-width:0;max-width:100%}
 }

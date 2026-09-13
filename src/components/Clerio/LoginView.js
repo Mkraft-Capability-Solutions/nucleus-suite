@@ -43,7 +43,7 @@ const LoginView = () => {
                 </div>
 
                 {/* Error Message */}
-                {error && <div role="alert" style={{ color: 'red', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
+                {error && <div role="alert" style={{ color: '#fda4af', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
 
                 <form className={styles.inputGroup} onSubmit={handleLogin}>
                     <input

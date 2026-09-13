@@ -24,7 +24,7 @@
   flex-wrap: wrap;
   gap: 0.85rem;
   padding: 0.95rem 1.35rem;
-  background: rgba(13, 22, 33, 0.65);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -113,7 +113,7 @@
 
 .scopeBtnPrimary {
   background: var(--signal);
-  color: #FFFFFF;
+  color: var(--on-signal);
   border-color: var(--signal);
   font-weight: 700;
   box-shadow: 0 4px 18px var(--line-glow);
@@ -335,7 +335,7 @@
 
 /* Widget Card Shell (The Fixed Anatomy) */
 .widgetCard {
-  background: rgba(13, 22, 33, 0.65);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -356,7 +356,7 @@
 }
 
 .cardRaised {
-  background: rgba(16, 28, 42, 0.75);
+  background: var(--card-2);
 }
 
 .cardTitleRow {
@@ -428,7 +428,7 @@
 
 /* Standard KPI Tile (W01) */
 .kpiTile {
-  background: rgba(13, 22, 33, 0.65);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -640,7 +640,7 @@
 
 .btnRowAction:hover {
   background: var(--signal);
-  color: #FFFFFF;
+  color: var(--on-signal);
   border-color: var(--signal);
   box-shadow: 0 0 12px var(--line-glow);
 }
@@ -665,7 +665,7 @@
   flex-wrap: wrap;
   gap: 0.85rem;
   padding: 0.95rem 1.35rem;
-  background: rgba(13, 22, 33, 0.65);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -754,7 +754,7 @@
 /* Buttons */
 .primaryBtn {
   background: var(--signal);
-  color: #FFFFFF;
+  color: var(--on-signal);
   border: 1px solid var(--signal);
   font-size: 0.78rem;
   font-weight: 700;
@@ -820,7 +820,7 @@
 /* KPI Grid & Card */
 .kpiGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
   gap: 12px;
   width: 100%;
 }
@@ -906,4 +906,31 @@
 
 .table tr:hover td {
   background: rgba(255, 255, 255, 0.02);
+}
+
+/* One palette and a fluid grid for all ten consoles. */
+.dashboardCanvas,.dashboardWrapper,.grid12,.cardBody{min-width:0}
+.grid12>*{min-width:0}
+.scopeBar,.pageHeader,.widgetCard,.kpiTile{border-color:var(--line);box-shadow:var(--shadow-surface)}
+.aiNarrativeCard{background:var(--agent-wash);box-shadow:var(--shadow-surface)}
+.kpiValue{color:var(--text);background:none;-webkit-text-fill-color:currentColor;filter:none}
+.narrativeBadge,.narrativeBtn{color:var(--agent)}
+.narrativeBtnPrimary{color:#fff;background:#6d28d9}
+.scopeBar>*,.scopeLeft>*,.pageHeader>*,.cardTitleRow>*,.cardHeader>*,.narrativeBody>*{min-width:0;max-width:100%}
+.kpiValueRow,.cardTitleRow,.cardHeader,.scopeMetadata,.anomalyRibbon,.narrativeFooter{flex-wrap:wrap;gap:10px}
+.kpiValueRow>*{min-width:0;overflow-wrap:anywhere}
+.scopePill:hover,.scopeBtn:hover,.cardAction:hover{color:var(--text);background:var(--card-2)}
+.pillAmber,.kpiDeltaWarning{color:var(--pending);background:var(--pending-wash)}
+.pillCoral,.deltaNegative{color:var(--flag);background:var(--flag-wash)}
+.pillViolet{color:var(--agent);background:var(--agent-wash)}
+.pillSky{color:var(--info);background:var(--info-wash)}
+.pillSlate{color:var(--text-2);background:var(--card-2)}
+@container(max-width:1050px){.grid12>.kpiTile{grid-column:span 6!important}}
+@container(max-width:600px){
+ .grid12{grid-template-columns:minmax(0,1fr)}
+ .grid12>*,.grid12>.kpiTile{grid-column:1 / -1!important}
+ .aiNarrativeCard :global([style*="display: flex"]),.cardBody :global([style*="display: flex"]){flex-wrap:wrap;min-width:0;gap:10px}
+ .cardTitleRow,.cardHeader{flex-direction:column;align-items:flex-start}
+ .scopeBar,.pageHeader{padding:16px}
+ .scopeBar button,.pageHeader button,.narrativeBtn{white-space:normal}
 }

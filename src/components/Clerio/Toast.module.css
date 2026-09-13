@@ -2,7 +2,7 @@
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    z-index: 9999;
+    z-index: 990; /* Notifications must not cover modal actions. */
     display: flex;
     flex-direction: column;
     gap: 0.5rem;

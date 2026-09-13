@@ -194,7 +194,7 @@
 
 .actionBtnIn:hover {
     background: var(--signal, #0F6E5C);
-    color: #ffffff;
+    color: var(--on-signal);
 }
 
 .actionBtnOut {

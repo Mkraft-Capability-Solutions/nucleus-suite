@@ -105,7 +105,7 @@ export default function MagnetixCapability({ onNavigate }) {
                     <div className={shared.badgeRow}>
                         <span className={`${shared.badge} ${shared.badgeTeal}`}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_48")}</span>
                         <span className={`${shared.badge} ${shared.badgeSky}`}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_49")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_50")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_50")}</span>
                     </div>
                     <h1 className={shared.screenTitle}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_51")}</h1>
                 </div>
@@ -125,12 +125,12 @@ export default function MagnetixCapability({ onNavigate }) {
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_56")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_57")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#F2A93B' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_58")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--pending)' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_58")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_59")}</div>
                     <div className={shared.kpiValue}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_60")}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#E6EDF6' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_61")}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text)' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_61")}</div>
                 </div>
                 <div className={shared.kpiCard}>
                     <div className={shared.kpiLabel}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_62")}</div>
@@ -164,14 +164,14 @@ export default function MagnetixCapability({ onNavigate }) {
                             <tr>
                                 <td><strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_74")}</strong></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_75")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_76")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_76")}</span></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_77")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_78")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_79")}</span></td>
                             </tr>
                             <tr>
                                 <td><strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_80")}</strong></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_81")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_81")}</span></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_82")}</span></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_83")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_84")}</span></td>
@@ -183,23 +183,23 @@ export default function MagnetixCapability({ onNavigate }) {
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_88")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_89")}</span></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_90")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_91")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_91")}</span></td>
                             </tr>
                             <tr>
                                 <td><strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_92")}</strong></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_93")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_94")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_93")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_94")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_95")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_96")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_96")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_97")}</span></td>
                             </tr>
                             <tr>
                                 <td><strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_98")}</strong></td>
                                 <td><span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_99")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_100")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_100")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_101")}</span></td>
                                 <td><span style={{ color: '#F2647E', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_102")}</span></td>
-                                <td><span style={{ color: '#F2A93B', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_103")}</span></td>
+                                <td><span style={{ color: 'var(--pending)', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_103")}</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -249,13 +249,13 @@ export default function MagnetixCapability({ onNavigate }) {
                                     >
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', minWidth: 0 }}>
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: stage.color, flexShrink: 0 }} />
-                                            <span style={{ color: '#E2E8F0', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            <span style={{ color: 'var(--text)', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                                 {stage.name}
                                             </span>
                                         </div>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', flexShrink: 0 }}>
                                             <strong style={{ color: '#FFFFFF', fontSize: '0.76rem' }}>{stage.value.toLocaleString()}</strong>
-                                            <span style={{ fontSize: '0.68rem', color: '#94A3B8' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_109")}{stage.rate}{readData("components.Dashboard.Views.MagnetixCapability", "content_text_110")}</span>
+                                            <span style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_109")}{stage.rate}{readData("components.Dashboard.Views.MagnetixCapability", "content_text_110")}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -273,7 +273,7 @@ export default function MagnetixCapability({ onNavigate }) {
                             fontSize: '0.72rem',
                             marginTop: 'auto'
                         }}>
-                            <span style={{ color: '#94A3B8' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_111")}</span>
+                            <span style={{ color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_111")}</span>
                             <span style={{ color: '#05CD99', fontWeight: 700 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_112")}</span>
                         </div>
                     </div>
@@ -310,8 +310,8 @@ export default function MagnetixCapability({ onNavigate }) {
                         border: '1px solid rgba(155, 140, 255, 0.3)',
                         borderRadius: '8px'
                     }}>
-                        <h4 style={{ fontSize: '0.85rem', color: '#E6EDF6', margin: '0 0 0.5rem' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_118")}</h4>
-                        <p style={{ fontSize: '0.74rem', color: '#93A6BF', lineHeight: 1.5, margin: 0 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_119")}<strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_120")}</strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_121")}</p>
+                        <h4 style={{ fontSize: '0.85rem', color: 'var(--text)', margin: '0 0 0.5rem' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_118")}</h4>
+                        <p style={{ fontSize: '0.74rem', color: 'var(--text-2)', lineHeight: 1.5, margin: 0 }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_119")}<strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_120")}</strong>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_121")}</p>
                         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
                             <button className={shared.primaryBtn} style={{ fontSize: '0.74rem' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_122")}</button>
                             <button className={shared.secondaryBtn} style={{ fontSize: '0.74rem' }}>{readData("components.Dashboard.Views.MagnetixCapability", "content_text_123")}</button>

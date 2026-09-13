@@ -80,7 +80,7 @@
 /* Metric Strip */
 .metricGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
     gap: 1rem;
 }
 
@@ -426,7 +426,7 @@
 /* User Scope & Role Bar */
 .userConfigBar {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 1rem;
     padding: 1.15rem 1.35rem;
     background: rgba(14, 23, 38, 0.6);
@@ -511,7 +511,7 @@
 /* Modules Grid */
 .moduleGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
     gap: 0.85rem;
 }
 
@@ -589,7 +589,7 @@
 /* Cockpit Grid */
 .cockpitGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
     gap: 0.85rem;
 }
 
@@ -764,4 +764,13 @@
 .toggleSwitchActive .toggleSwitchThumb {
     transform: translateX(18px);
     background: #060D18;
+}
+
+/* Reflow within the available workspace width, including an open navigation panel. */
+.tabNav{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
+.tabNav > *{flex-shrink:0}
+@container (max-width: 760px){
+.sectionHeader{flex-wrap:wrap;gap:12px;min-width:0}
+.sectionHeader > *{min-width:0;max-width:100%}
+.splitLayout{grid-template-columns:minmax(0,1fr)}
 }

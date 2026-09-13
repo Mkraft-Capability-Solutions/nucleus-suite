@@ -3,5 +3,14 @@
 @media(max-width:700px){.dashboard{padding:12px 0 130px}.header{flex-direction:column;gap:12px}.grid{grid-template-columns:minmax(0,1fr)}.widget{grid-column:1}.toolbar{padding:12px;gap:8px}.toolbar .spacer{display:none}.toolbar label{flex-wrap:wrap}.toolbar select,.toolbar input{max-width:100%;width:100%}.toolbar .button{flex-grow:1}.library{grid-template-columns:1fr}.widgetHead{padding:18px 18px 12px}.widgetBody{padding:0 18px 15px}}
 @media(prefers-reduced-motion:reduce){.widget{transition:none!important;animation:none!important}}
 
-/* MUI dialogs use a light surface; keep inherited workspace text tokens readable. */
-.dialog{--text:#182335;--text-2:#626879}
+/* Dialog surfaces and text inherit the same MUI/workspace theme. */
+.dialog{color:var(--text)}
+.dialog .libraryCard{border-color:var(--line)}
+.dialog .libraryCard p{color:var(--text-2)}
+:global([data-theme="dark"]) .dashboard{--accent:#bca7ff;--accent-soft:#2c2244}
+:global([data-theme="dark"]) .dashboard[data-accent=blue]{--accent:#93c5fd;--accent-soft:#192e48}
+:global([data-theme="dark"]) .dashboard[data-accent=teal]{--accent:#5eead4;--accent-soft:#123b39}
+:global([data-theme="dark"]) .primary{color:#10222f}
+.row > div{min-width:0;overflow-wrap:anywhere}
+.linkRow{white-space:normal}
+@media(max-width:480px){.row{flex-wrap:wrap}.role{white-space:normal}.widgetFooter{flex-wrap:wrap}.editNote{align-items:flex-start}.toolbar label{width:100%}}

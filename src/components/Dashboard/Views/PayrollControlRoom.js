@@ -187,7 +187,7 @@ export default function PayrollControlRoom({ onNavigate }) {
                             <div style={{ fontSize: '0.74rem', fontWeight: 600, color: s.status === 'active' ? '#F2A93B' : '#E6EDF6' }}>
                                 {s.label}
                             </div>
-                            <div style={{ fontSize: '0.68rem', color: '#93A6BF' }}>{s.date}</div>
+                            <div style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{s.date}</div>
                         </div>
                     </div>
                 ))}
@@ -295,7 +295,7 @@ export default function PayrollControlRoom({ onNavigate }) {
                                 <tr style={{ opacity: blockingExceptionsCleared ? 0.4 : 1 }}>
                                     <td>
                                         <strong>{readData("components.Dashboard.Views.PayrollControlRoom", "content_text_100")}</strong>
-                                        <div style={{ fontSize: '0.7rem', color: '#93A6BF' }}>{readData("components.Dashboard.Views.PayrollControlRoom", "content_text_101")}</div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{readData("components.Dashboard.Views.PayrollControlRoom", "content_text_101")}</div>
                                     </td>
                                     <td>{readData("components.Dashboard.Views.PayrollControlRoom", "content_text_102")}</td>
                                     <td>{readData("components.Dashboard.Views.PayrollControlRoom", "content_text_103")}</td>
