@@ -117,7 +117,7 @@ test('sign out returns to the public home and protected entry asks for login', a
     await page.getByTitle('User profile and account links', { exact: true }).click();
     await page.getByRole('button', { name: 'Sign Out of Nucleus' }).click();
     await expect(page).toHaveURL(/\/$/);
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('People first.');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('HR that flows.');
     await page.goto('/workspace');
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.getByRole('textbox', { name: 'Email Address' })).toBeVisible();

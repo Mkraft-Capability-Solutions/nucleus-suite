@@ -130,7 +130,7 @@ export default function AccessControlModal({ isOpen, onClose }) {
 
                 {/* Role Selector Strip */}
                 <div className={styles.roleSelectorStrip}>
-                    <span style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 700, textTransform: 'uppercase', marginRight: '0.25rem' }}>{readData("components.Dashboard.Modals.AccessControlModal", "content_text_29")}</span>
+                    <span style={{ fontSize: '0.74rem', color: 'var(--text-3)', fontWeight: 700, textTransform: 'uppercase', marginRight: '0.25rem' }}>{readData("components.Dashboard.Modals.AccessControlModal", "content_text_29")}</span>
                     {ROLES_LIST.map(r => {
                         const Icon = r.icon;
                         const isSelected = selectedRole === r.key;

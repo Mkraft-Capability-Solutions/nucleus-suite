@@ -1,7 +1,7 @@
-.overlay {
+.overlay{
   position: fixed;
   inset: 0;
-  background: rgba(6, 13, 24, 0.75);
+  background: var(--overlay);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -252,7 +252,7 @@
 
 .selectInput,
 .textareaInput {
-  background: rgba(6, 13, 24, 0.65);
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.65rem 0.85rem;

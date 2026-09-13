@@ -1,7 +1,7 @@
-.overlay {
+.overlay{
     position: fixed;
     inset: 0;
-    background: rgba(16, 34, 47, 0.6);
+    background: var(--overlay);
     backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
@@ -468,13 +468,13 @@
 }
 
 .deleteBtn:hover {
-    background: #f1cfc8;
+    background: var(--flag-wash);
 }
 
 /* Audit Log Terminal in Inspector */
 .terminalCard {
-    background: var(--ink, #10222F);
-    color: var(--surface-2, #F6F8F6);
+    background: var(--card-2);
+    color: var(--text);
     border-radius: var(--r-control, 5px);
     padding: 0.85rem;
     font-family: var(--f-num, monospace);

@@ -75,7 +75,7 @@ const LearningView = ({ onNavigate, onSelectConsole }) => {
                             </div>
 
                             <strong style={{ fontSize: '1.05rem', color: '#0f172a', display: 'block' }}>{course.title}</strong>
-                            <div style={{ fontSize: '0.82rem', color: '#64748b', marginTop: '0.35rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_7")}<strong>{course.provider}</strong>{readData("components.Clerio.LearningView", "LearningView_text_8")}{course.duration}
+                            <div style={{ fontSize: '0.82rem', color: 'var(--text-3)', marginTop: '0.35rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_7")}<strong>{course.provider}</strong>{readData("components.Clerio.LearningView", "LearningView_text_8")}{course.duration}
                             </div>
                         </div>
 
@@ -106,9 +106,9 @@ const LearningView = ({ onNavigate, onSelectConsole }) => {
                     <div>
                         <h3 style={{ margin: 0, fontSize: '1.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <Award size={20} color="#2563eb" />{readData("components.Clerio.LearningView", "LearningView_text_11")}</h3>
-                        <p style={{ margin: '0.35rem 0 0', color: '#64748b', fontSize: '0.88rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_12")}<strong>{readData("components.Clerio.LearningView", "LearningView_text_13")}</strong>{readData("components.Clerio.LearningView", "LearningView_text_14")}</p>
+                        <p style={{ margin: '0.35rem 0 0', color: 'var(--text-3)', fontSize: '0.88rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_12")}<strong>{readData("components.Clerio.LearningView", "LearningView_text_13")}</strong>{readData("components.Clerio.LearningView", "LearningView_text_14")}</p>
                     </div>
-                    <span style={{ background: '#dcfce7', color: '#166534', padding: '0.4rem 0.8rem', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_15")}</span>
+                    <span style={{ background: 'var(--status-ok-wash)', color: 'var(--status-ok-ink)', padding: '0.4rem 0.8rem', borderRadius: '10px', fontWeight: '700', fontSize: '0.85rem' }}>{readData("components.Clerio.LearningView", "LearningView_text_15")}</span>
                 </div>
             </div>
         </div>

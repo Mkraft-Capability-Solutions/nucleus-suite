@@ -2,6 +2,7 @@
 import {useTranslation} from '@/context/I18nContext';
 
 import NextImage from 'next/image';
+import Dialog from '@mui/material/Dialog';
 
 import { readData } from '../../services/workspace-data.mjs';
 
@@ -407,25 +408,14 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
 
             {/* Reassign Reporting Manager Modal */}
             {reassignTarget && (
-                <div style={{
-                    position: 'fixed',
-                    inset: 0,
-                    background: 'rgba(6, 13, 24, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    WebkitBackdropFilter: 'blur(10px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    zIndex: 9999,
-                    padding: '1.25rem'
-                }} onClick={() => setReassignTarget(null)}>
+                <Dialog open onClose={() => setReassignTarget(null)} aria-labelledby="reassign-manager-title" fullWidth maxWidth="sm">
                     <div
                         style={{
-                            background: 'linear-gradient(145deg, rgba(14, 23, 38, 0.98) 0%, rgba(10, 16, 28, 0.99) 100%)',
+                            background: 'var(--card)',
                             border: '1px solid rgba(45, 212, 168, 0.3)',
                             borderRadius: '14px',
                             width: '100%',
-                            maxWidth: '460px',
+                            maxWidth: '100%',
                             boxShadow: '0 24px 64px rgba(0, 0, 0, 0.7)',
                             padding: '1.5rem',
                             display: 'flex',
@@ -435,21 +425,22 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                         onClick={e => e.stopPropagation()}
                     >
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#F1F5F9' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_77")}</h3>
-                            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: '#94A3B8' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_78")}<strong>{reassignTarget.name}</strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_79")}{reassignTarget.role}{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_80")}</p>
+                            <h3 id="reassign-manager-title" style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_77")}</h3>
+                            <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_78")}<strong>{reassignTarget.name}</strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_79")}{reassignTarget.role}{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_80")}</p>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_81")}</label>
+                            <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_81")}</label>
                             <select
+                                aria-label={readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_81")}
                                 value={selectedNewManager}
                                 onChange={e => setSelectedNewManager(e.target.value)}
                                 style={{
-                                    background: 'rgba(6, 13, 24, 0.8)',
+                                    background: 'var(--card-2)',
                                     border: '1px solid rgba(255, 255, 255, 0.15)',
                                     borderRadius: 8,
                                     padding: '0.65rem 0.85rem',
-                                    color: '#F1F5F9',
+                                    color: 'var(--text)',
                                     fontSize: '0.84rem',
                                     outline: 'none',
                                     cursor: 'pointer'
@@ -475,7 +466,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                             >{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_85")}</button>
                         </div>
                     </div>
-                </div>
+                </Dialog>
             )}
         </div>
     );

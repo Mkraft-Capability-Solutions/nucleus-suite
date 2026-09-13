@@ -189,7 +189,7 @@ export default function TalentAcquisition({ onNavigate }) {
                                             justifyContent: 'space-between',
                                             padding: '0.3rem 0.55rem',
                                             borderRadius: '6px',
-                                            background: 'rgba(255, 255, 255, 0.03)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.06)',
                                             fontSize: '0.72rem'
                                         }}
@@ -246,7 +246,7 @@ export default function TalentAcquisition({ onNavigate }) {
                                     <span style={{ color: 'var(--text)', fontWeight: 600 }}>{src.name}</span>
                                     <span style={{ color: 'var(--text-2)' }}>{src.hires}{readData("components.Dashboard.Views.TalentAcquisition", "content_text_88")}{src.cost}</span>
                                 </div>
-                                <div style={{ height: 6, background: '#14263D', borderRadius: 3, overflow: 'hidden' }}>
+                                <div style={{ height: 6, background: 'var(--card-2)', borderRadius: 3, overflow: 'hidden' }}>
                                     <div style={{ width: `${src.pct}%`, height: '100%', background: src.color }} />
                                 </div>
                             </div>

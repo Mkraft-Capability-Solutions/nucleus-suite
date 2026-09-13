@@ -237,7 +237,7 @@
 }
 
 .requestCopy { margin: 0 0 1rem; max-width: 56ch; color: var(--text-2); font-size: var(--t-small); line-height: 1.55; }
-.modalOverlay { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 1rem; background: rgba(3, 11, 24, .62); backdrop-filter: blur(5px); }
+.modalOverlay{ position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 1rem; background: var(--overlay); backdrop-filter: blur(5px); }
 .modalCard { width: min(640px, 100%); max-height: calc(100vh - 2rem); overflow: auto; padding: 1.25rem; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--card); box-shadow: var(--shadow-overlay); color: var(--text); }
 .modalHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .modalHeader h3 { margin: .2rem 0; font-size: var(--t-h2); }
@@ -492,11 +492,11 @@
     border: 1px solid color-mix(in srgb, var(--signal-ink) 25%, transparent);
 }
 
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     inset: 0;
     padding: 1rem;
-    background: rgba(3, 11, 24, .62);
+    background: var(--overlay);
     backdrop-filter: blur(5px);
     display: grid;
     place-items: center;

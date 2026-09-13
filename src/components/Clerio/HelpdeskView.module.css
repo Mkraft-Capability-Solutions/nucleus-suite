@@ -311,13 +311,13 @@
 }
 
 /* Modals & Drawers */
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(16, 34, 47, 0.5);
+    background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;

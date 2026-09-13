@@ -218,7 +218,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
                                 <h4>{activeWorkflow.name}</h4>
                                 <p>{activeWorkflow.description}</p>
                             </div>
-                            <span style={{ fontSize: '0.78rem', color: '#2563eb', background: '#eff6ff', padding: '0.25rem 0.6rem', borderRadius: '6px', fontWeight: 700 }}>
+                            <span style={{ fontSize: '0.78rem', color: '#2563eb', background: 'var(--info-wash)', padding: '0.25rem 0.6rem', borderRadius: '6px', fontWeight: 700 }}>
                                 {activeWorkflow.category}
                             </span>
                         </div>
@@ -274,7 +274,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
 
                         {/* Append Step Quick Bar */}
                         <div className={styles.appendNodeBar}>
-                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#64748b' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_17")}</span>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-3)' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_17")}</span>
                             <button className={styles.appendNodeBtn} onClick={() => handleAddStep('approval')}>
                                 <Users size={13} color="#2563eb" />{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_18")}</button>
                             <button className={styles.appendNodeBtn} onClick={() => handleAddStep('condition')}>
@@ -302,7 +302,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
                             {simulationLogs.length > 0 && !isSimulating && (
                                 <button
                                     onClick={() => setSimulationLogs([])}
-                                    style={{ background: 'transparent', border: 'none', color: '#64748b', fontSize: '0.76rem', cursor: 'pointer' }}
+                                    style={{ background: 'transparent', border: 'none', color: 'var(--text-3)', fontSize: '0.76rem', cursor: 'pointer' }}
                                 >{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_23")}</button>
                             )}
                         </div>
@@ -319,7 +319,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
                                         </div>
                                     ))}
                                 </div>
-                                <div style={{ fontSize: '0.76rem', color: '#64748b', textAlign: 'center' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_24")}</div>
+                                <div style={{ fontSize: '0.76rem', color: 'var(--text-3)', textAlign: 'center' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_24")}</div>
                             </div>
                         ) : selectedNode ? (
                             <form className={styles.inspectorBody} onSubmit={handleSaveNodeEdits}>
@@ -388,7 +388,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
                             <div className={styles.emptyState}>
                                 <Layers size={36} color="#cbd5e1" />
                                 <p>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_40")}</p>
-                                <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_41")}<strong>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_42")}</strong>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_43")}</span>
+                                <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_41")}<strong>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_42")}</strong>{readData("components.Clerio.WorkflowBuilderModal", "WorkflowBuilderModal_text_43")}</span>
                             </div>
                         )}
                     </div>

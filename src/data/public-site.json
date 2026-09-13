@@ -29,13 +29,13 @@
   ],
   "login": "Log in",
   "cta": "Explore the workspace",
-  "footer": "Nucleus \u00b7 People, purpose, possibility.",
-  "preview": "Interactive product preview \u00b7 Synthetic data",
+  "footer": "Nucleus · People, purpose, possibility.",
+  "preview": "Interactive product preview · Synthetic data",
   "pages": {
     "home": {
-      "eyebrow": "ONE WORKSPACE. EVERY STAGE OF WORK.",
-      "title": "People first.\nEverything connected.",
-      "description": "Give your people a clear place to start\u2014and your HR team the space to move forward. Bring everyday work, employee journeys and people operations together in Nucleus.",
+      "eyebrow": "PEOPLE. PROCESS. POSSIBILITY.",
+      "title": "HR that flows.\nPeople who thrive.",
+      "description": "Bring the employee journey into one clear, connected experience. From the first conversation to the next career milestone, Nucleus puts people at the centre of work.",
       "sectionTitle": "Less switching. More moving forward.",
       "sectionDescription": "Connect the work that matters across your organization, with a consistent experience for every role.",
       "cards": [
@@ -62,7 +62,7 @@
       "closingDescription": "Build a dashboard that feels like yours, with components selected around your role and permissions."
     },
     "about": {
-      "eyebrow": "WHY WE\u2019RE HERE",
+      "eyebrow": "WHY WE’RE HERE",
       "title": "People are the heart of every organization.",
       "description": "Nucleus brings a simple idea to a complex working world: people systems should help people do their best work. We are building a connected HR experience with clarity at its core.",
       "sectionTitle": "Designed with intention.",
@@ -172,7 +172,7 @@
         {
           "icon": "dashboard",
           "title": "1. Enter your workspace",
-          "description": "Open Login and use one of the five demo accounts documented in the repository\u2019s ROLE_MODEL.md. Your role determines the starting console and available modules."
+          "description": "Open Login and use one of the five demo accounts documented in the repository’s ROLE_MODEL.md. Your role determines the starting console and available modules."
         },
         {
           "icon": "layers",
@@ -204,7 +204,7 @@
       "closingDescription": "Your workspace is one sign-in away."
     },
     "contact": {
-      "eyebrow": "LET\u2019S TALK PEOPLE",
+      "eyebrow": "LET’S TALK PEOPLE",
       "title": "What would a better working day look like?",
       "description": "Tell us what your team needs, what you would like to explore or where the experience could be better.",
       "sectionTitle": "Start a conversation.",
@@ -225,7 +225,7 @@
     ],
     "cards": [
       {
-        "title": "Today\u2019s focus",
+        "title": "Today’s focus",
         "value": "Your priorities, together",
         "detail": "A clearer view of your next step"
       },
@@ -244,7 +244,7 @@
   "contactForm": {
     "name": "Your name",
     "email": "Work email",
-    "topic": "What\u2019s on your mind?",
+    "topic": "What’s on your mind?",
     "message": "Your message",
     "topics": [
       "Product walkthrough",
@@ -258,7 +258,7 @@
   "homeExperience": {
     "label": "A CLOSER LOOK AT NUCLEUS",
     "title": "Your workday, in focus.",
-    "preview": "Illustrative workspace \u00b7 Explore a role",
+    "preview": "Illustrative workspace · Explore a role",
     "roles": [
       {
         "id": "employee",
@@ -302,7 +302,7 @@
         ],
         "tasks": [
           "Review employee requests",
-          "Prepare a new joiner\u2019s first day",
+          "Prepare a new joiner’s first day",
           "Explore workforce insights"
         ]
       },
@@ -359,5 +359,155 @@
       "Payroll workspace",
       "Learning & growth"
     ]
+  },
+  "homeStory": {
+    "orbitLabel": "Explore the employee lifecycle",
+    "orbitCenter": "People at the core",
+    "orbitHint": "Choose a moment. See the connection.",
+    "stages": [
+      {
+        "id": "hire",
+        "label": "Hire",
+        "detail": "Make a great beginning",
+        "description": "Bring candidates, interviews and onboarding into a more thoughtful first experience.",
+        "icon": "people"
+      },
+      {
+        "id": "engage",
+        "label": "Engage",
+        "detail": "Help people do their best",
+        "description": "Connect goals, feedback and learning so growth becomes part of the working day.",
+        "icon": "growth"
+      },
+      {
+        "id": "reward",
+        "label": "Reward",
+        "detail": "Make contribution visible",
+        "description": "Explore compensation, recognition and payroll views with the context your team needs.",
+        "icon": "reward"
+      },
+      {
+        "id": "support",
+        "label": "Support",
+        "detail": "Keep everyday work moving",
+        "description": "Give employees a clear path to requests, leave, documents and support.",
+        "icon": "support"
+      },
+      {
+        "id": "manage",
+        "label": "Manage",
+        "detail": "Turn context into clarity",
+        "description": "Bring people records, team responsibilities and workforce insights into one workspace.",
+        "icon": "manage"
+      }
+    ],
+    "problem": {
+      "eyebrow": "FROM FRAGMENTED TO CONNECTED",
+      "title": "Your people deserve more than another spreadsheet.",
+      "description": "When every process lives somewhere different, even simple questions become a chain of messages. Start with a shared view of the work.",
+      "beforeTitle": "The disconnected day",
+      "before": [
+        "Records scattered across tools",
+        "Approvals lost in follow-ups",
+        "Teams repeating the same information"
+      ],
+      "afterTitle": "A clearer way to work",
+      "after": [
+        "People and processes in one interface",
+        "Requests with visible context and status",
+        "Role-specific views for the next action"
+      ]
+    },
+    "platform": {
+      "eyebrow": "ONE PLATFORM. MANY PERSPECTIVES.",
+      "title": "Different roles. A shared picture.",
+      "description": "Switch between employee, HR and platform perspectives. Explore how the same workspace adapts to the people using it."
+    },
+    "intelligence": {
+      "eyebrow": "MAKE ROOM FOR BETTER DECISIONS",
+      "title": "Less searching.\nMore understanding.",
+      "description": "Bring workforce signals, reviews and next steps closer to the work. Explore the intelligence interface using clearly labelled synthetic examples.",
+      "cards": [
+        {
+          "title": "Context beside the action",
+          "description": "See the information around a request before choosing the next step."
+        },
+        {
+          "title": "A view that fits your role",
+          "description": "Choose relevant widgets and arrange your dashboard around your priorities."
+        },
+        {
+          "title": "A clear preview boundary",
+          "description": "AI examples and operational changes in this build are previews, not a live decision-making service."
+        }
+      ]
+    },
+    "delivery": {
+      "eyebrow": "A THOUGHTFUL PATH TO ROLLOUT",
+      "title": "Start with your people.\nBuild the right system around them.",
+      "description": "Use the preview to validate workflows and role expectations before connecting production services.",
+      "steps": [
+        {
+          "title": "Discover",
+          "description": "Map your employee journey and priorities."
+        },
+        {
+          "title": "Shape",
+          "description": "Review roles, navigation and key workflows."
+        },
+        {
+          "title": "Validate",
+          "description": "Test the interface with synthetic records."
+        },
+        {
+          "title": "Integrate",
+          "description": "Plan services, migration and production security."
+        }
+      ]
+    },
+    "trust": {
+      "eyebrow": "CLARITY BUILDS TRUST",
+      "title": "Know what you are exploring.",
+      "items": [
+        {
+          "title": "Synthetic data",
+          "description": "Explore the interface without entering employee information."
+        },
+        {
+          "title": "Role-aware interface",
+          "description": "Preview the experiences for employees, managers, HR and administrators."
+        },
+        {
+          "title": "Production gates",
+          "description": "Server authorization, tenant isolation and live integrations need separate implementation and verification."
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "BEFORE YOU EXPLORE",
+      "title": "Good questions. Clear answers.",
+      "items": [
+        {
+          "question": "What can I try in this version?",
+          "answer": "Public pages, role-based workspaces, dashboard customization and synthetic HR workflows. Operational changes are temporary preview state."
+        },
+        {
+          "question": "Can I customize my dashboard?",
+          "answer": "Yes. Supported dashboards offer a widget library, drag handles, keyboard controls and layout settings. Saved preferences belong to this browser."
+        },
+        {
+          "question": "Does the preview run payroll or send messages?",
+          "answer": "No. Payroll views, approvals and AI examples demonstrate the interface. The contact page downloads a draft rather than sending it."
+        },
+        {
+          "question": "Does the selected theme follow me into the workspace?",
+          "answer": "Yes. The header appearance control applies to public pages, sign-in, navigation, greeting panels and dialogs."
+        },
+        {
+          "question": "How should we plan implementation?",
+          "answer": "Start with workflow and role validation. Then agree on data migration, integrations, security controls and acceptance tests before production rollout."
+        }
+      ]
+    }
   }
 }

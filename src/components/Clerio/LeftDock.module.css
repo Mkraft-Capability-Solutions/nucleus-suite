@@ -2,7 +2,7 @@
     width: 68px;
     height: 100vh;
     background: var(--rail);
-    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    border-right: 1px solid var(--line);
     display: flex;
     flex-direction: column;
     padding: 0.85rem 0.55rem;
@@ -79,14 +79,14 @@
 .brandTitle {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--rail-active);
     letter-spacing: 0.12em;
 }
 
 .brandSubtitle {
     font-size: var(--t-micro);
     font-weight: 500;
-    color: #5E7684;
+    color: var(--rail-text);
     letter-spacing: 0.04em;
     text-transform: uppercase;
 }
@@ -119,18 +119,18 @@
 }
 
 .dockBtn:hover {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
+    background: var(--rail-hover);
+    color: var(--rail-active);
 }
 
 .dockBtnActive {
-    background: rgba(255, 255, 255, 0.10);
+    background: var(--rail-selected);
     color: var(--rail-active);
 }
 
 .dockBtnActive:hover {
-    background: rgba(255, 255, 255, 0.14);
-    color: #ffffff;
+    background: var(--rail-hover);
+    color: var(--rail-active);
 }
 
 .iconContainer {
@@ -166,7 +166,7 @@
 }
 
 .dockBtnActive .btnLabel {
-    color: #ffffff;
+    color: var(--rail-active);
     font-weight: 600;
 }
 
@@ -185,9 +185,9 @@
 .tooltip {
     position: absolute;
     left: calc(100% + 12px);
-    background: var(--ink);
+    background: var(--card);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #ffffff;
+    color: var(--rail-active);
     font-size: var(--t-small);
     font-weight: 500;
     padding: 0.35rem 0.75rem;
@@ -222,7 +222,7 @@
 .divider {
     width: 100%;
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--line);
     margin-bottom: 0.65rem;
 }
 

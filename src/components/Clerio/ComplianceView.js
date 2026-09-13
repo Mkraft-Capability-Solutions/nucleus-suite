@@ -251,7 +251,7 @@ const ComplianceView = () => {
                             </div>
 
                             <div className={styles.splitBreakdown}>
-                                <div className={styles.splitPill} style={{ background: '#dbeafe', color: '#1e40af' }}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_37")}{basicPercent + daPercent}{readData("components.Clerio.ComplianceView", "ComplianceView_text_38")}</div>
+                                <div className={styles.splitPill} style={{ background: 'var(--info-wash)', color: 'var(--info)' }}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_37")}{basicPercent + daPercent}{readData("components.Clerio.ComplianceView", "ComplianceView_text_38")}</div>
                                 <div className={styles.splitPill} style={{ background: excessExcluded > 0 ? '#fee2e2' : '#dcfce7', color: excessExcluded > 0 ? '#991b1b' : '#166534' }}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_39")}{hraPercent + specialPercent}{readData("components.Clerio.ComplianceView", "ComplianceView_text_40")}{excessExcluded > 0 ? readData("components.Clerio.ComplianceView", "display_10") : readData("components.Clerio.ComplianceView", "display_11")}
                                 </div>
                             </div>
@@ -1405,7 +1405,7 @@ const ComplianceView = () => {
                         {exportCodeModal ? (
                             <div>
                                 <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '13px' }}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_359")}{exportCodeModal.format}{readData("components.Clerio.ComplianceView", "ComplianceView_text_360")}</h4>
-                                <div style={{ background: '#0f172a', padding: '1rem', borderRadius: '6px', maxHeight: '280px', overflowY: 'auto' }}>
+                                <div style={{ background: 'var(--card-2)', padding: '1rem', borderRadius: '6px', maxHeight: '280px', overflowY: 'auto' }}>
                                     <pre style={{ margin: 0, color: '#38bdf8', fontSize: '11px', fontFamily: 'var(--f-num)', whiteSpace: 'pre-wrap' }}>
                                         {exportCodeModal.code}
                                     </pre>

@@ -16,7 +16,7 @@
     border-radius: var(--r-card);
     overflow: hidden;
     margin-bottom: 2rem;
-    color: #ffffff;
+    color: var(--hero-text);
     display: flex;
     align-items: stretch;
     padding: 0;
@@ -78,18 +78,18 @@
     font-weight: 700;
     margin-bottom: 0.35rem;
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: var(--hero-text);
 }
 
 .heroText p {
     font-size: 14px;
-    color: var(--rail-text);
+    color: var(--hero-muted);
     margin-bottom: 1rem;
     font-weight: 500;
 }
 
 .aiInsight {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--card-2);
     backdrop-filter: blur(8px);
     padding: 0.75rem 1.15rem;
     border-radius: var(--r-control);
@@ -100,7 +100,7 @@
     border: 1px solid rgba(255, 255, 255, 0.14);
     font-size: var(--t-small);
     line-height: 1.5;
-    color: #E8EEF0;
+    color: var(--hero-text);
 }
 
 .heroActionsRight {
@@ -118,7 +118,7 @@
     justify-content: center;
     align-items: flex-end;
     text-align: right;
-    background: rgba(0, 0, 0, 0.28);
+    background: var(--hero-surface);
     padding: 1.5rem 2.25rem;
     border-radius: 0;
     backdrop-filter: blur(12px);
@@ -141,7 +141,7 @@
 
 .dateSmall {
     font-size: var(--t-small);
-    color: var(--rail-text);
+    color: var(--hero-muted);
     margin-bottom: 0.4rem;
     font-weight: 500;
 }
@@ -151,7 +151,7 @@
     gap: 1rem;
     justify-content: flex-end;
     font-size: var(--t-micro);
-    color: var(--rail-text);
+    color: var(--hero-muted);
     font-weight: 500;
 }
 
@@ -165,7 +165,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
+    color: var(--on-agent);
     border: none;
     box-shadow: 0 4px 16px rgba(91, 63, 168, 0.4);
     cursor: pointer;
@@ -368,7 +368,7 @@
 
 .countBadge {
     background: var(--flag);
-    color: #ffffff;
+    color: var(--hero-text);
     padding: 0.1rem 0.5rem;
     border-radius: var(--r-pill);
     font-size: var(--t-micro);
@@ -443,7 +443,7 @@
 .announceBadge {
     font-size: var(--t-micro);
     background: var(--agent);
-    color: #ffffff;
+    color: var(--hero-text);
     padding: 0.15rem 0.5rem;
     border-radius: var(--r-pill);
     font-weight: 600;
@@ -1023,7 +1023,7 @@
 @container (min-width: 1200px) { .workforceFilterGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @container (max-width: 600px) { .workforceFilterGrid { grid-template-columns: minmax(0, 1fr); } }
 
-/* The intentionally dark welcome banner owns its inverse foreground. */
-.heroText button { color: var(--rail-active); }
-.heroText button:hover { background: var(--rail); }
+/* Welcome surfaces and their foregrounds follow the selected palette. */
+.heroText button { color: var(--hero-text); }
+.heroText button:hover { background: var(--hero-surface); }
 .heroText button svg { color: inherit; }

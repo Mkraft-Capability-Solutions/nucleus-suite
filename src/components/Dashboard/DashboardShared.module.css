@@ -198,7 +198,7 @@
 
 /* P1 AI Narrative Card */
 .aiNarrativeCard {
-  background: linear-gradient(135deg, rgba(20, 26, 48, 0.75) 0%, rgba(11, 17, 32, 0.8) 100%);
+  background: var(--card);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(155, 140, 255, 0.25);

@@ -90,7 +90,7 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
             {/* Top Stats Cards */}
             <div className={styles.statsRow}>
                 <div className={styles.statCard}>
-                    <div className={styles.statIconWrap} style={{ background: '#eff6ff', color: '#2563eb' }}>
+                    <div className={styles.statIconWrap} style={{ background: 'var(--info-wash)', color: '#2563eb' }}>
                         <Users size={22} />
                     </div>
                     <div className={styles.statMeta}>
@@ -100,7 +100,7 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIconWrap} style={{ background: '#f0fdf4', color: '#16a34a' }}>
+                    <div className={styles.statIconWrap} style={{ background: 'var(--status-ok-wash)', color: '#16a34a' }}>
                         <CheckCircle2 size={22} />
                     </div>
                     <div className={styles.statMeta}>
@@ -110,7 +110,7 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIconWrap} style={{ background: '#fef2f2', color: '#ef4444' }}>
+                    <div className={styles.statIconWrap} style={{ background: 'var(--flag-wash)', color: '#ef4444' }}>
                         <Clock size={22} />
                     </div>
                     <div className={styles.statMeta}>
@@ -120,7 +120,7 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
                 </div>
 
                 <div className={styles.statCard}>
-                    <div className={styles.statIconWrap} style={{ background: '#fffbeb', color: '#d97706' }}>
+                    <div className={styles.statIconWrap} style={{ background: 'var(--pending-wash)', color: '#d97706' }}>
                         <Laptop size={22} />
                     </div>
                     <div className={styles.statMeta}>

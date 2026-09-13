@@ -73,12 +73,12 @@
 }
 
 .mciHeroCard {
-    background: linear-gradient(135deg, #10222F 0%, #1B3444 100%);
-    color: #FFFFFF;
+    background: var(--hero-bg);
+    color: var(--hero-text);
     border-radius: var(--r-card, 7px);
     padding: 1.5rem;
     box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
-    border: 1px solid #1B3444;
+    border: 1px solid var(--line);
 }
 
 .dimensionGrid {
@@ -89,7 +89,7 @@
 }
 
 .dimCard {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--card);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: var(--r-control, 5px);

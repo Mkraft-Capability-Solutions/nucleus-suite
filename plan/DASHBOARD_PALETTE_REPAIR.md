@@ -9,7 +9,7 @@ The supplied People Command Centre screenshot showed the executive filter region
 - Executive scope surfaces, labels, select controls, date controls and scope chips use semantic theme tokens. The four filters form four, two or one columns according to available workspace width, including open sidebars.
 - Filter fields provide 44px controls; buttons have visible keyboard focus and 44px targets in narrow containers.
 - Shared dashboard narrative actions use matched foreground/background pairs. Unavailable prototype actions remain disabled, but readable. Hover styles follow the selected palette.
-- The intentional dark welcome banner retains its inverse text and icon colors. Shared metric surfaces use the selected card surface and elevation.
+- The initial repair retained an inverse welcome banner. This decision is superseded by the later reference/surface audit: greeting panels and navigation now follow the selected appearance. Shared metric surfaces use the selected card surface and elevation.
 
 ## Verification scope
 

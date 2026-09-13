@@ -540,13 +540,13 @@
 }
 
 /* Modal */
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(16, 34, 47, 0.5);
+    background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
@@ -688,7 +688,7 @@
 
 .packCard {
     background: var(--rail);
-    color: #ffffff;
+    color: var(--hero-text);
     border-radius: var(--r-card);
     padding: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1147,13 +1147,13 @@
     border-radius: var(--r-pill);
 }
 
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.65);
+    background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;

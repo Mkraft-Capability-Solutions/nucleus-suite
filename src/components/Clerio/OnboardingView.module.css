@@ -280,13 +280,13 @@
     border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.65);
+    background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;

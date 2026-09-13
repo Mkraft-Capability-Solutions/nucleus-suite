@@ -21,7 +21,7 @@ test('public pages reflow across themes and respect reduced motion', async ({pag
     expect(animations).toBe(0);
     await page.emulateMedia({reducedMotion:'no-preference'});
     await page.goto('/');
-    await expect(page.getByRole('heading',{name:'People first. Everything connected.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:'HR that flows. People who thrive.'})).toBeVisible();
     await page.getByRole('tab',{name:'Employee',exact:true}).press('ArrowRight');
     await expect(page.getByRole('tab',{name:'HR Manager',exact:true})).toBeFocused();
     await page.screenshot({path:info.outputPath('landing.png'),fullPage:true,animations:'disabled'});
@@ -33,4 +33,15 @@ test('public pages reflow across themes and respect reduced motion', async ({pag
         await expect(menu).not.toHaveAttribute('open','');
         await expect(menu.locator('summary')).toBeFocused();
     }
+});
+
+test('home lifecycle and FAQ reveal useful content with keyboard controls',async({page})=>{
+ await page.goto('/');
+ const orbit=page.getByRole('group',{name:'Explore the employee lifecycle'});
+ await orbit.getByRole('button',{name:/Support/}).click();
+ await expect(orbit.getByRole('button',{name:/Support/})).toHaveAttribute('aria-pressed','true');
+ await expect(page.getByText('Give employees a clear path to requests, leave, documents and support.',{exact:true})).toBeVisible();
+ const question=page.getByText('What can I try in this version?',{exact:true});
+ await question.focus();await question.press('Enter');
+ await expect(page.getByText('Public pages, role-based workspaces, dashboard customization and synthetic HR workflows. Operational changes are temporary preview state.',{exact:true})).toBeVisible();
 });

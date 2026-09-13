@@ -184,7 +184,7 @@ const MainWorkspace = ({
                             <div className={styles.heroText}>
                                 {isExecutive ? (
                                     <>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: 'var(--text-2)', fontWeight: 600, marginBottom: '0.2rem' }}>
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--status-ok)', boxShadow: '0 0 8px var(--status-ok)', display: 'inline-block' }} />
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_4")}</span>
                                             <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_5")}</span>
@@ -210,7 +210,7 @@ const MainWorkspace = ({
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
                                                 <Users size={13} color="var(--signal)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_10")}</button>
                                             <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
-                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_11")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_12")}</button>
+                                                <Megaphone size={13} color="var(--signal-ink)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_11")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_12")}</button>
                                             <button
                                                 className={shared.scopeBtn}
                                                 onClick={() => onTabChange('access_control')}
@@ -226,8 +226,8 @@ const MainWorkspace = ({
                                     </>
                                 ) : isEmployee ? (
                                     <>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
-                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4FB6F5', boxShadow: '0 0 8px #4FB6F5', display: 'inline-block' }} />
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: 'var(--text-2)', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--info)', boxShadow: '0 0 8px var(--info)', display: 'inline-block' }} />
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_15")}</span>
                                             <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_16")}</span>
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_17")}</span>
@@ -237,7 +237,7 @@ const MainWorkspace = ({
                                             <span style={{
                                                 padding: '0.2rem 0.6rem',
                                                 background: 'rgba(79, 182, 245, 0.15)',
-                                                color: '#4FB6F5',
+                                                color: 'var(--info)',
                                                 borderRadius: '6px',
                                                 fontSize: '0.74rem',
                                                 fontWeight: '700',
@@ -258,9 +258,9 @@ const MainWorkspace = ({
                                                     fontSize: '0.78rem',
                                                     fontWeight: '700',
                                                     cursor: 'pointer',
-                                                    background: attendance.status === 'present' ? 'rgba(239, 68, 68, 0.22)' : 'var(--status-ok)',
-                                                    color: attendance.status === 'present' ? '#F43F5E' : '#060D18',
-                                                    border: attendance.status === 'present' ? '1px solid #F43F5E' : '1px solid var(--status-ok)',
+                                                    background: attendance.status === 'present' ? 'var(--flag-wash)' : 'var(--status-ok-wash)',
+                                                    color: attendance.status === 'present' ? 'var(--flag)' : 'var(--status-ok-ink)',
+                                                    border: attendance.status === 'present' ? '1px solid var(--flag)' : '1px solid var(--status-ok-ink)',
                                                     boxShadow: attendance.status === 'present' ? 'none' : '0 2px 10px rgba(16, 185, 129, 0.25)',
                                                     transition: 'all 0.15s ease'
                                                 }}
@@ -270,18 +270,18 @@ const MainWorkspace = ({
                                                 {attendance.status === 'present' ?translateText("components.Clerio.MainWorkspace","text_63c2b4a100", {value1: String(attendance.punchInTime || readData("components.Clerio.MainWorkspace", "fallback_3"))}) : readData("components.Clerio.MainWorkspace", "display_10")}
                                             </button>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('leaves')}>
-                                                <Sun size={13} color="#F2A93B" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_23")}</button>
+                                                <Sun size={13} color="var(--pending)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_23")}</button>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('compensation')}>
-                                                <DollarSign size={13} color="#4FB6F5" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_24")}</button>
+                                                <DollarSign size={13} color="var(--info)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_24")}</button>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
                                                 <Users size={13} color="var(--signal)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_25")}</button>
                                             <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
-                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_26")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_27")}</button>
+                                                <Megaphone size={13} color="var(--signal-ink)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_26")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_27")}</button>
                                         </div>
                                     </>
                                 ) : isManager ? (
                                     <>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: 'var(--text-2)', fontWeight: 600, marginBottom: '0.2rem' }}>
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--status-ok)', boxShadow: '0 0 8px var(--status-ok)', display: 'inline-block' }} />
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_28")}</span>
                                             <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_29")}</span>
@@ -305,15 +305,15 @@ const MainWorkspace = ({
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('leaves')}>
                                                 <CheckCircle size={13} color="var(--status-ok)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_35")}</button>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
-                                                <Users size={13} color="#4FB6F5" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_36")}</button>
+                                                <Users size={13} color="var(--info)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_36")}</button>
                                             <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
-                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_37")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_38")}</button>
+                                                <Megaphone size={13} color="var(--signal-ink)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_37")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_38")}</button>
                                         </div>
                                     </>
                                 ) : (
                                     <>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
-                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#9B8CFF', boxShadow: '0 0 8px #9B8CFF', display: 'inline-block' }} />
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: 'var(--text-2)', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--signal-ink)', boxShadow: '0 0 8px var(--signal-ink)', display: 'inline-block' }} />
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_39")}</span>
                                             <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_40")}</span>
                                             <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_41")}</span>
@@ -323,7 +323,7 @@ const MainWorkspace = ({
                                             <span style={{
                                                 padding: '0.2rem 0.6rem',
                                                 background: 'rgba(155, 140, 255, 0.15)',
-                                                color: '#9B8CFF',
+                                                color: 'var(--signal-ink)',
                                                 borderRadius: '6px',
                                                 fontSize: '0.74rem',
                                                 fontWeight: '700',
@@ -336,9 +336,9 @@ const MainWorkspace = ({
                                         <p style={{ margin: '0.25rem 0 0.85rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_44")}</p>
                                         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
-                                                <Users size={13} color="#05CD99" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_45")}</button>
+                                                <Users size={13} color="var(--status-ok-ink)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_45")}</button>
                                             <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
-                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_46")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_47")}</button>
+                                                <Megaphone size={13} color="var(--signal-ink)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_46")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_47")}</button>
                                         </div>
                                     </>
                                 )}
@@ -891,8 +891,8 @@ const MainWorkspace = ({
                                     </span>
                                     <span style={{
                                         fontSize: '0.68rem',
-                                        color: '#93A6BF',
-                                        background: 'rgba(255,255,255,0.05)',
+                                        color: 'var(--text-2)',
+                                        background: 'var(--card-2)',
                                         padding: '0.1rem 0.4rem',
                                         borderRadius: '3px'
                                     }}>
@@ -946,7 +946,7 @@ const MainWorkspace = ({
                                             <span style={{ fontSize: '0.65rem', color: '#9B8CFF', fontWeight: 700, textTransform: 'uppercase' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_109")}</span>
                                         )}
                                     </div>
-                                    <div style={{ fontSize: '0.7rem', color: '#93A6BF', marginTop: '0.2rem' }}>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '0.2rem' }}>
                                         {ann.author}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_110")}{ann.date}
                                     </div>
                                 </div>
@@ -985,10 +985,10 @@ const MainWorkspace = ({
                                         <strong style={{ color: 'var(--text, #E6EDF6)' }}>{p.name}</strong>
                                         <span style={{ color: '#2DD4A8', fontWeight: 700 }}>{p.progress}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_113")}</span>
                                     </div>
-                                    <div style={{ height: 6, background: '#14263D', borderRadius: 3, overflow: 'hidden' }}>
+                                    <div style={{ height: 6, background: 'var(--card-2)', borderRadius: 3, overflow: 'hidden' }}>
                                         <div style={{ width: `${p.progress}%`, height: '100%', background: '#2DD4A8' }} />
                                     </div>
-                                    <div style={{ fontSize: '0.68rem', color: '#93A6BF' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_114")}{p.lead}</div>
+                                    <div style={{ fontSize: '0.68rem', color: 'var(--text-2)' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_114")}{p.lead}</div>
                                 </div>
                             ))}
                         </div>

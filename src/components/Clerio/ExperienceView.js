@@ -67,15 +67,15 @@ const ExperienceView = () => {
                     <div className={styles.mciHeroCard}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                             <div>
-                                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: '#c084fc', fontWeight: '700' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_7")}</span>
+                                <span style={{ fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--signal-ink)', fontWeight: '700' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_7")}</span>
                                 <h1 style={{ fontSize: '2.5rem', margin: '0.35rem 0', fontWeight: '800' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_8")}</h1>
                                 <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                                    <span style={{ background: 'rgba(255,255,255,0.18)', padding: '0.35rem 0.85rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: '600' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_9")}</span>
-                                    <span style={{ background: '#22c55e', color: 'white', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_10")}</span>
+                                    <span style={{ background: 'var(--card-2)', padding: '0.35rem 0.85rem', borderRadius: '10px', fontSize: '0.88rem', fontWeight: '600' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_9")}</span>
+                                    <span style={{ background: 'var(--status-ok-wash)', color: 'var(--status-ok-ink)', padding: '0.2rem 0.6rem', borderRadius: '6px', fontSize: '0.75rem', fontWeight: '700' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_10")}</span>
                                 </div>
                             </div>
                             <div style={{ textAlign: 'right', maxWidth: '380px' }}>
-                                <div style={{ fontSize: '0.82rem', background: 'rgba(0,0,0,0.2)', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
+                                <div style={{ fontSize: '0.82rem', background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.15)' }}>
                                     <code>{readData("components.Clerio.ExperienceView", "ExperienceView_text_11")}</code>
                                     <div style={{ marginTop: '0.4rem', opacity: 0.85, fontSize: '0.75rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_12")}</div>
                                 </div>
@@ -87,35 +87,35 @@ const ExperienceView = () => {
                             <div className={styles.dimCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                     <strong style={{ fontSize: '0.88rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_13")}</strong>
-                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#38bdf8' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_14")}</span>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--info)' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_14")}</span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_15")}</div>
                             </div>
                             <div className={styles.dimCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                     <strong style={{ fontSize: '0.88rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_16")}</strong>
-                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#38bdf8' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_17")}</span>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--info)' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_17")}</span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_18")}</div>
                             </div>
                             <div className={styles.dimCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                     <strong style={{ fontSize: '0.88rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_19")}</strong>
-                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#38bdf8' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_20")}</span>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--info)' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_20")}</span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_21")}</div>
                             </div>
                             <div className={styles.dimCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                     <strong style={{ fontSize: '0.88rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_22")}</strong>
-                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#38bdf8' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_23")}</span>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--info)' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_23")}</span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_24")}</div>
                             </div>
                             <div className={styles.dimCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
                                     <strong style={{ fontSize: '0.88rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_25")}</strong>
-                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: '#38bdf8' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_26")}</span>
+                                    <span style={{ fontSize: '1.15rem', fontWeight: '800', color: 'var(--info)' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_26")}</span>
                                 </div>
                                 <div style={{ fontSize: '0.78rem', opacity: 0.85 }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_27")}</div>
                             </div>
@@ -132,7 +132,7 @@ const ExperienceView = () => {
                             <h3><Sun size={20} color="#f59e0b" />{readData("components.Clerio.ExperienceView", "ExperienceView_text_28")}</h3>
                             <span style={{ fontSize: '0.85rem', color: '#d97706', fontWeight: '700' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_29")}</span>
                         </div>
-                        <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_30")}</p>
+                        <p style={{ color: 'var(--text-3)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>{readData("components.Clerio.ExperienceView", "ExperienceView_text_30")}</p>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1.25rem' }}>
                             <div style={{ background: 'var(--pending-wash)', border: '1px solid var(--pending)', borderRadius: 'var(--r-card)', padding: '1.5rem' }}>

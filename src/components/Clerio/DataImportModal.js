@@ -179,7 +179,7 @@ const DataImportModal = ({ isOpen, onClose }) => {
                     {/* STEP 2: FIELD MAPPING MATRIX */}
                     {step === 2 && (
                         <div>
-                            <div style={{ marginBottom: '1rem', background: '#eff6ff', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.84rem', color: '#1e40af', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                            <div style={{ marginBottom: '1rem', background: 'var(--info-wash)', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.84rem', color: 'var(--info)', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                                 <Sparkles size={18} />
                                 <div>
                                     <strong>{readData("components.Clerio.DataImportModal", "DataImportModal_text_16")}</strong>{readData("components.Clerio.DataImportModal", "DataImportModal_text_17")}</div>
@@ -273,7 +273,7 @@ const DataImportModal = ({ isOpen, onClose }) => {
                                         {getMappedRows().slice(0, 5).map((row, idx) => (
                                             <tr key={idx}>
                                                 <td>
-                                                    <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.75rem', background: '#dcfce7', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{readData("components.Clerio.DataImportModal", "DataImportModal_text_31")}</span>
+                                                    <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.75rem', background: 'var(--status-ok-wash)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{readData("components.Clerio.DataImportModal", "DataImportModal_text_31")}</span>
                                                 </td>
                                                 {Object.entries(mappings)
                                                     .filter(([_, key]) => key && key !== '__ignore__')
@@ -291,12 +291,12 @@ const DataImportModal = ({ isOpen, onClose }) => {
                     {/* STEP 4: COMPLETED */}
                     {step === 4 && (
                         <div style={{ textAlign: 'center', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#dcfce7', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--status-ok-wash)', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Check size={36} />
                             </div>
                             <div>
                                 <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.25rem', color: '#0f172a' }}>{readData("components.Clerio.DataImportModal", "DataImportModal_text_32")}</h3>
-                                <p style={{ margin: 0, fontSize: '0.88rem', color: '#64748b', maxWidth: '500px' }}>
+                                <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-3)', maxWidth: '500px' }}>
                                     <strong>{currentFile.sampleRows.length}{readData("components.Clerio.DataImportModal", "DataImportModal_text_33")}</strong>{readData("components.Clerio.DataImportModal", "DataImportModal_text_34")}<code>{currentFile.fileName}</code>{readData("components.Clerio.DataImportModal", "DataImportModal_text_35")}</p>
                             </div>
                         </div>

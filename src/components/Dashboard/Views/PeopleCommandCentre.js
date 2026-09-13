@@ -339,7 +339,7 @@ export default function PeopleCommandCentre({ onNavigate }) {
                         borderRadius: '6px',
                         border: '1px solid rgba(155, 140, 255, 0.2)',
                         fontSize: '0.76rem',
-                        color: '#CAD6DD'
+                        color: 'var(--text-2)'
                     }}>
                         <strong>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_118")}</strong>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_119")}<code>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_120")}</code>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_121")}<strong>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_122")}</strong>{readData("components.Dashboard.Views.PeopleCommandCentre", "content_text_123")}</div>
                 )}

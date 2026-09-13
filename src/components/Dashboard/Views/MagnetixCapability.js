@@ -242,7 +242,7 @@ export default function MagnetixCapability({ onNavigate }) {
                                             justifyContent: 'space-between',
                                             padding: '0.3rem 0.55rem',
                                             borderRadius: '6px',
-                                            background: 'rgba(255, 255, 255, 0.03)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.06)',
                                             fontSize: '0.72rem'
                                         }}

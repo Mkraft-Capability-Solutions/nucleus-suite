@@ -242,8 +242,8 @@ const ProjectView = () => {
                                     </div>
                                     <span style={{
                                         fontSize: '0.7rem',
-                                        color: '#94a3b8',
-                                        background: 'rgba(255,255,255,0.05)',
+                                        color: 'var(--text-2)',
+                                        background: 'var(--card-2)',
                                         padding: '2px 6px',
                                         borderRadius: '4px'
                                     }}>
@@ -268,7 +268,7 @@ const ProjectView = () => {
                                             />
                                         ))}
                                         {(proj.members || []).length > 3 && (
-                                            <span style={{ fontSize: '0.72rem', marginLeft: '4px', alignSelf: 'center', color: '#94a3b8' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_10")}{proj.members.length - 3}
+                                            <span style={{ fontSize: '0.72rem', marginLeft: '4px', alignSelf: 'center', color: 'var(--text-2)' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_10")}{proj.members.length - 3}
                                             </span>
                                         )}
                                     </div>
@@ -307,8 +307,8 @@ const ProjectView = () => {
                         }}
                     >
                         <Plus size={32} color="#94a3b8" />
-                        <span style={{ color: '#94a3b8', fontWeight: '600', marginTop: '0.5rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_13")}</span>
-                        <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_14")}</span>
+                        <span style={{ color: 'var(--text-2)', fontWeight: '600', marginTop: '0.5rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_13")}</span>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-3)' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_14")}</span>
                     </div>
                 </div>
 
@@ -320,9 +320,9 @@ const ProjectView = () => {
                             <span>{readData("components.Clerio.ProjectView", "ProjectView_text_15")}{activeProject?.title || readData("components.Clerio.ProjectView", "fallback_9")}{readData("components.Clerio.ProjectView", "ProjectView_text_16")}</span>
                             <span style={{
                                 fontSize: '0.74rem',
-                                color: '#94a3b8',
+                                color: 'var(--text-2)',
                                 fontWeight: 500,
-                                background: 'rgba(255,255,255,0.06)',
+                                background: 'var(--card-2)',
                                 padding: '3px 8px',
                                 borderRadius: 12
                             }}>
@@ -414,7 +414,7 @@ const ProjectView = () => {
                                 );
                             })}
                             {displayTasks.todo.length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '1.5rem', color: '#94a3b8', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_22")}</div>
+                                <div style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-2)', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_22")}</div>
                             )}
                         </div>
 
@@ -463,10 +463,10 @@ const ProjectView = () => {
                                                 <button
                                                     onClick={(e) => rollbackTask(e, task.id, 'inprogress')}
                                                     style={{
-                                                        background: 'rgba(255,255,255,0.06)',
+                                                        background: 'var(--card-2)',
                                                         border: '1px solid rgba(255,255,255,0.15)',
                                                         borderRadius: '4px',
-                                                        color: '#94a3b8',
+                                                        color: 'var(--text-2)',
                                                         fontSize: '0.65rem',
                                                         fontWeight: 600,
                                                         padding: '2px 5px',
@@ -494,7 +494,7 @@ const ProjectView = () => {
                                 );
                             })}
                             {displayTasks.inprogress.length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '1.5rem', color: '#94a3b8', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_29")}</div>
+                                <div style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-2)', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_29")}</div>
                             )}
                         </div>
 
@@ -535,10 +535,10 @@ const ProjectView = () => {
                                                 <button
                                                     onClick={(e) => rollbackTask(e, task.id, 'review')}
                                                     style={{
-                                                        background: 'rgba(255,255,255,0.06)',
+                                                        background: 'var(--card-2)',
                                                         border: '1px solid rgba(255,255,255,0.15)',
                                                         borderRadius: '4px',
-                                                        color: '#94a3b8',
+                                                        color: 'var(--text-2)',
                                                         fontSize: '0.65rem',
                                                         fontWeight: 600,
                                                         padding: '2px 5px',
@@ -566,7 +566,7 @@ const ProjectView = () => {
                                 );
                             })}
                             {displayTasks.review.length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '1.5rem', color: '#94a3b8', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_36")}</div>
+                                <div style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-2)', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_36")}</div>
                             )}
                         </div>
 
@@ -595,7 +595,7 @@ const ProjectView = () => {
                                                 <span style={{ fontSize: '0.68rem', background: 'rgba(45, 212, 168, 0.15)', color: '#2DD4A8', padding: '2px 6px', borderRadius: 4, fontWeight: 700 }}>{readData("components.Clerio.ProjectView", "ProjectView_text_38")}</span>
                                             )}
                                         </div>
-                                        <div className={styles.taskTitle} style={{ textDecoration: 'line-through', color: '#94a3b8' }}>{task.title}</div>
+                                        <div className={styles.taskTitle} style={{ textDecoration: 'line-through', color: 'var(--text-2)' }}>{task.title}</div>
                                         <div className={styles.taskFooter}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                                 <NextImage unoptimized width={48} height={48} alt="" src={`https://ui-avatars.com/api/?name=${encodeURIComponent(task.assignee)}&background=random`} className={styles.taskAssignee} />
@@ -609,7 +609,7 @@ const ProjectView = () => {
                                                     style={{
                                                         background: 'transparent',
                                                         border: 'none',
-                                                        color: '#94a3b8',
+                                                        color: 'var(--text-2)',
                                                         fontSize: '0.65rem',
                                                         textDecoration: 'underline',
                                                         cursor: 'pointer',
@@ -623,7 +623,7 @@ const ProjectView = () => {
                                 );
                             })}
                             {displayTasks.done.length === 0 && (
-                                <div style={{ textAlign: 'center', padding: '1.5rem', color: '#94a3b8', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_42")}</div>
+                                <div style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--text-2)', fontSize: '0.8rem' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_42")}</div>
                             )}
                         </div>
 
@@ -637,7 +637,7 @@ const ProjectView = () => {
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'rgba(6, 13, 24, 0.8)',
+                    background: 'var(--overlay)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)',
                     display: 'flex',
@@ -648,7 +648,7 @@ const ProjectView = () => {
                 }} onClick={() => setIsAssignModalOpen(false)}>
                     <div
                         style={{
-                            background: 'linear-gradient(145deg, rgba(14, 23, 38, 0.98) 0%, rgba(10, 16, 28, 0.99) 100%)',
+                            background: 'var(--card)',
                             border: '1px solid rgba(45, 212, 168, 0.3)',
                             borderRadius: '16px',
                             width: '100%',
@@ -663,13 +663,13 @@ const ProjectView = () => {
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#F1F5F9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <UserCheck size={20} color="#2DD4A8" />{readData("components.Clerio.ProjectView", "ProjectView_text_43")}</h3>
-                                <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: '#94A3B8' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_44")}</p>
+                                <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_44")}</p>
                             </div>
                             <button
                                 onClick={() => setIsAssignModalOpen(false)}
-                                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4 }}
+                                style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 4 }}
                             >
                                 <X size={20} />
                             </button>
@@ -678,7 +678,7 @@ const ProjectView = () => {
                         <form onSubmit={handleCreateTask} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {/* Title */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_45")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_45")}</label>
                                 <input
                                     type="text"
                                     placeholder={readData("components.Clerio.ProjectView", "ProjectView_placeholder_46")}
@@ -686,11 +686,11 @@ const ProjectView = () => {
                                     onChange={e => setTaskTitle(e.target.value)}
                                     required
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.8)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.15)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.84rem',
                                         outline: 'none'
                                     }}
@@ -700,16 +700,16 @@ const ProjectView = () => {
                             {/* Project & Tag */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_47")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_47")}</label>
                                     <select
                                         value={taskProject}
                                         onChange={e => setTaskProject(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.8)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.84rem',
                                             outline: 'none',
                                             cursor: 'pointer'
@@ -722,16 +722,16 @@ const ProjectView = () => {
                                     </select>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_52")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_52")}</label>
                                     <select
                                         value={taskTag}
                                         onChange={e => setTaskTag(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.8)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.84rem',
                                             outline: 'none',
                                             cursor: 'pointer'
@@ -749,16 +749,16 @@ const ProjectView = () => {
                             {/* Assignee & Priority */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_58")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_58")}</label>
                                     <select
                                         value={taskAssignee}
                                         onChange={e => setTaskAssignee(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.8)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.84rem',
                                             outline: 'none',
                                             cursor: 'pointer'
@@ -782,16 +782,16 @@ const ProjectView = () => {
                                     </select>
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_68")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_68")}</label>
                                     <select
                                         value={taskPriority}
                                         onChange={e => setTaskPriority(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.8)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.84rem',
                                             outline: 'none',
                                             cursor: 'pointer'
@@ -807,18 +807,18 @@ const ProjectView = () => {
 
                             {/* Due Date & Assignment Governance info */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_73")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_73")}</label>
                                 <input
                                     type="text"
                                     placeholder={readData("components.Clerio.ProjectView", "ProjectView_placeholder_74")}
                                     value={taskDue}
                                     onChange={e => setTaskDue(e.target.value)}
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.8)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.15)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.84rem',
                                         outline: 'none'
                                     }}
@@ -831,7 +831,7 @@ const ProjectView = () => {
                                 borderRadius: 8,
                                 padding: '0.65rem 0.85rem',
                                 fontSize: '0.76rem',
-                                color: '#94A3B8',
+                                color: 'var(--text-2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: '0.5rem'
@@ -867,7 +867,7 @@ const ProjectView = () => {
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'rgba(6, 13, 24, 0.8)',
+                    background: 'var(--overlay)',
                     backdropFilter: 'blur(10px)',
                     WebkitBackdropFilter: 'blur(10px)',
                     display: 'flex',
@@ -878,7 +878,7 @@ const ProjectView = () => {
                 }} onClick={() => setIsCreateProjectModalOpen(false)}>
                     <div
                         style={{
-                            background: 'linear-gradient(145deg, rgba(14, 23, 38, 0.98) 0%, rgba(10, 16, 28, 0.99) 100%)',
+                            background: 'var(--card)',
                             border: '1px solid rgba(45, 212, 168, 0.3)',
                             borderRadius: '16px',
                             width: '100%',
@@ -893,13 +893,13 @@ const ProjectView = () => {
                     >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#F1F5F9', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <Briefcase size={20} color="#2DD4A8" />{readData("components.Clerio.ProjectView", "ProjectView_text_79")}</h3>
-                                <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: '#94A3B8' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_80")}</p>
+                                <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_80")}</p>
                             </div>
                             <button
                                 onClick={() => setIsCreateProjectModalOpen(false)}
-                                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 4 }}
+                                style={{ background: 'transparent', border: 'none', color: 'var(--text-2)', cursor: 'pointer', padding: 4 }}
                             >
                                 <X size={20} />
                             </button>
@@ -908,7 +908,7 @@ const ProjectView = () => {
                         <form onSubmit={handleCreateProject} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             {/* Title */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_81")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_81")}</label>
                                 <input
                                     type="text"
                                     placeholder={readData("components.Clerio.ProjectView", "ProjectView_placeholder_82")}
@@ -916,11 +916,11 @@ const ProjectView = () => {
                                     onChange={e => setNewProjTitle(e.target.value)}
                                     required
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.8)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.15)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.84rem',
                                         outline: 'none'
                                     }}
@@ -929,18 +929,18 @@ const ProjectView = () => {
 
                             {/* Description */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_83")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_83")}</label>
                                 <textarea
                                     rows={2}
                                     placeholder={readData("components.Clerio.ProjectView", "ProjectView_placeholder_84")}
                                     value={newProjDesc}
                                     onChange={e => setNewProjDesc(e.target.value)}
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.8)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.15)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.84rem',
                                         outline: 'none',
                                         resize: 'none',
@@ -952,25 +952,25 @@ const ProjectView = () => {
                             {/* Due Date & Color */}
                             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '0.75rem' }}>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_85")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_85")}</label>
                                     <input
                                         type="text"
                                         placeholder={readData("components.Clerio.ProjectView", "ProjectView_placeholder_86")}
                                         value={newProjDue}
                                         onChange={e => setNewProjDue(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.8)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.15)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',
-                                            color: '#F1F5F9',
+                                            color: 'var(--text)',
                                             fontSize: '0.84rem',
                                             outline: 'none'
                                         }}
                                     />
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_87")}</label>
+                                    <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_87")}</label>
                                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', height: '100%' }}>
                                         {readData("components.Clerio.ProjectView", "ProjectView_88").map(c => (
                                             <button
@@ -995,16 +995,16 @@ const ProjectView = () => {
 
                             {/* Visibility & Access Control */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_89")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_89")}</label>
                                 <select
                                     value={newProjVisibility}
                                     onChange={e => setNewProjVisibility(e.target.value)}
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.8)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.15)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
-                                        color: '#F1F5F9',
+                                        color: 'var(--text)',
                                         fontSize: '0.84rem',
                                         outline: 'none',
                                         cursor: 'pointer'
@@ -1018,7 +1018,7 @@ const ProjectView = () => {
 
                             {/* Initial Pod Members */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_93")}</label>
+                                <label style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2)', textTransform: 'uppercase' }}>{readData("components.Clerio.ProjectView", "ProjectView_text_93")}</label>
                                 <div style={{
                                     display: 'flex',
                                     flexWrap: 'wrap',

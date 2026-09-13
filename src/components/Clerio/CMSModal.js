@@ -342,7 +342,7 @@ const CMSModal = ({ isOpen, onClose }) => {
                                                     width: '36px',
                                                     height: '36px',
                                                     borderRadius: '8px',
-                                                    background: '#eff6ff',
+                                                    background: 'var(--info-wash)',
                                                     color: '#2563eb',
                                                     display: 'flex',
                                                     alignItems: 'center',
@@ -351,7 +351,7 @@ const CMSModal = ({ isOpen, onClose }) => {
                                                     fontSize: '0.75rem'
                                                 }}>{readData("components.Clerio.CMSModal", "CMSModal_text_54")}</div>
                                                 <div className={styles.itemInfo}>
-                                                    <h4>{doc.title} <span style={{ fontSize: '0.72rem', color: '#2563eb', background: '#eff6ff', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{doc.version}</span></h4>
+                                                    <h4>{doc.title} <span style={{ fontSize: '0.72rem', color: '#2563eb', background: 'var(--info-wash)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{doc.version}</span></h4>
                                                     <p>{doc.category}{readData("components.Clerio.CMSModal", "CMSModal_text_55")}{doc.department}{readData("components.Clerio.CMSModal", "CMSModal_text_56")}{doc.effectiveDate}{readData("components.Clerio.CMSModal", "CMSModal_text_57")}{doc.fileSize}</p>
                                                 </div>
                                             </div>

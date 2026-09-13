@@ -1,7 +1,7 @@
 {
   "status": "direct-jsx-covered",
   "scope": "Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.",
-  "snapshotReads": 4578,
+  "snapshotReads": 4579,
   "directLabelLocations": 0,
   "files": [
     {
@@ -146,7 +146,7 @@
     },
     {
       "path": "src/components/Clerio/PeopleCoreView.js",
-      "snapshotReads": 90,
+      "snapshotReads": 91,
       "hardcodedLabelLocations": []
     },
     {

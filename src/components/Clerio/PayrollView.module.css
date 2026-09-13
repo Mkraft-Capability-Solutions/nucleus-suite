@@ -148,7 +148,7 @@
 
 .ewaCard {
     background: var(--hero-bg);
-    color: #ffffff;
+    color: var(--hero-text);
     border-radius: var(--r-card);
     padding: 1.5rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -161,9 +161,9 @@
 }
 
 .ewaInput {
-    background: rgba(255, 255, 255, 0.12);
+    background: var(--hero-surface);
     border: 1px solid rgba(255, 255, 255, 0.25);
-    color: #ffffff;
+    color: var(--hero-text);
     padding: 0.5rem 0.85rem;
     border-radius: var(--r-control);
     font-size: var(--t-small);
@@ -382,13 +382,13 @@
     gap: 0.5rem;
 }
 
-.modalOverlay {
+.modalOverlay{
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
     align-items: center;

@@ -103,7 +103,7 @@ export default function ManagerCockpit({ onNavigate }) {
             {undoToast && (
                 <div style={{
                     padding: '0.6rem 1rem',
-                    background: '#14263D',
+                    background: 'var(--card-2)',
                     border: '1px solid #05CD99',
                     borderRadius: '6px',
                     color: 'var(--text)',

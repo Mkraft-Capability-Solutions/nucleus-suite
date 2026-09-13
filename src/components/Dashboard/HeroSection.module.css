@@ -7,7 +7,7 @@
     display: flex;
     align-items: center;
     padding: 0 3rem;
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+    background: var(--hero-bg);
     border: 1px solid var(--glass-border);
 }
 
@@ -44,7 +44,7 @@
     width: 20px;
     height: 20px;
     background: #22c55e;
-    border: 3px solid var(--background);
+    border: 3px solid var(--card);
     border-radius: 50%;
 }
 
@@ -52,9 +52,9 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: var(--card);
     border: none;
-    color: white;
+    color: var(--text);
     padding: 0.5rem;
     border-radius: 50%;
     cursor: pointer;
@@ -69,9 +69,9 @@
 .greetingText h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, #fff, #94a3b8);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--hero-text);
+
+
 }
 
 .greetingText p {
@@ -96,7 +96,7 @@
 .aiInsight p {
     margin: 0;
     font-size: 0.95rem;
-    color: #e2e8f0;
+    color: var(--hero-text);
 }
 
 .dateCard {
@@ -142,7 +142,8 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: var(--gradient-accent);
+    background: var(--signal);
+    color: var(--on-signal);
     border: none;
     display: flex;
     align-items: center;

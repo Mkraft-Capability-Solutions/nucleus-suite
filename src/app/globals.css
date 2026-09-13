@@ -40,10 +40,16 @@
   --line: rgba(16, 34, 47, 0.09);
   --line-soft: rgba(16, 34, 47, 0.045);
   --line-glow: rgba(37, 99, 235, 0.25);
-  --rail: #0C1C27;
-  --rail-text: #9FB2BD;
-  --rail-active: #FFFFFF;
-  --hero-bg: linear-gradient(135deg, #0C1C27 0%, #1B3444 65%, #183344 100%);
+  --rail: var(--card);
+  --rail-text: var(--text-2);
+  --rail-active: var(--text);
+  --hero-bg: linear-gradient(120deg, var(--signal-wash), var(--card));
+  --hero-text: var(--text);
+  --hero-muted: var(--text-2);
+  --hero-surface: var(--card-2);
+  --rail-hover: var(--card-2);
+  --rail-selected: var(--signal-wash);
+  --overlay: rgba(24, 35, 53, 0.28);
 
   /* Type scale & fonts: Montserrat for Headings / Display, Lato for Body / UI */
   --t-display: clamp(1.65rem, 2vw, 2.25rem);

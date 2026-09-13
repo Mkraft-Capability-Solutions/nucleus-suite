@@ -167,7 +167,7 @@ const ContractWorkforceView = () => {
                                                 ))
                                             ) : (
                                                 <tr>
-                                                    <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: '#64748b' }}>{readData("components.Clerio.ContractWorkforceView", "ContractWorkforceView_text_47")}</td>
+                                                    <td colSpan="6" style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-3)' }}>{readData("components.Clerio.ContractWorkforceView", "ContractWorkforceView_text_47")}</td>
                                                 </tr>
                                             )}
                                         </tbody>

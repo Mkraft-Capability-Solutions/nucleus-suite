@@ -101,7 +101,7 @@ export default function NucleusIntelligence({ onNavigate }) {
                         onChange={(e) => setQuery(e.target.value)}
                         style={{
                             flex: 1,
-                            background: '#060D18',
+                            background: 'var(--card-2)',
                             border: '1px solid #1C3450',
                             borderRadius: '6px',
                             padding: '0.6rem 0.85rem',

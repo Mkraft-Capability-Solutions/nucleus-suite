@@ -763,7 +763,7 @@
 
 .toggleSwitchActive .toggleSwitchThumb {
     transform: translateX(18px);
-    background: #060D18;
+    background: var(--on-signal);
 }
 
 /* Reflow within the available workspace width, including an open navigation panel. */

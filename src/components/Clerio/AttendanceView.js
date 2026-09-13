@@ -460,9 +460,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                 <div style={{ fontSize: '0.75rem', color: '#16a34a' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_87")}</div>
                             </div>
                             <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px dashed #ef4444', padding: '0.85rem', borderRadius: '6px' }}>
-                                <span style={{ fontSize: '0.72rem', color: '#b91c1c' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_88")}</span>
-                                <div style={{ fontWeight: 600, color: '#b91c1c', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_89")}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#b91c1c' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_90")}</div>
+                                <span style={{ fontSize: '0.72rem', color: 'var(--flag)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_88")}</span>
+                                <div style={{ fontWeight: 600, color: 'var(--flag)', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_89")}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--flag)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_90")}</div>
                             </div>
                             <div style={{ background: 'var(--card-2)', padding: '0.85rem', borderRadius: '6px' }}>
                                 <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_91")}</span>

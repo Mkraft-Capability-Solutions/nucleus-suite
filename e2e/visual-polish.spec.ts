@@ -2,7 +2,7 @@ import {test,expect} from '@playwright/test';
 test('home walkthrough and access control remain legible across palettes',async({page},info)=>{
  test.setTimeout(150000);
  await page.goto('/');
- await expect(page.getByRole('heading',{name:'People first. Everything connected.'})).toBeVisible();
+ await expect(page.getByRole('heading',{name:'HR that flows. People who thrive.'})).toBeVisible();
  await page.getByRole('tab',{name:'HR Manager',exact:true}).click();
  await expect(page.getByRole('heading',{name:'See what needs your attention.'})).toBeVisible();
  await page.getByRole('tab',{name:'HR Manager',exact:true}).press('ArrowRight');

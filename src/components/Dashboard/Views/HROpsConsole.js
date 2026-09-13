@@ -316,7 +316,7 @@ export default function HROpsConsole({ onNavigate }) {
                                             justifyContent: 'space-between',
                                             padding: '0.3rem 0.55rem',
                                             borderRadius: '6px',
-                                            background: 'rgba(255, 255, 255, 0.03)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.06)',
                                             fontSize: '0.72rem'
                                         }}
@@ -367,7 +367,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_109")}</span>
                                 <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_110")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_111")}</span></strong>
                             </div>
-                            <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 8, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '82%', height: '100%', background: '#F2A93B' }} />
                             </div>
                         </div>
@@ -377,7 +377,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_112")}</span>
                                 <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_113")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_114")}</span></strong>
                             </div>
-                            <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 8, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '94%', height: '100%', background: '#05CD99' }} />
                             </div>
                         </div>
@@ -387,7 +387,7 @@ export default function HROpsConsole({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.HROpsConsole", "content_text_115")}</span>
                                 <strong>{readData("components.Dashboard.Views.HROpsConsole", "content_text_116")}<span style={{ color: 'var(--text-2)', fontWeight: 400 }}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_117")}</span></strong>
                             </div>
-                            <div style={{ height: 8, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 8, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '6%', height: '100%', background: '#F2647E' }} />
                             </div>
                         </div>

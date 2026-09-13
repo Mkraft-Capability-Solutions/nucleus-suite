@@ -595,7 +595,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                         const cap = calculateDepartmentCapacity(reqDept, employees, positions, sanctionedQuotas);
                                         return cap.isAtCapacity ? (
                                             <div style={{ padding: '0.75rem', background: 'rgba(239, 68, 68, 0.08)', borderRadius: 6, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: '#b91c1c', fontWeight: 600, fontSize: '0.84rem' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--flag)', fontWeight: 600, fontSize: '0.84rem' }}>
                                                     <AlertTriangle size={16} />{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_101")}{reqDept}{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_102")}{cap.totalCommitted}{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_103")}{cap.sanctioned}{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_104")}</div>
                                                 <div style={{ fontSize: '0.78rem', color: 'var(--text-2)', marginTop: '0.3rem' }}>{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_105")}</div>
                                             </div>

@@ -144,7 +144,7 @@ const SideNav = ({ activeTab, onTabChange, isCollapsed, onToggleCollapse, select
                                     {attendance.status === 'present' ? readData("components.Clerio.SideNav", "display_4") : readData("components.Clerio.SideNav", "display_5")}
                                 </span>
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{readData("components.Clerio.SideNav", "SideNav_text_44")}<strong>{attendance.totalHours}</strong>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>{readData("components.Clerio.SideNav", "SideNav_text_44")}<strong>{attendance.totalHours}</strong>
                             </div>
                             {attendance.status === 'present' ? (
                                 <button

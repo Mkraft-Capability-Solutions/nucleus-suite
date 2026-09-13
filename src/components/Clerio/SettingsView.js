@@ -552,52 +552,52 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
 
                     {/* Quick Access Matrix Snapshot */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
-                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                        <div style={{ background: 'var(--card-2)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <Users size={16} color="#4FB6F5" />
-                                    <strong style={{ fontSize: '0.88rem', color: '#F1F5F9' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_120")}</strong>
+                                    <strong style={{ fontSize: '0.88rem', color: 'var(--text)' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_120")}</strong>
                                 </div>
                                 <span style={{ fontSize: '0.72rem', color: '#2DD4A8', fontWeight: 700 }}>
                                     {Object.values(modulePermissions).filter(roles => roles.includes('HR_MANAGER')).length}{readData("components.Clerio.SettingsView", "SettingsView_text_121")}</span>
                             </div>
-                            <p style={{ fontSize: '0.76rem', color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_122")}</p>
+                            <p style={{ fontSize: '0.76rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_122")}</p>
                         </div>
 
-                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                        <div style={{ background: 'var(--card-2)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <CreditCard size={16} color="#F2A93B" />
-                                    <strong style={{ fontSize: '0.88rem', color: '#F1F5F9' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_123")}</strong>
+                                    <strong style={{ fontSize: '0.88rem', color: 'var(--text)' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_123")}</strong>
                                 </div>
                                 <span style={{ fontSize: '0.72rem', color: '#2DD4A8', fontWeight: 700 }}>
                                     {Object.values(modulePermissions).filter(roles => roles.includes('FINANCE_MANAGER')).length}{readData("components.Clerio.SettingsView", "SettingsView_text_124")}</span>
                             </div>
-                            <p style={{ fontSize: '0.76rem', color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_125")}</p>
+                            <p style={{ fontSize: '0.76rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_125")}</p>
                         </div>
 
-                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                        <div style={{ background: 'var(--card-2)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <Briefcase size={16} color="#9B8CFF" />
-                                    <strong style={{ fontSize: '0.88rem', color: '#F1F5F9' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_126")}</strong>
+                                    <strong style={{ fontSize: '0.88rem', color: 'var(--text)' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_126")}</strong>
                                 </div>
                                 <span style={{ fontSize: '0.72rem', color: '#2DD4A8', fontWeight: 700 }}>
                                     {Object.values(modulePermissions).filter(roles => roles.includes('TEAM_LEAD')).length}{readData("components.Clerio.SettingsView", "SettingsView_text_127")}</span>
                             </div>
-                            <p style={{ fontSize: '0.76rem', color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_128")}</p>
+                            <p style={{ fontSize: '0.76rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_128")}</p>
                         </div>
 
-                        <div style={{ background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
+                        <div style={{ background: 'var(--card-2)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '1rem 1.25rem' }}>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.65rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                     <User size={16} color="#CBD5E1" />
-                                    <strong style={{ fontSize: '0.88rem', color: '#F1F5F9' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_129")}</strong>
+                                    <strong style={{ fontSize: '0.88rem', color: 'var(--text)' }}>{readData("components.Clerio.SettingsView", "SettingsView_text_129")}</strong>
                                 </div>
                                 <span style={{ fontSize: '0.72rem', color: '#2DD4A8', fontWeight: 700 }}>
                                     {Object.values(modulePermissions).filter(roles => roles.includes('EMPLOYEE')).length}{readData("components.Clerio.SettingsView", "SettingsView_text_130")}</span>
                             </div>
-                            <p style={{ fontSize: '0.76rem', color: '#94A3B8', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_131")}</p>
+                            <p style={{ fontSize: '0.76rem', color: 'var(--text-2)', margin: 0, lineHeight: 1.4 }}>{readData("components.Clerio.SettingsView", "SettingsView_text_131")}</p>
                         </div>
                     </div>
                 </div>

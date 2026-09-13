@@ -139,7 +139,7 @@ export default function EmployeeHome({ onNavigate }) {
                 gap: '0.6rem',
                 flexWrap: 'wrap',
                 padding: '0.85rem 1.15rem',
-                background: 'linear-gradient(135deg, rgba(14, 23, 38, 0.8) 0%, rgba(10, 16, 28, 0.9) 100%)',
+                background: 'var(--card)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '12px',
                 marginBottom: '1rem',
@@ -228,7 +228,7 @@ export default function EmployeeHome({ onNavigate }) {
                         gap: '0.4rem',
                         padding: '0.38rem 0.75rem',
                         borderRadius: '8px',
-                        background: 'rgba(255, 255, 255, 0.05)',
+                        background: 'var(--card-2)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
                         color: 'var(--text)',
                         fontSize: '0.76rem',
@@ -246,7 +246,7 @@ export default function EmployeeHome({ onNavigate }) {
                         gap: '0.4rem',
                         padding: '0.38rem 0.75rem',
                         borderRadius: '8px',
-                        background: 'rgba(255, 255, 255, 0.05)',
+                        background: 'var(--card-2)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
                         color: 'var(--text)',
                         fontSize: '0.76rem',
@@ -264,7 +264,7 @@ export default function EmployeeHome({ onNavigate }) {
                         gap: '0.4rem',
                         padding: '0.38rem 0.75rem',
                         borderRadius: '8px',
-                        background: 'rgba(255, 255, 255, 0.05)',
+                        background: 'var(--card-2)',
                         border: '1px solid rgba(255, 255, 255, 0.12)',
                         color: 'var(--text)',
                         fontSize: '0.76rem',
@@ -377,7 +377,7 @@ export default function EmployeeHome({ onNavigate }) {
                             borderRadius: '6px',
                             border: '1px solid #1C3450',
                             fontSize: '0.72rem',
-                            color: '#CAD6DD'
+                            color: 'var(--text-2)'
                         }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_77")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_78")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_79")}<strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_80")}</strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_81")}</div>
                     </div>
                 </div>
@@ -399,7 +399,7 @@ export default function EmployeeHome({ onNavigate }) {
                         style={{
                             flex: 1,
                             padding: '0.5rem 0.85rem',
-                            background: '#060D18',
+                            background: 'var(--card-2)',
                             border: '1px solid #1C3450',
                             borderRadius: '6px',
                             color: 'var(--text)',
@@ -575,7 +575,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         alignItems: 'center',
                                         gap: '0.35rem',
                                         padding: '0.4rem 0.8rem',
-                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         color: 'var(--text)',
                                         fontSize: '0.76rem',
@@ -636,7 +636,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_130")}</span>
                                 <strong style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_131")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '63%', height: '100%', background: '#05CD99' }} />
                             </div>
                             <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_132")}</div>
@@ -647,7 +647,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_133")}</span>
                                 <strong style={{ color: '#4FB6F5' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_134")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '22%', height: '100%', background: '#4FB6F5' }} />
                             </div>
                             <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_135")}</div>
@@ -658,7 +658,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span style={{ color: 'var(--text)', fontWeight: 600 }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_136")}</span>
                                 <strong style={{ color: '#9B8CFF' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_137")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '15%', height: '100%', background: '#9B8CFF' }} />
                             </div>
                             <div style={{ fontSize: '0.68rem', color: 'var(--text-2)', marginTop: '0.15rem' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_138")}</div>
@@ -696,7 +696,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_147")}</span>
                                 <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_148")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '74%', height: '100%', background: '#05CD99' }} />
                             </div>
                         </div>
@@ -706,7 +706,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_149")}</span>
                                 <strong>{readData("components.Dashboard.Views.EmployeeHome", "content_text_150")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '46%', height: '100%', background: '#4FB6F5' }} />
                             </div>
                         </div>
@@ -716,7 +716,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_151")}</span>
                                 <strong style={{ color: '#05CD99' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_152")}</strong>
                             </div>
-                            <div style={{ height: 7, background: '#14263D', borderRadius: 4, overflow: 'hidden' }}>
+                            <div style={{ height: 7, background: 'var(--card-2)', borderRadius: 4, overflow: 'hidden' }}>
                                 <div style={{ width: '100%', height: '100%', background: '#05CD99' }} />
                             </div>
                         </div>
@@ -811,7 +811,7 @@ export default function EmployeeHome({ onNavigate }) {
                         <button
                             onClick={() => onNavigate && onNavigate('people_core')}
                             style={{
-                                background: 'rgba(255, 255, 255, 0.05)',
+                                background: 'var(--card-2)',
                                 border: '1px solid rgba(255, 255, 255, 0.12)',
                                 color: 'var(--text)',
                                 borderRadius: '6px',
@@ -859,7 +859,7 @@ export default function EmployeeHome({ onNavigate }) {
                                 </div>
                             </div>
 
-                            <div style={{ height: 1, background: 'rgba(255, 255, 255, 0.06)' }} />
+                            <div style={{ height: 1, background: 'var(--card-2)' }} />
 
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem', color: 'var(--text-2)' }}>
                                 <span>{readData("components.Dashboard.Views.EmployeeHome", "content_text_176")}<strong style={{ color: 'var(--text)' }}>{readData("components.Dashboard.Views.EmployeeHome", "content_text_177")}</strong></span>
@@ -901,7 +901,7 @@ export default function EmployeeHome({ onNavigate }) {
                 <div style={{
                     position: 'fixed',
                     inset: 0,
-                    background: 'rgba(6, 13, 24, 0.8)',
+                    background: 'var(--overlay)',
                     backdropFilter: 'blur(12px)',
                     WebkitBackdropFilter: 'blur(12px)',
                     display: 'flex',
@@ -912,7 +912,7 @@ export default function EmployeeHome({ onNavigate }) {
                 }} onClick={() => setIsLogModalOpen(false)}>
                     <div
                         style={{
-                            background: 'linear-gradient(145deg, rgba(14, 23, 38, 0.98) 0%, rgba(10, 16, 28, 0.99) 100%)',
+                            background: 'var(--card)',
                             border: '1px solid rgba(45, 212, 168, 0.3)',
                             borderRadius: '16px',
                             width: '100%',
@@ -980,7 +980,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     value={newLogProject}
                                     onChange={e => setNewLogProject(e.target.value)}
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.75)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
@@ -1006,7 +1006,7 @@ export default function EmployeeHome({ onNavigate }) {
                                     onChange={e => setNewLogTask(e.target.value)}
                                     placeholder={readData("components.Dashboard.Views.EmployeeHome", "content_placeholder_191")}
                                     style={{
-                                        background: 'rgba(6, 13, 24, 0.75)',
+                                        background: 'var(--card-2)',
                                         border: '1px solid rgba(255, 255, 255, 0.12)',
                                         borderRadius: 8,
                                         padding: '0.65rem 0.85rem',
@@ -1033,7 +1033,7 @@ export default function EmployeeHome({ onNavigate }) {
                                         value={newLogHours}
                                         onChange={e => setNewLogHours(e.target.value)}
                                         style={{
-                                            background: 'rgba(6, 13, 24, 0.75)',
+                                            background: 'var(--card-2)',
                                             border: '1px solid rgba(255, 255, 255, 0.12)',
                                             borderRadius: 8,
                                             padding: '0.65rem 0.85rem',

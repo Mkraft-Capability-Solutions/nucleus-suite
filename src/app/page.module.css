@@ -87,12 +87,12 @@
 /* AI Assistant FAB */
 .aiFab {
   background: var(--agent);
-  color: #ffffff;
+  color: var(--on-agent);
   box-shadow: 0 4px 16px rgba(91, 63, 168, 0.35);
 }
 
 .aiFab:hover {
-  background: #4A3289;
+  background: var(--agent);
   box-shadow: 0 8px 24px rgba(91, 63, 168, 0.48);
 }
 
@@ -196,7 +196,7 @@
   }
 }
 
-.demoNotice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: #172554; color: #fff; text-align: center; font-size: 11px; line-height: 20px; pointer-events: none; }
+.demoNotice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--card-2); color: var(--text-2); border-top: 1px solid var(--line); text-align: center; font-size: 11px; line-height: 20px; pointer-events: none; }
 .mainContainer { padding-bottom: 20px; }
 
 /* Keep the layout editor clear of floating operational shortcuts. */

@@ -11,7 +11,7 @@ describe('interface translations',()=>{
  });
 });
 it('indexes public copy while preserving routing and icon identifiers',()=>{
- expect(defaultMessages.publicContent['pages.home.title']).toContain('People first.');
+ expect(defaultMessages.publicContent['pages.home.title']).toContain('HR that flows.');
  expect(defaultMessages.publicContent['nav.0.href']).toBeUndefined();
  expect(defaultMessages.publicContent['pages.home.cards.0.icon']).toBeUndefined();
 });

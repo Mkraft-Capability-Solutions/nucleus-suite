@@ -4,10 +4,10 @@
    ========================================================================== */
 
 /* Overlay backdrop */
-.overlay {
+.overlay{
   position: fixed;
   inset: 0;
-  background: rgba(6, 13, 24, 0.72);
+  background: var(--overlay);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   z-index: 9999;
@@ -613,7 +613,7 @@
 }
 
 @media (max-width: 720px) {
-  .overlay {
+  .overlay{
     align-items: stretch;
     padding: 0;
   }

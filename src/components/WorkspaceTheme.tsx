@@ -12,12 +12,14 @@ export default function WorkspaceTheme({ children }: { children: ReactNode }) {
     const theme = useMemo(() => createTheme({
         palette: {
             mode,
-            primary: { main: mode === 'dark' ? '#bca7ff' : tokens['--signal'] },
+            primary: { main: tokens['--signal'], contrastText: tokens['--on-signal'] },
             background: { default: tokens['--bg'], paper: tokens['--card'] },
             text: { primary: tokens['--text'], secondary: tokens['--text-2'] },
         },
         typography: { fontFamily: 'var(--f-ui)' },
         components: {
+            MuiBackdrop: { styleOverrides: { root: { backgroundColor: tokens['--overlay'] } } },
+            MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
             MuiDialog: { styleOverrides: { paper: { backgroundImage: 'none', maxHeight: 'calc(100dvh - 32px)', '@media(max-width:600px)': { margin: 12, width: 'calc(100% - 24px)', maxWidth: 'calc(100% - 24px)' } } } },
             MuiButton: { styleOverrides: { root: { whiteSpace: 'normal', '@media(pointer:coarse)': { minHeight: 44 } } } },
         },

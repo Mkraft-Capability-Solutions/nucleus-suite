@@ -374,7 +374,7 @@ const LeaveView = () => {
                             <div style={{ fontSize: '2rem', fontWeight: 700, color: '#ef4444' }}>
                                 {lapsedCompOffs.length} <span style={{ fontSize: '0.9rem', color: 'var(--text-2)' }}>{readData("components.Clerio.LeaveView", "LeaveView_text_83")}</span>
                             </div>
-                            <span style={{ fontSize: '0.75rem', color: '#b91c1c' }}>{readData("components.Clerio.LeaveView", "LeaveView_text_84")}</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--flag)' }}>{readData("components.Clerio.LeaveView", "LeaveView_text_84")}</span>
                         </div>
 
                         <div className={styles.compOffCard}>
