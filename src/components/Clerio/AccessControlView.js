@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -23,6 +25,8 @@ const DATA_SCOPES = readData("components.Clerio.AccessControlView", "DATA_SCOPES
 const ROLE_LIST = readData("components.Clerio.AccessControlView", "ROLE_LIST_4");
 
 export default function AccessControlView({ onNavigate, onSelectConsole }) {
+    const {t: translateText}=useTranslation();
+
     const {
         user: authUser,
         modulePermissions,
@@ -143,8 +147,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
 
         setUserModulePermission(targetUserId, moduleKey, nextValue);
         showToast?.(
-            nextValue ? 'Module Access Granted' : 'Module Access Revoked',
-            `Updated "${MODULE_REGISTRY.find(m => m.key === moduleKey)?.name}" for ${selectedUser.name}.`,
+            nextValue ? 'Module Access Granted' : 'Module Access Revoked',translateText("components.Clerio.AccessControlView","text_818a30c487", {value1: String(MODULE_REGISTRY.find(m => m.key === moduleKey)?.name), value2: String(selectedUser.name)}),
             nextValue ? 'success' : 'info'
         );
     };
@@ -158,8 +161,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
 
         setUserConsolePermission(targetUserId, consoleId, nextValue);
         showToast?.(
-            nextValue ? 'Console Unlocked' : 'Console Restricted',
-            `Updated Cockpit "${consoleId}" for ${selectedUser.name}.`,
+            nextValue ? 'Console Unlocked' : 'Console Restricted',translateText("components.Clerio.AccessControlView","text_473e9fc737", {value1: String(consoleId), value2: String(selectedUser.name)}),
             nextValue ? 'success' : 'info'
         );
     };
@@ -170,35 +172,35 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
         if (!selectedUser) return;
         const targetUserId = selectedUser.id || selectedUser.email;
         setUserModulePermission(targetUserId, moduleKey, null);
-        showToast?.('Override Cleared', `Reverted module "${moduleKey}" to role baseline for ${selectedUser.name}.`, 'info');
+        showToast?.(translateText("components.Clerio.AccessControlView","text_bd0744876d"),translateText("components.Clerio.AccessControlView","text_2411ab7926", {value1: String(moduleKey), value2: String(selectedUser.name)}), 'info');
     };
 
     // Quick Action: Grant All
     const handleGrantAll = () => {
         if (!selectedUser) return;
         grantAllToUser(selectedUser.id || selectedUser.email);
-        showToast?.('Full Access Granted', `Granted all 18 modules & 10 cockpits to ${selectedUser.name}.`, 'success');
+        showToast?.(translateText("components.Clerio.AccessControlView","text_f4086bbf33"),translateText("components.Clerio.AccessControlView","text_66e5fff677", {value1: String(selectedUser.name)}), 'success');
     };
 
     // Quick Action: Restrict to ESS
     const handleRestrictAll = () => {
         if (!selectedUser) return;
         revokeAllFromUser(selectedUser.id || selectedUser.email);
-        showToast?.('Access Restricted', `Restricted ${selectedUser.name} to self-service boundaries.`, 'warning');
+        showToast?.(translateText("components.Clerio.AccessControlView","text_a3966fe995"),translateText("components.Clerio.AccessControlView","text_ec36003698", {value1: String(selectedUser.name)}), 'warning');
     };
 
     // Quick Action: Reset Overrides
     const handleResetUser = () => {
         if (!selectedUser) return;
         resetUserPermissions(selectedUser.id || selectedUser.email);
-        showToast?.('Reset to Defaults', `Cleared all custom overrides for ${selectedUser.name}.`, 'info');
+        showToast?.(translateText("components.Clerio.AccessControlView","text_0953e0d516"),translateText("components.Clerio.AccessControlView","text_7f80275770", {value1: String(selectedUser.name)}), 'info');
     };
 
     // Impersonate / Test as User
     const handleTestAsUser = () => {
         if (!selectedUser) return;
         switchRole(selectedUser.role);
-        showToast?.('Session Switched', `Now testing platform session as ${selectedUser.name} (${selectedUser.role}).`, 'info');
+        showToast?.(translateText("components.Clerio.AccessControlView","text_6cbc60d91d"),translateText("components.Clerio.AccessControlView","text_80e75036c4", {value1: String(selectedUser.name), value2: String(selectedUser.role)}), 'info');
         if (onNavigate) onNavigate('dashboard');
     };
 
@@ -219,7 +221,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                         onClick={() => {
                             if (window.confirm('Reset all roles and custom user overrides to factory enterprise defaults?')) {
                                 resetPermissionsToDefault();
-                                showToast?.('Permissions Reset', 'Restored factory enterprise RBAC defaults.', 'info');
+                                showToast?.(translateText("components.Clerio.AccessControlView","text_e386bd4401"),translateText("components.Clerio.AccessControlView","text_a3e2e157d7"), 'info');
                             }
                         }}
                         title={readData("components.Clerio.AccessControlView", "content_title_17")}
@@ -239,7 +241,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
             {/* Metrics Ribbon */}
             <div className={styles.metricGrid}>
                 <div className={styles.metricCard}>
-                    <div className={styles.metricIconWrap} style={{ background: 'rgba(79, 182, 245, 0.15)', color: '#4FB6F5' }}>
+                    <div className={styles.metricIconWrap} style={{ background: 'rgba(79, 182, 245, 0.15)', color: 'var(--signal)' }}>
                         <Users size={22} />
                     </div>
                     <div className={styles.metricInfo}>
@@ -254,7 +256,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                     </div>
                     <div className={styles.metricInfo}>
                         <span className={styles.metricLabel}>{readData("components.Clerio.AccessControlView", "content_text_22")}</span>
-                        <span className={styles.metricValue} style={{ color: totalCustomOverridesCount > 0 ? '#F2A93B' : '#F8FAFC' }}>
+                        <span className={styles.metricValue} style={{ color: totalCustomOverridesCount > 0 ? '#F2A93B' : 'var(--text)' }}>
                             {totalCustomOverridesCount}
                         </span>
                     </div>
@@ -271,7 +273,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                 </div>
 
                 <div className={styles.metricCard}>
-                    <div className={styles.metricIconWrap} style={{ background: 'rgba(155, 140, 255, 0.15)', color: '#9B8CFF' }}>
+                    <div className={styles.metricIconWrap} style={{ background: 'rgba(155, 140, 255, 0.15)', color: 'var(--agent)' }}>
                         <Key size={22} />
                     </div>
                     <div className={styles.metricInfo}>
@@ -298,7 +300,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                 >
                     <Sliders size={16} />
                     <span>{readData("components.Clerio.AccessControlView", "content_text_28")}</span>
-                    <span className={styles.tabCountBadge}>{readData("components.Clerio.AccessControlView", "content_text_29")}</span>
+                    <span className={styles.tabCountBadge}>{ROLE_LIST.length} {readData("components.Clerio.AccessControlView", "content_text_29")}</span>
                 </button>
 
                 <button
@@ -370,10 +372,10 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                 <div className={styles.userCardInitials}>{initials}</div>
                                             )}
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
-                                                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#F8FAFC' }}>
+                                                <span style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--text)' }}>
                                                     {user.name}
                                                 </span>
-                                                <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                                                <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>
                                                     {user.role}{readData("components.Clerio.AccessControlView", "content_text_38")}{user.dept || readData("components.Clerio.AccessControlView", "fallback_1")}
                                                 </span>
                                             </div>
@@ -414,7 +416,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                     fontSize: '0.72rem',
                                                     fontWeight: 700,
                                                     background: 'rgba(79, 182, 245, 0.15)',
-                                                    color: '#4FB6F5',
+                                                    color: 'var(--signal)',
                                                     border: '1px solid rgba(79, 182, 245, 0.3)'
                                                 }}>
                                                     {selectedUser.role}
@@ -457,7 +459,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                             value={userOverrides?.dataScope || (selectedUser.role === 'SUPER_ADMIN' ? readData("components.Clerio.AccessControlView", "display_7") : readData("components.Clerio.AccessControlView", "display_8"))}
                                             onChange={(e) => {
                                                 setUserDataScope(selectedUser.id || selectedUser.email, e.target.value);
-                                                showToast?.('Data Scope Updated', `Set scope to ${e.target.value} for ${selectedUser.name}.`, 'success');
+                                                showToast?.(translateText("components.Clerio.AccessControlView","text_5e35eb9dea"),translateText("components.Clerio.AccessControlView","text_2b87d8572a", {value1: String(e.target.value), value2: String(selectedUser.name)}), 'success');
                                             }}
                                         >
                                             {DATA_SCOPES.map(s => (
@@ -494,7 +496,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                 <Lock size={16} color="var(--status-ok)" />{readData("components.Clerio.AccessControlView", "content_text_59")}</h3>
                                             <p className={styles.sectionSubtitle}>{readData("components.Clerio.AccessControlView", "content_text_60")}<strong>{selectedUser.name}</strong>{readData("components.Clerio.AccessControlView", "content_text_61")}</p>
                                         </div>
-                                        <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
+                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>
                                             {MODULE_REGISTRY.filter(m => getEffectiveModulePerm(m.key).allowed).length}{readData("components.Clerio.AccessControlView", "content_text_62")}</span>
                                     </div>
 
@@ -513,7 +515,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                             className={styles.moduleIconSquare}
                                                             style={{
                                                                 background: status.allowed ? 'rgba(45, 212, 168, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-                                                                color: status.allowed ? 'var(--status-ok)' : '#64748B'
+                                                                color: status.allowed ? 'var(--status-ok)' : 'var(--text-3)'
                                                             }}
                                                         >
                                                             {status.allowed ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
@@ -538,7 +540,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                                 style={{
                                                                     background: 'transparent',
                                                                     border: 'none',
-                                                                    color: '#94A3B8',
+                                                                    color: 'var(--text-2)',
                                                                     cursor: 'pointer',
                                                                     fontSize: '0.68rem',
                                                                     textDecoration: 'underline'
@@ -549,7 +551,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                         <div
                                                             className={`${styles.toggleSwitch} ${status.allowed ? styles.toggleSwitchActive : ''}`}
                                                             onClick={() => handleToggleUserModule(mod.key)}
-                                                            title={`Click to ${status.allowed ? readData("components.Clerio.AccessControlView", "display_11") : readData("components.Clerio.AccessControlView", "display_12")} module`}
+                                                            title={translateText("components.Clerio.AccessControlView","text_5db7d8dc8c", {value1: String(status.allowed ? readData("components.Clerio.AccessControlView", "display_11") : readData("components.Clerio.AccessControlView", "display_12"))})}
                                                         >
                                                             <div className={styles.toggleSwitchThumb} />
                                                         </div>
@@ -568,7 +570,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                 <Laptop size={16} color="#4FB6F5" />{readData("components.Clerio.AccessControlView", "content_text_68")}</h3>
                                             <p className={styles.sectionSubtitle}>{readData("components.Clerio.AccessControlView", "content_text_69")}<strong>{selectedUser.name}</strong>{readData("components.Clerio.AccessControlView", "content_text_70")}</p>
                                         </div>
-                                        <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
+                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>
                                             {COCKPIT_REGISTRY.filter(c => getEffectiveConsolePerm(c.id).allowed).length}{readData("components.Clerio.AccessControlView", "content_text_71")}</span>
                                     </div>
 
@@ -587,17 +589,17 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
                                                             <span
                                                                 className={styles.cockpitIdBadge}
-                                                                style={{ background: `${c.color}20`, color: c.color, border: `1px solid ${c.color}40` }}
+                                                                style={{ background: `${c.color}20`, color: 'var(--signal-ink)', border: `1px solid ${c.color}40` }}
                                                             >
                                                                 {c.id}
                                                             </span>
-                                                            <strong style={{ fontSize: '0.82rem', color: '#F8FAFC' }}>{c.name}</strong>
+                                                            <strong style={{ fontSize: '0.82rem', color: 'var(--text)' }}>{c.name}</strong>
                                                         </div>
 
                                                         <div
                                                             className={`${styles.toggleSwitch} ${status.allowed ? styles.toggleSwitchActive : ''}`}
                                                             onClick={() => handleToggleUserConsole(c.id)}
-                                                            title={`Toggle access to cockpit ${c.id}`}
+                                                            title={translateText("components.Clerio.AccessControlView","text_b8ebb1051d", {value1: String(c.id)})}
                                                         >
                                                             <div className={styles.toggleSwitchThumb} />
                                                         </div>
@@ -606,13 +608,13 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                     <p className={styles.cockpitDesc}>{c.desc}</p>
 
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.2rem' }}>
-                                                        <span style={{ fontSize: '0.68rem', color: '#64748B' }}>{readData("components.Clerio.AccessControlView", "content_text_72")}{c.persona}</span>
+                                                        <span style={{ fontSize: '0.68rem', color: 'var(--text-3)' }}>{readData("components.Clerio.AccessControlView", "content_text_72")}{c.persona}</span>
                                                         <span style={{ fontSize: '0.68rem', fontWeight: 700 }}>
                                                             {isOverridden ? (
                                                                 <span style={{ color: status.allowed ? 'var(--status-ok)' : '#F43F5E' }}>{readData("components.Clerio.AccessControlView", "content_text_73")}{status.allowed ? readData("components.Clerio.AccessControlView", "display_13") : readData("components.Clerio.AccessControlView", "display_14")}
                                                                 </span>
                                                             ) : (
-                                                                <span style={{ color: '#94A3B8' }}>{readData("components.Clerio.AccessControlView", "content_text_74")}</span>
+                                                                <span style={{ color: 'var(--text-2)' }}>{readData("components.Clerio.AccessControlView", "content_text_74")}</span>
                                                             )}
                                                         </span>
                                                     </div>
@@ -623,7 +625,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                 </div>
                             </>
                         ) : (
-                            <div style={{ padding: '4rem', textAlign: 'center', color: '#94A3B8' }}>{readData("components.Clerio.AccessControlView", "content_text_75")}</div>
+                            <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-2)' }}>{readData("components.Clerio.AccessControlView", "content_text_75")}</div>
                         )}
                     </div>
                 </div>
@@ -647,7 +649,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                     <th style={{ minWidth: '220px' }}>{readData("components.Clerio.AccessControlView", "content_text_78")}</th>
                                     <th>{readData("components.Clerio.AccessControlView", "content_text_79")}</th>
                                     {ROLE_LIST.map(r => (
-                                        <th key={r.key} style={{ textAlign: 'center', color: r.color }}>
+                                        <th key={r.key} style={{ textAlign: 'center', color: 'var(--text)' }}>
                                             {r.label}
                                         </th>
                                     ))}
@@ -657,9 +659,9 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                 {MODULE_REGISTRY.map(mod => (
                                     <tr key={mod.key}>
                                         <td>
-                                            <strong style={{ color: '#F8FAFC' }}>{mod.name}</strong>
+                                            <strong style={{ color: 'var(--text)' }}>{mod.name}</strong>
                                         </td>
-                                        <td style={{ color: '#94A3B8', fontSize: '0.74rem' }}>{mod.category}</td>
+                                        <td style={{ color: 'var(--text-2)', fontSize: '0.74rem' }}>{mod.category}</td>
                                         {ROLE_LIST.map(role => {
                                             const isSuperAdmin = role.key === 'SUPER_ADMIN';
                                             const isAllowed = isSuperAdmin || (modulePermissions[mod.key] || DEFAULT_MODULE_PERMISSIONS[mod.key] || []).includes(role.key);
@@ -674,7 +676,7 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                                                             checked={isAllowed}
                                                             onChange={() => {
                                                                 toggleModulePermission(mod.key, role.key);
-                                                                showToast?.('Role Baseline Updated', `Toggled ${mod.name} for ${role.label}.`, 'info');
+                                                                showToast?.(translateText("components.Clerio.AccessControlView","text_a9c1581438"),translateText("components.Clerio.AccessControlView","text_30fefaac97", {value1: String(mod.name), value2: String(role.label)}), 'info');
                                                             }}
                                                             style={{ cursor: 'pointer', accentColor: 'var(--status-ok)', transform: 'scale(1.2)' }}
                                                         />
@@ -713,9 +715,9 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                         }}>
                             <div>
                                 <strong style={{ color: 'var(--status-ok)', fontSize: '0.85rem' }}>{readData("components.Clerio.AccessControlView", "content_text_84")}</strong>
-                                <p style={{ margin: '0.2rem 0 0', color: '#94A3B8', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_85")}<span style={{ color: '#F1F5F9' }}>{readData("components.Clerio.AccessControlView", "content_text_86")}</span>{readData("components.Clerio.AccessControlView", "content_text_87")}</p>
+                                <p style={{ margin: '0.2rem 0 0', color: 'var(--text-2)', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_85")}<span style={{ color: 'var(--text)' }}>{readData("components.Clerio.AccessControlView", "content_text_86")}</span>{readData("components.Clerio.AccessControlView", "content_text_87")}</p>
                             </div>
-                            <span style={{ fontSize: '0.74rem', color: '#64748B' }}>{readData("components.Clerio.AccessControlView", "content_text_88")}</span>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-3)' }}>{readData("components.Clerio.AccessControlView", "content_text_88")}</span>
                         </div>
 
                         <div style={{
@@ -728,10 +730,10 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                             alignItems: 'center'
                         }}>
                             <div>
-                                <strong style={{ color: '#4FB6F5', fontSize: '0.85rem' }}>{readData("components.Clerio.AccessControlView", "content_text_89")}</strong>
-                                <p style={{ margin: '0.2rem 0 0', color: '#94A3B8', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_90")}</p>
+                                <strong style={{ color: 'var(--signal)', fontSize: '0.85rem' }}>{readData("components.Clerio.AccessControlView", "content_text_89")}</strong>
+                                <p style={{ margin: '0.2rem 0 0', color: 'var(--text-2)', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_90")}</p>
                             </div>
-                            <span style={{ fontSize: '0.74rem', color: '#64748B' }}>{readData("components.Clerio.AccessControlView", "content_text_91")}</span>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-3)' }}>{readData("components.Clerio.AccessControlView", "content_text_91")}</span>
                         </div>
 
                         <div style={{
@@ -744,10 +746,10 @@ export default function AccessControlView({ onNavigate, onSelectConsole }) {
                             alignItems: 'center'
                         }}>
                             <div>
-                                <strong style={{ color: '#9B8CFF', fontSize: '0.85rem' }}>{readData("components.Clerio.AccessControlView", "content_text_92")}</strong>
-                                <p style={{ margin: '0.2rem 0 0', color: '#94A3B8', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_93")}</p>
+                                <strong style={{ color: 'var(--agent)', fontSize: '0.85rem' }}>{readData("components.Clerio.AccessControlView", "content_text_92")}</strong>
+                                <p style={{ margin: '0.2rem 0 0', color: 'var(--text-2)', fontSize: '0.78rem' }}>{readData("components.Clerio.AccessControlView", "content_text_93")}</p>
                             </div>
-                            <span style={{ fontSize: '0.74rem', color: '#64748B' }}>{readData("components.Clerio.AccessControlView", "content_text_94")}</span>
+                            <span style={{ fontSize: '0.74rem', color: 'var(--text-3)' }}>{readData("components.Clerio.AccessControlView", "content_text_94")}</span>
                         </div>
                     </div>
                 </div>

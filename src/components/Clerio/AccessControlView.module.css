@@ -6,7 +6,7 @@
     max-width: 1440px;
     margin: 0 auto;
     padding-bottom: 4rem;
-    color: var(--text-1, #F1F5F9);
+    color: var(--text);
     animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -23,8 +23,8 @@
     flex-wrap: wrap;
     gap: 1.25rem;
     padding: 1.75rem 2rem;
-    background: linear-gradient(135deg, rgba(14, 23, 38, 0.85) 0%, rgba(10, 16, 28, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, var(--card) 0%, var(--card-2) 100%);
+    border: 1px solid var(--line);
     border-radius: 16px;
     backdrop-filter: blur(16px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
@@ -54,7 +54,7 @@
 .title {
     font-size: 1.65rem;
     font-weight: 800;
-    color: #F8FAFC;
+    color: var(--text);
     margin: 0;
     letter-spacing: -0.02em;
     display: flex;
@@ -64,7 +64,7 @@
 
 .subtitle {
     font-size: 0.86rem;
-    color: #94A3B8;
+    color: var(--text-2);
     margin: 0;
     max-width: 680px;
     line-height: 1.5;
@@ -89,8 +89,8 @@
     align-items: center;
     gap: 1rem;
     padding: 1.1rem 1.35rem;
-    background: rgba(14, 23, 38, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 12px;
     backdrop-filter: blur(12px);
     transition: transform 0.15s ease, border-color 0.15s ease;
@@ -119,7 +119,7 @@
 .metricLabel {
     font-size: 0.74rem;
     font-weight: 600;
-    color: #94A3B8;
+    color: var(--text-2);
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -127,7 +127,7 @@
 .metricValue {
     font-size: 1.45rem;
     font-weight: 800;
-    color: #F8FAFC;
+    color: var(--text);
     letter-spacing: -0.01em;
 }
 
@@ -136,7 +136,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--line);
     padding-bottom: 0.25rem;
 }
 
@@ -148,7 +148,7 @@
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
-    color: #94A3B8;
+    color: var(--text-2);
     font-size: 0.88rem;
     font-weight: 600;
     cursor: pointer;
@@ -157,8 +157,8 @@
 }
 
 .tabBtn:hover {
-    color: #F1F5F9;
-    background: rgba(255, 255, 255, 0.03);
+    color: var(--text);
+    background: var(--line);
 }
 
 .tabBtnActive {
@@ -172,8 +172,8 @@
     border-radius: 9999px;
     font-size: 0.7rem;
     font-weight: 700;
-    background: rgba(255, 255, 255, 0.08);
-    color: #CBD5E1;
+    background: var(--line);
+    color: var(--text-2);
 }
 
 .tabBtnActive .tabCountBadge {
@@ -199,8 +199,8 @@
 .userListPane {
     display: flex;
     flex-direction: column;
-    background: rgba(14, 23, 38, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 14px;
     padding: 1.25rem;
     gap: 1rem;
@@ -218,24 +218,24 @@
 .searchIcon {
     position: absolute;
     left: 0.85rem;
-    color: #64748B;
+    color: var(--text-3);
     pointer-events: none;
 }
 
 .searchInput {
     width: 100%;
     padding: 0.65rem 0.85rem 0.65rem 2.4rem;
-    background: rgba(10, 16, 28, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--card-2);
+    border: 1px solid var(--line);
     border-radius: 8px;
-    color: #F8FAFC;
+    color: var(--text);
     font-size: 0.84rem;
     outline: none;
     transition: border-color 0.15s ease;
 }
 
 .searchInput:focus {
-    border-color: #05CD99;
+    border-color: var(--status-ok);
     box-shadow: 0 0 0 3px rgba(45, 212, 168, 0.15);
 }
 
@@ -251,17 +251,17 @@
     border-radius: 9999px;
     font-size: 0.72rem;
     font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.04);
-    color: #94A3B8;
+    border: 1px solid var(--line);
+    background: var(--line);
+    color: var(--text-2);
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.12s ease;
 }
 
 .filterChip:hover {
-    color: #F1F5F9;
-    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text);
+    border-color: var(--line);
 }
 
 .filterChipActive {
@@ -284,8 +284,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 0.9rem;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--line);
+    border: 1px solid var(--line);
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.12s ease;
@@ -294,8 +294,8 @@
 }
 
 .userCardItem:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--line);
+    border-color: var(--line);
 }
 
 .userCardItemActive {
@@ -309,16 +309,16 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--line);
 }
 
 .userCardInitials {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #F8FAFC;
+    background: linear-gradient(135deg, var(--card-2) 0%, var(--card) 100%);
+    border: 1px solid var(--line);
+    color: var(--text);
     font-weight: 700;
     font-size: 0.8rem;
     display: flex;
@@ -340,8 +340,8 @@
     flex-wrap: wrap;
     gap: 1.25rem;
     padding: 1.5rem 1.75rem;
-    background: linear-gradient(135deg, rgba(17, 27, 46, 0.85) 0%, rgba(13, 20, 36, 0.95) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(135deg, var(--signal-wash) 0%, var(--card) 100%);
+    border: 1px solid var(--line);
     border-radius: 14px;
 }
 
@@ -363,9 +363,9 @@
     width: 64px;
     height: 64px;
     border-radius: 12px;
-    background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    background: linear-gradient(135deg, var(--card-2) 0%, var(--card-2) 100%);
     border: 2px solid rgba(45, 212, 168, 0.3);
-    color: #05CD99;
+    color: var(--status-ok);
     font-weight: 800;
     font-size: 1.35rem;
     display: flex;
@@ -389,7 +389,7 @@
 .userHeroName {
     font-size: 1.35rem;
     font-weight: 800;
-    color: #F8FAFC;
+    color: var(--text);
     margin: 0;
 }
 
@@ -400,7 +400,7 @@
     padding: 0.2rem 0.55rem;
     background: rgba(242, 169, 59, 0.15);
     border: 1px solid rgba(242, 169, 59, 0.35);
-    color: #F2A93B;
+    color: var(--pending);
     border-radius: 6px;
     font-size: 0.7rem;
     font-weight: 700;
@@ -411,7 +411,7 @@
     align-items: center;
     gap: 0.65rem;
     font-size: 0.82rem;
-    color: #94A3B8;
+    color: var(--text-2);
     margin: 0;
     flex-wrap: wrap;
 }
@@ -429,8 +429,8 @@
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
     gap: 1rem;
     padding: 1.15rem 1.35rem;
-    background: rgba(14, 23, 38, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 12px;
 }
 
@@ -443,7 +443,7 @@
 .configLabel {
     font-size: 0.74rem;
     font-weight: 700;
-    color: #94A3B8;
+    color: var(--text-2);
     text-transform: uppercase;
     letter-spacing: 0.05em;
     display: flex;
@@ -453,10 +453,10 @@
 
 .configSelect {
     padding: 0.55rem 0.85rem;
-    background: rgba(10, 16, 28, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--card-2);
+    border: 1px solid var(--line);
     border-radius: 8px;
-    color: #F8FAFC;
+    color: var(--text);
     font-size: 0.84rem;
     font-weight: 600;
     outline: none;
@@ -464,7 +464,7 @@
 }
 
 .configSelect:focus {
-    border-color: #05CD99;
+    border-color: var(--status-ok);
 }
 
 /* Permission Sections */
@@ -473,8 +473,8 @@
     flex-direction: column;
     gap: 1.1rem;
     padding: 1.5rem 1.75rem;
-    background: rgba(14, 23, 38, 0.65);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--card);
+    border: 1px solid var(--line);
     border-radius: 14px;
 }
 
@@ -495,7 +495,7 @@
 .sectionTitle {
     font-size: 1.05rem;
     font-weight: 700;
-    color: #F8FAFC;
+    color: var(--text);
     margin: 0;
     display: flex;
     align-items: center;
@@ -504,7 +504,7 @@
 
 .sectionSubtitle {
     font-size: 0.78rem;
-    color: #94A3B8;
+    color: var(--text-2);
     margin: 0;
 }
 
@@ -520,24 +520,24 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.85rem 1rem;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--line);
+    border: 1px solid var(--line);
     border-radius: 10px;
     transition: all 0.15s ease;
 }
 
 .modulePermCard:hover {
-    background: rgba(255, 255, 255, 0.04);
-    border-color: rgba(255, 255, 255, 0.12);
+    background: var(--line);
+    border-color: var(--line);
 }
 
 .modulePermCardAllowed {
-    border-left: 3px solid #05CD99;
+    border-left: 3px solid var(--status-ok);
 }
 
 .modulePermCardDenied {
     border-left: 3px solid rgba(244, 63, 94, 0.6);
-    opacity: 0.75;
+    opacity: 1;
 }
 
 .modulePermLeft {
@@ -564,7 +564,7 @@
 .modulePermName {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: var(--text);
 }
 
 .modulePermSource {
@@ -573,16 +573,16 @@
 }
 
 .sourceInherited {
-    color: #64748B;
+    color: var(--text-3);
 }
 
 .sourceOverride {
-    color: #05CD99;
+    color: var(--status-ok);
     font-weight: 700;
 }
 
 .sourceOverrideRevoked {
-    color: #F43F5E;
+    color: var(--flag);
     font-weight: 700;
 }
 
@@ -598,14 +598,14 @@
     flex-direction: column;
     gap: 0.5rem;
     padding: 0.9rem 1.1rem;
-    background: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: var(--line);
+    border: 1px solid var(--line);
     border-radius: 10px;
     transition: all 0.15s ease;
 }
 
 .cockpitPermCard:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--line);
 }
 
 .cockpitTop {
@@ -625,13 +625,13 @@
 .cockpitTitle {
     font-size: 0.84rem;
     font-weight: 700;
-    color: #F1F5F9;
+    color: var(--text);
     margin: 0;
 }
 
 .cockpitDesc {
     font-size: 0.73rem;
-    color: #94A3B8;
+    color: var(--text-2);
     margin: 0;
     line-height: 1.4;
 }
@@ -639,9 +639,9 @@
 /* Global Baseline Matrix Table */
 .matrixWrapper {
     overflow-x: auto;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--line);
     border-radius: 12px;
-    background: rgba(14, 23, 38, 0.6);
+    background: var(--card);
 }
 
 .matrixTable {
@@ -652,23 +652,23 @@
 }
 
 .matrixTable th {
-    background: rgba(10, 16, 28, 0.9);
+    background: var(--card-2);
     padding: 0.85rem 1rem;
-    color: #94A3B8;
+    color: var(--text-2);
     font-weight: 700;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid var(--line);
     white-space: nowrap;
 }
 
 .matrixTable td {
     padding: 0.8rem 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    color: #F1F5F9;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
     white-space: nowrap;
 }
 
 .matrixTable tr:hover td {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--line);
 }
 
 /* Buttons */
@@ -678,7 +678,7 @@
     gap: 0.45rem;
     padding: 0.55rem 1.15rem;
     background: var(--signal);
-    color: #060D18;
+    color: var(--on-signal);
     border: 1px solid var(--signal);
     border-radius: 8px;
     font-size: 0.82rem;
@@ -689,7 +689,7 @@
 }
 
 .btnPrimary:hover {
-    background: #24b891;
+    background: var(--signal-ink);
     transform: translateY(-1px);
 }
 
@@ -698,9 +698,9 @@
     align-items: center;
     gap: 0.45rem;
     padding: 0.55rem 1rem;
-    background: rgba(255, 255, 255, 0.06);
-    color: #E2E8F0;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--line);
+    color: var(--text);
+    border: 1px solid var(--line);
     border-radius: 8px;
     font-size: 0.82rem;
     font-weight: 600;
@@ -709,8 +709,8 @@
 }
 
 .btnSecondary:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: var(--line);
+    border-color: var(--line);
 }
 
 .btnDanger {
@@ -719,7 +719,7 @@
     gap: 0.45rem;
     padding: 0.55rem 1rem;
     background: rgba(244, 63, 94, 0.12);
-    color: #F43F5E;
+    color: var(--flag);
     border: 1px solid rgba(244, 63, 94, 0.3);
     border-radius: 8px;
     font-size: 0.82rem;
@@ -737,11 +737,11 @@
     width: 38px;
     height: 20px;
     border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--line);
     position: relative;
     cursor: pointer;
     transition: background 0.18s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--line);
 }
 
 .toggleSwitchActive {
@@ -774,3 +774,19 @@
 .sectionHeader > *{min-width:0;max-width:100%}
 .splitLayout{grid-template-columns:minmax(0,1fr)}
 }
+
+/* Permission state stays legible in every palette and narrow workspace. */
+.filterChips { flex-wrap: wrap; overflow: visible; }
+.filterChip { flex: 0 0 auto; white-space: normal; min-height: 36px; }
+.splitLayout { grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.5fr); }
+.detailPane, .metricInfo, .userHeroInfo { min-width: 0; }
+.userHeroSub { flex-wrap: wrap; overflow-wrap: anywhere; }
+.pageHeader { box-shadow: var(--shadow-surface); background: linear-gradient(120deg, var(--signal-wash), var(--card)); }
+.metricCard, .userListPane, .permissionSection { backdrop-filter: none; }
+@container (max-width: 950px) { .splitLayout { grid-template-columns: minmax(0, 1fr); } .userListPane { position: static; max-height: 350px; } }
+@media(max-width:700px) { .splitLayout { grid-template-columns: minmax(0, 1fr); } .pageHeader { padding: 20px; } .userHeroCard { flex-wrap: wrap; padding: 20px; } }
+
+.metricGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.metricValue { overflow-wrap: anywhere; }
+@container(max-width:1100px) { .metricGrid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:500px) { .metricGrid { grid-template-columns: minmax(0,1fr); } }

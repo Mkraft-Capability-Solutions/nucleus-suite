@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -11,6 +13,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const IntegrationsView = () => {
+    const {t: translateText}=useTranslation();
+
     const { connectors, apiKeys, showToast } = useHRMS();
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.IntegrationsView", "initialState_1"));
 
@@ -23,7 +27,7 @@ const IntegrationsView = () => {
                     <p>{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_2")}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className={styles.btnSecondary} onClick={() => showToast('Docs Opened', 'Swagger/OpenAPI 3.0 specification opened.', 'info')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.IntegrationsView","text_9d5e294999"),translateText("components.Clerio.IntegrationsView","text_9cd953818a"), 'info')}>
                         <Terminal size={16} />{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_3")}</button>
                     <button className={styles.btnPrimary} onClick={() => launchAction('apiKey')}>
                         <Key size={16} />{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_4")}</button>
@@ -70,7 +74,7 @@ const IntegrationsView = () => {
 
                             <div style={{ marginTop: '1.25rem', display: 'flex', gap: '0.5rem' }}>
                                 <button className={styles.btnSecondary} style={{ width: '100%', fontSize: '0.8rem', padding: '0.4rem', justifyContent: 'center' }} onClick={() => launchAction('connector', { provider: c.name })}>{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_9")}</button>
-                                <button className={styles.btnPrimary} style={{ width: '100%', fontSize: '0.8rem', padding: '0.4rem', justifyContent: 'center' }} onClick={() => showToast('Sync Triggered', `Data pipeline synced with ${c.name}.`, 'success')}>{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_10")}</button>
+                                <button className={styles.btnPrimary} style={{ width: '100%', fontSize: '0.8rem', padding: '0.4rem', justifyContent: 'center' }} onClick={() => showToast(translateText("components.Clerio.IntegrationsView","text_169dcd164f"),translateText("components.Clerio.IntegrationsView","text_d6d697b11c", {value1: String(c.name)}), 'success')}>{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_10")}</button>
                             </div>
                         </div>
                     ))}
@@ -101,7 +105,7 @@ const IntegrationsView = () => {
                             <strong>{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_19")}</strong>
                             <div style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>{apiKeys[0].name}{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_20")}{apiKeys[0].prefix}{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_21")}</div>
                         </div>
-                        <button className={styles.btnSecondary} onClick={() => showToast('Copied', 'API Key copied to clipboard.', 'success')}>
+                        <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.IntegrationsView","text_8d525e5f15"),translateText("components.Clerio.IntegrationsView","text_4241b54bbc"), 'success')}>
                             <Copy size={14} />{readData("components.Clerio.IntegrationsView", "IntegrationsView_text_22")}</button>
                     </div>
                 </div>

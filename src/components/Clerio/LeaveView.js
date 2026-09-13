@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -36,6 +38,8 @@ const LeaveApplicationModal = ({ isOpen, onClose, onSubmit, leaveTypeCode, setLe
 };
 
 const LeaveView = () => {
+    const {t: translateText}=useTranslation();
+
     const {
         leaves,
         leaveApplications,
@@ -109,7 +113,7 @@ const LeaveView = () => {
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <button
                         className={styles.btnSecondary}
-                        onClick={() => showToast('Policy Handbook', 'Opening 2026 Statutory Leave Policy Document...', 'info')}
+                        onClick={() => showToast(translateText("components.Clerio.LeaveView","text_bae613c912"),translateText("components.Clerio.LeaveView","text_55c7940b6f"), 'info')}
                     >
                         <FileText size={15} />{readData("components.Clerio.LeaveView", "LeaveView_text_22")}</button>
                     <button
@@ -136,7 +140,7 @@ const LeaveView = () => {
                 <button
                     className={styles.btnSecondary}
                     style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
-                    onClick={() => showToast('Engine Status', 'All 3 Leave Demo Points passing deterministic assertions.', 'success')}
+                    onClick={() => showToast(translateText("components.Clerio.LeaveView","text_d2978f1fd6"),translateText("components.Clerio.LeaveView","text_ea91b4c61d"), 'success')}
                 >
                     <CheckCircle size={14} color="#16a34a" />{readData("components.Clerio.LeaveView", "LeaveView_text_28")}</button>
             </div>

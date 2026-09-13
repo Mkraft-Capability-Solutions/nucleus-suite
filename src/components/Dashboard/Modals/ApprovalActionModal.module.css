@@ -24,12 +24,12 @@
 }
 
 .modal {
-  background: linear-gradient(145deg, rgba(14, 23, 38, 0.96) 0%, rgba(10, 16, 28, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(145deg, var(--card) 0%, var(--card-2) 100%);
+  border: 1px solid var(--line);
   border-radius: 16px;
   width: 100%;
   max-width: 540px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -41,8 +41,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--line);
+  background: var(--line);
 }
 
 .headerLeft {
@@ -64,53 +64,53 @@
 .iconApprove {
   background: rgba(45, 212, 168, 0.15);
   border: 1px solid rgba(45, 212, 168, 0.35);
-  color: #2DD4A8;
+  color: var(--signal-ink);
 }
 
 .iconReject {
   background: rgba(244, 63, 94, 0.15);
   border: 1px solid rgba(244, 63, 94, 0.35);
-  color: #F43F5E;
+  color: var(--flag);
 }
 
 .iconReroute {
   background: rgba(155, 140, 255, 0.15);
   border: 1px solid rgba(155, 140, 255, 0.35);
-  color: #9B8CFF;
+  color: var(--agent);
 }
 
 .headerTitle {
   font-family: var(--f-heading, 'Montserrat', sans-serif);
   font-size: 1.05rem;
   font-weight: 700;
-  color: #F1F5F9;
+  color: var(--text);
   margin: 0;
 }
 
 .headerSubtitle {
   font-size: 0.74rem;
-  color: #94A3B8;
+  color: var(--text-2);
   margin-top: 0.15rem;
 }
 
 .closeBtn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line);
   border-radius: 8px;
   width: 32px;
   height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #94A3B8;
+  color: var(--text-2);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .closeBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #F1F5F9;
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--line);
+  color: var(--text);
+  border-color: var(--line);
 }
 
 .body {
@@ -125,10 +125,10 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--card-2);
   padding: 0.35rem;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
 }
 
 .actionTabBtn {
@@ -140,7 +140,7 @@
   border-radius: 7px;
   border: 1px solid transparent;
   background: transparent;
-  color: #94A3B8;
+  color: var(--text-2);
   font-size: 0.78rem;
   font-weight: 600;
   cursor: pointer;
@@ -148,35 +148,35 @@
 }
 
 .actionTabBtn:hover {
-  color: #E2E8F0;
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  background: var(--line);
 }
 
 .tabActiveApprove {
   background: rgba(45, 212, 168, 0.15) !important;
   border-color: rgba(45, 212, 168, 0.35) !important;
-  color: #2DD4A8 !important;
+  color: var(--signal-ink) !important;
   font-weight: 700;
 }
 
 .tabActiveReject {
   background: rgba(244, 63, 94, 0.15) !important;
   border-color: rgba(244, 63, 94, 0.35) !important;
-  color: #F43F5E !important;
+  color: var(--flag) !important;
   font-weight: 700;
 }
 
 .tabActiveReroute {
   background: rgba(155, 140, 255, 0.15) !important;
   border-color: rgba(155, 140, 255, 0.35) !important;
-  color: #C4B5FD !important;
+  color: var(--agent) !important;
   font-weight: 700;
 }
 
 /* Request Summary Card */
 .summaryCard {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--line);
+  border: 1px solid var(--line);
   border-radius: 10px;
   padding: 0.85rem 1rem;
   display: flex;
@@ -193,12 +193,12 @@
 .summaryName {
   font-weight: 700;
   font-size: 0.92rem;
-  color: #F1F5F9;
+  color: var(--text);
 }
 
 .summaryType {
   font-size: 0.76rem;
-  color: #94A3B8;
+  color: var(--text-2);
 }
 
 /* Form Controls */
@@ -217,7 +217,7 @@
 .formLabel {
   font-size: 0.8rem;
   font-weight: 600;
-  color: #E2E8F0;
+  color: var(--text);
 }
 
 .badgeOptional {
@@ -226,7 +226,7 @@
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
   background: rgba(148, 163, 184, 0.12);
-  color: #94A3B8;
+  color: var(--text-2);
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
@@ -236,7 +236,7 @@
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
   background: rgba(244, 63, 94, 0.15);
-  color: #F43F5E;
+  color: var(--flag);
   border: 1px solid rgba(244, 63, 94, 0.3);
 }
 
@@ -246,17 +246,17 @@
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
   background: rgba(155, 140, 255, 0.15);
-  color: #C4B5FD;
+  color: var(--agent);
   border: 1px solid rgba(155, 140, 255, 0.3);
 }
 
 .selectInput,
 .textareaInput {
   background: rgba(6, 13, 24, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.65rem 0.85rem;
-  color: #F1F5F9;
+  color: var(--text);
   font-size: 0.82rem;
   font-family: inherit;
   transition: all 0.2s ease;
@@ -272,7 +272,7 @@
 }
 
 .inputError {
-  border-color: #F43F5E !important;
+  border-color: var(--flag) !important;
   box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
 }
 
@@ -281,7 +281,7 @@
   border: 1px solid rgba(244, 63, 94, 0.3);
   border-radius: 8px;
   padding: 0.6rem 0.85rem;
-  color: #F87171;
+  color: var(--flag);
   font-size: 0.76rem;
   display: flex;
   align-items: center;
@@ -294,16 +294,16 @@
   justify-content: flex-end;
   gap: 0.65rem;
   padding: 1.1rem 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border-top: 1px solid var(--line);
+  background: var(--line);
 }
 
 .cancelBtn {
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.55rem 1.1rem;
-  color: #94A3B8;
+  color: var(--text-2);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -311,14 +311,14 @@
 }
 
 .cancelBtn:hover {
-  background: rgba(255, 255, 255, 0.06);
-  color: #F1F5F9;
+  background: var(--line);
+  color: var(--text);
 }
 
 .submitBtnApprove {
-  background: #2DD4A8;
-  color: #060D18;
-  border: 1px solid #2DD4A8;
+  background: var(--signal-ink);
+  color: var(--on-signal);
+  border: 1px solid var(--signal-ink);
   border-radius: 8px;
   padding: 0.55rem 1.25rem;
   font-size: 0.8rem;
@@ -332,13 +332,13 @@
 }
 
 .submitBtnApprove:hover {
-  background: #26b891;
+  background: var(--signal);
   box-shadow: 0 6px 20px rgba(45, 212, 168, 0.4);
   transform: translateY(-1px);
 }
 
 .submitBtnReject {
-  background: #F43F5E;
+  background: #b91c1c;
   color: #FFFFFF;
   border: 1px solid #F43F5E;
   border-radius: 8px;
@@ -354,7 +354,7 @@
 }
 
 .submitBtnReject:hover {
-  background: #e11d48;
+  background: #991b1b;
   box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
   transform: translateY(-1px);
 }

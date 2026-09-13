@@ -12,8 +12,4 @@ test('the active workspace hosts the shared action form launcher', () => {
   assert.match(source, /nucleus:open-action/);
 });
 
-test('the action modal resets values when a different workflow opens', () => {
-  const modal = fs.readFileSync(path.join(process.cwd(), 'src/components/Clerio/ActionFormModal.js'), 'utf8');
-
-  assert.match(modal, /useEffect\(\(\) => \{\s*setValues\(initialValues\)/);
-});
+// Request-reset behavior is exercised in e2e/leave-form.spec.ts, including cancel/reopen.

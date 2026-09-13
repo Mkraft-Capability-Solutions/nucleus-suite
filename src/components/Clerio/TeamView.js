@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -14,6 +16,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const TeamView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const { teamMembers = [], showToast } = useHRMS();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPod, setSelectedPod] = useState(readData("components.Clerio.TeamView", "initialState_1"));
@@ -38,9 +42,9 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
 
     const handleAction = (type, memberName) => {
         if (type === 'chat') {
-            showToast('Instant Chat', `Opening Slack / Teams DM with ${memberName}...`, 'info');
+            showToast(translateText("components.Clerio.TeamView","text_836ed69b38"),translateText("components.Clerio.TeamView","text_1d0b1b8233", {value1: String(memberName)}), 'info');
         } else if (type === 'mail') {
-            showToast('Email Dispatch', `Preparing mail draft to ${memberName}...`, 'info');
+            showToast(translateText("components.Clerio.TeamView","text_a756b7b111"),translateText("components.Clerio.TeamView","text_b5d07b5c53", {value1: String(memberName)}), 'info');
         } else if (type === 'sync') {
             launchAction('oneOnOne', { participant: memberName });
         }
@@ -170,7 +174,7 @@ const TeamView = ({ onNavigate, onSelectConsole }) => {
                                             ? styles.statusBusy
                                             : styles.statusAway
                                     }`}
-                                    title={`Status: ${member.status}`}
+                                    title={translateText("components.Clerio.TeamView","text_f112abedd7", {value1: String(member.status)})}
                                 />
                             </div>
                             <div className={styles.memberHeaderInfo}>

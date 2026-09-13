@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useEffect, useState } from 'react';
@@ -11,6 +13,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const CompensationView = () => {
+    const {t: translateText}=useTranslation();
+
     const { compensationData, showToast } = useHRMS();
     const [benefits, setBenefits] = useState(compensationData.flexBenefits);
     const [benefitsLocked, setBenefitsLocked] = useState(false);
@@ -25,7 +29,7 @@ const CompensationView = () => {
 
     const toggleBenefit = (id) => {
         setBenefits(prev => prev.map(b => b.id === id ? { ...b, selected: !b.selected } : b));
-        showToast('Flex Benefit Updated', 'Selection updated for upcoming policy cycle.', 'info');
+        showToast(translateText("components.Clerio.CompensationView","text_b4cf1c716d"),translateText("components.Clerio.CompensationView","text_709991b8bf"), 'info');
     };
 
     return (
@@ -37,7 +41,7 @@ const CompensationView = () => {
                     <p>{readData("components.Clerio.CompensationView", "CompensationView_text_2")}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className={styles.btnSecondary} onClick={() => showToast('Compensation Letter', 'Annual CTC breakdown letter downloaded.', 'success')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.CompensationView","text_b5b9434a68"),translateText("components.Clerio.CompensationView","text_48269108c6"), 'success')}>
                         <Download size={16} />{readData("components.Clerio.CompensationView", "CompensationView_text_3")}</button>
                     <button className={styles.btnPrimary} onClick={() => launchAction('compCycle')}>
                         <TrendingUp size={16} />{readData("components.Clerio.CompensationView", "CompensationView_text_4")}</button>

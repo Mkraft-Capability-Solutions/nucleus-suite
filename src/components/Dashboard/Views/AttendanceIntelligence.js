@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../../services/workspace-data.mjs';
 
 import React, { useEffect, useState } from 'react';
@@ -13,6 +15,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 export default function AttendanceIntelligence({ onNavigate }) {
+    const {t: translateText}=useTranslation();
+
     const { timeOfficeLedger, gatePasses, rulesetVersion } = useHRMS();
     const [selectedSite, setSelectedSite] = useState(readData("components.Dashboard.Views.AttendanceIntelligence", "initialState_1"));
     const [autoFilled, setAutoFilled] = useState(false);
@@ -245,7 +249,7 @@ export default function AttendanceIntelligence({ onNavigate }) {
                                 marginTop: '0.2rem',
                                 color: slot.gap < 0 ? '#F2647E' : '#05CD99'
                             }}>
-                                {slot.gap < 0 ? `${slot.gap} gap` : readData("components.Dashboard.Views.AttendanceIntelligence", "display_10")}
+                                {slot.gap < 0 ?translateText("components.Dashboard.Views.AttendanceIntelligence","text_d485073303", {value1: String(slot.gap)}) : readData("components.Dashboard.Views.AttendanceIntelligence", "display_10")}
                             </div>
                         </div>
                     ))}

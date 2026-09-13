@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -14,6 +16,8 @@ import { useAuth } from '@/context/AuthContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const SettingsView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const { settings, updateSettings, showToast } = useHRMS();
     const { user: authUser, openAccessControl, modulePermissions, consolePermissions, switchRole } = useAuth();
     const userRole = authUser?.role || readData("components.Clerio.SettingsView", "fallback_1");
@@ -37,7 +41,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
     const handleSave = () => launchAction('settings', formData);
 
     const handleReset = () => {
-        showToast('Preferences Reset', 'Restored previous saved configuration.', 'info');
+        showToast(translateText("components.Clerio.SettingsView","text_03673c17ae"),translateText("components.Clerio.SettingsView","text_ce3e59d613"), 'info');
     };
 
     return (
@@ -508,7 +512,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                         <button
                             className={styles.btnSecondary}
                             style={{ color: 'var(--flag)', borderColor: 'var(--flag)', fontSize: '0.82rem' }}
-                            onClick={() => showToast('Sessions Terminated', 'All other active device tokens have been revoked.', 'info')}
+                            onClick={() => showToast(translateText("components.Clerio.SettingsView","text_21b2faaceb"),translateText("components.Clerio.SettingsView","text_3e0d5618e9"), 'info')}
                         >{readData("components.Clerio.SettingsView", "SettingsView_text_116")}</button>
                     </div>
                 </div>

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -42,6 +44,8 @@ const MODULES_LIST = [
 const CONSOLES_LIST = readData("components.Dashboard.Modals.AccessControlModal", "CONSOLES_LIST_25");
 
 export default function AccessControlModal({ isOpen, onClose }) {
+    const {t: translateText}=useTranslation();
+
     const {
         modulePermissions,
         consolePermissions,
@@ -78,8 +82,7 @@ export default function AccessControlModal({ isOpen, onClose }) {
         const currentlyAllowed = isModuleAllowed(moduleKey, selectedRole);
         toggleModulePermission(moduleKey, selectedRole);
         showToast?.(
-            currentlyAllowed ? 'Access Revoked' : 'Access Granted',
-            `${title} is now ${currentlyAllowed ? 'locked' : 'unlocked'} for ${currentRoleObj.label}.`,
+            currentlyAllowed ? 'Access Revoked' : 'Access Granted',translateText("components.Dashboard.Modals.AccessControlModal","text_06096d35df", {value1: String(title), value2: String(currentlyAllowed ? 'locked' : 'unlocked'), value3: String(currentRoleObj.label)}),
             currentlyAllowed ? 'warning' : 'success'
         );
     };
@@ -88,8 +91,7 @@ export default function AccessControlModal({ isOpen, onClose }) {
         const currentlyAllowed = isConsoleAllowed(consoleId, selectedRole);
         toggleConsolePermission(consoleId, selectedRole);
         showToast?.(
-            currentlyAllowed ? 'Console Locked' : 'Console Unlocked',
-            `Console ${consoleId} (${title}) is now ${currentlyAllowed ? 'hidden from' : 'available to'} ${currentRoleObj.label}.`,
+            currentlyAllowed ? 'Console Locked' : 'Console Unlocked',translateText("components.Dashboard.Modals.AccessControlModal","text_e99dd8509b", {value1: String(consoleId), value2: String(title), value3: String(currentlyAllowed ? 'hidden from' : 'available to'), value4: String(currentRoleObj.label)}),
             currentlyAllowed ? 'warning' : 'success'
         );
     };
@@ -97,14 +99,14 @@ export default function AccessControlModal({ isOpen, onClose }) {
     const handleResetAll = () => {
         if (confirm('Reset all module and console permissions back to enterprise defaults?')) {
             resetPermissionsToDefault();
-            showToast?.('Permissions Reset', 'All role access permissions have been restored to factory defaults.', 'info');
+            showToast?.(translateText("components.Dashboard.Modals.AccessControlModal","text_e386bd4401"),translateText("components.Dashboard.Modals.AccessControlModal","text_d962d31822"), 'info');
         }
     };
 
     const handleTestPersona = () => {
         switchRole(selectedRole);
         onClose();
-        showToast?.('Switched Persona', `Now previewing Nucleus as ${currentRoleObj.name} (${currentRoleObj.label}).`, 'info');
+        showToast?.(translateText("components.Dashboard.Modals.AccessControlModal","text_042dad0b3c"),translateText("components.Dashboard.Modals.AccessControlModal","text_e99547ec5a", {value1: String(currentRoleObj.name), value2: String(currentRoleObj.label)}), 'info');
     };
 
     return (
@@ -193,7 +195,7 @@ export default function AccessControlModal({ isOpen, onClose }) {
                                     <div
                                         className={styles.toggleSwitch}
                                         onClick={() => handleToggleModule(m.key, m.title)}
-                                        title={`Click to ${isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_2") : readData("components.Dashboard.Modals.AccessControlModal", "display_3")} access for ${currentRoleObj.label}`}
+                                        title={translateText("components.Dashboard.Modals.AccessControlModal","text_eb895f2be5", {value1: String(isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_2") : readData("components.Dashboard.Modals.AccessControlModal", "display_3")), value2: String(currentRoleObj.label)})}
                                     >
                                         <span className={`${styles.statusLabel} ${isAllowed ? styles.statusAllowed : styles.statusBlocked}`}>
                                             {isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_4") : readData("components.Dashboard.Modals.AccessControlModal", "display_5")}
@@ -231,7 +233,7 @@ export default function AccessControlModal({ isOpen, onClose }) {
                                     <div
                                         className={styles.toggleSwitch}
                                         onClick={() => handleToggleConsole(c.id, c.title)}
-                                        title={`Click to ${isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_6") : readData("components.Dashboard.Modals.AccessControlModal", "display_7")} console for ${currentRoleObj.label}`}
+                                        title={translateText("components.Dashboard.Modals.AccessControlModal","text_c9a76049ab", {value1: String(isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_6") : readData("components.Dashboard.Modals.AccessControlModal", "display_7")), value2: String(currentRoleObj.label)})}
                                     >
                                         <span className={`${styles.statusLabel} ${isAllowed ? styles.statusAllowed : styles.statusBlocked}`}>
                                             {isAllowed ? readData("components.Dashboard.Modals.AccessControlModal", "display_8") : readData("components.Dashboard.Modals.AccessControlModal", "display_9")}

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../../services/workspace-data.mjs';
@@ -16,6 +18,8 @@ import shared from '../DashboardShared.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
 export default function EmployeeHome({ onNavigate }) {
+    const {t: translateText}=useTranslation();
+
     const { showToast } = useHRMS();
     const [isClockedIn, setIsClockedIn] = useState(true);
     const [query, setQuery] = useState('');
@@ -36,13 +40,13 @@ export default function EmployeeHome({ onNavigate }) {
 
     const handleSubmitTimesheet = () => {
         setTimesheetStatus('submitted');
-        showToast?.('Timesheet Submitted', `Week 37 timesheet (${totalHours.toFixed(1)}h) dispatched to Amit Verma for manager sign-off.`, 'success');
+        showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_fd2ecb1c57"),translateText("components.Dashboard.Views.EmployeeHome","text_051f8272b5", {value1: String(totalHours.toFixed(1))}), 'success');
     };
 
     const handleAddLog = (e) => {
         e.preventDefault();
         if (!newLogTask.trim()) {
-            showToast?.('Task Description Required', 'Please enter a brief note for your timesheet entry.', 'warning');
+            showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_432bef80e7"),translateText("components.Dashboard.Views.EmployeeHome","text_9e12fe321d"), 'warning');
             return;
         }
         const hoursNum = parseFloat(newLogHours) || readData("components.Dashboard.Views.EmployeeHome", "fallback_1");
@@ -58,7 +62,7 @@ export default function EmployeeHome({ onNavigate }) {
         setDailyEntries(prev => [...prev, newEntry]);
         setNewLogTask('');
         setIsLogModalOpen(false);
-        showToast?.('Time Logged', `${hoursNum}h recorded on ${newLogProject}.`, 'success');
+        showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_6ff44d14c8"),translateText("components.Dashboard.Views.EmployeeHome","text_fc41832be5", {value1: String(hoursNum), value2: String(newLogProject)}), 'success');
     };
 
     // 1. Concentric Rings Leave Balance (W08)

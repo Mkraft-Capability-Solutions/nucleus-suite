@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -69,6 +71,8 @@ const MainWorkspace = ({
     activeConsole = readData("components.Clerio.MainWorkspace", "defaultValue_1"),
     onSelectConsole
 }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         user, attendance, punchIn, punchOut,
         leaves, projects, focusTasks, completeFocusTask,
@@ -128,7 +132,7 @@ const MainWorkspace = ({
         setCustomStartDate('2026-06-01');
         setCustomEndDate('2026-09-11');
         setFilterBranch('All Branches');
-        showToast('Filters Reset', 'Restored global organization telemetry scope.', 'info');
+        showToast(translateText("components.Clerio.MainWorkspace","text_4a7cecb37b"),translateText("components.Clerio.MainWorkspace","text_82b997f867"), 'info');
     };
 
     const permittedConsoleIds = getPermittedConsoles ? getPermittedConsoles(currentRole) : (ROLE_PERMITTED_CONSOLES[currentRole] || readData("components.Clerio.MainWorkspace", "permittedConsoleIds_3"));
@@ -263,7 +267,7 @@ const MainWorkspace = ({
                                                 title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_22")}
                                             >
                                                 <Clock size={14} />
-                                                {attendance.status === 'present' ? `Punch Out (In: ${attendance.punchInTime || readData("components.Clerio.MainWorkspace", "fallback_3")})` : readData("components.Clerio.MainWorkspace", "display_10")}
+                                                {attendance.status === 'present' ?translateText("components.Clerio.MainWorkspace","text_63c2b4a100", {value1: String(attendance.punchInTime || readData("components.Clerio.MainWorkspace", "fallback_3"))}) : readData("components.Clerio.MainWorkspace", "display_10")}
                                             </button>
                                             <button className={shared.scopeBtn} onClick={() => onTabChange('leaves')}>
                                                 <Sun size={13} color="#F2A93B" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_23")}</button>
@@ -472,7 +476,7 @@ const MainWorkspace = ({
                                     </div>
                                     {filterLocation !== 'All Locations' && (
                                         <button
-                                            onClick={() => { setFilterLocation('All Locations'); showToast('Location Cleared', 'Reset to All Locations.', 'info'); }}
+                                            onClick={() => { setFilterLocation('All Locations'); showToast(translateText("components.Clerio.MainWorkspace","text_c703f4b6e8"),translateText("components.Clerio.MainWorkspace","text_c8e9ccf8d2"), 'info'); }}
                                             style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_61")}
                                         >
@@ -484,7 +488,7 @@ const MainWorkspace = ({
                                     value={filterLocation}
                                     onChange={(e) => {
                                         setFilterLocation(e.target.value);
-                                        showToast('Location Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                        showToast(translateText("components.Clerio.MainWorkspace","text_615dc9a96d"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
                                     style={{
                                         width: '100%',
@@ -527,7 +531,7 @@ const MainWorkspace = ({
                                     </div>
                                     {filterDepartment !== 'All Departments' && (
                                         <button
-                                            onClick={() => { setFilterDepartment('All Departments'); showToast('Department Cleared', 'Reset to All Departments.', 'info'); }}
+                                            onClick={() => { setFilterDepartment('All Departments'); showToast(translateText("components.Clerio.MainWorkspace","text_13eb4bfef2"),translateText("components.Clerio.MainWorkspace","text_487a9562cf"), 'info'); }}
                                             style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_71")}
                                         >
@@ -539,7 +543,7 @@ const MainWorkspace = ({
                                     value={filterDepartment}
                                     onChange={(e) => {
                                         setFilterDepartment(e.target.value);
-                                        showToast('Department Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                        showToast(translateText("components.Clerio.MainWorkspace","text_cd7b2f937d"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
                                     style={{
                                         width: '100%',
@@ -593,7 +597,7 @@ const MainWorkspace = ({
                                                 onClick={() => {
                                                     setFilterTenure(t);
                                                     setIsCustomCalendarOpen(false);
-                                                    showToast('Tenure Filter Applied', `Scope set to: ${t}`, 'info');
+                                                    showToast(translateText("components.Clerio.MainWorkspace","text_165361fec3"),translateText("components.Clerio.MainWorkspace","text_84c8971810", {value1: String(t)}), 'info');
                                                 }}
                                                 style={{
                                                     flex: 1,
@@ -654,7 +658,7 @@ const MainWorkspace = ({
                                     </div>
                                     {filterBranch !== 'All Branches' && (
                                         <button
-                                            onClick={() => { setFilterBranch('All Branches'); showToast('Branch Cleared', 'Reset to All Branches.', 'info'); }}
+                                            onClick={() => { setFilterBranch('All Branches'); showToast(translateText("components.Clerio.MainWorkspace","text_5d7dc5a35f"),translateText("components.Clerio.MainWorkspace","text_f82b3856b4"), 'info'); }}
                                             style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
                                             title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_85")}
                                         >
@@ -666,7 +670,7 @@ const MainWorkspace = ({
                                     value={filterBranch}
                                     onChange={(e) => {
                                         setFilterBranch(e.target.value);
-                                        showToast('Branch Entity Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                        showToast(translateText("components.Clerio.MainWorkspace","text_3d811a5cc6"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
                                     style={{
                                         width: '100%',
@@ -745,7 +749,7 @@ const MainWorkspace = ({
                                     <button
                                         onClick={() => {
                                             setFilterTenure(`Custom (${customStartDate} to ${customEndDate})`);
-                                            showToast('Custom Range Applied', `Window set to: ${customStartDate} to ${customEndDate}`, 'success');
+                                            showToast(translateText("components.Clerio.MainWorkspace","text_6fded91277"),translateText("components.Clerio.MainWorkspace","text_52edd19697", {value1: String(customStartDate), value2: String(customEndDate)}), 'success');
                                         }}
                                         style={{
                                             padding: '0.38rem 0.85rem',
@@ -809,7 +813,7 @@ const MainWorkspace = ({
                                     background: 'rgba(242, 169, 59, 0.15)',
                                     color: '#F2A93B',
                                     border: '1px solid rgba(242, 169, 59, 0.3)'
-                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_101")}{isCustomCalendarOpen ? `${customStartDate}..${customEndDate}` : filterTenure}
+                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_101")}{isCustomCalendarOpen ?translateText("components.Clerio.MainWorkspace","text_4aa0a8bf87", {value1: String(customStartDate), value2: String(customEndDate)}) : filterTenure}
                                 </span>
                                 <span style={{
                                     padding: '0.15rem 0.5rem',
@@ -1055,7 +1059,7 @@ const MainWorkspace = ({
                     )}
 
                     {/* Display Content based on Active Tab */}
-                    {activeTab === 'dashboard' && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>Return to my dashboard</button>}{renderDashboard()}</>}
+                    {activeTab === 'dashboard' && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>{translateText("components.Clerio.MainWorkspace","text_e53d7af293")}</button>}{renderDashboard()}</>}
 
             {/* Module 1: People Core */}
             {activeTab === 'people_core' && (

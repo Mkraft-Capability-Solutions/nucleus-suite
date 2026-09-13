@@ -1,0 +1,372 @@
+{
+  "public": {
+    "navigation": "Main navigation",
+    "home": "Nucleus home",
+    "menu": "Menu",
+    "tagline": "People at the core",
+    "skip": "Skip to content"
+  },
+  "login": {
+    "eyebrow": "YOUR PEOPLE. YOUR WORKSPACE.",
+    "title": "A clearer start to your working day.",
+    "description": "One familiar place for the people, priorities and moments that matter. Pick up where you left off in Nucleus.",
+    "pointOne": "A workspace shaped around your role",
+    "pointTwo": "Your time, requests and next steps together",
+    "pointThree": "A consistent experience on every device"
+  },
+  "components.Navigation.DualPaneNav": {
+    "text_a9e0109bbe": "Clear navigation search",
+    "text_b4a520bc62": "Role: {value1}"
+  },
+  "components.Website.PublicPage": {
+    "text_ac576a66d4": "Skip to content",
+    "text_ef7f82c49e": "Discover the features",
+    "text_2e1ac6e929": "Explore ",
+    "text_588da41053": " · ",
+    "text_bcecd61864": "Read the guides"
+  },
+  "components.AppearanceToggle": {
+    "text_d6effeab12": "Choose theme",
+    "text_c40f363118": "Appearance: {value1}"
+  },
+  "components.Dashboard.Personalization.WidgetContent": {
+    "text_74585fab8d": "No permitted items to display.",
+    "text_ae06037ad4": " / {value1} {value2}"
+  },
+  "components.Dashboard.Personalization.PersonalDashboard": {
+    "text_d07c7cc919": "Drag, or press Space and use arrow keys",
+    "text_ac6f7ef8d2": "Loading your dashboard preferences…",
+    "text_6e60195197": "Dashboard controls",
+    "text_a511909161": "Layout",
+    "text_a9d449165e": "Saved layout",
+    "text_ef02e11e38": "New layout",
+    "text_4cf7481104": "Delete layout",
+    "text_b4d1987a22": "Detailed console",
+    "text_c5276e27af": "Customize",
+    "text_dcd1d5223f": "Name",
+    "text_38a82ab9f4": "Layout name",
+    "text_5ab344046c": "Add widgets",
+    "text_6f8390f08f": "Undo layout change",
+    "text_0d63542f78": "Redo layout change",
+    "text_19766ed6cc": "Cancel",
+    "text_8920f4d176": "Layout appearance",
+    "text_77a283d692": "Density",
+    "text_acf02edc11": "Dashboard density",
+    "text_459a23a598": "Comfortable",
+    "text_99452646e3": "Compact",
+    "text_53aade77cd": "Columns",
+    "text_c78f57b43e": "Dashboard columns",
+    "text_926f52d1c1": "Three",
+    "text_94a72c074c": "Two",
+    "text_a5c6fb18c9": "Accent",
+    "text_b1416f188d": "Dashboard accent",
+    "text_2a36428839": "Violet",
+    "text_ec7d56a016": "Blue",
+    "text_fa15a5c1d6": "Teal",
+    "text_7252e7ce00": "Preset",
+    "text_aeb59f9e9c": "Apply layout preset",
+    "text_2f311e68c3": "Choose a preset",
+    "text_8413878a5f": "Role default",
+    "text_4f9a966fb2": "Focused",
+    "text_d719689dce": "Blank canvas",
+    "text_2cff9baabf": "Import",
+    "text_3664895579": "Export",
+    "text_709d0245c8": "Import dashboard layout",
+    "text_7d7a09007e": "Editing a draft · Save before navigating away. Drag the handles or use the move buttons.",
+    "text_10e65012f3": "Synthetic preview",
+    "text_b3e34b185d": "Open workspace",
+    "text_b4e58db359": "Widget library",
+    "text_b82d286bbc": "Find a widget",
+    "text_c289e9e0d2": "No permitted widgets match your search.",
+    "text_11a6767d56": "Done",
+    "text_359eba19f7": "Edit component",
+    "text_180fa5dbb1": "Widget title",
+    "text_de5c698b15": "Widget width",
+    "text_4af4c82aca": "One column",
+    "text_ff4a0135d7": "Two columns",
+    "text_d34008d28f": "Full width",
+    "text_22b699fdff": "Visible items",
+    "text_0e5653cfa2": "Up to 3",
+    "text_4a065ef157": "Up to 5",
+    "text_84895542d8": "Up to 8",
+    "text_fe8a865203": "Widgets stack on narrow screens. Editing presentation does not change the source data.",
+    "text_85045ccc05": "Apply changes",
+    "text_2b3ac95cbc": "Delete this saved layout?",
+    "text_5e98a0f680": "Only “",
+    "text_e764f2493a": "” will be removed from this browser. Your other layouts and source data are unchanged.",
+    "text_c823ef4e9e": "Delete saved layout",
+    "text_9227859394": "Create a personal layout",
+    "text_bd5423e688": "Start from the current layout. Up to six layouts can be saved for this dashboard.",
+    "text_fce5b5ca0d": "New layout name",
+    "text_07d07af207": "Create draft",
+    "text_058c6c8a76": "Move {value1}",
+    "text_8165809696": "Move {value1} earlier",
+    "text_189599ffae": "Move {value1} later",
+    "text_b3cfc66057": "Edit {value1}",
+    "text_0ab4d0cee3": "Remove {value1}",
+    "text_30e69cdae3": "{value1} moved to position {value2}.",
+    "text_1f15ed0030": "Choose a different name; a layout with this name already exists.",
+    "text_711a3d028c": "Layout saved on this browser.",
+    "text_4b7577c6ff": "Layout deleted.",
+    "text_3ed2181789": "Layout imported into your draft. Unavailable widgets were removed. Save to apply.",
+    "text_0faebd62db": "Draft discarded.",
+    "text_23e39291d6": "Saving…",
+    "text_26ac39b198": "Save layout",
+    "text_02613b813c": "{value1} removed. Undo restores it.",
+    "text_139290a3b8": "{value1} added.",
+    "text_6b02e0d363": "Added",
+    "text_4706000596": "Add {value1}"
+  },
+  "components.BrandLogo": {
+    "text_c31602f84f": "Nucleus — People at the core"
+  },
+  "components.WorkspaceDataBoundary": {
+    "text_805f423488": "This workspace is not enabled. Contact the application administrator.",
+    "text_c04500f833": "Workspace data could not be loaded. Check your connection and try again.",
+    "text_942087cc2d": "Retry",
+    "text_e177bbb93e": "Loading workspace data…"
+  },
+  "components.Clerio.ProcessGuide": {
+    "text_588da41053": " · ",
+    "text_4f5a2ada11": " (",
+    "text_ba5ec51d07": ")",
+    "text_f9271cfd09": "08_Form_Fields!A",
+    "text_45822f54a0": ": ",
+    "text_3b9667ee73": "04_Process_Steps!A",
+    "text_3b2e8119b6": " — "
+  },
+  "components.Clerio.MainWorkspace": {
+    "text_e53d7af293": "Return to my dashboard",
+    "text_4a7cecb37b": "Filters Reset",
+    "text_82b997f867": "Restored global organization telemetry scope.",
+    "text_63c2b4a100": "Punch Out (In: {value1})",
+    "text_c703f4b6e8": "Location Cleared",
+    "text_c8e9ccf8d2": "Reset to All Locations.",
+    "text_615dc9a96d": "Location Scope Applied",
+    "text_64d0a984c6": "Telemetry filtered to: {value1}",
+    "text_13eb4bfef2": "Department Cleared",
+    "text_487a9562cf": "Reset to All Departments.",
+    "text_cd7b2f937d": "Department Scope Applied",
+    "text_165361fec3": "Tenure Filter Applied",
+    "text_84c8971810": "Scope set to: {value1}",
+    "text_5d7dc5a35f": "Branch Cleared",
+    "text_f82b3856b4": "Reset to All Branches.",
+    "text_3d811a5cc6": "Branch Entity Scope Applied",
+    "text_6fded91277": "Custom Range Applied",
+    "text_52edd19697": "Window set to: {value1} to {value2}",
+    "text_4aa0a8bf87": "{value1}..{value2}"
+  },
+  "components.Clerio.LeftDock": {
+    "text_0ab6910b45": "Nucleus home"
+  },
+  "components.Dashboard.Views.HROpsConsole": {
+    "text_e847085d37": "Request Approved",
+    "text_91801f7d34": "Approved {value1} ({value2}){value3}",
+    "text_584cb388ca": "Request Rejected",
+    "text_b29b6843fd": "Declined {value1} ({value2}) • Reason: {value3}",
+    "text_800e839576": "Request Re-routed",
+    "text_b32ed95084": "Transferred {value1} ({value2}) to {value3} • Note: {value4}"
+  },
+  "components.Dashboard.Views.AttendanceIntelligence": {
+    "text_d485073303": "{value1} gap"
+  },
+  "components.Dashboard.Views.EmployeeHome": {
+    "text_fd2ecb1c57": "Timesheet Submitted",
+    "text_051f8272b5": "Week 37 timesheet ({value1}h) dispatched to Amit Verma for manager sign-off.",
+    "text_432bef80e7": "Task Description Required",
+    "text_9e12fe321d": "Please enter a brief note for your timesheet entry.",
+    "text_6ff44d14c8": "Time Logged",
+    "text_fc41832be5": "{value1}h recorded on {value2}."
+  },
+  "components.Dashboard.Modals.AccessControlModal": {
+    "text_06096d35df": "{value1} is now {value2} for {value3}.",
+    "text_e99dd8509b": "Console {value1} ({value2}) is now {value3} {value4}.",
+    "text_e386bd4401": "Permissions Reset",
+    "text_d962d31822": "All role access permissions have been restored to factory defaults.",
+    "text_042dad0b3c": "Switched Persona",
+    "text_e99547ec5a": "Now previewing Nucleus as {value1} ({value2}).",
+    "text_eb895f2be5": "Click to {value1} access for {value2}",
+    "text_c9a76049ab": "Click to {value1} console for {value2}"
+  },
+  "components.Dashboard.Modals.ApprovalActionModal": {
+    "text_98b1c338f2": "Rejection remark is compulsory. Please enter a valid reason for declining this request.",
+    "text_87a01de2af": "Re-route target is compulsory. Please select a designated approver from the list.",
+    "text_ce36031d79": "Re-route handover remark is compulsory. Please provide context for the new approver."
+  },
+  "components.Clerio.LearningView": {
+    "text_c608981d8d": "Marketplace",
+    "text_37e8f75dea": "Opening Coursera & LinkedIn Learning portal...",
+    "text_19ff47baa3": "Launching Lesson",
+    "text_933253e7ee": "Opening player for {value1}..."
+  },
+  "components.Clerio.TeamView": {
+    "text_836ed69b38": "Instant Chat",
+    "text_1d0b1b8233": "Opening Slack / Teams DM with {value1}...",
+    "text_a756b7b111": "Email Dispatch",
+    "text_b5d07b5c53": "Preparing mail draft to {value1}...",
+    "text_f112abedd7": "Status: {value1}"
+  },
+  "components.Clerio.LeaveView": {
+    "text_bae613c912": "Policy Handbook",
+    "text_55c7940b6f": "Opening 2026 Statutory Leave Policy Document...",
+    "text_d2978f1fd6": "Engine Status",
+    "text_ea91b4c61d": "All 3 Leave Demo Points passing deterministic assertions."
+  },
+  "components.Clerio.IntegrationsView": {
+    "text_9d5e294999": "Docs Opened",
+    "text_9cd953818a": "Swagger/OpenAPI 3.0 specification opened.",
+    "text_169dcd164f": "Sync Triggered",
+    "text_d6d697b11c": "Data pipeline synced with {value1}.",
+    "text_8d525e5f15": "Copied",
+    "text_4241b54bbc": "API Key copied to clipboard."
+  },
+  "components.Clerio.OperationalModuleView": {
+    "text_1f94abc47d": "{value1} record created in the workspace. Connect this module's create action to its API command when the relevant backend write contract is enabled.",
+    "text_942fc1b03f": "State updated to {value1}. The audit entry is visible in this record detail.",
+    "text_247374fc3d": "{value1} records",
+    "text_de86a6588b": "{value1} records in the current scope"
+  },
+  "components.Clerio.OnboardingView": {
+    "text_e589d3921c": "Letter Printed",
+    "text_2435b5cb6d": "Sent formatted letter to system print spooler.",
+    "text_f2d1f36de1": "Letter Exported",
+    "text_5e9be7e2b6": "{value1} saved as encrypted PDF."
+  },
+  "components.Clerio.CMSModal": {
+    "text_757df777f4": "Missing Fields",
+    "text_c6c2c302a8": "Please enter a title and description for the notice.",
+    "text_8583d21cc2": "Title Required",
+    "text_679826ca7a": "Please enter a name for the policy document.",
+    "text_b895ae2a32": "File Required",
+    "text_e2b87a0e7f": "Select a PDF before adding the policy.",
+    "text_5cd52a394a": "Invalid File",
+    "text_4e7a480723": "Select a PDF smaller than 10 MB.",
+    "text_a968d28cf0": "Downloading Handbook",
+    "text_0e540827a4": "Downloading {value1}..."
+  },
+  "components.Clerio.MisReportingHub": {
+    "text_18fd32e12f": "Dataset validated",
+    "text_1bbe48e4fd": "{value1} accepted and {value2} rejected rows are ready for review.",
+    "text_25c5b213ae": "Import could not be read",
+    "text_0d3b5e069b": "No publishable records",
+    "text_51619e8da0": "Correct validation issues before publishing this source.",
+    "text_94251d5730": "Dataset published",
+    "text_64677b989b": "{value1} validated records are now available to the report.",
+    "text_b65cb957e6": "Export prepared",
+    "text_6a25232639": "{value1} report generated for {value2} scoped records.",
+    "text_4040b7c06c": "{value1} {value2}",
+    "text_5f4daa5c37": "{value1} rows checked against required fields, reference keys, type and business rules.",
+    "text_9eab8d21e8": "{value1} · model/run metadata must be completed by the source integration."
+  },
+  "components.Clerio.DataImportModal": {
+    "text_7742f74fef": "Mapping Error",
+    "text_30bad5d803": "Please map at least one column to Employee ID so records can synchronize.",
+    "text_f3fac34f42": "File Attached",
+    "text_8160746ae1": "Pre-loaded {value1} with {value2} rows."
+  },
+  "components.Clerio.SettingsView": {
+    "text_03673c17ae": "Preferences Reset",
+    "text_ce3e59d613": "Restored previous saved configuration.",
+    "text_21b2faaceb": "Sessions Terminated",
+    "text_3e0d5618e9": "All other active device tokens have been revoked."
+  },
+  "components.Clerio.RecruitmentView": {
+    "text_ac513560df": "{value1} Vacancies"
+  },
+  "components.Clerio.PayrollView": {
+    "text_b32605e3ca": "Tally XML Exported",
+    "text_f2892a1a8c": "Salary_Journal_Feb2026_Tally.xml ready to import directly into Tally Prime.",
+    "text_12359ffbc2": "Bank NEFT File Exported",
+    "text_5e0472baed": "{value1} generated for direct corporate banking portal upload.",
+    "text_ae41de725e": "Audit Report",
+    "text_82fc3c8d2c": "All 248 employee calculations passed sanity checks.",
+    "text_82e0a1037b": "Payslip Downloaded",
+    "text_1ec3eaf7e4": "Jan 2026 PDF decrypted.",
+    "text_dc2d2c9f3c": "Dec 2025 PDF decrypted.",
+    "text_3ded7b2466": "({value1} hrs)",
+    "text_e575aef6d0": "⚠️ {value1}% Complete ({value2} Pending)",
+    "text_292097ff69": "⛔ {value1}",
+    "text_35cd59d276": "₹ {value1}"
+  },
+  "components.Clerio.TopNav": {
+    "text_25941aea4c": "Signed Out",
+    "text_4d158fa9e7": "You have been logged out of Nucleus HRMS.",
+    "text_f0ea68918d": "Filtered by RBAC policy for {value1}",
+    "text_8290d65752": "Console Switched",
+    "text_a00b1786e3": "Loaded {value1} ({value2})."
+  },
+  "components.Clerio.ChatPanel": {
+    "text_d869d3fc0f": "Message {value1}..."
+  },
+  "components.Clerio.CompensationView": {
+    "text_b4cf1c716d": "Flex Benefit Updated",
+    "text_709991b8bf": "Selection updated for upcoming policy cycle.",
+    "text_b5b9434a68": "Compensation Letter",
+    "text_48269108c6": "Annual CTC breakdown letter downloaded."
+  },
+  "components.Clerio.PeopleCoreView": {
+    "text_dfc8f0d02f": "Export Initialized",
+    "text_b64285281e": "Exporting People Core records to CSV...",
+    "text_1614058fbf": "Profile Opened",
+    "text_69fc081ae6": "Viewing complete dossier for {value1}",
+    "text_1ee270b569": "Secure Download",
+    "text_e15db7c501": "Decrypted securely for local preview.",
+    "text_353f98aa9a": "Reporting manager updated",
+    "text_2703bfa588": "{value1} now reports to {value2}."
+  },
+  "components.Clerio.ComplianceView": {
+    "text_bab9d39e28": "Includes +₹{value1} add-back excess",
+    "text_70966a5717": "+ ₹ {value1}/mo",
+    "text_dc58967752": "+ ₹ {value1} to PF",
+    "text_ea4562ebf8": "- ₹ {value1}/mo",
+    "text_70b427bc30": "Day {value1}: {value2} ({value3}h regular, {value4}h OT)",
+    "text_74ca1223f9": "rule_pack: IN-CENTRAL-WAGES v2026.04.01\njurisdiction: IN\neffective_from: 2026-04-01\nsupersedes: v2025.11.21\nrules:\n  - id: wage_base_definition\n    formula: \"MAX(BASIC + DA + RA, TOTAL_REMUNERATION * 0.50)\"\n    test_cases: 120\n  - id: overtime_multiplier\n    formula: \"HOURLY_WAGE_BASE * 2.0\"\n    statutory_ceiling: \"125 hours per quarter\"\n  - id: bonus_eligibility_ceiling\n    threshold: 21000\n    formula: \"MIN(WAGE_BASE, 7000) * 0.0833\"\nchangelog: \"Central Rules notified; overtime allowance confirmed within 50% wage floor computation per MoLE FAQ 16-Mar-2026\""
+  },
+  "components.Clerio.WorkflowBuilderModal": {
+    "text_3c9b888d55": "Simulation Completed",
+    "text_09ac4f4b73": "\"{value1}\" executed all {value2} pipeline nodes with 0 errors."
+  },
+  "components.Clerio.AccessControlView": {
+    "text_818a30c487": "Updated \"{value1}\" for {value2}.",
+    "text_473e9fc737": "Updated Cockpit \"{value1}\" for {value2}.",
+    "text_bd0744876d": "Override Cleared",
+    "text_2411ab7926": "Reverted module \"{value1}\" to role baseline for {value2}.",
+    "text_f4086bbf33": "Full Access Granted",
+    "text_66e5fff677": "Granted all 18 modules & 10 cockpits to {value1}.",
+    "text_a3966fe995": "Access Restricted",
+    "text_ec36003698": "Restricted {value1} to self-service boundaries.",
+    "text_0953e0d516": "Reset to Defaults",
+    "text_7f80275770": "Cleared all custom overrides for {value1}.",
+    "text_6cbc60d91d": "Session Switched",
+    "text_80e75036c4": "Now testing platform session as {value1} ({value2}).",
+    "text_e386bd4401": "Permissions Reset",
+    "text_a3e2e157d7": "Restored factory enterprise RBAC defaults.",
+    "text_5e35eb9dea": "Data Scope Updated",
+    "text_2b87d8572a": "Set scope to {value1} for {value2}.",
+    "text_5db7d8dc8c": "Click to {value1} module",
+    "text_b8ebb1051d": "Toggle access to cockpit {value1}",
+    "text_a9c1581438": "Role Baseline Updated",
+    "text_30fefaac97": "Toggled {value1} for {value2}."
+  },
+  "components.Clerio.ExperienceView": {
+    "text_95e02cd741": "Kudos Shared",
+    "text_9778b2c25d": "Your recognition was posted to the company feed with +50 points!",
+    "text_737e78b17e": "Rewards Store",
+    "text_95d6d0a015": "Opening points redemption catalog (AirPods, Wellness passes, Books)..."
+  },
+  "components.Clerio.AttendanceView": {
+    "text_bf34462856": "Attendance Export",
+    "text_0bf6412031": "Monthly ledger exported with break reports.",
+    "text_e1bbe08261": "Ruleset Verified",
+    "text_06d3452f42": "All 26 HR demo rule assertions passing at 100% deterministic accuracy.",
+    "text_48c93fbf08": "🟢 Checked In ({value1})",
+    "text_9f40e7d4cc": "Anomaly Review",
+    "text_13f6644330": "Opening anomaly details...",
+    "text_c905026590": "Recomputation Result",
+    "text_de6042fe12": "Punch intervals 08:00 to 03:20 verified: 19h 20m span, 45m dinner break deducted, 10h 35m OT computed."
+  },
+  "metadata": {
+    "title": "Nucleus AI | HRMS",
+    "description": "AI-Powered Human Resource Management System"
+  }
+}

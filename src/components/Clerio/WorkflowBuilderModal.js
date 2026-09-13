@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useEffect } from 'react';
@@ -39,6 +41,8 @@ const NODE_TYPE_CONFIG = {
 };
 
 const WorkflowBuilderModal = ({ isOpen, onClose }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         workflows = [],
         updateWorkflowNode,
@@ -145,9 +149,7 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
                     ...prev,
                     `[${finishTime}] ✅ WORKFLOW EXECUTION COMPLETED: All ${nodes.length} stages passed successfully.`
                 ]);
-                showToast(
-                    'Simulation Completed',
-                    `"${activeWorkflow.name}" executed all ${nodes.length} pipeline nodes with 0 errors.`,
+                showToast(translateText("components.Clerio.WorkflowBuilderModal","text_3c9b888d55"),translateText("components.Clerio.WorkflowBuilderModal","text_09ac4f4b73", {value1: String(activeWorkflow.name), value2: String(nodes.length)}),
                     'success'
                 );
             }

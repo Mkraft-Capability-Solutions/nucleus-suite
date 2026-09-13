@@ -1,6 +1,8 @@
 "use client";
 import { readData } from '../../services/workspace-data.mjs';
 
+import {useTranslation} from '@/context/I18nContext';
+import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import PublicHeader from '@/components/Website/PublicHeader';
 import websiteStyles from '@/components/Website/Website.module.css';
 import BrandLogo from '@/components/BrandLogo';
@@ -10,6 +12,7 @@ import styles from './LoginView.module.css';
 import { useAuth } from '@/context/AuthContext';
 
 const LoginView = () => {
+    const {t: translateText}=useTranslation();
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -32,19 +35,23 @@ const LoginView = () => {
 
     return (
         <div className={`${styles.loginWrapper} ${websiteStyles.site}`}>
-            <div className={`${styles.orb} ${styles.orb1}`}></div>
-            <div className={`${styles.orb} ${styles.orb2}`}></div>
-
             <PublicHeader />
-            <main id="main-content" className={styles.loginCard}>
+            <main id="main-content" className={styles.loginLayout}>
+                <section className={styles.introduction} aria-labelledby="login-introduction-title">
+                    <span className={styles.eyebrow}>{translateText('login','eyebrow')}</span>
+                    <h1 id="login-introduction-title">{translateText('login','title')}</h1>
+                    <p>{translateText('login','description')}</p>
+                    <ul>{['pointOne','pointTwo','pointThree'].map(key=><li key={key}><CheckCircleOutline fontSize="small" />{translateText('login',key)}</li>)}</ul>
+                </section>
+                <section className={styles.loginCard} aria-labelledby="login-form-title">
                 <div className={styles.brand}>
-                    <BrandLogo size={160} />
-                    <div className={styles.title}>{readData("components.Clerio.LoginView", "LoginView_text_3")}</div>
+                    <BrandLogo size={64} />
+                    <h2 id="login-form-title" className={styles.title}>{readData("components.Clerio.LoginView", "LoginView_text_3")}</h2>
                     <div className={styles.subtitle}>{readData("components.Clerio.LoginView", "LoginView_text_4")}</div>
                 </div>
 
                 {/* Error Message */}
-                {error && <div role="alert" style={{ color: 'var(--flag)', textAlign: 'center', marginBottom: '1rem' }}>{error}</div>}
+                {error && <div role="alert" className={styles.error}>{error}</div>}
 
                 <form className={styles.inputGroup} onSubmit={handleLogin}>
                     <input
@@ -77,6 +84,7 @@ const LoginView = () => {
                 </form>
 
                 <p role="note">{readData("components.Clerio.LoginView", "demoNotice")}</p>
+                </section>
             </main>
 
         </div>

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -13,6 +15,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const ExperienceView = () => {
+    const {t: translateText}=useTranslation();
+
     const { mciScore, vedicFramework, socialFeed, addKudos, showToast } = useHRMS();
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.ExperienceView", "initialState_1"));
     const [newPost, setNewPost] = useState('');
@@ -20,7 +24,7 @@ const ExperienceView = () => {
     const handleShareKudos = (e) => {
         e.preventDefault();
         if (!newPost.trim()) return;
-        showToast('Kudos Shared', 'Your recognition was posted to the company feed with +50 points!', 'success');
+        showToast(translateText("components.Clerio.ExperienceView","text_95e02cd741"),translateText("components.Clerio.ExperienceView","text_9778b2c25d"), 'success');
         setNewPost('');
     };
 
@@ -33,7 +37,7 @@ const ExperienceView = () => {
                     <p>{readData("components.Clerio.ExperienceView", "ExperienceView_text_2")}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className={styles.btnSecondary} onClick={() => showToast('Rewards Store', 'Opening points redemption catalog (AirPods, Wellness passes, Books)...', 'info')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.ExperienceView","text_737e78b17e"),translateText("components.Clerio.ExperienceView","text_95d6d0a015"), 'info')}>
                         <Award size={16} />{readData("components.Clerio.ExperienceView", "ExperienceView_text_3")}</button>
                 </div>
             </div>

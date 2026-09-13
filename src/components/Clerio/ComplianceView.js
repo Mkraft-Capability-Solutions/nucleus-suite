@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -20,6 +22,8 @@ import styles from './ComplianceView.module.css';
 import { launchAction } from '@/lib/action-launcher';
 
 const ComplianceView = () => {
+    const {t: translateText}=useTranslation();
+
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.ComplianceView", "initialState_1")); // 'simulator' | 'calendar' | 'factory_registers' | 'form_f_gratuity' | 'erp_integration' | 'matrix' | 'packs'
 
     const {
@@ -271,7 +275,7 @@ const ComplianceView = () => {
                                     <div className={styles.compVal}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_48")}{newWageBase.toLocaleString()}</div>
                                     <span className={styles.compSub}>
                                         {excessExcluded > 0
-                                            ? `Includes +₹${excessExcluded.toLocaleString()} add-back excess`
+                                            ?translateText("components.Clerio.ComplianceView","text_bab9d39e28", {value1: String(excessExcluded.toLocaleString())})
                                             : readData("components.Clerio.ComplianceView", "display_12")
                                         }
                                     </span>
@@ -298,7 +302,7 @@ const ComplianceView = () => {
                                             <td>{readData("components.Clerio.ComplianceView", "ComplianceView_text_55")}{oldPFEmployer.toLocaleString()}</td>
                                             <td className={styles.boldCell}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_56")}{newPFEmployer.toLocaleString()}</td>
                                             <td className={pfVariance > 0 ? styles.textRed : styles.textGreen}>
-                                                {pfVariance > 0 ? `+ ₹ ${pfVariance.toLocaleString()}/mo` : readData("components.Clerio.ComplianceView", "display_13")}
+                                                {pfVariance > 0 ?translateText("components.Clerio.ComplianceView","text_70966a5717", {value1: String(pfVariance.toLocaleString())}) : readData("components.Clerio.ComplianceView", "display_13")}
                                             </td>
                                         </tr>
                                         <tr>
@@ -309,7 +313,7 @@ const ComplianceView = () => {
                                             <td>{readData("components.Clerio.ComplianceView", "ComplianceView_text_59")}{oldGratuityMonthly.toLocaleString()}</td>
                                             <td className={styles.boldCell}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_60")}{newGratuityMonthly.toLocaleString()}</td>
                                             <td className={gratuityVariance > 0 ? styles.textRed : styles.textGreen}>
-                                                {gratuityVariance > 0 ? `+ ₹ ${gratuityVariance.toLocaleString()}/mo` : readData("components.Clerio.ComplianceView", "display_14")}
+                                                {gratuityVariance > 0 ?translateText("components.Clerio.ComplianceView","text_70966a5717", {value1: String(gratuityVariance.toLocaleString())}) : readData("components.Clerio.ComplianceView", "display_14")}
                                             </td>
                                         </tr>
                                         <tr>
@@ -320,7 +324,7 @@ const ComplianceView = () => {
                                             <td>{readData("components.Clerio.ComplianceView", "ComplianceView_text_63")}{oldPFEmployee.toLocaleString()}</td>
                                             <td className={styles.boldCell}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_64")}{newPFEmployee.toLocaleString()}</td>
                                             <td className={pfVariance > 0 ? styles.textAmber : styles.textGreen}>
-                                                {pfVariance > 0 ? `+ ₹ ${pfVariance.toLocaleString()} to PF` : readData("components.Clerio.ComplianceView", "display_15")}
+                                                {pfVariance > 0 ?translateText("components.Clerio.ComplianceView","text_dc58967752", {value1: String(pfVariance.toLocaleString())}) : readData("components.Clerio.ComplianceView", "display_15")}
                                             </td>
                                         </tr>
                                         <tr>
@@ -331,7 +335,7 @@ const ComplianceView = () => {
                                             <td>{readData("components.Clerio.ComplianceView", "ComplianceView_text_67")}{oldTakeHome.toLocaleString()}</td>
                                             <td className={styles.boldCell}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_68")}{newTakeHome.toLocaleString()}</td>
                                             <td className={pfVariance > 0 ? styles.textAmber : styles.textGreen}>
-                                                {pfVariance > 0 ? `- ₹ ${pfVariance.toLocaleString()}/mo` : readData("components.Clerio.ComplianceView", "display_16")}
+                                                {pfVariance > 0 ?translateText("components.Clerio.ComplianceView","text_ea4562ebf8", {value1: String(pfVariance.toLocaleString())}) : readData("components.Clerio.ComplianceView", "display_16")}
                                             </td>
                                         </tr>
                                     </tbody>
@@ -575,7 +579,7 @@ const ComplianceView = () => {
                                                                         d.mark === 'WO' ? styles.pillOff :
                                                                         d.mark === 'CL' ? styles.pillLeave : styles.pillEL
                                                                     }`}
-                                                                    title={`Day ${d.day}: ${d.mark} (${d.hours}h regular, ${d.ot}h OT)`}
+                                                                    title={translateText("components.Clerio.ComplianceView","text_70b427bc30", {value1: String(d.day), value2: String(d.mark), value3: String(d.hours), value4: String(d.ot)})}
                                                                 >
                                                                     {d.mark === 'P' ? (d.ot > 0 ? readData("components.Clerio.ComplianceView", "display_17") : readData("components.Clerio.ComplianceView", "display_18")) : d.mark}
                                                                 </span>
@@ -1158,21 +1162,7 @@ const ComplianceView = () => {
                         </div>
 
                         <div className={styles.codePreview}>
-                            <pre>{`rule_pack: IN-CENTRAL-WAGES v2026.04.01
-jurisdiction: IN
-effective_from: 2026-04-01
-supersedes: v2025.11.21
-rules:
-  - id: wage_base_definition
-    formula: "MAX(BASIC + DA + RA, TOTAL_REMUNERATION * 0.50)"
-    test_cases: 120
-  - id: overtime_multiplier
-    formula: "HOURLY_WAGE_BASE * 2.0"
-    statutory_ceiling: "125 hours per quarter"
-  - id: bonus_eligibility_ceiling
-    threshold: 21000
-    formula: "MIN(WAGE_BASE, 7000) * 0.0833"
-changelog: "Central Rules notified; overtime allowance confirmed within 50% wage floor computation per MoLE FAQ 16-Mar-2026"`}</pre>
+                            <pre>{translateText("components.Clerio.ComplianceView","text_74ca1223f9")}</pre>
                         </div>
                     </div>
                 </div>

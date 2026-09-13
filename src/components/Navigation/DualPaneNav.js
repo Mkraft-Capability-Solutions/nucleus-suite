@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -25,6 +27,8 @@ export default function DualPaneNav({
     onSelectConsole,
     onSelectTab
 }) {
+    const {t: translateText}=useTranslation();
+
     const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
     const [activeModuleId, setActiveModuleId] = useState(readData("components.Navigation.DualPaneNav", "initialState_2"));
     const [searchQuery, setSearchQuery] = useState('');
@@ -122,7 +126,7 @@ export default function DualPaneNav({
                         </div>
                         <div>
                             <h2 id="navigation-title" className={styles.headerTitle}>{readData("components.Navigation.DualPaneNav", "content_text_136")}</h2>
-                            <p className={styles.headerSubtitle}>{readData("components.Navigation.DualPaneNav", "content_text_137")}{userRole === 'SUPER_ADMIN' ? readData("components.Navigation.DualPaneNav", "display_3") : `Role: ${userRole.replace('_', ' ')}`}
+                            <p className={styles.headerSubtitle}>{readData("components.Navigation.DualPaneNav", "content_text_137")}{userRole === 'SUPER_ADMIN' ? readData("components.Navigation.DualPaneNav", "display_3") :translateText("components.Navigation.DualPaneNav","text_b4a520bc62", {value1: String(userRole.replace('_', ' '))})}
                             </p>
                         </div>
                     </div>
@@ -139,7 +143,7 @@ export default function DualPaneNav({
                             autoFocus
                         />
                         {searchQuery && (
-                            <button aria-label="Clear navigation search" className={styles.clearSearch} onClick={() => setSearchQuery('')}>
+                            <button aria-label={translateText("components.Navigation.DualPaneNav","text_a9e0109bbe")} className={styles.clearSearch} onClick={() => setSearchQuery('')}>
                                 <X sx={{ fontSize: 14 }} />
                             </button>
                         )}

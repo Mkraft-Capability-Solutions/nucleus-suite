@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useMemo } from 'react';
@@ -14,6 +16,8 @@ import WorkflowBuilderModal from './WorkflowBuilderModal';
 import { launchAction } from '@/lib/action-launcher';
 
 const OnboardingView = () => {
+    const {t: translateText}=useTranslation();
+
     const {
         onboardingTasks, completeOnboardingTask, workflows = [], showToast,
         hardwareAssets, allocateHardwareAsset, markAssetReturned,
@@ -247,12 +251,12 @@ const OnboardingView = () => {
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button
                                     className={styles.btnSecondary}
-                                    onClick={() => showToast('Letter Printed', 'Sent formatted letter to system print spooler.', 'success')}
+                                    onClick={() => showToast(translateText("components.Clerio.OnboardingView","text_e589d3921c"),translateText("components.Clerio.OnboardingView","text_2435b5cb6d"), 'success')}
                                 >
                                     <Printer size={14} />{readData("components.Clerio.OnboardingView", "OnboardingView_text_45")}</button>
                                 <button
                                     className={styles.btnPrimary}
-                                    onClick={() => showToast('Letter Exported', `${renderedLetter?.title} saved as encrypted PDF.`, 'success')}
+                                    onClick={() => showToast(translateText("components.Clerio.OnboardingView","text_f2d1f36de1"),translateText("components.Clerio.OnboardingView","text_5e9be7e2b6", {value1: String(renderedLetter?.title)}), 'success')}
                                 >
                                     <Download size={14} />{readData("components.Clerio.OnboardingView", "OnboardingView_text_46")}</button>
                             </div>

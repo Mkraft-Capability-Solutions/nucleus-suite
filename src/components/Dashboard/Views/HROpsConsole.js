@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -14,6 +16,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 export default function HROpsConsole({ onNavigate }) {
+    const {t: translateText}=useTranslation();
+
     const [dismissAnomaly, setDismissAnomaly] = useState(false);
     const [approvalList, setApprovalList] = useState(readData("components.Dashboard.Views.HROpsConsole", "approvalList_1"));
 
@@ -31,11 +35,11 @@ export default function HROpsConsole({ onNavigate }) {
     const handleModalSubmit = ({ id, actionType, remarks, rerouteTargetName, item }) => {
         setApprovalList(prev => prev.filter(a => a.id !== id));
         if (actionType === 'approve') {
-            showToast?.('Request Approved', `Approved ${item.name} (${item.type})${remarks ? ` • Note: ${remarks}` : ''}`, 'success');
+            showToast?.(translateText("components.Dashboard.Views.HROpsConsole","text_e847085d37"),translateText("components.Dashboard.Views.HROpsConsole","text_91801f7d34", {value1: String(item.name), value2: String(item.type), value3: String(remarks ? ` • Note: ${remarks}` : '')}), 'success');
         } else if (actionType === 'reject') {
-            showToast?.('Request Rejected', `Declined ${item.name} (${item.type}) • Reason: ${remarks}`, 'error');
+            showToast?.(translateText("components.Dashboard.Views.HROpsConsole","text_584cb388ca"),translateText("components.Dashboard.Views.HROpsConsole","text_b29b6843fd", {value1: String(item.name), value2: String(item.type), value3: String(remarks)}), 'error');
         } else if (actionType === 'reroute') {
-            showToast?.('Request Re-routed', `Transferred ${item.name} (${item.type}) to ${rerouteTargetName} • Note: ${remarks}`, 'info');
+            showToast?.(translateText("components.Dashboard.Views.HROpsConsole","text_800e839576"),translateText("components.Dashboard.Views.HROpsConsole","text_b32ed95084", {value1: String(item.name), value2: String(item.type), value3: String(rerouteTargetName), value4: String(remarks)}), 'info');
         }
     };
 

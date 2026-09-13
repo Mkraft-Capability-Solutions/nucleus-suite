@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import BrandLogo from '@/components/BrandLogo';
@@ -16,6 +18,8 @@ import { useAuth } from '@/context/AuthContext';
 import { canViewNavigationDomain } from '@/lib/navigation-access';
 
 const LeftDock = ({ activeDomain, activeTab = readData("components.Clerio.LeftDock", "defaultValue_1"), onSelectDomain, onToggleCatalog, showCatalog }) => {
+    const {t: translateText}=useTranslation();
+
     const [isHovered, setIsHovered] = useState(false);
     const { user, isModuleAllowed } = useAuth();
 
@@ -51,7 +55,7 @@ const LeftDock = ({ activeDomain, activeTab = readData("components.Clerio.LeftDo
             aria-label={readData("components.Clerio.LeftDock", "LeftDock_aria-label_18")}
         >
             {/* Top: Logo Mark & Brand Title */}
-            <button type="button" aria-label="Nucleus home"
+            <button type="button" aria-label={translateText("components.Clerio.LeftDock","text_0ab6910b45")}
                 className={styles.logoWrapper}
                 onClick={() => onSelectDomain('dashboard')}
                 title={readData("components.Clerio.LeftDock", "LeftDock_title_19")}

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -13,6 +15,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const PayrollView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         payrollSummary, ewaTransactions, requestEWA, showToast,
         companyLoans, applyForCompanyLoan, repayLoanEMI,
@@ -95,7 +99,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Tally XML Exported', 'Salary_Journal_Feb2026_Tally.xml ready to import directly into Tally Prime.', 'success');
+        showToast(translateText("components.Clerio.PayrollView","text_b32605e3ca"),translateText("components.Clerio.PayrollView","text_f2892a1a8c"), 'success');
     };
 
     // Download NEFT File
@@ -117,7 +121,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('Bank NEFT File Exported', `${run.bankFileRef || readData("components.Clerio.PayrollView", "fallback_1")} generated for direct corporate banking portal upload.`, 'success');
+        showToast(translateText("components.Clerio.PayrollView","text_12359ffbc2"),translateText("components.Clerio.PayrollView","text_5e0472baed", {value1: String(run.bankFileRef || readData("components.Clerio.PayrollView", "fallback_1"))}), 'success');
     };
 
     // Handle Loan Submit
@@ -262,7 +266,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                 <div style={{ fontSize: '0.85rem', color: 'var(--text)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_22")}</div>
                             </div>
                         </div>
-                        <button className={styles.btnSecondary} style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }} onClick={() => showToast('Audit Report', 'All 248 employee calculations passed sanity checks.', 'info')}>{readData("components.Clerio.PayrollView", "PayrollView_text_23")}</button>
+                        <button className={styles.btnSecondary} style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }} onClick={() => showToast(translateText("components.Clerio.PayrollView","text_ae41de725e"),translateText("components.Clerio.PayrollView","text_82fc3c8d2c"), 'info')}>{readData("components.Clerio.PayrollView", "PayrollView_text_23")}</button>
                     </div>
 
                     {/* Top Stat Cards */}
@@ -371,7 +375,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                         <strong style={{ display: 'block', color: 'var(--text)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_52")}</strong>
                                         <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_53")}</span>
                                     </div>
-                                    <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast('Payslip Downloaded', 'Jan 2026 PDF decrypted.', 'success')}>
+                                    <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast(translateText("components.Clerio.PayrollView","text_82e0a1037b"),translateText("components.Clerio.PayrollView","text_1ec3eaf7e4"), 'success')}>
                                         <Download size={14} />{readData("components.Clerio.PayrollView", "PayrollView_text_54")}</button>
                                 </div>
                                 <div className={styles.payslipItem}>
@@ -379,7 +383,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                         <strong style={{ display: 'block', color: 'var(--text)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_55")}</strong>
                                         <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_56")}</span>
                                     </div>
-                                    <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast('Payslip Downloaded', 'Dec 2025 PDF decrypted.', 'success')}>
+                                    <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast(translateText("components.Clerio.PayrollView","text_82e0a1037b"),translateText("components.Clerio.PayrollView","text_dc2d2c9f3c"), 'success')}>
                                         <Download size={14} />{readData("components.Clerio.PayrollView", "PayrollView_text_57")}</button>
                                 </div>
                             </div>
@@ -489,7 +493,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{run.notes}</div>
                                             </td>
                                             <td style={{ fontFamily: 'var(--f-num, monospace)', fontWeight: 600 }}>
-                                                {run.employeeCount} {run.totalHours ? `(${run.totalHours} hrs)` : ''}
+                                                {run.employeeCount} {run.totalHours ?translateText("components.Clerio.PayrollView","text_3ded7b2466", {value1: String(run.totalHours)}) : ''}
                                             </td>
                                             <td style={{ fontFamily: 'var(--f-num, monospace)', fontWeight: 700, color: 'var(--signal)' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_82")}{run.totalDisbursement.toLocaleString()}
                                             </td>
@@ -678,7 +682,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                         <div className={styles.cardHeader}>
                             <h3><CheckSquare size={18} color="var(--info)" />{readData("components.Clerio.PayrollView", "PayrollView_text_132")}</h3>
                             <span className={`${styles.badge} ${liveSettlement?.clearanceStatus.allCleared ? styles.badgeSuccess : styles.badgeDanger}`}>
-                                {liveSettlement?.clearanceStatus.allCleared ? readData("components.Clerio.PayrollView", "display_16") : `⚠️ ${liveSettlement?.clearanceStatus.clearanceProgress}% Complete (${liveSettlement?.clearanceStatus.pendingDepartments.join(', ')} Pending)`}
+                                {liveSettlement?.clearanceStatus.allCleared ? readData("components.Clerio.PayrollView", "display_16") :translateText("components.Clerio.PayrollView","text_e575aef6d0", {value1: String(liveSettlement?.clearanceStatus.clearanceProgress), value2: String(liveSettlement?.clearanceStatus.pendingDepartments.join(', '))})}
                             </span>
                         </div>
 
@@ -796,7 +800,7 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                                     <div style={{ fontSize: '0.82rem', color: liveSettlement.isDisbursementAllowed ? 'var(--signal-ink)' : '#b91c1c' }}>
                                         {liveSettlement.isDisbursementAllowed
                                             ? readData("components.Clerio.PayrollView", "display_19")
-                                            : `⛔ ${liveSettlement.disbursementBlockedReason}`}
+                                            :translateText("components.Clerio.PayrollView","text_292097ff69", {value1: String(liveSettlement.disbursementBlockedReason)})}
                                     </div>
                                 </div>
                                 <div>
@@ -893,9 +897,9 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                             <tbody>
                                 {employees.map(emp => {
                                     const dummyWageRecord = {
-                                        basicSalary: emp.basicSalaryNumeric ? `₹ ${emp.basicSalaryNumeric.toLocaleString()}` : readData("components.Clerio.PayrollView", "display_24"),
-                                        grossSalary: emp.grossSalaryNumeric ? `₹ ${emp.grossSalaryNumeric.toLocaleString()}` : readData("components.Clerio.PayrollView", "display_25"),
-                                        netPayable: emp.grossSalaryNumeric ? `₹ ${Math.round(emp.grossSalaryNumeric * 0.85).toLocaleString()}` : readData("components.Clerio.PayrollView", "display_26"),
+                                        basicSalary: emp.basicSalaryNumeric ?translateText("components.Clerio.PayrollView","text_35cd59d276", {value1: String(emp.basicSalaryNumeric.toLocaleString())}) : readData("components.Clerio.PayrollView", "display_24"),
+                                        grossSalary: emp.grossSalaryNumeric ?translateText("components.Clerio.PayrollView","text_35cd59d276", {value1: String(emp.grossSalaryNumeric.toLocaleString())}) : readData("components.Clerio.PayrollView", "display_25"),
+                                        netPayable: emp.grossSalaryNumeric ?translateText("components.Clerio.PayrollView","text_35cd59d276", {value1: String(Math.round(emp.grossSalaryNumeric * 0.85).toLocaleString())}) : readData("components.Clerio.PayrollView", "display_26"),
                                         otHours: emp.id === 'EMP-009' ? readData("components.Clerio.PayrollView", "display_27") : emp.id === 'EMP-001' ? readData("components.Clerio.PayrollView", "display_28") : readData("components.Clerio.PayrollView", "display_29"),
                                         ...readData("components.Clerio.PayrollView", "dummyWageRecord_fields_192"),
                                         shiftCode: emp.id === 'EMP-009' ? readData("components.Clerio.PayrollView", "display_30") : readData("components.Clerio.PayrollView", "display_31")

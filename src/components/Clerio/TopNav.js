@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -43,6 +45,8 @@ const TopNav = ({
     activeConsole = readData("components.Clerio.TopNav", "defaultValue_1"),
     onSelectConsole
 }) => {
+    const {t: translateText}=useTranslation();
+
     const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
     const { showToast } = useHRMS();
     const userRole = user?.role || readData("components.Clerio.TopNav", "fallback_1");
@@ -99,7 +103,7 @@ const TopNav = ({
     const handleLogout = () => {
         setShowProfileMenu(false);
         logout();
-        showToast('Signed Out', 'You have been logged out of Nucleus HRMS.', 'info');
+        showToast(translateText("components.Clerio.TopNav","text_25941aea4c"),translateText("components.Clerio.TopNav","text_4d158fa9e7"), 'info');
     };
 
     return (
@@ -169,7 +173,7 @@ const TopNav = ({
                                 <div style={{ fontSize: 'var(--t-micro)', color: 'var(--text-2)', marginTop: '0.2rem' }}>
                                     {userRole === 'SUPER_ADMIN'
                                         ? readData("components.Clerio.TopNav", "display_3")
-                                        : `Filtered by RBAC policy for ${userRole.replace('_', ' ')}`
+                                        :translateText("components.Clerio.TopNav","text_f0ea68918d", {value1: String(userRole.replace('_', ' '))})
                                     }
                                 </div>
                             </div>
@@ -184,7 +188,7 @@ const TopNav = ({
                                                 onSelectConsole(c.id);
                                                 if (onTabChange) onTabChange('dashboard', 'dashboard', c.id.toLowerCase());
                                                 setShowConsoleMenu(false);
-                                                showToast('Console Switched', `Loaded ${c.title} (${c.id}).`, 'info');
+                                                showToast(translateText("components.Clerio.TopNav","text_8290d65752"),translateText("components.Clerio.TopNav","text_a00b1786e3", {value1: String(c.title), value2: String(c.id)}), 'info');
                                             }}
                                         >
                                             <span className={styles.consoleItemBadge}>{c.id}</span>

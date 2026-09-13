@@ -15,5 +15,5 @@ for(const path of files){
  }
  visit(ast);if(labels.length||snapshotReads)findings.push({path,snapshotReads,hardcodedLabelLocations:labels});
 }
-const report={status:'not-refactored',scope:'Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.',snapshotReads:findings.reduce((n,f)=>n+f.snapshotReads,0),directLabelLocations:findings.reduce((n,f)=>n+f.hardcodedLabelLocations.length,0),files:findings};
+const report={status:findings.some(file=>file.hardcodedLabelLocations.length)?'direct-jsx-gaps':'direct-jsx-covered',scope:'Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.',snapshotReads:findings.reduce((n,f)=>n+f.snapshotReads,0),directLabelLocations:findings.reduce((n,f)=>n+f.hardcodedLabelLocations.length,0),files:findings};
 writeFileSync('plan/frontend-live-gap-register.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({files:findings.length,snapshotReads:report.snapshotReads,directLabelLocations:report.directLabelLocations}));

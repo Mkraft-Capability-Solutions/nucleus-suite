@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -16,6 +18,8 @@ function ApprovalActionForm({
     initialAction = readData("components.Dashboard.Modals.ApprovalActionModal", "defaultValue_1"),
     onSubmit
 }) {
+    const {t: translateText}=useTranslation();
+
     const [actionType, setActionType] = useState(initialAction);
     const [remarks, setRemarks] = useState('');
     const [rerouteTarget, setRerouteTarget] = useState('');
@@ -47,7 +51,7 @@ function ApprovalActionForm({
         // 2. REJECT: Remarks is COMPULSORY
         if (actionType === 'reject') {
             if (!remarks.trim()) {
-                setError('Rejection remark is compulsory. Please enter a valid reason for declining this request.');
+                setError(translateText("components.Dashboard.Modals.ApprovalActionModal","text_98b1c338f2"));
                 return;
             }
             onSubmit({
@@ -63,11 +67,11 @@ function ApprovalActionForm({
         // 3. RE-ROUTE: Both Target and Remarks are COMPULSORY
         if (actionType === 'reroute') {
             if (!rerouteTarget) {
-                setError('Re-route target is compulsory. Please select a designated approver from the list.');
+                setError(translateText("components.Dashboard.Modals.ApprovalActionModal","text_87a01de2af"));
                 return;
             }
             if (!remarks.trim()) {
-                setError('Re-route handover remark is compulsory. Please provide context for the new approver.');
+                setError(translateText("components.Dashboard.Modals.ApprovalActionModal","text_ce36031d79"));
                 return;
             }
 

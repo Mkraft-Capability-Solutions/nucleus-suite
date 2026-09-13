@@ -2900,7 +2900,7 @@
     "key": "content_text_23",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_23",
-    "sourceHash": "a238f0789b2ef375433d2f7f6a0b64879a4b8e0f318ab8fccde77223741fd57f",
+    "sourceHash": "de99712294713ecbc3691de3cba65687d1257601099439c7c85a11c600b4f33f",
     "classification": "label-candidate"
   },
   {
@@ -2908,7 +2908,7 @@
     "key": "content_text_24",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_24",
-    "sourceHash": "16906b6f38272ff350813f302de7eaa0947417dbef3047337ca27e84b25aa268",
+    "sourceHash": "d575b5ac673f9d109e832565c1c5b39f556ab7e7a865145962a37b1b3450cef0",
     "classification": "label-candidate"
   },
   {
@@ -2916,7 +2916,7 @@
     "key": "content_text_25",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_25",
-    "sourceHash": "596e57cf4f45127df5b96c135d41e88b28ace4a5f6678222836ed86ae546fae4",
+    "sourceHash": "7fc32aa4f4d541d5a9eec2c16de503d12b4524219c1a8bddae334aface313eab",
     "classification": "label-candidate"
   },
   {
@@ -2924,7 +2924,7 @@
     "key": "content_text_26",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_26",
-    "sourceHash": "42d2a4b0687b0668581dcffb16c0f57d063999c6e3d95309b2d1041034f2ef39",
+    "sourceHash": "24d79bab47b5ee32e3c0f95a5d27bd9921fc3be2ee96e76e8f1a2ede78ea8aee",
     "classification": "label-candidate"
   },
   {
@@ -2948,7 +2948,7 @@
     "key": "content_text_29",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_29",
-    "sourceHash": "9f421a570c8fe29c114a9d3ee44bbef74a3472f6e54192c39e0cfc6ba8616342",
+    "sourceHash": "c25337055464f8d31fb1498bc94025cba5eae3b0e1cf07741f09f8b873d00103",
     "classification": "label-candidate"
   },
   {
@@ -3380,7 +3380,7 @@
     "key": "content_text_83",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_83",
-    "sourceHash": "e9cac33204473ae768d2f44cfe8e60d458ae1f1829bc0d7eddd72b99ebcffee4",
+    "sourceHash": "49cd5e2740f8189e69a0b7b0bb548752080b6ddd358fcbde9876800f2dff5454",
     "classification": "label-candidate"
   },
   {
@@ -3396,7 +3396,7 @@
     "key": "content_text_85",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_85",
-    "sourceHash": "fdf32ee526b5bd7772fc51979a344557a0e7d29c2147386efa40386b05da0d5a",
+    "sourceHash": "7c54dab21763d2e89e8ca7bc23bedbe2010683fdc54997ae9f9d633db77e53f8",
     "classification": "label-candidate"
   },
   {
@@ -3404,7 +3404,7 @@
     "key": "content_text_86",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_86",
-    "sourceHash": "fda2db1518513375d18f2f69a3e592d8abb47e93c6b33f95247ace14475149e4",
+    "sourceHash": "8a1c5c0729003b7c6f2ec8fdc36d8e634836b5ec84917582797d22668974a651",
     "classification": "label-candidate"
   },
   {
@@ -3412,7 +3412,7 @@
     "key": "content_text_87",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_87",
-    "sourceHash": "64458da94dbc08d6fa3c2286622bb23dac6113a6b745d26667064885bd73e648",
+    "sourceHash": "59bc23870aa3c7e03be4e676e26021486e7aa8bf68ab45c3bbc27dca08354852",
     "classification": "label-candidate"
   },
   {
@@ -3420,7 +3420,7 @@
     "key": "content_text_88",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_88",
-    "sourceHash": "486a5b2395444df45fd14ab8e59ba86c1c24fc144faf4bd2c34bc87e5a07a1f4",
+    "sourceHash": "6c3f6998290fb3b81db802dd8b7b4a4361968acdc4108966917efb11040b5eef",
     "classification": "label-candidate"
   },
   {
@@ -3436,7 +3436,7 @@
     "key": "content_text_90",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_90",
-    "sourceHash": "aa60413262b65e5bc80081eb057da8305c84010253278f85a49b6cac88605811",
+    "sourceHash": "9de7fb1644adbfda31d75f0042077024ffd0c937f06aaaf96aaebf98395b7f50",
     "classification": "label-candidate"
   },
   {
@@ -3444,7 +3444,7 @@
     "key": "content_text_91",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_91",
-    "sourceHash": "d0142ba66a214439c55a9336cc7d82e21dfa84340ca4715a33b0c8da849971f0",
+    "sourceHash": "74dc0b6270b5512913019b3c5ea3cfbdf13b285d6e6d14041fc6e43ff1c3f720",
     "classification": "label-candidate"
   },
   {
@@ -3460,7 +3460,7 @@
     "key": "content_text_93",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_93",
-    "sourceHash": "16ca152ae860b0ebff6352764622f39713d2f8c3fbfb0a76cd85110556ddd719",
+    "sourceHash": "6eb5d2b8f50921db02afb38ddf9aa6b8170f599850d05bc0daa9cf78a12ea3be",
     "classification": "label-candidate"
   },
   {
@@ -3468,7 +3468,7 @@
     "key": "content_text_94",
     "sourceFile": "src/data/ui/components.Clerio.AccessControlView.json",
     "sourcePointer": "/content_text_94",
-    "sourceHash": "104e3a7a61aeadd26239446be5c01e617248d198e8e3d918e5c23795d43c7070",
+    "sourceHash": "183f54fdcbc2e5ad45da823c42b36c45ac8c383d90ee4e9e21cc16f00024e0f3",
     "classification": "label-candidate"
   },
   {

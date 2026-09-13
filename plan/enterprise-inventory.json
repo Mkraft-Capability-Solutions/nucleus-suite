@@ -265,6 +265,7 @@
     "src/components/Navigation/DualPaneNav.js",
     "src/components/Providers.js",
     "src/components/Website/ContactForm.tsx",
+    "src/components/Website/HomePreview.tsx",
     "src/components/Website/PublicHeader.tsx",
     "src/components/Website/PublicPage.tsx",
     "src/components/WorkspaceDataBoundary.js",
@@ -278,6 +279,7 @@
     "src/context/AppearanceContext.tsx",
     "src/context/AuthContext.js",
     "src/context/HRMSContext.js",
+    "src/context/I18nContext.tsx",
     "src/context/PublicSiteContext.tsx"
   ],
   "services": [
@@ -318,6 +320,7 @@
     "src/services/erpAndComplianceService.js",
     "src/services/establishmentService.js",
     "src/services/leaveEngine.js",
+    "src/services/localization.ts",
     "src/services/module-service.mjs",
     "src/services/payrollAdjacenciesService.js",
     "src/services/public-content.ts",

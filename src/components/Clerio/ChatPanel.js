@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -10,6 +12,8 @@ import styles from './ChatPanel.module.css';
 const initialConversations = readData("components.Clerio.ChatPanel", "initialConversations_1");
 
 const ChatPanel = ({ onClose }) => {
+    const {t: translateText}=useTranslation();
+
     const [activeChannel, setActiveChannel] = useState(readData("components.Clerio.ChatPanel", "initialState_1"));
     const [conversations, setConversations] = useState(initialConversations);
     const [inputValue, setInputValue] = useState('');
@@ -141,7 +145,7 @@ const ChatPanel = ({ onClose }) => {
                 <input
                     type="text"
                     className={styles.chatInput}
-                    placeholder={`Message ${currentConv.name}...`}
+                    placeholder={translateText("components.Clerio.ChatPanel","text_d869d3fc0f", {value1: String(currentConv.name)})}
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                 />

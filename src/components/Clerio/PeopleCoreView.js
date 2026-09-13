@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
@@ -14,6 +16,8 @@ import { launchAction } from '@/lib/action-launcher';
 import { getWorkbookRowsForModule, recordCellValue } from '@/lib/demo-workbook-adapter.mjs';
 
 const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const { positions, documents, auditLogs, showToast } = useHRMS();
     const [activeSection, setActiveSection] = useState(readData("components.Clerio.PeopleCoreView", "initialState_1"));
     const [searchQuery, setSearchQuery] = useState('');
@@ -67,7 +71,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <ShieldCheck size={15} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_4")}</button>
                     )}
-                    <button className={styles.btnSecondary} onClick={() => showToast('Export Initialized', 'Exporting People Core records to CSV...', 'info')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.PeopleCoreView","text_dfc8f0d02f"),translateText("components.Clerio.PeopleCoreView","text_b64285281e"), 'info')}>
                         <Download size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_5")}</button>
                     <button className={styles.btnPrimary} onClick={() => launchAction('employee')}>
                         <Plus size={16} />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_6")}</button>
@@ -221,7 +225,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                                             <button
                                                 className={styles.btnSecondary}
                                                 style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                                                onClick={() => showToast('Profile Opened', `Viewing complete dossier for ${emp.name}`, 'info')}
+                                                onClick={() => showToast(translateText("components.Clerio.PeopleCoreView","text_1614058fbf"),translateText("components.Clerio.PeopleCoreView","text_69fc081ae6", {value1: String(emp.name)}), 'info')}
                                             >{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_30")}</button>
                                         </td>
                                     </tr>
@@ -354,7 +358,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                                         <td>{doc.expiry}</td>
                                         <td><span className={`${styles.badge} ${styles.badgeActive}`}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_67")}</span></td>
                                         <td>
-                                            <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast('Secure Download', 'Decrypted securely for local preview.', 'success')}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_68")}</button>
+                                            <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }} onClick={() => showToast(translateText("components.Clerio.PeopleCoreView","text_1ee270b569"),translateText("components.Clerio.PeopleCoreView","text_e15db7c501"), 'success')}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_68")}</button>
                                         </td>
                                     </tr>
                                 ))}
@@ -465,7 +469,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                                 className={styles.btnPrimary}
                                 onClick={() => {
                                     setManagerOverrides((current) => ({ ...current, [reassignTarget.id]: selectedNewManager }));
-                                    showToast('Reporting manager updated', `${reassignTarget.name} now reports to ${selectedNewManager}.`, 'success');
+                                    showToast(translateText("components.Clerio.PeopleCoreView","text_353f98aa9a"),translateText("components.Clerio.PeopleCoreView","text_2703bfa588", {value1: String(reassignTarget.name), value2: String(selectedNewManager)}), 'success');
                                     setReassignTarget(null);
                                 }}
                             >{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_85")}</button>

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -11,6 +13,8 @@ import styles from './AttendanceView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
 const AttendanceView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         attendance,
         attendanceAnomalies,
@@ -113,7 +117,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                         style={{ border: '1px solid rgba(37, 99, 235, 0.3)', color: '#2563eb' }}
                     >
                         <KeyRound size={15} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_10")}</button>
-                    <button className={styles.btnSecondary} onClick={() => showToast('Attendance Export', 'Monthly ledger exported with break reports.', 'info')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_bf34462856"),translateText("components.Clerio.AttendanceView","text_0bf6412031"), 'info')}>
                         <FileText size={16} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_11")}</button>
                 </div>
             </div>
@@ -134,7 +138,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                 <button
                     className={styles.btnSecondary}
                     style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
-                    onClick={() => showToast('Ruleset Verified', 'All 26 HR demo rule assertions passing at 100% deterministic accuracy.', 'success')}
+                    onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_e1bbe08261"),translateText("components.Clerio.AttendanceView","text_06d3452f42"), 'success')}
                 >
                     <CheckCircle size={14} color="#16a34a" />{readData("components.Clerio.AttendanceView", "AttendanceView_text_16")}</button>
             </div>
@@ -175,7 +179,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                             <span className={styles.statLabel}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_23")}</span>
                             <span className={styles.statValue}>{attendance.totalHours}</span>
                             <span className={styles.statSub}>
-                                {attendance.status === 'present' ? `🟢 Checked In (${attendance.punchInTime})` : readData("components.Clerio.AttendanceView", "display_6")}
+                                {attendance.status === 'present' ?translateText("components.Clerio.AttendanceView","text_48c93fbf08", {value1: String(attendance.punchInTime)}) : readData("components.Clerio.AttendanceView", "display_6")}
                             </span>
                         </div>
                         <div className={styles.statCard}>
@@ -201,7 +205,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                     {attendanceAnomalies.length}{readData("components.Clerio.AttendanceView", "AttendanceView_text_31")}</div>
                             </div>
                         </div>
-                        <button className={styles.anomalyBtn} onClick={() => showToast('Anomaly Review', 'Opening anomaly details...', 'info')}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_32")}</button>
+                        <button className={styles.anomalyBtn} onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_9f40e7d4cc"),translateText("components.Clerio.AttendanceView","text_13f6644330"), 'info')}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_32")}</button>
                     </div>
 
                     {/* Main Calendar View */}
@@ -445,7 +449,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                             </div>
                             <button
                                 className={styles.btnSecondary}
-                                onClick={() => showToast('Recomputation Result', 'Punch intervals 08:00 to 03:20 verified: 19h 20m span, 45m dinner break deducted, 10h 35m OT computed.', 'success')}
+                                onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_c905026590"),translateText("components.Clerio.AttendanceView","text_de6042fe12"), 'success')}
                             >
                                 <RefreshCw size={14} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_84")}</button>
                         </div>

@@ -414,3 +414,8 @@ input, select, textarea { background-color: var(--card); }
 
 :root{--on-signal:#fff}
 [data-theme="dark"]{--on-signal:#10222f}
+
+/* Shared layout primitives; colors remain owned by the appearance catalog. */
+:root{--public-content-width:1240px;--login-card-width:440px;--login-intro-width:520px;--login-column-gap:clamp(32px,6vw,88px);--login-section-padding:64px 30px;--login-card-padding:36px;--space-page-bottom:48px;--radius-card:20px;--radius-control:10px}
+
+:root{--brand-logo-surface:#fff}

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -11,6 +13,8 @@ import styles from './RecruitmentView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
 const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         candidates, moveCandidate, showToast,
         positions, createJobRequisition, sanctionedQuotas,
@@ -264,7 +268,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                             <span style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_36")}{cap.quotaInfo.budgetCode}</span>
                                         </div>
                                         <span className={`${styles.badge} ${cap.isAtCapacity ? styles.badgeDanger : fillPercent > 75 ? styles.badgeWarning : styles.badgeSuccess}`}>
-                                            {cap.isAtCapacity ? readData("components.Clerio.RecruitmentView", "display_11") : `${cap.availableVacancies} Vacancies`}
+                                            {cap.isAtCapacity ? readData("components.Clerio.RecruitmentView", "display_11") :translateText("components.Clerio.RecruitmentView","text_ac513560df", {value1: String(cap.availableVacancies)})}
                                         </span>
                                     </div>
 

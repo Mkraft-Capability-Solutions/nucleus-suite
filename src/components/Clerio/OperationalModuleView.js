@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import Dialog from '@mui/material/Dialog';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
@@ -46,6 +48,8 @@ function recordValue(record, column) {
 }
 
 export default function OperationalModuleView({ module, onNavigate }) {
+    const {t: translateText}=useTranslation();
+
     const [records, setRecords] = useState(() => fallbackRows(module));
     const [selected, setSelected] = useState(null);
     const [loading, setLoading] = useState(Boolean(module.endpoint) && !getWorkbookRowsForModule(module.id).length);
@@ -99,7 +103,7 @@ export default function OperationalModuleView({ module, onNavigate }) {
         setSelected(newRecord);
         setIsCreateOpen(false);
         setValues({});
-        setNotice(`${module.title} record created in the workspace. Connect this module's create action to its API command when the relevant backend write contract is enabled.`);
+        setNotice(translateText("components.Clerio.OperationalModuleView","text_1f94abc47d", {value1: String(module.title)}));
     };
 
     const transition = (state) => {
@@ -107,7 +111,7 @@ export default function OperationalModuleView({ module, onNavigate }) {
         const next = { ...selectedRecord, status: state, ...readData("components.Clerio.OperationalModuleView", "next_fields_4") };
         setRecords((current) => current.map((record) => record.id === selectedRecord.id ? next : record));
         setSelected(next);
-        setNotice(`State updated to ${state}. The audit entry is visible in this record detail.`);
+        setNotice(translateText("components.Clerio.OperationalModuleView","text_942fc1b03f", {value1: String(state)}));
     };
 
     return (
@@ -134,8 +138,8 @@ export default function OperationalModuleView({ module, onNavigate }) {
             </div>
 
             <div className={styles.layout}>
-                <section className={styles.listCard} aria-label={`${module.title} records`}>
-                    <div className={styles.cardTitle}><div><h2>{readData("components.Clerio.OperationalModuleView", "content_text_10")}</h2><p>{loading ? readData("components.Clerio.OperationalModuleView", "display_1") : `${records.length} records in the current scope`}</p></div><FileText size={19} /></div>
+                <section className={styles.listCard} aria-label={translateText("components.Clerio.OperationalModuleView","text_247374fc3d", {value1: String(module.title)})}>
+                    <div className={styles.cardTitle}><div><h2>{readData("components.Clerio.OperationalModuleView", "content_text_10")}</h2><p>{loading ? readData("components.Clerio.OperationalModuleView", "display_1") :translateText("components.Clerio.OperationalModuleView","text_de86a6588b", {value1: String(records.length)})}</p></div><FileText size={19} /></div>
                     <div className={styles.tableWrap}>
                         <table>
                             <thead><tr>{module.columns.map((column) => <th key={column}>{column}</th>)}<th aria-label={readData("components.Clerio.OperationalModuleView", "content_aria-label_11")} /></tr></thead>

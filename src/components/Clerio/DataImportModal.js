@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -47,6 +49,8 @@ function inferMappings(currentFile) {
 }
 
 const DataImportModal = ({ isOpen, onClose }) => {
+    const {t: translateText}=useTranslation();
+
     const { ingestMappedData, showToast } = useHRMS();
 
     const [step, setStep] = useState(readData("components.Clerio.DataImportModal", "initialState_1")); // 1: Upload, 2: Mapping, 3: Validation, 4: Complete
@@ -83,7 +87,7 @@ const DataImportModal = ({ isOpen, onClose }) => {
     const handleIngestCommit = () => {
         const mappedRows = getMappedRows();
         if (!mappedRows.some(r => r.empId)) {
-            showToast('Mapping Error', 'Please map at least one column to Employee ID so records can synchronize.', 'warning');
+            showToast(translateText("components.Clerio.DataImportModal","text_7742f74fef"),translateText("components.Clerio.DataImportModal","text_30bad5d803"), 'warning');
             return;
         }
 
@@ -145,7 +149,7 @@ const DataImportModal = ({ isOpen, onClose }) => {
                         <>
                             <div
                                 className={styles.uploadArea}
-                                onClick={() => showToast('File Attached', `Pre-loaded ${currentFile.fileName} with ${currentFile.sampleRows.length} rows.`, 'info')}
+                                onClick={() => showToast(translateText("components.Clerio.DataImportModal","text_f3fac34f42"),translateText("components.Clerio.DataImportModal","text_8160746ae1", {value1: String(currentFile.fileName), value2: String(currentFile.sampleRows.length)}), 'info')}
                             >
                                 <UploadCloud size={40} color="#2563eb" />
                                 <div>

@@ -29,7 +29,7 @@ const AppContent = () => {
 
   // Active navigation states
   const [activeDomain, setActiveDomain] = useState(readData("components.AppWorkspace", "initialState_1"));
-  const [activeSubFeature, setActiveSubFeature] = useState(readData("components.AppWorkspace", "initialState_2"));
+  const [activeSubFeature, setActiveSubFeature] = useState(user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"));
   const [activeTab, setActiveTab] = useState(readData("components.AppWorkspace", "initialState_3"));
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);

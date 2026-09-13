@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -11,6 +13,8 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const LearningView = ({ onNavigate, onSelectConsole }) => {
+    const {t: translateText}=useTranslation();
+
     const { courses, setCourses, showToast } = useHRMS();
 
     return (
@@ -42,7 +46,7 @@ const LearningView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <Sparkles size={15} />{readData("components.Clerio.LearningView", "LearningView_text_4")}</button>
                     )}
-                    <button className={styles.btnSecondary} onClick={() => showToast('Marketplace', 'Opening Coursera & LinkedIn Learning portal...', 'info')}>
+                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.LearningView","text_c608981d8d"),translateText("components.Clerio.LearningView","text_37e8f75dea"), 'info')}>
                         <ExternalLink size={16} />{readData("components.Clerio.LearningView", "LearningView_text_5")}</button>
                     <button className={styles.btnPrimary} onClick={() => launchAction('learningPath')}>
                         <Sparkles size={16} />{readData("components.Clerio.LearningView", "LearningView_text_6")}</button>
@@ -87,7 +91,7 @@ const LearningView = ({ onNavigate, onSelectConsole }) => {
                             <button
                                 className={styles.btnPrimary}
                                 style={{ width: '100%', justifyContent: 'center', marginTop: '0.5rem', padding: '0.5rem' }}
-                                onClick={() => showToast('Launching Lesson', `Opening player for ${course.title}...`, 'info')}
+                                onClick={() => showToast(translateText("components.Clerio.LearningView","text_19ff47baa3"),translateText("components.Clerio.LearningView","text_933253e7ee", {value1: String(course.title)}), 'info')}
                             >
                                 <Play size={14} /> {course.progress === 100 ? readData("components.Clerio.LearningView", "display_1") : readData("components.Clerio.LearningView", "display_2")}
                             </button>

@@ -1,4 +1,6 @@
 "use client";
+import {useTranslation} from '@/context/I18nContext';
+
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState } from 'react';
@@ -11,6 +13,8 @@ import styles from './CMSModal.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
 const CMSModal = ({ isOpen, onClose }) => {
+    const {t: translateText}=useTranslation();
+
     const {
         announcements = [],
         addAnnouncement,
@@ -43,7 +47,7 @@ const CMSModal = ({ isOpen, onClose }) => {
     const handlePublishAnnouncement = (e) => {
         e.preventDefault();
         if (!annTitle.trim() || !annContent.trim()) {
-            showToast('Missing Fields', 'Please enter a title and description for the notice.', 'warning');
+            showToast(translateText("components.Clerio.CMSModal","text_757df777f4"),translateText("components.Clerio.CMSModal","text_c6c2c302a8"), 'warning');
             return;
         }
 
@@ -65,12 +69,12 @@ const CMSModal = ({ isOpen, onClose }) => {
     const handleUploadPolicy = (e) => {
         e.preventDefault();
         if (!polTitle.trim()) {
-            showToast('Title Required', 'Please enter a name for the policy document.', 'warning');
+            showToast(translateText("components.Clerio.CMSModal","text_8583d21cc2"),translateText("components.Clerio.CMSModal","text_679826ca7a"), 'warning');
             return;
         }
 
         if (!uploadedFile) {
-            showToast('File Required', 'Select a PDF before adding the policy.', 'warning');
+            showToast(translateText("components.Clerio.CMSModal","text_b895ae2a32"),translateText("components.Clerio.CMSModal","text_e2b87a0e7f"), 'warning');
             return;
         }
         addPolicyDocument({
@@ -301,7 +305,7 @@ const CMSModal = ({ isOpen, onClose }) => {
                                                 const file = event.target.files?.[0];
                                                 if (!file) return;
                                                 if (file.type !== 'application/pdf' || file.size > 10 * 1024 * 1024) {
-                                                    showToast('Invalid File', 'Select a PDF smaller than 10 MB.', 'warning');
+                                                    showToast(translateText("components.Clerio.CMSModal","text_5cd52a394a"),translateText("components.Clerio.CMSModal","text_4e7a480723"), 'warning');
                                                     event.target.value = '';
                                                     return;
                                                 }
@@ -354,7 +358,7 @@ const CMSModal = ({ isOpen, onClose }) => {
                                             <div className={styles.itemActions}>
                                                 <button
                                                     className={styles.btnSecondary}
-                                                    onClick={() => showToast('Downloading Handbook', `Downloading ${doc.title}...`, 'info')}
+                                                    onClick={() => showToast(translateText("components.Clerio.CMSModal","text_a968d28cf0"),translateText("components.Clerio.CMSModal","text_0e540827a4", {value1: String(doc.title)}), 'info')}
                                                     style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
                                                 >
                                                     <Download size={14} />{readData("components.Clerio.CMSModal", "CMSModal_text_58")}</button>

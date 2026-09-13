@@ -1,6 +1,6 @@
 {
   "scope": "Static intrinsic forms/numeric inputs and both shared metadata engines; click-only domain commands require separate validation contracts.",
-  "filesScanned": 440,
+  "filesScanned": 445,
   "forms": [
     {
       "file": "src/components/Website/ContactForm.tsx",
@@ -8,23 +8,38 @@
       "submit": "{download}"
     },
     {
-      "file": "src/components/Clerio/ActionFormModal.js",
-      "line": 68,
+      "file": "src/components/Dashboard/Views/EmployeeHome.js",
+      "line": 975,
+      "submit": "{handleAddLog}"
+    },
+    {
+      "file": "src/components/Dashboard/Modals/ApprovalActionModal.js",
+      "line": 138,
+      "submit": "{handleSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 160,
       "submit": "{submit}"
     },
     {
-      "file": "src/components/Clerio/LeaveView.js",
-      "line": 25,
-      "submit": "{onSubmit}"
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 603,
+      "submit": "{handleAssetSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 714,
+      "submit": "{handleAwardSubmit}"
     },
     {
       "file": "src/components/Clerio/CMSModal.js",
-      "line": 128,
+      "line": 132,
       "submit": "{handlePublishAnnouncement}"
     },
     {
       "file": "src/components/Clerio/CMSModal.js",
-      "line": 250,
+      "line": 254,
       "submit": "{handleUploadPolicy}"
     },
     {
@@ -38,157 +53,142 @@
       "submit": "{handleCreateProject}"
     },
     {
-      "file": "src/components/Clerio/OperationalModuleView.js",
-      "line": 156,
-      "submit": "{submit}"
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 599,
-      "submit": "{handleAssetSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 710,
-      "submit": "{handleAwardSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/PayrollView.js",
-      "line": 337,
-      "submit": "{handleEWASubmit}"
-    },
-    {
-      "file": "src/components/Clerio/PayrollView.js",
-      "line": 968,
-      "submit": "{handleLoanSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/ChatPanel.js",
-      "line": 140,
-      "submit": "{handleSend}"
-    },
-    {
-      "file": "src/components/Clerio/RecruitmentView.js",
-      "line": 495,
-      "submit": "{handleRequisitionSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/RecruitmentView.js",
-      "line": 660,
-      "submit": "{handleReferralSubmit}"
+      "file": "src/components/Clerio/LeaveView.js",
+      "line": 27,
+      "submit": "{onSubmit}"
     },
     {
       "file": "src/components/Clerio/AttendanceView.js",
-      "line": 583,
+      "line": 587,
       "submit": "{handleCreateGatePass}"
     },
     {
       "file": "src/components/Clerio/ExperienceView.js",
-      "line": 177,
+      "line": 181,
       "submit": "{handleShareKudos}"
     },
     {
       "file": "src/components/Clerio/WorkflowBuilderModal.js",
-      "line": 323,
+      "line": 325,
       "submit": "{handleSaveNodeEdits}"
     },
     {
       "file": "src/components/Clerio/LoginView.js",
-      "line": 49,
+      "line": 56,
       "submit": "{handleLogin}"
     },
     {
       "file": "src/components/Clerio/ComplianceView.js",
-      "line": 1190,
+      "line": 1180,
       "submit": "{(e) => {\n                            e.preventDefault();\n                            reportFactoryAccidentForm18(accidentForm);\n                            setShowAccidentModal(false);\n                        }}"
     },
     {
-      "file": "src/components/Dashboard/Views/EmployeeHome.js",
-      "line": 971,
-      "submit": "{handleAddLog}"
+      "file": "src/components/Clerio/RecruitmentView.js",
+      "line": 499,
+      "submit": "{handleRequisitionSubmit}"
     },
     {
-      "file": "src/components/Dashboard/Modals/ApprovalActionModal.js",
-      "line": 134,
-      "submit": "{handleSubmit}"
+      "file": "src/components/Clerio/RecruitmentView.js",
+      "line": 664,
+      "submit": "{handleReferralSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 341,
+      "submit": "{handleEWASubmit}"
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 972,
+      "submit": "{handleLoanSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/ChatPanel.js",
+      "line": 144,
+      "submit": "{handleSend}"
+    },
+    {
+      "file": "src/components/Clerio/ActionFormModal.js",
+      "line": 68,
+      "submit": "{submit}"
     }
   ],
   "numeric": [
     {
-      "file": "src/components/Clerio/OperationalModuleView.js",
-      "line": 166,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 666,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 740,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/PayrollView.js",
-      "line": 338,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/PayrollView.js",
-      "line": 991,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/PayrollView.js",
-      "line": 1009,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 174,
-      "type": "\"range\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 190,
-      "type": "\"range\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 206,
-      "type": "\"range\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 222,
-      "type": "\"range\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 238,
-      "type": "\"range\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/ComplianceView.js",
-      "line": 1248,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
       "file": "src/components/Dashboard/Views/EmployeeHome.js",
-      "line": 1023,
+      "line": 1027,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 170,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 670,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 744,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 178,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 194,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 210,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 226,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 242,
+      "type": "\"range\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/ComplianceView.js",
+      "line": 1238,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 342,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 995,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/PayrollView.js",
+      "line": 1013,
       "type": "\"number\"",
       "missing": []
     }
