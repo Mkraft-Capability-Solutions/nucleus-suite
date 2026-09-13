@@ -251,27 +251,27 @@
 }
 
 .badgeSuccess {
-    background: rgba(16, 185, 129, 0.12);
-    color: #05CD99;
-    border: 1px solid rgba(16, 185, 129, 0.3);
+    background: var(--status-ok-wash);
+    color: var(--status-ok-ink);
+    border: 1px solid color-mix(in srgb, var(--status-ok-ink) 25%, transparent);
 }
 
 .badgeWarning {
-    background: rgba(245, 158, 11, 0.12);
-    color: #f59e0b;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+    background: var(--pending-wash);
+    color: var(--pending);
+    border: 1px solid color-mix(in srgb, var(--pending) 25%, transparent);
 }
 
 .badgeDanger {
-    background: rgba(239, 68, 68, 0.12);
-    color: #ef4444;
-    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: var(--flag-wash);
+    color: var(--flag);
+    border: 1px solid color-mix(in srgb, var(--flag) 25%, transparent);
 }
 
 .badgePurple {
-    background: rgba(139, 92, 246, 0.12);
-    color: #8b5cf6;
-    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border: 1px solid color-mix(in srgb, var(--signal-ink) 25%, transparent);
 }
 
 .badgeInfo {

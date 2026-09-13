@@ -27,10 +27,10 @@ export default function HomePreview({copy}: {copy:Preview}) {
         <div className={styles.workspace}>
             <aside aria-hidden="true"><DashboardOutlined/><PeopleOutline/><CalendarTodayOutlined/></aside>
             <div id={`${id}-panel`} role="tabpanel" aria-labelledby={`${id}-tab-${selected}`} className={styles.panel} tabIndex={0}>
-                <div className={styles.kicker}>{copy.label}</div><h2>{role.greeting}</h2><p>{role.description}</p>
+                <div key={role.id} className={styles.roleContent}><div className={styles.kicker}>{copy.label}</div><h2>{role.greeting}</h2><p>{role.description}</p>
                 <div className={styles.cards}>{role.cards.map(card=><article key={card.label}><span>{card.label}</span><h3>{card.value}</h3><p>{card.detail}</p></article>)}</div>
                 <div className={styles.queue}><h3>{copy.queueLabel}</h3>{role.tasks.map(task=><div key={task}><CheckCircleOutline fontSize="small"/><span>{task}</span><ArrowForward fontSize="small" aria-hidden="true"/></div>)}</div>
-            </div>
+            </div></div>
         </div>
     </section>;
 }

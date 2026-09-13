@@ -21,6 +21,13 @@ export default function PublicHeader({content, currentPath}: {content?: PublicNa
     </nav>;
     return <header className={styles.header}>
         <Link className={styles.brand} href="/" aria-label={translateText("public","home")}><Image src="/images/logo.png" alt="" width={64} height={64} priority /><span>{navigation.brand}<small>{translateText("public","tagline")}</small></span></Link>
-        {nav}<AppearanceToggle /><details className={styles.mobileMenu}><summary>{translateText("public","menu")}</summary>{nav}</details>
+        {nav}<AppearanceToggle /><details className={styles.mobileMenu} onClick={event => {
+            if ((event.target as Element).closest('a')) event.currentTarget.open = false;
+        }} onKeyDown={event => {
+            if (event.key === 'Escape') {
+                event.currentTarget.open = false;
+                event.currentTarget.querySelector('summary')?.focus();
+            }
+        }}><summary>{translateText("public","menu")}</summary>{nav}</details>
     </header>;
 }

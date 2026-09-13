@@ -486,8 +486,8 @@
 }
 
 .badgeGreen {
-    background: var(--signal-wash);
-    color: var(--signal-ink);
+    background: var(--status-ok-wash);
+    color: var(--status-ok-ink);
 }
 
 .badgeAmber {
@@ -922,25 +922,13 @@
     flex-shrink: 0;
 }
 
-.pillPresent {
-    background: #dcfce7;
-    color: #166534;
-}
+.pillPresent { background: var(--status-ok-wash); color: var(--status-ok-ink); }
 
-.pillOff {
-    background: #f1f5f9;
-    color: #64748b;
-}
+.pillOff { background: var(--card-2); color: var(--text-2); }
 
-.pillLeave {
-    background: #fef9c3;
-    color: #854d0e;
-}
+.pillLeave { background: var(--pending-wash); color: var(--pending); }
 
-.pillEL {
-    background: #fee2e2;
-    color: #991b1b;
-}
+.pillEL { background: var(--flag-wash); color: var(--flag); }
 
 .incidentCard {
     background: var(--card);

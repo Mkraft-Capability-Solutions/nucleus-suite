@@ -11,3 +11,12 @@
 .queue{margin-top:22px}.queue h3{font-size:12px;margin-bottom:8px}.queue>div{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);font-size:11px;color:var(--text-2)}.queue>div>svg:first-child{color:var(--agent)}.queue>div>svg:last-child{margin-left:auto;font-size:14px;flex-shrink:0}
 @media(max-width:700px){.preview{transform:none}.workspace{grid-template-columns:minmax(0,1fr)}.workspace aside{display:none}.panel{padding:20px;min-height:430px}.roles button{font-size:11px}.windowTop{padding:12px}.cards{gap:8px}.cards article{padding:12px}.cards h3{font-size:15px}}
 @media(prefers-reduced-motion:reduce){.preview{transform:none}}
+/* Product stage: stable geometry with a short transition on role selection. */
+.preview{transform:none;border-radius:20px;box-shadow:var(--shadow-overlay);position:relative}
+.windowTop{background:linear-gradient(110deg,var(--card),var(--card-2))}
+.roleContent{animation:roleEntrance .35s cubic-bezier(.16,1,.3,1)}
+.roles button{transition:background .2s,color .2s}.roles button:hover{background:var(--card-2)}.roles button[aria-selected=true]{background:var(--signal-wash)}
+.cards article{transition:border-color .2s,transform .2s}.queue>div>svg:first-child{color:var(--signal-ink)}
+@keyframes roleEntrance{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.cards article:hover{border-color:var(--signal);transform:translateY(-2px)}}
+@media(prefers-reduced-motion:reduce){.roleContent{animation:none}.roles button,.cards article{transition:none}}
