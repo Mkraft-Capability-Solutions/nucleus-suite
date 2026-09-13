@@ -1,0 +1,92 @@
+{
+  "LEAVE_TYPES_1": {
+    "PRIVILEGE": {
+      "code": "PRIVILEGE",
+      "label": "Privilege / Earned Leave (EL)",
+      "encashable": true,
+      "carry_forward_max": 30,
+      "can_be_sandwich": true
+    },
+    "SICK": {
+      "code": "SICK",
+      "label": "Sick Leave (SL)",
+      "annual_quota": 10,
+      "encashable": false,
+      "carry_forward_max": 0,
+      "can_be_sandwich": false
+    },
+    "CASUAL": {
+      "code": "CASUAL",
+      "label": "Casual Leave (CL)",
+      "annual_quota": 12,
+      "encashable": false,
+      "carry_forward_max": 0,
+      "can_be_sandwich": false
+    },
+    "COMP_OFF": {
+      "code": "COMP_OFF",
+      "label": "Compensatory Off",
+      "validity_days": 60,
+      "encashable": false,
+      "can_be_sandwich": true
+    },
+    "WELLNESS": {
+      "code": "WELLNESS",
+      "label": "Vedic Wellness Day",
+      "annual_quota": 4,
+      "encashable": false,
+      "carry_forward_max": 0,
+      "can_be_sandwich": false
+    },
+    "LOP": {
+      "code": "LOP",
+      "label": "Loss of Pay / Unpaid Leave",
+      "encashable": false,
+      "carry_forward_max": 0,
+      "can_be_sandwich": true
+    }
+  },
+  "content_fields_2": {
+    "cl_credit": 12,
+    "sl_credit": 10,
+    "wellness_credit": 4
+  },
+  "evaluated_fields_3": {
+    "days_remaining": 0,
+    "status": "USED"
+  },
+  "content_fields_4": {
+    "success": false
+  },
+  "updated_fields_5": {
+    "status": "USED"
+  },
+  "content_fields_6": {
+    "success": true
+  },
+  "content_fields_7": {
+    "is_weekend": true,
+    "chargeable": false
+  },
+  "content_fields_8": {
+    "is_weekend": false,
+    "chargeable": true
+  },
+  "updatedApplication_fields_9": {
+    "status": "SHORT_CLOSED"
+  },
+  "APPROVAL_TIERS_10": [
+    "SUPERVISOR",
+    "HOD",
+    "HR_HEAD"
+  ],
+  "content_fields_11": {
+    "action": "REJECTED"
+  },
+  "content_fields_12": {
+    "status": "REJECTED"
+  },
+  "content_fields_13": {
+    "action": "APPROVED"
+  }
+}

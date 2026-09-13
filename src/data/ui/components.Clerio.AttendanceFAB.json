@@ -1,0 +1,18 @@
+{
+  "AttendanceFAB_text_1": "ATTENDANCE",
+  "AttendanceFAB_2": {
+    "month": "short",
+    "day": "numeric"
+  },
+  "AttendanceFAB_text_3": "SESSION START",
+  "AttendanceFAB_text_4": "TOTAL HRS",
+  "AttendanceFAB_text_5": "📍 ",
+  "AttendanceFAB_text_6": " Punch Out",
+  "AttendanceFAB_text_7": " Punch In",
+  "display_1": "Office Layer 4",
+  "display_2": "Remote",
+  "display_3": "Work summary or notes...",
+  "display_4": "Plan for the day...",
+  "fallback_1": "--:--",
+  "fallback_2": "0h 0m"
+}

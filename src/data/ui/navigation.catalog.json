@@ -1,0 +1,1009 @@
+{
+  "domains": [
+    {
+      "id": "dashboard",
+      "label": "Dashboard Consoles",
+      "icon": "LayoutGrid",
+      "badge": "S1\u2013S10",
+      "groups": [
+        {
+          "heading": "EXECUTIVE & OPERATIONAL CONSOLES",
+          "items": [
+            {
+              "id": "s1",
+              "label": "S1: People Command Centre",
+              "targetTab": "dashboard",
+              "icon": "LayoutGrid",
+              "desc": "Executive leadership KPIs, headcount forecast & org health radar",
+              "tag": "CHRO"
+            },
+            {
+              "id": "s2",
+              "label": "S2: HR Operations Console",
+              "targetTab": "dashboard",
+              "icon": "Users",
+              "desc": "SLA approval queue, onboarding pipeline & absence heatmap",
+              "tag": "HRBP"
+            },
+            {
+              "id": "s3",
+              "label": "S3: Attendance & Shifts",
+              "targetTab": "dashboard",
+              "icon": "Clock",
+              "desc": "Punches, shift roster strip with gaps & paired-punch AI",
+              "tag": "Ops"
+            },
+            {
+              "id": "s4",
+              "label": "S4: Talent Acquisition",
+              "targetTab": "dashboard",
+              "icon": "UserPlus",
+              "desc": "Hiring funnel, aged reqs with blockers & candidate AI match",
+              "tag": "TA Lead"
+            },
+            {
+              "id": "s5",
+              "label": "S5: Payroll Control Room",
+              "targetTab": "dashboard",
+              "icon": "CreditCard",
+              "desc": "8-stage cycle stepper, cost bridge & blocking exceptions",
+              "tag": "Finance"
+            },
+            {
+              "id": "s6",
+              "label": "S6: Performance & Talent",
+              "targetTab": "dashboard",
+              "icon": "TrendingUp",
+              "desc": "9-Box talent grid, calibration bias flags & succession",
+              "tag": "Talent"
+            },
+            {
+              "id": "s7",
+              "label": "S7: Manager Cockpit",
+              "targetTab": "dashboard",
+              "icon": "CheckCircle2",
+              "desc": "3-item weekly brief, 1-click approvals & team signals",
+              "tag": "Lead"
+            },
+            {
+              "id": "s8",
+              "label": "S8: Employee Home",
+              "targetTab": "dashboard",
+              "icon": "Award",
+              "desc": "Shift clock ring, leave balances, net pay preview & AI policy",
+              "tag": "Employee"
+            },
+            {
+              "id": "s9",
+              "label": "S9: Magnetix Capability",
+              "targetTab": "dashboard",
+              "icon": "BookOpen",
+              "desc": "NCI index, skill coverage matrix & business signal proof",
+              "tag": "L&D"
+            },
+            {
+              "id": "s10",
+              "label": "S10: Workspace Governance",
+              "targetTab": "dashboard",
+              "icon": "AdminPanelSettingsOutlined",
+              "desc": "Workspace settings, role access and integration previews",
+              "tag": "Admin",
+              "tagViolet": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core_hr",
+      "label": "Core HR",
+      "icon": "Users",
+      "badge": "8 Modules",
+      "groups": [
+        {
+          "heading": "FOUNDATION & LIFECYCLE",
+          "items": [
+            {
+              "id": "core_people",
+              "label": "People Core",
+              "targetTab": "people_core",
+              "icon": "Users",
+              "desc": "Central employee directory, personal details & digital profiles"
+            },
+            {
+              "id": "core_attendance",
+              "label": "Smart Attendance",
+              "targetTab": "attendance",
+              "icon": "Clock",
+              "desc": "Real-time clock-in/out, biometric turnstile sync & overtime"
+            },
+            {
+              "id": "core_leaves",
+              "label": "Leave Management",
+              "targetTab": "leaves",
+              "icon": "Calendar",
+              "desc": "Leave policies, rollover accrual & approval matrices"
+            },
+            {
+              "id": "core_onboarding",
+              "label": "Onboarding & Lifecycle",
+              "targetTab": "onboarding",
+              "icon": "Layers",
+              "desc": "New hire onboarding workflows, document checklist & exits"
+            }
+          ]
+        },
+        {
+          "heading": "ORGANIZATION & GOVERNANCE",
+          "items": [
+            {
+              "id": "core_org",
+              "label": "Organization Management",
+              "targetTab": "team",
+              "icon": "Building2",
+              "desc": "Departments, designations, reporting lines & visual org chart"
+            },
+            {
+              "id": "core_workforce",
+              "label": "Workforce Management",
+              "targetTab": "contract_workforce",
+              "icon": "Users",
+              "desc": "Worker classification, contractor pools & staffing"
+            },
+            {
+              "id": "core_operations",
+              "label": "HR Operations & Helpdesk",
+              "targetTab": "helpdesk",
+              "icon": "HelpCircle",
+              "desc": "Employee service desk, query resolution & letters"
+            },
+            {
+              "id": "core_compliance",
+              "label": "Statutory Compliance",
+              "targetTab": "compliance",
+              "icon": "ShieldCheck",
+              "desc": "2026 Labour Codes simulator, 50% wage floor & PF/ESI",
+              "tag": "2026 Code"
+            }
+          ]
+        },
+        {
+          "heading": "People & lifecycle",
+          "items": [
+            {
+              "id": "access_scope",
+              "label": "Access scope administration",
+              "targetTab": "access_scope",
+              "icon": "AdminPanelSettingsOutlined",
+              "desc": "Manage access scope administration with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-005"
+            },
+            {
+              "id": "person_record",
+              "label": "Employee record",
+              "targetTab": "person_record",
+              "icon": "BadgeOutlined",
+              "desc": "Manage employee record with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-010"
+            },
+            {
+              "id": "assignment_admin",
+              "label": "Assignment and policy attributes",
+              "targetTab": "assignment_admin",
+              "icon": "AssignmentIndOutlined",
+              "desc": "Manage assignment and policy attributes with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-011"
+            },
+            {
+              "id": "position_register",
+              "label": "Position register",
+              "targetTab": "position_register",
+              "icon": "AccountTreeOutlined",
+              "desc": "Manage position register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-012"
+            },
+            {
+              "id": "sanctioned_strength",
+              "label": "Sanctioned strength board",
+              "targetTab": "sanctioned_strength",
+              "icon": "GroupsOutlined",
+              "desc": "Manage sanctioned strength board with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-013"
+            },
+            {
+              "id": "document_vault",
+              "label": "Document vault",
+              "targetTab": "document_vault",
+              "icon": "FolderSharedOutlined",
+              "desc": "Manage document vault with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-014"
+            },
+            {
+              "id": "joining_chain",
+              "label": "Joining chain console",
+              "targetTab": "joining_chain",
+              "icon": "PlaylistAddCheckOutlined",
+              "desc": "Manage joining chain console with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-060"
+            },
+            {
+              "id": "clearance_board",
+              "label": "Clearance board",
+              "targetTab": "clearance_board",
+              "icon": "ExitToAppOutlined",
+              "desc": "Manage clearance board with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-061"
+            },
+            {
+              "id": "asset_register",
+              "label": "Asset register",
+              "targetTab": "asset_register",
+              "icon": "DevicesOutlined",
+              "desc": "Manage asset register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-064"
+            },
+            {
+              "id": "letters_register",
+              "label": "Letters and issue register",
+              "targetTab": "letters_register",
+              "icon": "MailOutline",
+              "desc": "Manage letters and issue register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-067"
+            },
+            {
+              "id": "policy_acknowledgements",
+              "label": "Policy acknowledgements",
+              "targetTab": "policy_acknowledgements",
+              "icon": "FactCheckOutlined",
+              "desc": "Manage policy acknowledgements with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-062"
+            },
+            {
+              "id": "employee_home",
+              "label": "Employee home actions",
+              "targetTab": "employee_home",
+              "icon": "HomeOutlined",
+              "desc": "Manage employee home actions with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-042"
+            }
+          ]
+        },
+        {
+          "heading": "Attendance operations",
+          "items": [
+            {
+              "id": "check_in_out",
+              "label": "Check in and check out",
+              "targetTab": "check_in_out",
+              "icon": "Fingerprint",
+              "desc": "Manage check in and check out with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-020"
+            },
+            {
+              "id": "my_attendance",
+              "label": "My attendance history",
+              "targetTab": "my_attendance",
+              "icon": "CalendarMonthOutlined",
+              "desc": "Manage my attendance history with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-021"
+            },
+            {
+              "id": "attendance_detail",
+              "label": "Attendance day detail",
+              "targetTab": "attendance_detail",
+              "icon": "EventAvailableOutlined",
+              "desc": "Manage attendance day detail with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-022"
+            },
+            {
+              "id": "gate_passes",
+              "label": "Gate pass register",
+              "targetTab": "gate_passes",
+              "icon": "MeetingRoomOutlined",
+              "desc": "Manage gate pass register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-023"
+            },
+            {
+              "id": "overtime_register",
+              "label": "Overtime register",
+              "targetTab": "overtime_register",
+              "icon": "MoreTimeOutlined",
+              "desc": "Manage overtime register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-024"
+            },
+            {
+              "id": "attendance_exceptions",
+              "label": "Attendance exception queue",
+              "targetTab": "attendance_exceptions",
+              "icon": "EventBusyOutlined",
+              "desc": "Manage attendance exception queue with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-025"
+            },
+            {
+              "id": "recompute_monitor",
+              "label": "Attendance recompute monitor",
+              "targetTab": "recompute_monitor",
+              "icon": "UpdateOutlined",
+              "desc": "Manage attendance recompute monitor with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-026"
+            },
+            {
+              "id": "team_history",
+              "label": "Team history",
+              "targetTab": "team_history",
+              "icon": "HistoryOutlined",
+              "desc": "Manage team history with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-027"
+            }
+          ]
+        },
+        {
+          "heading": "Leave operations",
+          "items": [
+            {
+              "id": "leave_requests",
+              "label": "Leave requests",
+              "targetTab": "leave_requests",
+              "icon": "EventNoteOutlined",
+              "desc": "Manage leave requests with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-030"
+            },
+            {
+              "id": "leave_ledger",
+              "label": "Leave balance and ledger",
+              "targetTab": "leave_ledger",
+              "icon": "HistoryEduOutlined",
+              "desc": "Manage leave balance and ledger with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-031"
+            },
+            {
+              "id": "leave_policy_admin",
+              "label": "Leave policy configuration",
+              "targetTab": "leave_policy_admin",
+              "icon": "RuleOutlined",
+              "desc": "Manage leave policy configuration with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-032"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "talent",
+      "label": "Talent",
+      "icon": "UserPlus",
+      "badge": "7 Modules",
+      "groups": [
+        {
+          "heading": "ACQUISITION & PERFORMANCE",
+          "items": [
+            {
+              "id": "talent_ats",
+              "label": "Talent ATS",
+              "targetTab": "recruitment",
+              "icon": "UserPlus",
+              "desc": "Requisitions, candidate pipeline & scorecards",
+              "tag": "Pipeline"
+            },
+            {
+              "id": "talent_performance",
+              "label": "Performance & OKRs",
+              "targetTab": "performance",
+              "icon": "TrendingUp",
+              "desc": "Goals cascade, quarterly appraisals & 360 reviews"
+            },
+            {
+              "id": "talent_learning",
+              "label": "Learning & L&D",
+              "targetTab": "learning",
+              "icon": "BookOpen",
+              "desc": "Course catalog, mandatory tracks & certifications"
+            },
+            {
+              "id": "talent_skills",
+              "label": "Skills & Capability",
+              "targetTab": "experience",
+              "icon": "Sparkles",
+              "desc": "Nucleus capability index & skill gap radar"
+            }
+          ]
+        },
+        {
+          "heading": "GROWTH & RECOGNITION",
+          "items": [
+            {
+              "id": "talent_succession",
+              "label": "Succession Planning",
+              "targetTab": "performance",
+              "icon": "Layers",
+              "desc": "9-Box talent calibration & critical bench strength"
+            },
+            {
+              "id": "talent_mobility",
+              "label": "Internal Mobility (IJP)",
+              "targetTab": "recruitment",
+              "icon": "ArrowUpRight",
+              "desc": "Internal job postings & career path transitions"
+            },
+            {
+              "id": "talent_recognition",
+              "label": "Recognition & Rewards",
+              "targetTab": "experience",
+              "icon": "Award",
+              "desc": "Peer appreciation badges & employee rewards ledger"
+            }
+          ]
+        },
+        {
+          "heading": "Talent & experience operations",
+          "items": [
+            {
+              "id": "requisitions",
+              "label": "Recruitment requisitions",
+              "targetTab": "requisitions",
+              "icon": "WorkOutline",
+              "desc": "Manage recruitment requisitions with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-090"
+            },
+            {
+              "id": "referrals",
+              "label": "Referral tracking",
+              "targetTab": "referrals",
+              "icon": "PersonAddAltOutlined",
+              "desc": "Manage referral tracking with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-091"
+            },
+            {
+              "id": "learning_paths",
+              "label": "My learning",
+              "targetTab": "learning_paths",
+              "icon": "SchoolOutlined",
+              "desc": "Manage my learning with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-063"
+            },
+            {
+              "id": "recognition_register",
+              "label": "Recognition register",
+              "targetTab": "recognition_register",
+              "icon": "EmojiEventsOutlined",
+              "desc": "Manage recognition register with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-065"
+            },
+            {
+              "id": "announcement_management",
+              "label": "Announcements",
+              "targetTab": "announcement_management",
+              "icon": "CampaignOutlined",
+              "desc": "Manage announcements with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-066"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "payroll_finance",
+      "label": "Payroll & Finance",
+      "icon": "CreditCard",
+      "badge": "7 Modules",
+      "groups": [
+        {
+          "heading": "PAYROLL & COMPENSATION",
+          "items": [
+            {
+              "id": "payroll_global",
+              "label": "Global Payroll",
+              "targetTab": "payroll",
+              "icon": "CreditCard",
+              "desc": "Gross-to-Net DAG calculation, pay cycles & bank files",
+              "tag": "Gross-to-Net"
+            },
+            {
+              "id": "payroll_comp",
+              "label": "Compensation & Benefits",
+              "targetTab": "compensation",
+              "icon": "DollarSign",
+              "desc": "Salary banding, compa-ratio & benefits setup"
+            },
+            {
+              "id": "payroll_claims",
+              "label": "Reimbursements & Claims",
+              "targetTab": "payroll",
+              "icon": "FileText",
+              "desc": "Employee expense reports, fuel claims & receipt OCR"
+            },
+            {
+              "id": "payroll_ewa",
+              "label": "Loans, Advances & EWA",
+              "targetTab": "payroll",
+              "icon": "TrendingUp",
+              "desc": "Earned Wage Access liquidity & automated EMI deductions"
+            }
+          ]
+        },
+        {
+          "heading": "STATUTORY & ACCOUNTING",
+          "items": [
+            {
+              "id": "payroll_tax",
+              "label": "Tax & Statutory",
+              "targetTab": "compliance",
+              "icon": "ShieldCheck",
+              "desc": "PF ECR, ESIC challans, PT & TDS 24Q filing verification"
+            },
+            {
+              "id": "payroll_accounting",
+              "label": "Payroll Accounting (GL)",
+              "targetTab": "payroll",
+              "icon": "Building2",
+              "desc": "Balanced salary journal & ERP general ledger sync"
+            },
+            {
+              "id": "payroll_fnf",
+              "label": "Full & Final Settlement",
+              "targetTab": "onboarding",
+              "icon": "CheckCircle2",
+              "desc": "Exit recovery calculation, notice pay & gratuity DAG"
+            }
+          ]
+        },
+        {
+          "heading": "Payroll & finance operations",
+          "items": [
+            {
+              "id": "payroll_runs",
+              "label": "Payroll run cockpit",
+              "targetTab": "payroll_runs",
+              "icon": "PaymentsOutlined",
+              "desc": "Manage payroll run cockpit with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-050"
+            },
+            {
+              "id": "pre_payroll_audit",
+              "label": "Pre-payroll audit",
+              "targetTab": "pre_payroll_audit",
+              "icon": "FactCheckOutlined",
+              "desc": "Manage pre-payroll audit with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-051"
+            },
+            {
+              "id": "salary_simulator",
+              "label": "Salary structure simulator",
+              "targetTab": "salary_simulator",
+              "icon": "CalculateOutlined",
+              "desc": "Manage salary structure simulator with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-052"
+            },
+            {
+              "id": "payslips",
+              "label": "Payslips",
+              "targetTab": "payslips",
+              "icon": "ReceiptOutlined",
+              "desc": "Manage payslips with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-053"
+            },
+            {
+              "id": "tax_declarations",
+              "label": "Tax declaration and projection",
+              "targetTab": "tax_declarations",
+              "icon": "ReceiptLongOutlined",
+              "desc": "Manage tax declaration and projection with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-054"
+            },
+            {
+              "id": "bank_disbursement",
+              "label": "Bank disbursement control",
+              "targetTab": "bank_disbursement",
+              "icon": "AccountBalanceOutlined",
+              "desc": "Manage bank disbursement control with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-055"
+            },
+            {
+              "id": "full_and_final",
+              "label": "Full and final settlement",
+              "targetTab": "full_and_final",
+              "icon": "TaskAltOutlined",
+              "desc": "Manage full and final settlement with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-056"
+            },
+            {
+              "id": "gl_mapping",
+              "label": "GL mapping and journal",
+              "targetTab": "gl_mapping",
+              "icon": "AccountTreeOutlined",
+              "desc": "Manage gl mapping and journal with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-102"
+            },
+            {
+              "id": "reconciliation",
+              "label": "Payroll reconciliation",
+              "targetTab": "reconciliation",
+              "icon": "CompareArrowsOutlined",
+              "desc": "Manage payroll reconciliation with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-103"
+            },
+            {
+              "id": "loans_advances",
+              "label": "Loans and advances",
+              "targetTab": "loans_advances",
+              "icon": "RequestQuoteOutlined",
+              "desc": "Manage loans and advances with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-080"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "workforce_ops",
+      "label": "Workforce Operations",
+      "icon": "Briefcase",
+      "badge": "7 Modules",
+      "groups": [
+        {
+          "heading": "SCHEDULING & WORKFORCE",
+          "items": [
+            {
+              "id": "ops_rosters",
+              "label": "Shift Planning & Rosters",
+              "targetTab": "attendance",
+              "icon": "Calendar",
+              "desc": "Multi-shift rotations & auto-roster assignments"
+            },
+            {
+              "id": "ops_projects",
+              "label": "Projects & Pod Allocation",
+              "targetTab": "projects",
+              "icon": "Briefcase",
+              "desc": "Agile engineering pods & sprint velocities",
+              "tag": "Sprints"
+            },
+            {
+              "id": "ops_field",
+              "label": "Field Workforce",
+              "targetTab": "attendance",
+              "icon": "Clock",
+              "desc": "Geo-fenced punches, route waypoints & field visits"
+            },
+            {
+              "id": "ops_contract",
+              "label": "Contract Workforce",
+              "targetTab": "contract_workforce",
+              "icon": "Users",
+              "desc": "Turnstile biometric vs vendor invoice reconciliation"
+            }
+          ]
+        },
+        {
+          "heading": "OPERATIONS & ASSETS",
+          "items": [
+            {
+              "id": "ops_assets",
+              "label": "Assets & Gate Passes",
+              "targetTab": "onboarding",
+              "icon": "ShieldCheck",
+              "desc": "IT equipment custody, serial logs & gate clearance"
+            },
+            {
+              "id": "ops_travel",
+              "label": "Travel & Duty Management",
+              "targetTab": "payroll",
+              "icon": "FileText",
+              "desc": "Travel requisitions, per diem rates & flight booking"
+            },
+            {
+              "id": "ops_timesheets",
+              "label": "Timesheets & Productivity",
+              "targetTab": "projects",
+              "icon": "Clock",
+              "desc": "Task timers, billable client hours & weekly review"
+            }
+          ]
+        },
+        {
+          "heading": "Workforce operations",
+          "items": [
+            {
+              "id": "approval_inbox",
+              "label": "Unified approval inbox",
+              "targetTab": "approval_inbox",
+              "icon": "ApprovalOutlined",
+              "desc": "Manage unified approval inbox with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-040"
+            }
+          ]
+        },
+        {
+          "heading": "Workforce operations",
+          "items": [
+            {
+              "id": "contractor_reconciliation",
+              "label": "Contractor engagement and invoice",
+              "targetTab": "contractor_reconciliation",
+              "icon": "EngineeringOutlined",
+              "desc": "Manage contractor engagement and invoice with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-095"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "analytics_ai",
+      "label": "Analytics & AI",
+      "icon": "BarChart3",
+      "badge": "7 Modules",
+      "groups": [
+        {
+          "heading": "DASHBOARDS & INTELLIGENCE",
+          "items": [
+            {
+              "id": "analytics_exec",
+              "label": "Executive Dashboards",
+              "targetTab": "dashboard",
+              "icon": "LayoutGrid",
+              "desc": "Cross-domain executive KPI pulse & forecasts"
+            },
+            {
+              "id": "analytics_people",
+              "label": "People Intelligence",
+              "targetTab": "analytics",
+              "icon": "Users",
+              "desc": "Demographic diversity ratios & attrition trends"
+            },
+            {
+              "id": "analytics_workforce",
+              "label": "Workforce Analytics",
+              "targetTab": "analytics",
+              "icon": "Clock",
+              "desc": "Overtime heatmaps & shift utilization"
+            },
+            {
+              "id": "analytics_payroll",
+              "label": "Payroll Analytics",
+              "targetTab": "analytics",
+              "icon": "CreditCard",
+              "desc": "Wage bill monthly bridge & statutory liabilities"
+            },
+            {
+              "id": "analytics_talent",
+              "label": "Talent Analytics",
+              "targetTab": "analytics",
+              "icon": "UserPlus",
+              "desc": "Time-to-hire metrics & candidate funnel conversion"
+            }
+          ]
+        },
+        {
+          "heading": "AI & CUSTOM REPORTING",
+          "items": [
+            {
+              "id": "analytics_copilot",
+              "label": "AI Copilot & Agents",
+              "targetTab": "dashboard",
+              "icon": "Sparkles",
+              "desc": "Autonomous reasoning agent & policy citations",
+              "tag": "Grounded AI",
+              "tagViolet": true
+            },
+            {
+              "id": "analytics_custom",
+              "label": "Custom Reports Builder",
+              "targetTab": "analytics",
+              "icon": "FileText",
+              "desc": "Dynamic query builder & CSV/PDF scheduler"
+            }
+          ]
+        },
+        {
+          "heading": "Intelligence operations",
+          "items": [
+            {
+              "id": "assistant_helpdesk",
+              "label": "Assistant and helpdesk",
+              "targetTab": "assistant_helpdesk",
+              "icon": "SupportAgentOutlined",
+              "desc": "Manage assistant and helpdesk with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-041"
+            },
+            {
+              "id": "agent_ledger",
+              "label": "Agent console and action ledger",
+              "targetTab": "agent_ledger",
+              "icon": "SmartToyOutlined",
+              "desc": "Manage agent console and action ledger with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-110"
+            },
+            {
+              "id": "operational_reports",
+              "label": "Operational reports",
+              "targetTab": "operational_reports",
+              "icon": "AssessmentOutlined",
+              "desc": "Manage operational reports with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-111"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "platform",
+      "label": "Platform & Admin",
+      "icon": "Settings",
+      "badge": "7 Modules",
+      "groups": [
+        {
+          "heading": "INTEGRATIONS & AUTOMATION",
+          "items": [
+            {
+              "id": "platform_integrations",
+              "label": "Integrations & API",
+              "targetTab": "integrations",
+              "icon": "Settings",
+              "desc": "Enterprise ERP connectors, Slack webhooks & REST API"
+            },
+            {
+              "id": "platform_workflows",
+              "label": "Workflow Automation Studio",
+              "targetTab": "onboarding",
+              "icon": "Layers",
+              "desc": "Visual node flowchart studio & execution DAG",
+              "tag": "Flowchart"
+            },
+            {
+              "id": "platform_roles",
+              "label": "Access Control & RBAC Studio",
+              "targetTab": "access_control",
+              "icon": "ShieldCheck",
+              "desc": "Per-user access configuration & organization-wide role matrix",
+              "tag": "Studio",
+              "tagTeal": true
+            },
+            {
+              "id": "platform_settings",
+              "label": "Settings & Configuration",
+              "targetTab": "settings",
+              "icon": "Sliders",
+              "desc": "Legal entities, operating units & holiday calendars"
+            }
+          ]
+        },
+        {
+          "heading": "SECURITY & GOVERNANCE",
+          "items": [
+            {
+              "id": "platform_security",
+              "label": "Security Center",
+              "targetTab": "settings",
+              "icon": "Shield",
+              "desc": "Single Sign-On (SSO), MFA & zero-trust cloud IAM"
+            },
+            {
+              "id": "platform_notifications",
+              "label": "Notifications & Alerts",
+              "targetTab": "settings",
+              "icon": "Bell",
+              "desc": "Alert channels, email digest rules & SLA triggers"
+            },
+            {
+              "id": "platform_audit",
+              "label": "Immutable Audit Logs",
+              "targetTab": "settings",
+              "icon": "FileText",
+              "desc": "Cryptographically verifiable activity ledger"
+            }
+          ]
+        },
+        {
+          "heading": "Compliance engineering",
+          "items": [
+            {
+              "id": "rule_pack_manager",
+              "label": "Rule-pack manager",
+              "targetTab": "rule_pack_manager",
+              "icon": "PolicyOutlined",
+              "desc": "Manage rule-pack manager with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-070"
+            },
+            {
+              "id": "golden_case_library",
+              "label": "Golden-case library",
+              "targetTab": "golden_case_library",
+              "icon": "ScienceOutlined",
+              "desc": "Manage golden-case library with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-071"
+            },
+            {
+              "id": "obligation_calendar",
+              "label": "Obligation calendar",
+              "targetTab": "obligation_calendar",
+              "icon": "EventRepeatOutlined",
+              "desc": "Manage obligation calendar with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-072"
+            },
+            {
+              "id": "statutory_register",
+              "label": "Statutory forms and registers",
+              "targetTab": "statutory_register",
+              "icon": "GavelOutlined",
+              "desc": "Manage statutory forms and registers with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-073"
+            }
+          ]
+        },
+        {
+          "heading": "Integration operations",
+          "items": [
+            {
+              "id": "integration_config",
+              "label": "Integration configuration",
+              "targetTab": "integration_config",
+              "icon": "SettingsEthernetOutlined",
+              "desc": "Manage integration configuration with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-100"
+            },
+            {
+              "id": "sync_monitor",
+              "label": "Integration sync monitor",
+              "targetTab": "sync_monitor",
+              "icon": "SyncOutlined",
+              "desc": "Manage integration sync monitor with a scoped work queue, record history and controlled actions.",
+              "tag": "SCR-101"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "operationalIcons": {
+    "access_scope": "AdminPanelSettingsOutlined",
+    "person_record": "BadgeOutlined",
+    "assignment_admin": "AssignmentIndOutlined",
+    "position_register": "AccountTreeOutlined",
+    "sanctioned_strength": "GroupsOutlined",
+    "document_vault": "FolderSharedOutlined",
+    "attendance_detail": "EventAvailableOutlined",
+    "overtime_register": "MoreTimeOutlined",
+    "attendance_exceptions": "EventBusyOutlined",
+    "recompute_monitor": "UpdateOutlined",
+    "team_history": "HistoryOutlined",
+    "leave_policy_admin": "RuleOutlined",
+    "tax_declarations": "ReceiptLongOutlined",
+    "bank_disbursement": "AccountBalanceOutlined",
+    "policy_acknowledgements": "FactCheckOutlined",
+    "rule_pack_manager": "PolicyOutlined",
+    "golden_case_library": "ScienceOutlined",
+    "sync_monitor": "SyncOutlined",
+    "gl_mapping": "AccountTreeOutlined",
+    "reconciliation": "CompareArrowsOutlined",
+    "approval_inbox": "ApprovalOutlined",
+    "joining_chain": "PlaylistAddCheckOutlined",
+    "clearance_board": "ExitToAppOutlined",
+    "asset_register": "DevicesOutlined",
+    "recognition_register": "EmojiEventsOutlined",
+    "letters_register": "MailOutline",
+    "statutory_register": "GavelOutlined",
+    "loans_advances": "RequestQuoteOutlined",
+    "requisitions": "WorkOutline",
+    "referrals": "PersonAddAltOutlined",
+    "contractor_reconciliation": "EngineeringOutlined",
+    "integration_config": "SettingsEthernetOutlined",
+    "agent_ledger": "SmartToyOutlined",
+    "operational_reports": "AssessmentOutlined",
+    "check_in_out": "Fingerprint",
+    "my_attendance": "CalendarMonthOutlined",
+    "gate_passes": "MeetingRoomOutlined",
+    "leave_requests": "EventNoteOutlined",
+    "leave_ledger": "HistoryEduOutlined",
+    "payroll_runs": "PaymentsOutlined",
+    "pre_payroll_audit": "FactCheckOutlined",
+    "salary_simulator": "CalculateOutlined",
+    "payslips": "ReceiptOutlined",
+    "full_and_final": "TaskAltOutlined",
+    "assistant_helpdesk": "SupportAgentOutlined",
+    "employee_home": "HomeOutlined",
+    "learning_paths": "SchoolOutlined",
+    "announcement_management": "CampaignOutlined",
+    "obligation_calendar": "EventRepeatOutlined"
+  }
+}

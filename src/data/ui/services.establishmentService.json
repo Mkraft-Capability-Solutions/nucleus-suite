@@ -1,0 +1,288 @@
+{
+  "DEFAULT_SANCTIONED_QUOTAS_1": {
+    "Engineering": {
+      "sanctioned": 10,
+      "plantLocation": "LOC-BLR-01",
+      "budgetCode": "BUD-ENG-2026"
+    },
+    "Product": {
+      "sanctioned": 3,
+      "plantLocation": "LOC-HO-HQ",
+      "budgetCode": "BUD-PROD-2026"
+    },
+    "Design": {
+      "sanctioned": 2,
+      "plantLocation": "LOC-BLR-01",
+      "budgetCode": "BUD-DES-2026"
+    },
+    "Manufacturing": {
+      "sanctioned": 15,
+      "plantLocation": "LOC-BLR-01",
+      "budgetCode": "BUD-MFG-2026"
+    },
+    "Supply Chain": {
+      "sanctioned": 6,
+      "plantLocation": "LOC-PUN-02",
+      "budgetCode": "BUD-SCM-2026"
+    },
+    "Infrastructure": {
+      "sanctioned": 3,
+      "plantLocation": "LOC-HO-HQ",
+      "budgetCode": "BUD-INFRA-2026"
+    },
+    "Quality Assurance": {
+      "sanctioned": 4,
+      "plantLocation": "LOC-PUN-02",
+      "budgetCode": "BUD-QA-2026"
+    },
+    "Human Resources": {
+      "sanctioned": 3,
+      "plantLocation": "LOC-BLR-01",
+      "budgetCode": "BUD-HR-2026"
+    },
+    "Finance": {
+      "sanctioned": 3,
+      "plantLocation": "LOC-BLR-01",
+      "budgetCode": "BUD-FIN-2026"
+    }
+  },
+  "quotaInfo_2": {
+    "sanctioned": 5,
+    "plantLocation": "GENERAL",
+    "budgetCode": "BUD-GEN"
+  },
+  "ASSET_TYPES_3": {
+    "LAPTOP": "Laptop / Workstation",
+    "MONITOR": "Display Monitor",
+    "SMARTPHONE": "Corporate Mobile & SIM",
+    "ACCESS_KEYFOB": "Physical Access Badge / Keyfob",
+    "SECURITY_KEY": "Hardware 2FA Key (YubiKey)"
+  },
+  "INITIAL_ASSET_REGISTER_4": [
+    {
+      "id": "AST-1001",
+      "assetType": "LAPTOP",
+      "brand": "Apple",
+      "model": "MacBook Pro 16\" M2 Pro (32GB / 1TB)",
+      "serialNumber": "C02G8726X981",
+      "assetTag": "NUC-IT-0042",
+      "assignedToEmployeeId": "EMP-104",
+      "assignedToName": "Rahul Saxena",
+      "assignedDate": "2023-11-12",
+      "status": "ASSIGNED",
+      "condition": "Good",
+      "replacementValue": 240000
+    },
+    {
+      "id": "AST-1002",
+      "assetType": "MONITOR",
+      "brand": "Dell",
+      "model": "UltraSharp 27\" 4K USB-C Hub (U2723QE)",
+      "serialNumber": "CN-0T3452-71618",
+      "assetTag": "NUC-IT-0115",
+      "assignedToEmployeeId": "EMP-104",
+      "assignedToName": "Rahul Saxena",
+      "assignedDate": "2023-11-15",
+      "status": "ASSIGNED",
+      "condition": "Excellent",
+      "replacementValue": 55000
+    },
+    {
+      "id": "AST-1003",
+      "assetType": "LAPTOP",
+      "brand": "Apple",
+      "model": "MacBook Air 15\" M3 (16GB / 512GB)",
+      "serialNumber": "C02H9120M442",
+      "assetTag": "NUC-IT-0089",
+      "assignedToEmployeeId": "EMP-101",
+      "assignedToName": "Trisha Khanna",
+      "assignedDate": "2023-01-15",
+      "status": "ASSIGNED",
+      "condition": "Good",
+      "replacementValue": 135000
+    },
+    {
+      "id": "AST-1004",
+      "assetType": "SECURITY_KEY",
+      "brand": "Yubico",
+      "model": "YubiKey 5C NFC Enterprise",
+      "serialNumber": "YK-89217441",
+      "assetTag": "NUC-SEC-0312",
+      "assignedToEmployeeId": "EMP-106",
+      "assignedToName": "David Miller",
+      "assignedDate": "2022-02-10",
+      "status": "ASSIGNED",
+      "condition": "Good",
+      "replacementValue": 6500
+    },
+    {
+      "id": "AST-1005",
+      "assetType": "LAPTOP",
+      "brand": "Lenovo",
+      "model": "ThinkPad P16 Gen 2 (i9 / 64GB RTX)",
+      "serialNumber": "PF-3982A110",
+      "assetTag": "NUC-IT-0201",
+      "assignedToEmployeeId": "EMP-106",
+      "assignedToName": "David Miller",
+      "assignedDate": "2022-02-08",
+      "status": "ASSIGNED",
+      "condition": "Good",
+      "replacementValue": 280000
+    }
+  ],
+  "APPOINTMENT_fields_5": {
+    "id": "APPOINTMENT",
+    "title": "Offer & Appointment Letter",
+    "category": "Onboarding",
+    "description": "Formal employment offer with compensation breakdown, designation, and terms.",
+    "variables": [
+      "employee_name",
+      "designation",
+      "department",
+      "join_date",
+      "annual_ctc",
+      "monthly_gross",
+      "reporting_manager",
+      "location"
+    ]
+  },
+  "INCREMENT_fields_7": {
+    "id": "INCREMENT",
+    "title": "Annual Compensation Increment & Appraisal Letter",
+    "category": "Compensation",
+    "description": "Official notification of performance rating, annual percentage hike, and revised CTC.",
+    "variables": [
+      "employee_name",
+      "designation",
+      "effective_date",
+      "current_ctc",
+      "revised_ctc",
+      "hike_percentage",
+      "performance_band"
+    ]
+  },
+  "PROMOTION_fields_9": {
+    "id": "PROMOTION",
+    "title": "Promotion & Role Elevation Order",
+    "category": "Talent",
+    "description": "Formal promotion order with new band designation and leadership responsibilities.",
+    "variables": [
+      "employee_name",
+      "previous_designation",
+      "promoted_designation",
+      "effective_date",
+      "new_band",
+      "department"
+    ]
+  },
+  "RELIEVING_fields_11": {
+    "id": "RELIEVING",
+    "title": "Relieving & Experience Certificate",
+    "category": "Separation",
+    "description": "Statutory separation certificate confirming tenure, last designation, and conduct.",
+    "variables": [
+      "employee_name",
+      "designation",
+      "join_date",
+      "relieving_date",
+      "department",
+      "employee_id"
+    ]
+  },
+  "current_date_14": {
+    "day": "2-digit",
+    "month": "short",
+    "year": "numeric"
+  },
+  "data_fields_13": {
+    "annual_ctc_words": "Appropriate Compensation Matrix"
+  },
+  "RECOGNITION_AWARD_TYPES_15": {
+    "STAR_OF_MONTH": {
+      "id": "STAR_OF_MONTH",
+      "label": "Star of the Month",
+      "rewardAmount": 20000,
+      "icon": "Award",
+      "color": "#f59e0b"
+    },
+    "SPOT_AWARD": {
+      "id": "SPOT_AWARD",
+      "label": "Spot Excellence Award",
+      "rewardAmount": 10000,
+      "icon": "Zap",
+      "color": "#10b981"
+    },
+    "INNOVATION_HERO": {
+      "id": "INNOVATION_HERO",
+      "label": "Innovation Champion",
+      "rewardAmount": 25000,
+      "icon": "Sparkles",
+      "color": "#8b5cf6"
+    },
+    "CUSTOMER_CHAMPION": {
+      "id": "CUSTOMER_CHAMPION",
+      "label": "Customer First Icon",
+      "rewardAmount": 15000,
+      "icon": "ShieldCheck",
+      "color": "#3b82f6"
+    }
+  },
+  "INITIAL_RECOGNITIONS_16": [
+    {
+      "id": "AWD-2026-01",
+      "employeeId": "EMP-101",
+      "employeeName": "Trisha Khanna",
+      "dept": "Engineering",
+      "awardType": "STAR_OF_MONTH",
+      "citation": "Architected the distributed cross-midnight punch engine and achieved 100% precision in shift overtime reconciliations.",
+      "rewardAmount": 20000,
+      "awardedBy": "Amit Verma (Director of Engineering)",
+      "date": "28 Feb 2026",
+      "status": "APPROVED_AND_BROADCAST"
+    },
+    {
+      "id": "AWD-2026-02",
+      "employeeId": "EMP-001",
+      "employeeName": "Vikram Seth",
+      "dept": "Manufacturing",
+      "awardType": "SPOT_AWARD",
+      "citation": "Maintained zero plant downtime and executed rapid gate pass compliance protocols across Unit-1.",
+      "rewardAmount": 10000,
+      "awardedBy": "VP Operations",
+      "date": "15 Feb 2026",
+      "status": "APPROVED_AND_BROADCAST"
+    }
+  ],
+  "INITIAL_REFERRALS_17": [
+    {
+      "id": "REF-801",
+      "candidateName": "Kunal Singhal",
+      "role": "Senior Go Systems Engineer",
+      "dept": "Engineering",
+      "referredByEmployeeId": "EMP-101",
+      "referredByName": "Trisha Khanna",
+      "status": "JOINED",
+      "joiningDate": "2026-01-15",
+      "daysSinceJoining": 45,
+      "totalBonusEligible": 25000,
+      "disbursedAmount": 10000,
+      "pendingAmount": 15000,
+      "nextPayoutMilestone": "15 Apr 2026 (90-Day Probation Confirmation)"
+    },
+    {
+      "id": "REF-802",
+      "candidateName": "Tanvi Shah",
+      "role": "Lead UI/UX Designer",
+      "dept": "Design",
+      "referredByEmployeeId": "EMP-105",
+      "referredByName": "Priya Nair",
+      "status": "OFFERED",
+      "joiningDate": "2026-03-01",
+      "daysSinceJoining": 0,
+      "totalBonusEligible": 25000,
+      "disbursedAmount": 0,
+      "pendingAmount": 25000,
+      "nextPayoutMilestone": "On Candidate Joining (₹10,000 Initial Installment)"
+    }
+  ]
+}

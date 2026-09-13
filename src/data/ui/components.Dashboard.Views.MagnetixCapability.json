@@ -1,0 +1,342 @@
+{
+  "legend_fields_2": {
+    "bottom": 0,
+    "data": [
+      "Baseline (Pre-training)",
+      "Post-Programme"
+    ]
+  },
+  "textStyle_fields_4": {
+    "fontSize": 11
+  },
+  "capabilityMovementOption_fields_1": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Coaching",
+          "max": 100
+        },
+        {
+          "name": "Feedback",
+          "max": 100
+        },
+        {
+          "name": "Planning",
+          "max": 100
+        },
+        {
+          "name": "Delegation",
+          "max": 100
+        },
+        {
+          "name": "Conflict Resolution",
+          "max": 100
+        },
+        {
+          "name": "Technical Hiring",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "46%"
+      ],
+      "radius": "65%"
+    }
+  },
+  "series_fields_6": {
+    "type": "radar"
+  },
+  "data_fields_7": {
+    "value": [
+      54,
+      60,
+      58,
+      48,
+      52,
+      64
+    ],
+    "name": "Baseline (Pre-training)"
+  },
+  "data_fields_8": {
+    "lineStyle": {
+      "type": "dashed"
+    }
+  },
+  "data_fields_11": {
+    "value": [
+      78,
+      84,
+      82,
+      74,
+      76,
+      88
+    ],
+    "name": "Post-Programme"
+  },
+  "data_fields_12": {
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.22)"
+    }
+  },
+  "ldStages_fields_15": {
+    "value": 1284,
+    "name": "Assigned",
+    "rate": "100%"
+  },
+  "ldStages_fields_16": {
+    "drop": null
+  },
+  "ldStages_fields_17": {
+    "value": 1042,
+    "name": "Started",
+    "rate": "81.2%"
+  },
+  "ldStages_fields_18": {
+    "drop": "-242"
+  },
+  "ldStages_fields_19": {
+    "value": 868,
+    "name": "Completed",
+    "rate": "83.3%"
+  },
+  "ldStages_fields_20": {
+    "drop": "-174"
+  },
+  "ldStages_fields_21": {
+    "value": 612,
+    "name": "Assessed",
+    "rate": "70.5%"
+  },
+  "ldStages_fields_22": {
+    "drop": "-256"
+  },
+  "ldStages_23": {
+    "value": 398,
+    "name": "Applied at Work",
+    "rate": "65.0%",
+    "color": "#05CD99",
+    "drop": "-214"
+  },
+  "tooltip_fields_24": {
+    "trigger": "item",
+    "confine": true,
+    "backgroundColor": "rgba(6, 13, 24, 0.95)",
+    "borderColor": "rgba(45, 212, 168, 0.4)",
+    "borderWidth": 1,
+    "padding": [
+      8,
+      12
+    ],
+    "textStyle": {
+      "color": "#F1F5F9",
+      "fontSize": 12
+    }
+  },
+  "series_fields_27": {
+    "name": "L&D Funnel",
+    "type": "funnel",
+    "left": "4%",
+    "top": 10,
+    "bottom": 10,
+    "width": "92%",
+    "min": 0,
+    "max": 1284,
+    "minSize": "36%",
+    "maxSize": "100%",
+    "sort": "descending",
+    "gap": 4
+  },
+  "label_fields_29": {
+    "show": true,
+    "position": "inside",
+    "align": "center",
+    "verticalAlign": "middle"
+  },
+  "label_fields_30": {
+    "color": "#060D18",
+    "fontSize": 12,
+    "fontWeight": 800
+  },
+  "series_fields_28": {
+    "itemStyle": {
+      "borderColor": "#0B1522",
+      "borderWidth": 2
+    },
+    "emphasis": {
+      "label": {
+        "fontSize": 13,
+        "fontWeight": 900
+      }
+    }
+  },
+  "learningHoursOption_fields_33": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow"
+      }
+    },
+    "grid": {
+      "left": "22%",
+      "right": "8%",
+      "top": "8%",
+      "bottom": "12%"
+    },
+    "xAxis": {
+      "type": "value",
+      "name": "Hours",
+      "splitLine": {
+        "lineStyle": {
+          "color": "rgba(28, 52, 80, 0.4)"
+        }
+      }
+    }
+  },
+  "yAxis_fields_37": {
+    "type": "category",
+    "data": [
+      "Finance",
+      "Operations",
+      "Sales",
+      "Support",
+      "Engineering"
+    ]
+  },
+  "axisLabel_fields_39": {
+    "fontSize": 11
+  },
+  "series_fields_40": {
+    "type": "bar"
+  },
+  "data_fields_42": {
+    "value": 380
+  },
+  "data_fields_43": {
+    "value": 640
+  },
+  "data_fields_44": {
+    "value": 760
+  },
+  "data_fields_45": {
+    "value": 980
+  },
+  "data_46": {
+    "value": 1420,
+    "itemStyle": {
+      "color": "#05CD99"
+    }
+  },
+  "series_fields_41": {
+    "barWidth": 14,
+    "label": {
+      "show": true,
+      "position": "right",
+      "formatter": "{c}h",
+      "color": "#E6EDF6",
+      "fontSize": 11
+    }
+  },
+  "content_text_48": "S9 Console",
+  "content_text_49": "Magnetix Capability",
+  "content_text_50": "1,284 learners • 62 programmes • FY27 to date",
+  "content_text_51": "Magnetix Capability & L&D Intelligence",
+  "content_text_52": "Build a Path",
+  "content_text_53": "Capability Index (NCI)",
+  "content_text_54": "68/100",
+  "content_text_55": " ▲ 7 pts since Apr",
+  "content_text_56": "Mandatory Compliance",
+  "content_text_57": "91%",
+  "content_text_58": "116 overdue certifications",
+  "content_text_59": "Total Learning Hours",
+  "content_text_60": "4,180h",
+  "content_text_61": "3.3 h per person / month",
+  "content_text_62": "Skill Gaps Closed",
+  "content_text_63": "142",
+  "content_text_64": "of 388 identified gaps",
+  "content_text_65": "Skill Coverage Matrix (Function × Critical Skill)",
+  "content_text_66": "Share of role holders at or above required proficiency level",
+  "content_text_67": "Target: ≥ 75%",
+  "content_text_68": "Function",
+  "content_text_69": "Core Craft",
+  "content_text_70": "Data & Analytics",
+  "content_text_71": "Cloud & Infra",
+  "content_text_72": "Client Skills",
+  "content_text_73": "Leadership",
+  "content_text_74": "Engineering",
+  "content_text_75": "84%",
+  "content_text_76": "59%",
+  "content_text_77": "72%",
+  "content_text_78": "46%",
+  "content_text_79": "38%",
+  "content_text_80": "Data & AI",
+  "content_text_81": "62%",
+  "content_text_82": "88%",
+  "content_text_83": "74%",
+  "content_text_84": "41%",
+  "content_text_85": "32%",
+  "content_text_86": "Sales",
+  "content_text_87": "71%",
+  "content_text_88": "44%",
+  "content_text_89": "28%",
+  "content_text_90": "86%",
+  "content_text_91": "54%",
+  "content_text_92": "Operations",
+  "content_text_93": "68%",
+  "content_text_94": "52%",
+  "content_text_95": "34%",
+  "content_text_96": "62%",
+  "content_text_97": "48%",
+  "content_text_98": "Finance",
+  "content_text_99": "79%",
+  "content_text_100": "66%",
+  "content_text_101": "30%",
+  "content_text_102": "44%",
+  "content_text_103": "58%",
+  "content_text_104": "Capability Movement",
+  "content_text_105": "Pre vs Post-Programme Shift",
+  "content_text_106": "Programme Funnel",
+  "content_text_107": "Assigned to Applied on the Job",
+  "content_text_108": "31.0% Yield",
+  "content_text_109": "(",
+  "content_text_110": ")",
+  "content_text_111": "Assigned to Applied",
+  "content_text_112": "398 / 1,284 learners (31.0%)",
+  "content_text_113": "Learning Hours by Function",
+  "content_text_114": "Total hours delivered this quarter",
+  "content_text_115": "Gap-to-Path Intelligence",
+  "content_text_116": "Autonomous skill gap inference",
+  "content_text_117": "AI Synthesis",
+  "content_text_118": "Data Engineering Skill Deficit",
+  "content_text_119": "Data engineering skills sit ",
+  "content_text_120": "41% below requirement",
+  "content_text_121": " across 3 teams, and 2 open engineering roles have stalled on the same skill. A 6-week path built from existing Magnetix modules would upskill 14 engineers.",
+  "content_text_122": "Review 6-Week Path →",
+  "content_text_123": "View Stalled Requisitions",
+  "content_text_124": "Does Learning Show Up in the Work?",
+  "content_text_125": "Manager-rated application 90 days after completion",
+  "content_text_126": "Business Signals",
+  "content_text_127": "Programme",
+  "content_text_128": "Completed",
+  "content_text_129": "Applied",
+  "content_text_130": "Observable Business Signal",
+  "content_text_131": "First-time Manager",
+  "content_text_132": "84",
+  "content_text_133": "71%",
+  "content_text_134": "Team attrition -3.1 pts",
+  "content_text_135": "Consultative Selling",
+  "content_text_136": "46",
+  "content_text_137": "63%",
+  "content_text_138": "Win rate +4 pts",
+  "content_text_139": "Payroll Statutory Update",
+  "content_text_140": "18",
+  "content_text_141": "94%",
+  "content_text_142": "Corrections -38%",
+  "content_text_143": "System Design Part 2",
+  "content_text_144": "62",
+  "content_text_145": "48%",
+  "content_text_146": "No signal yet",
+  "initialState_1": "All",
+  "fallback_1": "#05CD99",
+  "fallback_2": "100%"
+}

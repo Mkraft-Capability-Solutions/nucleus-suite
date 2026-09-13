@@ -1,0 +1,28 @@
+# Dependencies and generated build output
+/node_modules/
+/.next/
+/out/
+/build/
+/.netlify/
+/.vercel/
+/coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local secrets; commit only the example
+.env*
+!.env.example
+
+# Local database files and diagnostics
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.log
+.DS_Store
+
+/playwright-report/
+/test-results/
+
+# Private credential reference supplied for local setup
+/credentials.webp

@@ -1,0 +1,113 @@
+.card {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.title {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+}
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+}
+
+.eventItem {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.eventItem:last-child {
+    padding-bottom: 0;
+}
+
+.timeIndicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 20px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background: var(--text-primary);
+    /* Or accent color */
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    margin-top: 4px;
+}
+
+.line {
+    width: 2px;
+    flex: 1;
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 4px;
+}
+
+.eventContent {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.eventContent:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(4px);
+}
+
+.time {
+    font-size: 0.8rem;
+    color: var(--secondary);
+    /* Blue color for time */
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.eventContent h4 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.eventContent p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.joinBtn {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.joinBtn:hover {
+    background: rgba(59, 130, 246, 0.3);
+}
+
+.link {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+}
+
+.link:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}

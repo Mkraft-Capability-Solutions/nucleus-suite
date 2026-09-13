@@ -1,0 +1,389 @@
+{
+  "hiringStages_fields_1": {
+    "value": 1240,
+    "name": "Applied",
+    "rate": "100%"
+  },
+  "hiringStages_fields_2": {
+    "drop": null
+  },
+  "hiringStages_fields_3": {
+    "value": 412,
+    "name": "Screened",
+    "rate": "33.2%"
+  },
+  "hiringStages_fields_4": {
+    "drop": "-828"
+  },
+  "hiringStages_fields_5": {
+    "value": 168,
+    "name": "Interviewed",
+    "rate": "40.8%"
+  },
+  "hiringStages_fields_6": {
+    "drop": "-244"
+  },
+  "hiringStages_fields_7": {
+    "value": 44,
+    "name": "Offered",
+    "rate": "26.2%"
+  },
+  "hiringStages_fields_8": {
+    "drop": "-124"
+  },
+  "hiringStages_9": {
+    "value": 31,
+    "name": "Joined",
+    "rate": "70.5%",
+    "color": "#05CD99",
+    "drop": "-13"
+  },
+  "tooltip_fields_10": {
+    "trigger": "item",
+    "confine": true,
+    "backgroundColor": "rgba(6, 13, 24, 0.95)",
+    "borderColor": "rgba(45, 212, 168, 0.4)",
+    "borderWidth": 1,
+    "padding": [
+      8,
+      12
+    ],
+    "textStyle": {
+      "color": "#F1F5F9",
+      "fontSize": 12
+    }
+  },
+  "series_fields_13": {
+    "name": "Recruitment Funnel",
+    "type": "funnel",
+    "left": "4%",
+    "top": 10,
+    "bottom": 10,
+    "width": "92%",
+    "min": 0,
+    "max": 1240,
+    "minSize": "36%",
+    "maxSize": "100%",
+    "sort": "descending",
+    "gap": 4
+  },
+  "label_fields_15": {
+    "show": true,
+    "position": "inside",
+    "align": "center",
+    "verticalAlign": "middle"
+  },
+  "label_fields_16": {
+    "color": "#060D18",
+    "fontSize": 12,
+    "fontWeight": 800
+  },
+  "series_fields_14": {
+    "itemStyle": {
+      "borderColor": "#0B1522",
+      "borderWidth": 2
+    },
+    "emphasis": {
+      "label": {
+        "fontSize": 13,
+        "fontWeight": 900
+      }
+    }
+  },
+  "tooltip_fields_20": {
+    "trigger": "axis",
+    "axisPointer": {
+      "type": "shadow"
+    }
+  },
+  "xAxis_fields_22": {
+    "type": "category",
+    "data": [
+      "Offers Made",
+      "Comp Declined",
+      "Counter Offer",
+      "No Response",
+      "Joined"
+    ]
+  },
+  "axisLabel_fields_24": {
+    "fontSize": 10,
+    "interval": 0
+  },
+  "offerWaterfallOption_fields_19": {
+    "yAxis": {
+      "type": "value",
+      "splitLine": {
+        "lineStyle": {
+          "color": "rgba(28, 52, 80, 0.4)"
+        }
+      }
+    }
+  },
+  "series_26": {
+    "name": "Base",
+    "type": "bar",
+    "stack": "Total",
+    "itemStyle": {
+      "borderColor": "transparent",
+      "color": "transparent"
+    },
+    "data": [
+      0,
+      38,
+      34,
+      31,
+      0
+    ]
+  },
+  "series_fields_27": {
+    "name": "Candidates",
+    "type": "bar",
+    "stack": "Total"
+  },
+  "data_fields_29": {
+    "value": 44
+  },
+  "data_fields_30": {
+    "value": 6
+  },
+  "data_fields_31": {
+    "value": 4
+  },
+  "data_fields_32": {
+    "value": 3
+  },
+  "data_fields_33": {
+    "value": 31
+  },
+  "series_fields_28": {
+    "label": {
+      "show": true,
+      "position": "top",
+      "color": "#E6EDF6",
+      "fontSize": 11
+    }
+  },
+  "candidateExpRadarOption_fields_35": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Clarity",
+          "max": 100
+        },
+        {
+          "name": "Speed",
+          "max": 100
+        },
+        {
+          "name": "Panel Quality",
+          "max": 100
+        },
+        {
+          "name": "Respect",
+          "max": 100
+        },
+        {
+          "name": "Feedback",
+          "max": 100
+        },
+        {
+          "name": "Offer Process",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "50%"
+      ],
+      "radius": "65%"
+    }
+  },
+  "series_fields_37": {
+    "type": "radar"
+  },
+  "data_fields_38": {
+    "value": [
+      88,
+      76,
+      92,
+      95,
+      71,
+      84
+    ],
+    "name": "Candidate CSAT (n=214)"
+  },
+  "data_fields_39": {
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.2)"
+    }
+  },
+  "content_text_42": "S4 Console",
+  "content_text_43": "Talent Acquisition",
+  "content_text_44": "18 open roles • 156 active candidates • FY27 Q2",
+  "content_text_45": "Talent Acquisition Command",
+  "content_text_46": "All Functions",
+  "content_text_47": "Engineering",
+  "content_text_48": "Sales",
+  "content_text_49": "Finance",
+  "content_text_50": "+ New Requisition",
+  "content_text_51": "Open Roles",
+  "content_text_52": "18",
+  "content_text_53": "5 past 60 days SLA",
+  "content_text_54": "Avg. Time to Fill",
+  "content_text_55": "34d",
+  "content_text_56": " ▼ 5d vs Q1 (Target: 30d)",
+  "content_text_57": "Cost Per Hire",
+  "content_text_58": "₹58k",
+  "content_text_59": " ▲ ₹4k vs Q1",
+  "content_text_60": "Offer Acceptance Rate",
+  "content_text_61": "78%",
+  "content_text_62": " ▲ 6 pts vs Q1",
+  "content_text_63": "Offer-to-Join Drop",
+  "content_text_64": "29.5%",
+  "content_text_65": "13 lost post-offer (44 offered, 31 joined)",
+  "content_text_66": "Panel Load Average",
+  "content_text_67": "3.1h/wk",
+  "content_text_68": "Peak: 9.4h (N. Iyer)",
+  "content_text_69": "Hiring Funnel (QTD)",
+  "content_text_70": "Stage conversions & applicant yield",
+  "content_text_71": "2.5% Net Yield",
+  "content_text_72": "(",
+  "content_text_73": ")",
+  "content_text_74": "Applied to Joined",
+  "content_text_75": "31 / 1,240 candidates (2.5%)",
+  "content_text_76": "Source Channel Yield",
+  "content_text_77": "Hires and median cost per hire",
+  "content_fields_78": {
+    "name": "Employee Referrals",
+    "hires": 11,
+    "cost": "₹22k"
+  },
+  "content_fields_79": {
+    "pct": 85
+  },
+  "content_fields_80": {
+    "name": "Company Career Site",
+    "hires": 8,
+    "cost": "₹31k"
+  },
+  "content_fields_81": {
+    "pct": 65
+  },
+  "content_fields_82": {
+    "name": "Staffing Agencies",
+    "hires": 6,
+    "cost": "₹1.4L"
+  },
+  "content_fields_83": {
+    "pct": 45
+  },
+  "content_fields_84": {
+    "name": "LinkedIn Recruiter",
+    "hires": 4,
+    "cost": "₹68k"
+  },
+  "content_fields_85": {
+    "pct": 35
+  },
+  "content_fields_86": {
+    "name": "Campus Placement",
+    "hires": 2,
+    "cost": "₹18k"
+  },
+  "content_fields_87": {
+    "pct": 20
+  },
+  "content_text_88": " hires • ",
+  "content_text_89": "AI Shortlist Match Ready",
+  "content_text_90": "Unbiased candidate scoring",
+  "content_text_91": "Skills Only",
+  "content_92": [
+    {
+      "name": "A. Sharma",
+      "role": "Sr. Backend Eng",
+      "score": 94,
+      "match": "Go, Kafka, K8s"
+    },
+    {
+      "name": "M. Krishnan",
+      "role": "Sr. Backend Eng",
+      "score": 91,
+      "match": "Distributed DAG"
+    },
+    {
+      "name": "D. Patel",
+      "role": "Data Engineer",
+      "score": 88,
+      "match": "Spark, PySpark"
+    },
+    {
+      "name": "R. Sengupta",
+      "role": "Data Engineer",
+      "score": 85,
+      "match": "PostgreSQL, DBT"
+    }
+  ],
+  "content_text_93": " • ",
+  "content_text_94": "%",
+  "content_text_95": "🛡️ ",
+  "content_text_96": "Fairness Guardrail: Scored on skills, seniority and role history only. Name, age, gender, and college are excluded.",
+  "content_text_97": "Open Requisitions & Bottlenecks",
+  "content_text_98": "Sorted by days open with controlled blocker taxonomy",
+  "content_text_99": "5 Aged > 60d",
+  "content_text_100": "Role",
+  "content_text_101": "Function",
+  "content_text_102": "Location",
+  "content_text_103": "Days Open",
+  "content_text_104": "Pipeline",
+  "content_text_105": "Current Stage",
+  "content_text_106": "Hiring Manager",
+  "content_text_107": "Primary Blocker",
+  "content_text_108": "Senior Backend Engineer",
+  "content_text_109": "Engineering",
+  "content_text_110": "Bengaluru",
+  "content_text_111": "74d",
+  "content_text_112": "12",
+  "content_text_113": "Panel round 2",
+  "content_text_114": "N. Iyer",
+  "content_text_115": "Panel availability",
+  "content_text_116": "Data Engineer",
+  "content_text_117": "Engineering",
+  "content_text_118": "Bengaluru",
+  "content_text_119": "68d",
+  "content_text_120": "9",
+  "content_text_121": "Screening",
+  "content_text_122": "N. Iyer",
+  "content_text_123": "Panel availability",
+  "content_text_124": "Enterprise AE, West",
+  "content_text_125": "Sales",
+  "content_text_126": "Pune",
+  "content_text_127": "41d",
+  "content_text_128": "21",
+  "content_text_129": "Final culture",
+  "content_text_130": "S. Kulkarni",
+  "content_text_131": "Comp band",
+  "content_text_132": "Payroll Specialist",
+  "content_text_133": "Finance",
+  "content_text_134": "Bengaluru",
+  "content_text_135": "22d",
+  "content_text_136": "16",
+  "content_text_137": "Offer roll-out",
+  "content_text_138": "A. Menon",
+  "content_text_139": "On track",
+  "content_text_140": "Support Engineer × 6",
+  "content_text_141": "Support",
+  "content_text_142": "Hyderabad",
+  "content_text_143": "14d",
+  "content_text_144": "48",
+  "content_text_145": "Technical screening",
+  "content_text_146": "K. Rao",
+  "content_text_147": "On track",
+  "content_text_148": "Offer-to-Joining Leakage Bridge",
+  "content_text_149": "Where candidates drop off between offer and Day-1",
+  "content_text_150": "Candidate Experience Survey",
+  "content_text_151": "Post-interview feedback (n=214)",
+  "initialState_1": "All",
+  "fallback_1": "#05CD99",
+  "fallback_2": "100%"
+}

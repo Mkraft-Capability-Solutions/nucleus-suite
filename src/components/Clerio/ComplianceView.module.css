@@ -1,0 +1,1203 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    padding-bottom: 3rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: var(--card);
+    padding: 1.5rem 2rem;
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.badgeRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+.livePill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.65rem;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    border: 1px solid var(--signal);
+}
+
+.versionPill {
+    font-family: var(--f-num);
+    font-size: var(--t-micro);
+    padding: 0.2rem 0.65rem;
+    background: var(--card-2);
+    color: var(--text-2);
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+}
+
+.header h2 {
+    font-size: var(--t-h2);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.01em;
+}
+
+.header p {
+    color: var(--text-2);
+    font-size: var(--t-small);
+    margin: 0;
+    max-width: 800px;
+    line-height: 1.5;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btnPrimary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.15rem;
+    background: var(--signal);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: var(--t-small);
+    border-radius: var(--r-control);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: var(--signal-ink);
+}
+
+.btnSecondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.15rem;
+    background: var(--card);
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: var(--t-small);
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2);
+    color: var(--text);
+    border-color: var(--text-3);
+}
+
+/* Tabs: Modern Floating Segmented Control */
+.tabsRow {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.35rem;
+    background: var(--card);
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-subtle);
+    width: fit-content;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.tabBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.15rem;
+    border: none;
+    border-radius: var(--r-pill);
+    background: transparent;
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tabBtn:hover {
+    color: var(--text);
+    background: var(--card-2);
+}
+
+.activeTab {
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Tab 1: Simulator */
+.simulatorSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.simNotice {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--info-wash);
+    border: 1px solid var(--info);
+    border-radius: var(--r-card);
+    color: var(--info);
+    font-size: var(--t-small);
+    line-height: 1.5;
+}
+
+.simGrid {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 1.75rem;
+}
+
+.inputCard, .resultCard {
+    background: var(--card);
+    padding: 1.75rem;
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.inputCard h3, .resultCard h3 {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 1.25rem 0;
+}
+
+.inputGroup {
+    margin-bottom: 1.25rem;
+}
+
+.inputLabelRow {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--t-small);
+    color: var(--text);
+    margin-bottom: 0.4rem;
+}
+
+.rangeInput {
+    width: 100%;
+    accent-color: var(--signal);
+    cursor: pointer;
+}
+
+.splitBreakdown {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+}
+
+.splitPill {
+    flex: 1;
+    text-align: center;
+    padding: 0.45rem 0.65rem;
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.metricComparison {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.compBlock {
+    flex: 1;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1rem 1.25rem;
+}
+
+.compBlockAlert {
+    background: var(--flag-wash);
+    border-color: var(--flag);
+}
+
+.compBlockSuccess {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+}
+
+.compLabel {
+    font-size: var(--t-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    color: var(--text-2);
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.compVal {
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: var(--f-num);
+    color: var(--text);
+    margin-bottom: 0.25rem;
+}
+
+.compSub {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.arrowIcon {
+    font-size: 1.25rem;
+    color: var(--text-3);
+    font-weight: 600;
+}
+
+.cascadeTableWrapper {
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.cascadeTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+}
+
+.cascadeTable th {
+    background: var(--card-2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--line);
+}
+
+.cascadeTable td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+}
+
+.boldCell {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.tableHint {
+    font-size: var(--t-micro);
+    color: var(--text-3);
+    margin-top: 0.15rem;
+}
+
+.textRed {
+    color: var(--flag);
+    font-weight: 600;
+}
+
+.textGreen {
+    color: var(--signal-ink);
+    font-weight: 600;
+}
+
+.textAmber {
+    color: var(--pending);
+    font-weight: 600;
+}
+
+.advisorBox {
+    background: var(--pending-wash);
+    border: 1px solid var(--pending);
+    border-radius: var(--r-control);
+    padding: 1rem 1.25rem;
+    font-size: var(--t-small);
+    color: var(--pending);
+    line-height: 1.5;
+}
+
+.advisorBox strong {
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.advisorBox p {
+    margin: 0;
+}
+
+/* Tab 2: Calendar */
+.calendarStats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.statCard {
+    background: var(--card);
+    padding: 1.25rem 1.5rem;
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.statTitle {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.statNumber {
+    font-size: 1.75rem;
+    font-weight: 600;
+    font-family: var(--f-num);
+    color: var(--text);
+    margin: 0.35rem 0 0.2rem 0;
+}
+
+.statSub {
+    font-size: var(--t-micro);
+    color: var(--text-3);
+}
+
+.tableCard {
+    background: var(--card);
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+    overflow: hidden;
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.tableHeader h3 {
+    margin: 0;
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.filterBtns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filterBtnActive {
+    padding: 0.35rem 0.75rem;
+    background: var(--signal);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.filterBtn {
+    padding: 0.35rem 0.75rem;
+    background: var(--card-2);
+    color: var(--text-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.filterBtn:hover {
+    background: var(--card);
+    color: var(--text);
+}
+
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+}
+
+.dataTable th {
+    background: var(--card-2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-2);
+    border-bottom: 1px solid var(--line);
+}
+
+.dataTable td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+}
+
+.periodBadge {
+    font-family: var(--f-num);
+    font-size: var(--t-micro);
+    background: var(--card-2);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data);
+    color: var(--text-2);
+    border: 1px solid var(--line-soft);
+}
+
+.statusBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.badgeGreen {
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+}
+
+.badgeAmber {
+    background: var(--pending-wash);
+    color: var(--pending);
+}
+
+.badgeGray {
+    background: var(--card-2);
+    color: var(--text-2);
+    border: 1px solid var(--line);
+}
+
+.badgeBlue {
+    background: var(--info-wash);
+    color: var(--info);
+}
+
+.btnTableAction {
+    padding: 0.35rem 0.75rem;
+    background: var(--card);
+    color: var(--text-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.btnTableAction:hover {
+    background: var(--card-2);
+    color: var(--text);
+}
+
+.btnTableActionPrimary {
+    padding: 0.35rem 0.75rem;
+    background: var(--signal);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.btnTableActionPrimary:hover {
+    background: var(--signal-ink);
+}
+
+/* Modal */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(16, 34, 47, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: var(--card);
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    width: 620px;
+    max-width: 95vw;
+    box-shadow: var(--shadow-overlay);
+    overflow: hidden;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.15rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-3);
+    transition: color 0.12s ease;
+}
+
+.closeBtn:hover {
+    color: var(--text);
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.receiptProof {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    padding: 1.25rem;
+}
+
+.receiptHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px dashed var(--line);
+    padding-bottom: 0.85rem;
+    margin-bottom: 1rem;
+}
+
+.receiptHeader h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.receiptHeader span {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+    font-family: var(--f-num);
+}
+
+.receiptGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    font-size: var(--t-small);
+    color: var(--text);
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+}
+
+/* Tab 3: State Matrix */
+.matrixNotice {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: var(--signal-wash);
+    border: 1px solid var(--signal);
+    border-radius: var(--r-card);
+    color: var(--signal-ink);
+    font-size: var(--t-small);
+    margin-bottom: 1.5rem;
+}
+
+.tagGreen {
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.tagBlue {
+    background: var(--info-wash);
+    color: var(--info);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.textMuted {
+    color: var(--text-3);
+    font-size: var(--t-micro);
+}
+
+/* Tab 4: Packs */
+.packsSection {
+    background: var(--card);
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+    padding: 1.75rem;
+}
+
+.packCard {
+    background: var(--rail);
+    color: #ffffff;
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.packHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.packTag {
+    font-size: var(--t-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--signal);
+    color: #ffffff;
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data);
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 0.35rem;
+}
+
+.packHeader h3 {
+    margin: 0 0 0.25rem 0;
+    font-family: var(--f-num);
+    font-size: 1.25rem;
+}
+
+.packHeader p {
+    margin: 0;
+    color: var(--rail-text);
+    font-size: var(--t-small);
+}
+
+.testBadge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border: 1px solid var(--signal);
+    padding: 0.45rem 0.75rem;
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.codePreview pre {
+    margin: 0;
+    color: #38bdf8;
+    font-family: var(--f-num);
+    font-size: var(--t-small);
+    line-height: 1.6;
+    overflow-x: auto;
+}
+
+/* ==========================================================================
+   SPRINT 5: FACTORY ACT REGISTERS, FORM F & ERP GL POSTING STYLES
+   ========================================================================== */
+
+.subTabsNav {
+    display: inline-flex;
+    gap: 0.35rem;
+    background: var(--card);
+    padding: 0.35rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-subtle);
+    margin-bottom: 1.5rem;
+    width: fit-content;
+}
+
+.subTabBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1.15rem;
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-2);
+    background: transparent;
+    border: none;
+    border-radius: var(--r-pill);
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.subTabBtn:hover {
+    color: var(--text);
+    background: var(--card-2);
+}
+
+.activeSubTab {
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.statGrid4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.statCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.45rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.statCard:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-surface);
+}
+
+.statCardTitle {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-3);
+}
+
+.statCardValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    font-family: var(--f-num);
+}
+
+.statCardSub {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.cardPanel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-surface);
+    margin-bottom: 1.5rem;
+}
+
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.panelHeader h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panelHeader p {
+    margin: 0.25rem 0 0 0;
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.musterTableWrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+}
+
+.musterTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+    text-align: left;
+}
+
+.musterTable th {
+    background: var(--card-2);
+    padding: 0.65rem 0.85rem;
+    color: var(--text-2);
+    font-weight: 600;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+    font-size: var(--t-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.musterTable td {
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--line);
+    color: var(--text);
+}
+
+.dayPillsScroll {
+    display: flex;
+    gap: 2px;
+    max-width: 440px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.dayPill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 22px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.pillPresent {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.pillOff {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.pillLeave {
+    background: #fef9c3;
+    color: #854d0e;
+}
+
+.pillEL {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.incidentCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-left: 4px solid #ea580c;
+}
+
+.incidentHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.incidentTitle {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.incidentMeta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+    background: var(--card-2);
+    padding: 0.85rem 1rem;
+    border-radius: var(--r-control);
+    font-size: var(--t-micro);
+}
+
+.incidentMetaItem span {
+    color: var(--text-3);
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.incidentMetaItem strong {
+    color: var(--text);
+}
+
+.inspectionCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid #0284c7;
+}
+
+/* Form F Certificate Styling */
+.formFCertificate {
+    background: #fff;
+    color: #0f172a;
+    border: 2px solid #0f172a;
+    border-radius: 4px;
+    padding: 2.5rem;
+    font-family: 'Times New Roman', Times, serif;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-top: 1rem;
+}
+
+.formFHeader {
+    text-align: center;
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.formFHeader h2 {
+    margin: 0 0 0.35rem 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #0f172a;
+}
+
+.formFHeader h4 {
+    margin: 0 0 0.35rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #334155;
+    font-style: italic;
+}
+
+.formFHeader p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+}
+
+.formFBody {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #1e293b;
+}
+
+.formFTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+}
+
+.formFTable th, .formFTable td {
+    border: 1px solid #334155;
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+}
+
+.formFTable th {
+    background: #f1f5f9;
+    font-weight: 700;
+}
+
+.formFSignatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+}
+
+.sigBlock {
+    text-align: center;
+    width: 200px;
+}
+
+.sigLine {
+    border-top: 1px dashed #0f172a;
+    margin-top: 2.5rem;
+    padding-top: 0.35rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.formFEmployerSeal {
+    margin-top: 2rem;
+    border: 1.5px solid #0f172a;
+    padding: 1.25rem;
+    background: #f8fafc;
+    border-radius: 4px;
+}
+
+.allocationValidBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.85rem;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+.allocationInvalidBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.85rem;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+
+/* ERP Matrix & GL Queue */
+.connectorGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.connectorCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.connectorInfo h4 {
+    margin: 0 0 0.25rem 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.connectorInfo p {
+    margin: 0;
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.connectedStatus {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #16a34a;
+    font-size: var(--t-micro);
+    font-weight: 600;
+    background: #dcfce7;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--r-pill);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1.5rem;
+}
+
+.modalContent {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    width: 100%;
+    max-width: 780px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modalTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.modalTitle h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+

@@ -1,0 +1,638 @@
+{
+  "dailyEntries_1": [
+    {
+      "id": 1,
+      "day": "Mon",
+      "date": "07 Sep",
+      "project": "Project Alpha (Core HRMS)",
+      "task": "GraphQL Auth & RBAC Security Engine",
+      "hours": 8.5,
+      "billable": true,
+      "status": "Approved"
+    },
+    {
+      "id": 2,
+      "day": "Tue",
+      "date": "08 Sep",
+      "project": "Project Alpha (Core HRMS)",
+      "task": "Leave Accrual & Sandwich Rule DAG",
+      "hours": 8.2,
+      "billable": true,
+      "status": "Approved"
+    },
+    {
+      "id": 3,
+      "day": "Wed",
+      "date": "09 Sep",
+      "project": "DevOps & Cloud Pod",
+      "task": "Turbopack Multi-Tenant Build Optimization",
+      "hours": 8.8,
+      "billable": true,
+      "status": "Approved"
+    },
+    {
+      "id": 4,
+      "day": "Thu",
+      "date": "10 Sep",
+      "project": "Project Alpha (Core HRMS)",
+      "task": "Multi-Level Executive Approval Flow & Toasts",
+      "hours": 8.5,
+      "billable": true,
+      "status": "Approved"
+    },
+    {
+      "id": 5,
+      "day": "Fri",
+      "date": "11 Sep",
+      "project": "Platform Architecture",
+      "task": "Timesheet & Attendance Ledger Sync",
+      "hours": 6.2,
+      "billable": true,
+      "status": "Active (Today)"
+    }
+  ],
+  "newEntry_fields_2": {
+    "day": "Fri",
+    "date": "11 Sep"
+  },
+  "newEntry_fields_3": {
+    "status": "Active (Today)"
+  },
+  "leaveRingsOption_fields_4": {
+    "tooltip": {
+      "trigger": "item",
+      "formatter": "{b}: <strong>{c} days</strong> remaining"
+    }
+  },
+  "legend_fields_6": {
+    "bottom": 0,
+    "data": [
+      "Earned (12d)",
+      "Casual (4d)",
+      "Sick (6d)"
+    ]
+  },
+  "textStyle_fields_8": {
+    "fontSize": 11
+  },
+  "series_fields_9": {
+    "name": "Earned",
+    "type": "pie",
+    "radius": [
+      "68%",
+      "82%"
+    ],
+    "center": [
+      "50%",
+      "45%"
+    ],
+    "avoidLabelOverlap": false,
+    "label": {
+      "show": false
+    }
+  },
+  "data_fields_13": {
+    "value": 12,
+    "name": "Earned (12d)"
+  },
+  "data_14": {
+    "value": 18,
+    "name": "Taken",
+    "itemStyle": {
+      "color": "rgba(28, 52, 80, 0.4)"
+    }
+  },
+  "series_fields_15": {
+    "name": "Casual",
+    "type": "pie",
+    "radius": [
+      "50%",
+      "64%"
+    ],
+    "center": [
+      "50%",
+      "45%"
+    ],
+    "avoidLabelOverlap": false,
+    "label": {
+      "show": false
+    }
+  },
+  "data_fields_19": {
+    "value": 4,
+    "name": "Casual (4d)"
+  },
+  "data_20": {
+    "value": 8,
+    "name": "Taken",
+    "itemStyle": {
+      "color": "rgba(28, 52, 80, 0.4)"
+    }
+  },
+  "series_fields_21": {
+    "name": "Sick",
+    "type": "pie",
+    "radius": [
+      "32%",
+      "46%"
+    ],
+    "center": [
+      "50%",
+      "45%"
+    ],
+    "avoidLabelOverlap": false
+  },
+  "label_fields_24": {
+    "show": true,
+    "position": "center",
+    "formatter": "22\nDays Left",
+    "fontSize": 12,
+    "fontWeight": 700
+  },
+  "data_fields_25": {
+    "value": 6,
+    "name": "Sick (6d)"
+  },
+  "data_26": {
+    "value": 6,
+    "name": "Taken",
+    "itemStyle": {
+      "color": "rgba(28, 52, 80, 0.4)"
+    }
+  },
+  "weeks_27": {
+    "length": 8
+  },
+  "days_28": [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri"
+  ],
+  "personalHeatData_29": [
+    [
+      0,
+      0,
+      8.2
+    ],
+    [
+      0,
+      1,
+      8.5
+    ],
+    [
+      0,
+      2,
+      8.8
+    ],
+    [
+      0,
+      3,
+      8.2
+    ],
+    [
+      0,
+      4,
+      8.5
+    ],
+    [
+      1,
+      0,
+      8.9
+    ],
+    [
+      1,
+      1,
+      8.3
+    ],
+    [
+      1,
+      2,
+      8.6
+    ],
+    [
+      1,
+      3,
+      8.9
+    ],
+    [
+      1,
+      4,
+      8.3
+    ],
+    [
+      2,
+      0,
+      8.7
+    ],
+    [
+      2,
+      1,
+      9
+    ],
+    [
+      2,
+      2,
+      8.4
+    ],
+    [
+      2,
+      3,
+      8.7
+    ],
+    [
+      2,
+      4,
+      9
+    ],
+    [
+      3,
+      0,
+      8.5
+    ],
+    [
+      3,
+      1,
+      8.8
+    ],
+    [
+      3,
+      2,
+      8.2
+    ],
+    [
+      3,
+      3,
+      8.5
+    ],
+    [
+      3,
+      4,
+      8.8
+    ],
+    [
+      4,
+      0,
+      8.3
+    ],
+    [
+      4,
+      1,
+      8.6
+    ],
+    [
+      4,
+      2,
+      8.9
+    ],
+    [
+      4,
+      3,
+      8.3
+    ],
+    [
+      4,
+      4,
+      8.6
+    ],
+    [
+      5,
+      0,
+      9
+    ],
+    [
+      5,
+      1,
+      8.4
+    ],
+    [
+      5,
+      2,
+      8.7
+    ],
+    [
+      5,
+      3,
+      9
+    ],
+    [
+      5,
+      4,
+      8.4
+    ],
+    [
+      6,
+      0,
+      8.8
+    ],
+    [
+      6,
+      1,
+      8.2
+    ],
+    [
+      6,
+      2,
+      8.5
+    ],
+    [
+      6,
+      3,
+      8.8
+    ],
+    [
+      6,
+      4,
+      8.2
+    ],
+    [
+      7,
+      0,
+      8.6
+    ],
+    [
+      7,
+      1,
+      8.9
+    ],
+    [
+      7,
+      2,
+      8.3
+    ],
+    [
+      7,
+      3,
+      8.6
+    ],
+    [
+      7,
+      4,
+      8.9
+    ]
+  ],
+  "tooltip_fields_32": {
+    "position": "top"
+  },
+  "personalAttendanceOption_fields_30": {
+    "grid": {
+      "top": 10,
+      "bottom": 25,
+      "left": 35,
+      "right": 15
+    }
+  },
+  "xAxis_fields_34": {
+    "type": "category"
+  },
+  "axisLabel_fields_35": {
+    "fontSize": 10
+  },
+  "yAxis_fields_36": {
+    "type": "category"
+  },
+  "axisLabel_fields_37": {
+    "fontSize": 10
+  },
+  "personalAttendanceOption_fields_31": {
+    "visualMap": {
+      "min": 7.5,
+      "max": 9.5,
+      "show": false,
+      "inRange": {
+        "color": [
+          "#14263D",
+          "#1A4D4A",
+          "#2E9C84"
+        ]
+      }
+    }
+  },
+  "series_fields_39": {
+    "type": "heatmap"
+  },
+  "series_fields_40": {
+    "itemStyle": {
+      "borderRadius": 2,
+      "borderColor": "#0E1D30",
+      "borderWidth": 2
+    }
+  },
+  "content_text_42": " My Workspace",
+  "content_text_43": " Apply / View Leaves",
+  "content_text_44": " Assigned Tasks & Sprints",
+  "content_text_45": " Reporting Line & Team Pod",
+  "content_text_46": " Payslip & Tax 24Q",
+  "content_text_47": " Monthly Attendance Log",
+  "content_text_48": " My OKRs & Goals",
+  "content_text_49": " Policy Helpdesk",
+  "content_text_50": "Today's Shift Status",
+  "content_text_51": "Target 8h 30m • Net of breaks",
+  "content_text_52": "6h 12m",
+  "content_text_53": "73% of Target",
+  "content_text_54": "In: ",
+  "content_text_55": "9:18 AM",
+  "content_text_56": " • Break: ",
+  "content_text_57": "42m",
+  "content_text_58": " • Target: ",
+  "content_text_59": "8h 30m",
+  "content_text_60": "This week: ",
+  "content_text_61": "34h 20m",
+  "content_text_62": " of 42h 30m",
+  "content_text_63": "Leave Balance",
+  "content_text_64": "As on 11 Sep 2026",
+  "content_title_65": "Open full leaves & time off module",
+  "content_text_66": "Apply Leave →",
+  "content_text_67": "September Payslip",
+  "content_text_68": "Releases 30 Sep",
+  "content_title_69": "Open full payroll module & past payslips",
+  "content_text_70": "View Payslip →",
+  "content_text_71": "Gross salary:",
+  "content_text_72": "₹1,08,400",
+  "content_text_73": "Deductions (PF, PT, TDS):",
+  "content_text_74": "- ₹18,260",
+  "content_text_75": "Net pay estimated:",
+  "content_text_76": "₹90,140",
+  "content_text_77": "Investment proofs due 15 Jan. You have declared ",
+  "content_text_78": "₹1.2 L",
+  "content_text_79": " of a possible ",
+  "content_text_80": "₹1.5 L",
+  "content_text_81": ".",
+  "content_text_82": " Ask Nucleus Policy Assistant",
+  "content_text_83": "Answers cited from signed enterprise documents",
+  "content_placeholder_84": "How many casual leaves can I carry into next year?",
+  "content_text_85": "Search",
+  "content_text_86": "◆ ",
+  "content_text_87": "Casual leave doesn't carry forward",
+  "content_text_88": " — your balance of 4.0 days lapses on 31 December. ",
+  "content_text_89": "Earned leave does carry",
+  "content_text_90": ", up to 45 days. Based on your current balance and the two holidays in the last week of December, applying for 3 days between ",
+  "content_text_91": "26 and 31 December",
+  "content_text_92": " would use your casual leave before it lapses.",
+  "content_text_93": "Source: ",
+  "content_text_94": "Leave policy v4.2, clauses 6.1 and 6.4 • Updated 12 Mar 2026",
+  "content_text_95": "Apply for those dates →",
+  "content_text_96": "Open Policy in Helpdesk →",
+  "content_text_97": "Weekly Timesheet & Project Logging",
+  "content_text_98": "Week 37: 07 – 11 Sep 2026 • Target: 40h 00m (Standard Shift) • Approver: Amit Verma",
+  "content_title_99": "Open full projects board and sprints",
+  "content_text_100": "Projects & Tasks →",
+  "content_text_101": " Submitted for Sign-off",
+  "content_text_102": " Draft (",
+  "content_text_103": "h remaining)",
+  "content_104": {
+    "day": "Mon",
+    "date": "07 Sep",
+    "hours": 8.5,
+    "status": "approved"
+  },
+  "content_105": {
+    "day": "Tue",
+    "date": "08 Sep",
+    "hours": 8.2,
+    "status": "approved"
+  },
+  "content_106": {
+    "day": "Wed",
+    "date": "09 Sep",
+    "hours": 8.8,
+    "status": "approved"
+  },
+  "content_107": {
+    "day": "Thu",
+    "date": "10 Sep",
+    "hours": 8.5,
+    "status": "approved"
+  },
+  "content_fields_108": {
+    "day": "Fri",
+    "date": "11 Sep (Today)"
+  },
+  "content_fields_109": {
+    "status": "active"
+  },
+  "content_text_110": "h",
+  "content_text_111": "Date",
+  "content_text_112": "Project & Task",
+  "content_text_113": "Type",
+  "content_text_114": "Hours",
+  "content_text_115": "Status",
+  "content_text_116": ", ",
+  "content_text_117": "h",
+  "content_text_118": "Total Logged: ",
+  "content_text_119": "h",
+  "content_text_120": " / 40.0h",
+  "content_text_121": "Billable Client Hours: ",
+  "content_text_122": "h (",
+  "content_text_123": "%)",
+  "content_text_124": " Log Project Time",
+  "content_text_125": "✓ Submitted to Amit Verma",
+  "content_text_126": " Submit for Approval",
+  "content_text_127": "Project & Client Allocation",
+  "content_text_128": "Current Sprint Time Split",
+  "content_text_129": "% Billable",
+  "content_text_130": "Project Alpha (Core HRMS)",
+  "content_text_131": "25.2h (63%)",
+  "content_text_132": "Client: Asteria FinTech • Billable",
+  "content_text_133": "DevOps & Cloud Pod",
+  "content_text_134": "8.8h (22%)",
+  "content_text_135": "Client: MultipliersKraft Cloud • Billable",
+  "content_text_136": "Platform Architecture & Standups",
+  "content_text_137": "6.2h (15%)",
+  "content_text_138": "Internal Sprint Retrospectives & KT",
+  "content_text_139": " Timesheet Approval SLA",
+  "content_text_140": "Submissions close Fridays at ",
+  "content_text_141": "7:00 PM IST",
+  "content_text_142": ". Approving Lead ",
+  "content_text_143": "Amit Verma",
+  "content_text_144": " signs off before Monday 12:00 PM for automated payroll cycle ingestion.",
+  "content_text_145": "My Goals (FY26)",
+  "content_text_146": "Quarterly engineering objectives",
+  "content_text_147": "Ship migration API",
+  "content_text_148": "74%",
+  "content_text_149": "Cut p95 latency 30%",
+  "content_text_150": "46%",
+  "content_text_151": "Mentor 1 junior engineer",
+  "content_text_152": "Done ✓",
+  "content_text_153": "My Attendance",
+  "content_text_154": "Last 8 weeks hours logged",
+  "content_text_155": "Learning on Magnetix",
+  "content_text_156": "Assigned & recommended",
+  "content_text_157": "POSH Refresher",
+  "content_text_158": "Mandatory compliance",
+  "content_text_159": "Overdue 4d",
+  "content_text_160": "System Design, Part 2",
+  "content_text_161": "Pod capability track",
+  "content_text_162": "62% done",
+  "content_text_163": "Kubernetes for Engineers",
+  "content_text_164": "Identified skill gap",
+  "content_text_165": "Skill gap",
+  "content_text_166": "My Reporting Line, Manager & Engineering Pod",
+  "content_text_167": "Organizational hierarchy, pod colleagues, and reporting lead",
+  "content_text_168": " View Full Org Chart & Team →",
+  "content_text_169": "My Employee Profile →",
+  "content_text_170": "Reporting Structure & Approver",
+  "content_alt_171": "Amit Verma",
+  "content_text_172": "Amit Verma",
+  "content_text_173": "Reporting Manager",
+  "content_text_174": "Director of Engineering • Level 6 (Director)",
+  "content_text_175": "Approves: Leave Requests, Weekly Timesheets & Expense Claims",
+  "content_text_176": "Your Role: ",
+  "content_text_177": "Full Stack Engineer (L3)",
+  "content_text_178": "Campus: ",
+  "content_text_179": "Bengaluru (Hybrid)",
+  "content_text_180": "Pod Alpha Teammates (4 Colleagues Online)",
+  "content_181": [
+    {
+      "name": "Trisha Khanna",
+      "role": "Lead Architect",
+      "pod": "Core Platform",
+      "status": "Online"
+    },
+    {
+      "name": "Rahul Saxena",
+      "role": "Senior UX Designer",
+      "pod": "Experience",
+      "status": "Online"
+    },
+    {
+      "name": "David Miller",
+      "role": "Senior DevOps Architect",
+      "pod": "Cloud Infra",
+      "status": "In Sprint Review"
+    },
+    {
+      "name": "Sarah Chen",
+      "role": "Lead Product Manager",
+      "pod": "Product",
+      "status": "Online"
+    }
+  ],
+  "content_text_182": "• ",
+  "content_text_183": "Log Project Time",
+  "content_text_184": "Friday, 11 Sep 2026 • Timesheet Entry",
+  "content_text_185": "Project / Pod",
+  "content_text_186": "Project Alpha (Core HRMS) • Asteria FinTech",
+  "content_text_187": "DevOps & Cloud Pod • MultipliersKraft",
+  "content_text_188": "Platform Architecture • Internal Sprint KT",
+  "content_text_189": "General Admin & Townhalls • Non-billable",
+  "content_text_190": "Task & Deliverables Note",
+  "content_placeholder_191": "e.g. Implemented timesheet table UI & manager submission workflow...",
+  "content_text_192": "Hours Spent",
+  "content_text_193": "Billing Nature",
+  "content_text_194": "Cancel",
+  "content_text_195": " Add to Timesheet",
+  "initialState_1": "draft",
+  "initialState_2": "Project Alpha (Core HRMS)",
+  "initialState_3": "2.0",
+  "display_4": "● Today",
+  "display_5": "✓ Signed",
+  "display_6": "Billable",
+  "display_7": "Internal",
+  "attribute_8": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=250&auto=format&fit=crop&q=80",
+  "display_9": "Billable to Client",
+  "display_10": "Internal / Non-Billable",
+  "fallback_1": 1,
+  "fallback_2": "How many casual leaves can I carry into next year?"
+}

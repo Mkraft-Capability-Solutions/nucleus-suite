@@ -1,0 +1,208 @@
+{
+  "WORKER_CATEGORIES_1": {
+    "PERM": {
+      "code": "PERM",
+      "label": "Permanent Staff",
+      "has_rest_days": true,
+      "rest_day_pattern": "FIXED_SUNDAY_ALT_SATURDAY",
+      "wage_type": "monthly",
+      "ot_eligibility": "none",
+      "statutory_applicability": [
+        "PF",
+        "ESI",
+        "PT",
+        "TDS",
+        "GRATUITY",
+        "BONUS"
+      ]
+    },
+    "CONTRACT": {
+      "code": "CONTRACT",
+      "label": "Contractual Workers",
+      "has_rest_days": false,
+      "rest_day_pattern": "NONE",
+      "wage_type": "daily",
+      "ot_eligibility": "all",
+      "statutory_applicability": [
+        "PF",
+        "ESI",
+        "LWF"
+      ]
+    },
+    "THIRD_PARTY_EMP": {
+      "code": "THIRD_PARTY_EMP",
+      "label": "3rd-Party Agency Employees",
+      "has_rest_days": true,
+      "rest_day_pattern": "ROTATIONAL_WEEKLY_OFF",
+      "wage_type": "monthly",
+      "ot_eligibility": "restday_holiday_only",
+      "statutory_applicability": [
+        "PF",
+        "ESI",
+        "LWF"
+      ]
+    },
+    "THIRD_PARTY_HELPER": {
+      "code": "THIRD_PARTY_HELPER",
+      "label": "3rd-Party Helpers & Casual Labor",
+      "has_rest_days": false,
+      "rest_day_pattern": "NONE",
+      "wage_type": "daily",
+      "ot_eligibility": "all",
+      "statutory_applicability": [
+        "ESI",
+        "LWF"
+      ]
+    }
+  },
+  "WORK_CALENDARS_2": {
+    "LOC-BLR-01": {
+      "location_id": "LOC-BLR-01",
+      "location_name": "Bengaluru Electronics City Plant",
+      "state": "Karnataka",
+      "holidays_2026": [
+        {
+          "date": "2026-01-26",
+          "name": "Republic Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-03-20",
+          "name": "Ugadi",
+          "type": "state"
+        },
+        {
+          "date": "2026-05-01",
+          "name": "May Day / Labour Day",
+          "type": "festival"
+        },
+        {
+          "date": "2026-08-15",
+          "name": "Independence Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-10-02",
+          "name": "Gandhi Jayanti",
+          "type": "national"
+        },
+        {
+          "date": "2026-11-01",
+          "name": "Kannada Rajyotsava",
+          "type": "state"
+        },
+        {
+          "date": "2026-11-08",
+          "name": "Deepavali",
+          "type": "festival"
+        },
+        {
+          "date": "2026-12-25",
+          "name": "Christmas",
+          "type": "festival"
+        }
+      ]
+    },
+    "LOC-PUN-02": {
+      "location_id": "LOC-PUN-02",
+      "location_name": "Pune Chakan Manufacturing Facility",
+      "state": "Maharashtra",
+      "holidays_2026": [
+        {
+          "date": "2026-01-26",
+          "name": "Republic Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-05-01",
+          "name": "Maharashtra Day",
+          "type": "state"
+        },
+        {
+          "date": "2026-08-15",
+          "name": "Independence Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-09-14",
+          "name": "Ganesh Chaturthi",
+          "type": "state"
+        },
+        {
+          "date": "2026-10-02",
+          "name": "Gandhi Jayanti",
+          "type": "national"
+        },
+        {
+          "date": "2026-11-08",
+          "name": "Diwali",
+          "type": "festival"
+        },
+        {
+          "date": "2026-12-25",
+          "name": "Christmas",
+          "type": "festival"
+        }
+      ]
+    },
+    "LOC-HO-HQ": {
+      "location_id": "LOC-HO-HQ",
+      "location_name": "Corporate Global Headquarters",
+      "state": "Karnataka",
+      "holidays_2026": [
+        {
+          "date": "2026-01-26",
+          "name": "Republic Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-08-15",
+          "name": "Independence Day",
+          "type": "national"
+        },
+        {
+          "date": "2026-10-02",
+          "name": "Gandhi Jayanti",
+          "type": "national"
+        },
+        {
+          "date": "2026-11-08",
+          "name": "Diwali",
+          "type": "festival"
+        },
+        {
+          "date": "2026-12-25",
+          "name": "Christmas",
+          "type": "festival"
+        }
+      ]
+    }
+  },
+  "content_fields_3": {
+    "day_type": "holiday"
+  },
+  "content_fields_4": {
+    "is_payable": true,
+    "ot_multiplier": 2
+  },
+  "content_fields_5": {
+    "day_type": "weekly_off",
+    "label": "Sunday Rest Day"
+  },
+  "content_fields_6": {
+    "ot_multiplier": 1.5
+  },
+  "content_fields_7": {
+    "day_type": "weekly_off",
+    "label": "Rostered Rest Day"
+  },
+  "content_fields_8": {
+    "ot_multiplier": 1.5
+  },
+  "content_9": {
+    "day_type": "working",
+    "label": "Regular Working Day",
+    "is_payable": true,
+    "ot_multiplier": 1
+  }
+}

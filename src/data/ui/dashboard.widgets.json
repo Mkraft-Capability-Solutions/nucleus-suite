@@ -1,0 +1,59 @@
+{
+  "copy": {
+    "eyebrow":"YOUR PERSONAL WORKSPACE",
+    "subtitle":"A clearer view of the work that matters to you.",
+    "localNotice":"Layout preferences are saved on this browser for your account. All displayed records are synthetic examples.",
+    "empty":"Start with a blank canvas. Customize your dashboard to add components from your permitted widget library.",
+    "libraryDescription":"Only components allowed by your role and current module permissions appear here.",
+    "templateNames":{"SUPER_ADMIN":"Governance overview","HR_MANAGER":"HR daily briefing","EMPLOYEE":"My working day"},
+    "roles":{"SUPER_ADMIN":"System administrator","HR_MANAGER":"HR manager","EMPLOYEE":"Employee"}
+  },
+  "defaults": {
+    "SUPER_ADMIN":["governance","access","connectors","platform-checklist"],
+    "HR_MANAGER":["hr-priorities","hr-pipeline","hr-approvals","hr-actions","learning"],
+    "EMPLOYEE":["my-day","my-leave","my-learning","my-actions","recognition"]
+  },
+  "focused": {
+    "SUPER_ADMIN":["access","platform-checklist"],
+    "HR_MANAGER":["hr-priorities","hr-approvals"],
+    "EMPLOYEE":["my-day","my-actions"]
+  },
+  "widgets": [
+    {"id":"governance","title":"Workspace governance","description":"Your administration launchpad","roles":["SUPER_ADMIN"],"module":"settings","kind":"links","dataKey":"governance","size":2,"icon":"settings"},
+    {"id":"access","title":"Access review","description":"Review the active preview role model","roles":["SUPER_ADMIN"],"module":"settings","kind":"list","dataKey":"access","size":1,"icon":"shield","target":"access_control"},
+    {"id":"connectors","title":"Integration readiness","description":"Preview configuration, without live delivery","roles":["SUPER_ADMIN"],"module":"integrations","kind":"list","dataKey":"connectors","size":1,"icon":"integrations","target":"integrations"},
+    {"id":"platform-checklist","title":"Launch readiness","description":"Implementation milestones still to complete","roles":["SUPER_ADMIN"],"module":"settings","kind":"list","dataKey":"platform-checklist","size":2,"icon":"check","target":"settings"},
+    {"id":"hr-priorities","title":"Today’s HR priorities","description":"An illustrative briefing for your HR team","roles":["HR_MANAGER"],"module":"people_core","kind":"list","dataKey":"hr-priorities","size":2,"icon":"people","target":"people_core"},
+    {"id":"hr-pipeline","title":"Onboarding pipeline","description":"Sample candidate progress by stage","roles":["HR_MANAGER"],"module":"onboarding","kind":"bars","dataKey":"hr-pipeline","size":1,"icon":"people","target":"onboarding"},
+    {"id":"hr-approvals","title":"Approval queue","description":"Example requests waiting for review","roles":["HR_MANAGER"],"module":"leaves","kind":"list","dataKey":"hr-approvals","size":2,"icon":"check","target":"leaves"},
+    {"id":"hr-actions","title":"HR shortcuts","description":"Move directly to your core workflows","roles":["HR_MANAGER"],"module":"people_core","kind":"links","dataKey":"hr-actions","size":1,"icon":"bolt"},
+    {"id":"learning","title":"Learning priorities","description":"Sample development programmes","roles":["HR_MANAGER"],"module":"learning","kind":"bars","dataKey":"learning","size":1,"icon":"school","target":"learning"},
+    {"id":"hr-payroll","title":"Payroll checklist","description":"Review preparation before a payroll run","roles":["HR_MANAGER"],"module":"payroll","kind":"list","dataKey":"hr-payroll","size":2,"icon":"wallet","target":"payroll"},
+    {"id":"my-day","title":"My day","description":"A sample working-day agenda","roles":["EMPLOYEE"],"module":"attendance","kind":"list","dataKey":"my-day","size":2,"icon":"clock","target":"attendance"},
+    {"id":"my-leave","title":"My leave overview","description":"Illustrative balances, not a verified entitlement","roles":["EMPLOYEE"],"module":"leaves","kind":"metrics","dataKey":"my-leave","size":1,"icon":"calendar","target":"leaves"},
+    {"id":"my-learning","title":"My learning","description":"Sample learning progress","roles":["EMPLOYEE"],"module":"learning","kind":"bars","dataKey":"my-learning","size":1,"icon":"school","target":"learning"},
+    {"id":"my-actions","title":"My shortcuts","description":"The self-service places you use most","roles":["EMPLOYEE"],"module":"people_core","kind":"links","dataKey":"my-actions","size":2,"icon":"bolt"},
+    {"id":"recognition","title":"Moments of recognition","description":"Sample appreciation from the workplace","roles":["EMPLOYEE"],"module":"experience","kind":"list","dataKey":"recognition","size":1,"icon":"award","target":"experience"},
+    {"id":"my-documents","title":"My documents","description":"Explore document and payslip previews","roles":["EMPLOYEE"],"module":"payroll","kind":"links","dataKey":"my-documents","size":1,"icon":"wallet"},
+    {"id":"support","title":"Need a hand?","description":"Find the right place to get help","roles":["HR_MANAGER","EMPLOYEE"],"module":"helpdesk","kind":"links","dataKey":"support","size":1,"icon":"help"}
+  ],
+  "datasets": {
+    "governance":[{"label":"Workspace preferences","detail":"Review the organization setup","target":"settings","module":"settings"},{"label":"Role visibility","detail":"Preview console and module access","target":"access_control","module":"settings"},{"label":"Connector catalogue","detail":"Explore integration configuration","target":"integrations","module":"integrations"}],
+    "access":[{"label":"System administrator","detail":"Platform governance","status":"Review"},{"label":"Workspace owner","detail":"Tenant administration","status":"Review"},{"label":"Operational roles","detail":"HR, manager and employee","status":"Review"}],
+    "connectors":[{"label":"Payroll connector","detail":"Live adapter not connected","status":"Preview"},{"label":"Attendance devices","detail":"Device ingestion not connected","status":"Preview"},{"label":"Email delivery","detail":"Outbound delivery not connected","status":"Preview"}],
+    "platform-checklist":[{"label":"Server authorization","detail":"Implement and verify in the backend phase","status":"Planned"},{"label":"Tenant isolation","detail":"Verify cross-tenant denial before production","status":"Planned"},{"label":"Audit persistence","detail":"Persist and review privileged activity","status":"Planned"},{"label":"Restore rehearsal","detail":"Test recovery before go-live","status":"Planned"}],
+    "hr-priorities":[{"label":"Prepare the joining experience","detail":"Review onboarding tasks and ownership","status":"Onboarding"},{"label":"Review employee requests","detail":"Check the pending leave queue","status":"People"},{"label":"Plan the next check-in","detail":"Follow up on performance conversations","status":"Growth"}],
+    "hr-pipeline":[{"label":"Preboarding","value":8,"total":12,"unit":"people"},{"label":"Orientation","value":5,"total":12,"unit":"people"},{"label":"Role readiness","value":3,"total":12,"unit":"people"}],
+    "hr-approvals":[{"label":"Annual leave request","detail":"Example request · awaiting HR review","status":"Pending"},{"label":"Shift adjustment","detail":"Example request · review manager context","status":"Pending"},{"label":"Policy acknowledgement","detail":"Example task · follow-up required","status":"Open"}],
+    "hr-actions":[{"label":"Employee directory","detail":"People records","target":"people_core","module":"people_core"},{"label":"Recruitment","detail":"Candidate workflows","target":"recruitment","module":"recruitment"},{"label":"Leave requests","detail":"Review the queue","target":"leaves","module":"leaves"},{"label":"Performance","detail":"Reviews and development","target":"performance","module":"performance"}],
+    "learning":[{"label":"People leadership","value":68,"total":100,"unit":"%"},{"label":"Workplace safety","value":84,"total":100,"unit":"%"},{"label":"Role foundations","value":52,"total":100,"unit":"%"}],
+    "hr-payroll":[{"label":"Review attendance inputs","detail":"Reconcile time and absence exceptions","status":"Review"},{"label":"Validate payroll changes","detail":"Check approvals and supporting records","status":"Review"},{"label":"Check the preview output","detail":"No payment is executed in this workspace","status":"Preview"}],
+    "my-day":[{"label":"Start of shift","detail":"Review your attendance history","status":"09:00"},{"label":"Team check-in","detail":"Align on today’s priorities","status":"09:30"},{"label":"Learning time","detail":"Continue a development activity","status":"15:00"}],
+    "my-leave":[{"label":"Annual leave","value":12,"unit":"days"},{"label":"Sick leave","value":6,"unit":"days"},{"label":"Personal leave","value":3,"unit":"days"}],
+    "my-learning":[{"label":"Workplace safety","value":75,"total":100,"unit":"%"},{"label":"Role development","value":40,"total":100,"unit":"%"}],
+    "my-actions":[{"label":"Attendance history","detail":"Review your working time","target":"attendance","module":"attendance"},{"label":"Leave requests","detail":"Explore the request workflow","target":"leaves","module":"leaves"},{"label":"Learning catalogue","detail":"Find your next development activity","target":"learning","module":"learning"},{"label":"Help & support","detail":"Explore the helpdesk","target":"helpdesk","module":"helpdesk"}],
+    "recognition":[{"label":"Teamwork in action","detail":"A sample appreciation for supporting a colleague","status":"Teamwork"},{"label":"A focus on quality","detail":"A sample recognition for careful, consistent work","status":"Quality"}],
+    "my-documents":[{"label":"Payslip preview","detail":"Sample payroll information","target":"payroll","module":"payroll"},{"label":"My profile","detail":"Review your profile experience","target":"people_core","module":"people_core"}],
+    "support":[{"label":"Helpdesk","detail":"Review sample support requests","target":"helpdesk","module":"helpdesk"},{"label":"People directory","detail":"Find workplace context","target":"people_core","module":"people_core"}]
+  }
+}

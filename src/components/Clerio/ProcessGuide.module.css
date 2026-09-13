@@ -1,0 +1,10 @@
+.guide { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin: 12px 0; background: var(--card); color: var(--text); }
+.guide summary { display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; }
+.guide p, .guide li, .guide dd { font-size: 13px; line-height: 1.6; }
+.guide dt { font-weight: 600; font-size: 13px; }
+.guide dd { margin: 0 0 8px; }
+.guide h3 { font-size: 14px; margin-top: 18px; }
+.guide small { color: var(--text-2); }
+.table { overflow-x: auto; }
+.table table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.table th, .table td { padding: 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }

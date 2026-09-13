@@ -1,0 +1,394 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.titleBlock h2 {
+    font-size: var(--t-h2);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.titleBlock p {
+    color: var(--text-2);
+    font-size: var(--t-small);
+    margin: 0.25rem 0 0;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.statCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: var(--shadow-raise);
+}
+
+.statIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--r-control);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.statValue {
+    font-size: 1.5rem;
+    font-weight: 600;
+    font-family: var(--f-num);
+    color: var(--text);
+}
+
+.statLabel {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.tabNav {
+    display: flex;
+    gap: 0.4rem;
+    background: var(--card-2);
+    padding: 0.25rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    width: fit-content;
+}
+
+.tabBtn {
+    padding: 0.45rem 1.15rem;
+    border-radius: var(--r-data);
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: var(--t-small);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.12s ease;
+}
+
+.tabBtn.activeTab {
+    background: var(--card);
+    color: var(--signal);
+    font-weight: 600;
+    box-shadow: var(--shadow-raise);
+}
+
+.grid2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .grid2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-raise);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 0.75rem;
+}
+
+.cardHeader h3 {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnPrimary {
+    background: var(--signal);
+    color: #ffffff;
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--r-control);
+    border: none;
+    font-weight: 600;
+    font-size: var(--t-small);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: var(--signal-ink);
+}
+
+.btnSecondary {
+    background: var(--card);
+    color: var(--text-2);
+    border: 1px solid var(--line);
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--r-control);
+    font-weight: 500;
+    font-size: var(--t-small);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2);
+    color: var(--text);
+    border-color: var(--text-3);
+}
+
+/* Custom MIS Reports Studio */
+.misCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-raise);
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.misTopBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.misPresetRow {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+}
+
+.presetBtn {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    font-size: var(--t-micro);
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+
+.presetBtn:hover {
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+.presetBtn.activePreset {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+    color: var(--signal-ink);
+    font-weight: 600;
+}
+
+.misActionsRow {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.btnImport {
+    background: var(--signal);
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: var(--r-control);
+    border: none;
+    font-weight: 600;
+    font-size: var(--t-small);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 6px rgba(15, 110, 92, 0.25);
+    transition: all 0.15s ease;
+}
+
+.btnImport:hover {
+    background: var(--signal-ink);
+}
+
+.filterBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--card-2);
+    padding: 0.65rem 1rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    flex-wrap: wrap;
+}
+
+.filterGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.selectInput, .searchInput {
+    padding: 0.4rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    font-size: var(--t-small);
+    background: var(--card);
+    color: var(--text);
+}
+
+.searchInput {
+    min-width: 220px;
+}
+
+.columnPickerSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+}
+
+.columnPickerTitle {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.columnChipsWrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.columnChip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: var(--r-data);
+    font-size: var(--t-micro);
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    color: var(--text-2);
+    transition: all 0.12s ease;
+    user-select: none;
+}
+
+.columnChip.activeChip {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+    color: var(--signal-ink);
+    font-weight: 600;
+}
+
+.misTableWrapper {
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    overflow-x: auto;
+    background: var(--card);
+}
+
+.misTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--t-small);
+}
+
+.misTable th {
+    padding: 0.75rem 1rem;
+    background: var(--card-2);
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+}
+
+.misTable td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.misTable tr:hover td {
+    background: var(--card-2);
+}
+
+.summaryBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background: var(--card-2);
+    border-top: 1px solid var(--line);
+    font-size: var(--t-small);
+    color: var(--text-2);
+    border-radius: 0 0 var(--r-control) var(--r-control);
+}

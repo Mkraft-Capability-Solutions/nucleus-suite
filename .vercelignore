@@ -1,0 +1,15 @@
+.git
+.env*
+credentials.webp
+node_modules
+.next
+.netlify
+coverage
+test-results
+playwright-report
+scratch
+docs
+e2e
+tests
+*.log
+*.tsbuildinfo

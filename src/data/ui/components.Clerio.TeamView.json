@@ -1,0 +1,51 @@
+{
+  "pods_1": [
+    {
+      "id": "all",
+      "label": "All Pods"
+    },
+    {
+      "id": "Engineering",
+      "label": "Engineering"
+    },
+    {
+      "id": "Product",
+      "label": "Product"
+    },
+    {
+      "id": "Design",
+      "label": "Design & UX"
+    },
+    {
+      "id": "Infrastructure",
+      "label": "Infrastructure"
+    },
+    {
+      "id": "Human Resources",
+      "label": "People & HR"
+    },
+    {
+      "id": "Finance",
+      "label": "Finance"
+    }
+  ],
+  "TeamView_text_2": "My Team & Pod Directory",
+  "TeamView_text_3": "Connect with colleagues across engineering pods, view real-time availability, and reporting structure.",
+  "TeamView_title_4": "Open S7 Manager Cockpit Dashboard",
+  "TeamView_text_5": " S7 Manager Cockpit ↗",
+  "TeamView_text_6": " Invite Teammate",
+  "TeamView_text_7": "Total Teammates",
+  "TeamView_text_8": "Active in Shift",
+  "TeamView_text_9": "In Meetings / Focus",
+  "TeamView_text_10": "Away / Remote Shift",
+  "TeamView_placeholder_11": "Search teammate by name, role, or skill...",
+  "TeamView_title_12": "Direct Message",
+  "TeamView_text_13": " DM",
+  "TeamView_title_14": "Send Email",
+  "TeamView_text_15": " Email",
+  "TeamView_title_16": "Schedule 1-on-1 Sync",
+  "TeamView_text_17": " 1-on-1",
+  "initialState_1": "all",
+  "fallback_1": "2563eb",
+  "fallback_2": "General Shift 09:00 - 18:00"
+}

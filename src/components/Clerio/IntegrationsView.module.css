@@ -1,0 +1,152 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    animation: fadeIn 0.25s ease-out;
+    font-family: var(--f-ui, 'Archivo', sans-serif);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: var(--card, #FFFFFF);
+    border-radius: var(--r-card, 7px);
+    border: 1px solid var(--line, #D8DEDA);
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.titleBlock h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.titleBlock p {
+    color: var(--text-2, #5A6B78);
+    font-size: 0.85rem;
+    margin: 0.2rem 0 0;
+}
+
+.tabNav {
+    display: flex;
+    gap: 0.35rem;
+    background: var(--card-2, #F6F8F6);
+    padding: 0.25rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--line, #D8DEDA);
+    width: fit-content;
+}
+
+.tabBtn {
+    padding: 0.4rem 1rem;
+    border-radius: var(--r-data, 3px);
+    border: none;
+    background: transparent;
+    color: var(--text-2, #5A6B78);
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+    color: var(--text, #10222F);
+}
+
+.tabBtn.activeTab {
+    background: var(--card, #FFFFFF);
+    color: var(--signal-ink, #0A5546);
+    box-shadow: 0 1px 3px rgba(16, 34, 47, 0.08);
+    border: 1px solid var(--line, #D8DEDA);
+}
+
+.connectorsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.connectorCard {
+    background: var(--card, #FFFFFF);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.card {
+    background: var(--card, #FFFFFF);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.cardHeader h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+    letter-spacing: -0.01em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnPrimary {
+    background: var(--signal, #0F6E5C);
+    color: #FFFFFF;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--signal-ink, #0A5546);
+    font-weight: 600;
+    font-size: 0.84rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: var(--signal-ink, #0A5546);
+}
+
+.btnSecondary {
+    background: var(--card, #FFFFFF);
+    color: var(--text, #10222F);
+    border: 1px solid var(--line, #D8DEDA);
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--r-control, 5px);
+    font-weight: 600;
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2, #F6F8F6);
+    border-color: var(--slate-2, #8395A1);
+}

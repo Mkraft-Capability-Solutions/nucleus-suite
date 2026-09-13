@@ -1,0 +1,311 @@
+{
+  "ratingDistributionOption_fields_1": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow"
+      }
+    }
+  },
+  "legend_fields_4": {
+    "bottom": 0,
+    "data": [
+      "Actual Distribution",
+      "Guided Curve (Reference)"
+    ]
+  },
+  "textStyle_fields_6": {
+    "fontSize": 11
+  },
+  "ratingDistributionOption_fields_2": {
+    "xAxis": {
+      "type": "category",
+      "data": [
+        "Below",
+        "Meets-",
+        "Meets",
+        "Exceeds",
+        "Outstanding"
+      ]
+    },
+    "yAxis": {
+      "type": "value",
+      "splitLine": {
+        "lineStyle": {
+          "color": "rgba(28, 52, 80, 0.4)"
+        }
+      }
+    }
+  },
+  "series_fields_9": {
+    "name": "Actual Distribution",
+    "type": "bar",
+    "data": [
+      14,
+      42,
+      118,
+      56,
+      18
+    ]
+  },
+  "series_fields_10": {
+    "barWidth": 20
+  },
+  "series_fields_12": {
+    "name": "Guided Curve (Reference)",
+    "type": "line",
+    "smooth": true,
+    "data": [
+      12,
+      37,
+      124,
+      62,
+      13
+    ]
+  },
+  "series_fields_13": {
+    "lineStyle": {
+      "width": 2,
+      "type": "dashed"
+    }
+  },
+  "legend_fields_17": {
+    "bottom": 0,
+    "data": [
+      "Function Average",
+      "Role Benchmark Bar"
+    ]
+  },
+  "textStyle_fields_19": {
+    "fontSize": 11
+  },
+  "competencyRadarOption_fields_16": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Delivery",
+          "max": 100
+        },
+        {
+          "name": "Quality",
+          "max": 100
+        },
+        {
+          "name": "Collaboration",
+          "max": 100
+        },
+        {
+          "name": "Ownership",
+          "max": 100
+        },
+        {
+          "name": "Craft",
+          "max": 100
+        },
+        {
+          "name": "Coaching",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "46%"
+      ],
+      "radius": "65%"
+    }
+  },
+  "series_fields_21": {
+    "type": "radar"
+  },
+  "data_fields_22": {
+    "value": [
+      84,
+      88,
+      76,
+      82,
+      90,
+      71
+    ],
+    "name": "Function Average"
+  },
+  "data_fields_23": {
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.2)"
+    }
+  },
+  "data_fields_26": {
+    "value": [
+      80,
+      80,
+      80,
+      80,
+      80,
+      80
+    ],
+    "name": "Role Benchmark Bar"
+  },
+  "data_fields_27": {
+    "lineStyle": {
+      "type": "dashed"
+    }
+  },
+  "nineBoxCells_30": [
+    {
+      "id": "enigma",
+      "name": "Enigma",
+      "count": 9,
+      "pot": "High",
+      "perf": "Low",
+      "color": "#F2A93B"
+    },
+    {
+      "id": "growth",
+      "name": "Growth",
+      "count": 21,
+      "pot": "High",
+      "perf": "Medium",
+      "color": "#05CD99"
+    },
+    {
+      "id": "star",
+      "name": "Star",
+      "count": 14,
+      "pot": "High",
+      "perf": "High",
+      "color": "#05CD99",
+      "star": true
+    },
+    {
+      "id": "dilemma",
+      "name": "Dilemma",
+      "count": 18,
+      "pot": "Medium",
+      "perf": "Low",
+      "color": "#F2A93B"
+    },
+    {
+      "id": "core",
+      "name": "Core",
+      "count": 64,
+      "pot": "Medium",
+      "perf": "Medium",
+      "color": "#4FB6F5"
+    },
+    {
+      "id": "high_impact",
+      "name": "High Impact",
+      "count": 32,
+      "pot": "Medium",
+      "perf": "High",
+      "color": "#05CD99"
+    },
+    {
+      "id": "risk",
+      "name": "Risk",
+      "count": 11,
+      "pot": "Low",
+      "perf": "Low",
+      "color": "#F2647E"
+    },
+    {
+      "id": "effective",
+      "name": "Effective",
+      "count": 42,
+      "pot": "Low",
+      "perf": "Medium",
+      "color": "#4FB6F5"
+    },
+    {
+      "id": "trusted_pro",
+      "name": "Trusted Pro",
+      "count": 37,
+      "pot": "Low",
+      "perf": "High",
+      "color": "#4FB6F5"
+    }
+  ],
+  "content_text_31": "S6 Console",
+  "content_text_32": "Performance & Talent",
+  "content_text_33": "FY26 Annual Cycle • Calibration in Progress",
+  "content_text_34": "Performance & Talent Calibration",
+  "content_text_35": "Engineering (248 staff)",
+  "content_text_36": "Product & Design (64 staff)",
+  "content_text_37": "Sales & Growth (180 staff)",
+  "content_text_38": "Publish Ratings",
+  "content_text_39": "Reviews Complete",
+  "content_text_40": "86%",
+  "content_text_41": "41 managers pending submission",
+  "content_text_42": "Goals with Evidence",
+  "content_text_43": "72%",
+  "content_text_44": "Below 85% audit threshold",
+  "content_text_45": "Rating Spread Variance",
+  "content_text_46": "1.9σ",
+  "content_text_47": "3 managers outside variance band",
+  "content_text_48": "Succession Cover",
+  "content_text_49": "64%",
+  "content_text_50": "11 critical roles uncovered",
+  "content_text_51": "Nine-Box Talent Grid",
+  "content_text_52": "Performance × Potential (Total n=248)",
+  "content_text_53": "Interactive",
+  "content_text_54": " / ",
+  "content_text_55": "← Low Performance High →",
+  "content_text_56": "↑ High Potential",
+  "content_text_57": "Rating Distribution",
+  "content_text_58": "Actual vs Guided reference curve",
+  "content_text_59": "Competency Profile",
+  "content_text_60": "Average vs role bar",
+  "content_text_61": "Calibration Checks: Pattern & Bias Flags",
+  "content_text_62": "Algorithmic review of rating distributions",
+  "content_text_63": "4 Flags",
+  "content_64": [
+    {
+      "title": "Rating Flatline Detected",
+      "text": "Three managers rated every direct report at the same level despite team goal-attainment varying by 34 points.",
+      "action": "See (3 Managers)"
+    },
+    {
+      "title": "Tenure Skew (< 6 Months)",
+      "text": "Ratings for employees who joined within 6 months skew 0.4 below peers with equal goal attainment.",
+      "action": "See (18 Hires)"
+    },
+    {
+      "title": "Template Feedback Detected",
+      "text": "Nine reviews contain feedback text closely matching a template with zero employee-specific evidence.",
+      "action": "Audit (9 Reviews)"
+    },
+    {
+      "title": "Top-Box Flight Risk Hazard",
+      "text": "Two top-box employees have flight-risk scores above 0.7. Neither has a retention action logged.",
+      "action": "Open Flight Risk"
+    }
+  ],
+  "content_text_65": " →",
+  "content_text_66": "Succession Cover for Critical Roles",
+  "content_text_67": "Pipeline bench strength & single point risks",
+  "content_text_68": "Critical Role",
+  "content_text_69": "Incumbent",
+  "content_text_70": "Ready Now",
+  "content_text_71": "Ready 1-2y",
+  "content_text_72": "Bench Risk",
+  "content_text_73": "Head of Engineering",
+  "content_text_74": "N. Iyer",
+  "content_text_75": "1",
+  "content_text_76": "2",
+  "content_text_77": "Covered",
+  "content_text_78": "Payroll Controller",
+  "content_text_79": "A. Menon",
+  "content_text_80": "0",
+  "content_text_81": "1",
+  "content_text_82": "Single point",
+  "content_text_83": "Head of Delivery",
+  "content_text_84": "R. Deshpande",
+  "content_text_85": "0",
+  "content_text_86": "3",
+  "content_text_87": "Thin bench",
+  "content_text_88": "Regional Sales Lead, West",
+  "content_text_89": "S. Kulkarni",
+  "content_text_90": "2",
+  "content_text_91": "1",
+  "content_text_92": "Covered",
+  "initialState_1": "Engineering"
+}

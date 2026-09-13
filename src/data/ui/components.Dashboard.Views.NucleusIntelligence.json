@@ -1,0 +1,189 @@
+{
+  "attritionShiftOption_fields_1": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow"
+      }
+    }
+  },
+  "legend_fields_4": {
+    "bottom": 0,
+    "data": [
+      "Jul–Dec 2025 (Pre-shift change)",
+      "Jan–Jun 2026 (Post-shift change)"
+    ]
+  },
+  "textStyle_fields_6": {
+    "fontSize": 11
+  },
+  "attritionShiftOption_fields_2": {
+    "xAxis": {
+      "type": "category",
+      "data": [
+        "Support Hyd",
+        "Support Blr",
+        "Field Ops W",
+        "Sales SMB",
+        "Eng Blr",
+        "Finance"
+      ]
+    },
+    "yAxis": {
+      "type": "value",
+      "axisLabel": {
+        "formatter": "{value}%"
+      },
+      "splitLine": {
+        "lineStyle": {
+          "color": "rgba(28, 52, 80, 0.4)"
+        }
+      }
+    }
+  },
+  "series_fields_9": {
+    "name": "Jul–Dec 2025 (Pre-shift change)",
+    "type": "bar",
+    "data": [
+      18.2,
+      19.4,
+      16,
+      17.5,
+      8.4,
+      5.2
+    ]
+  },
+  "series_fields_10": {
+    "barWidth": 16
+  },
+  "series_fields_12": {
+    "name": "Jan–Jun 2026 (Post-shift change)",
+    "type": "bar",
+    "data": [
+      26.4,
+      28.1,
+      24.8,
+      23.9,
+      9.2,
+      5.8
+    ]
+  },
+  "series_fields_13": {
+    "barWidth": 16
+  },
+  "content_text_15": "S10 Console",
+  "content_text_16": "System & AI Admin",
+  "content_text_17": "Reading 14 modules • Scoped to Super Admin permissions",
+  "content_text_18": "Nucleus Intelligence & Model Governance",
+  "content_text_19": "Audit Log",
+  "content_text_20": "+ New Analysis",
+  "content_text_21": "Analysis saved as permanent widget to Dashboard Builder!",
+  "content_text_22": "Synthesize",
+  "content_text_23": "◆ ",
+  "content_text_24": "Four teams account for 61% of first-year exits",
+  "content_text_25": ": Support Hyderabad, Support Bengaluru, Field Ops West and Sales SMB. Across those teams, first-year attrition rose from 18.2% to 26.4% in the two quarters after the rotating shift pattern started in January. The rise is concentrated in employees who received three or more shift changes with under 72 hours' notice. Teams on the same pattern with stable rosters show no increase, so ",
+  "content_text_26": "the pattern itself is not the driver — the notice period is",
+  "content_text_27": ".",
+  "content_text_28": "Evidence Base: 1,284 employee records, 41,220 shift assignments, 218 exit records (Jan 2025 – Sep 2026). Confidence: ",
+  "content_text_29": "HIGH",
+  "content_text_30": ".",
+  "content_text_31": "💾 Save as Widget",
+  "content_text_32": "🔍 Show SQL Query",
+  "content_text_33": "📄 Show 2 Excluded Records",
+  "content_text_34": "Generated Analysis: First-Year Attrition Before vs After Shift Change",
+  "content_text_35": "Comparing Jul–Dec 2025 vs Jan–Jun 2026",
+  "content_text_36": "AI Generated",
+  "content_text_37": "What the Models Found Overnight",
+  "content_text_38": "Autonomous detection batch (03:00 IST)",
+  "content_text_39": "6 New",
+  "content_fields_40": {
+    "sev": "High",
+    "domain": "Payroll",
+    "text": "2 employees share bank account number"
+  },
+  "content_fields_41": {
+    "sev": "High",
+    "domain": "Retention",
+    "text": "Attrition risk above 0.7 for 22 engineers"
+  },
+  "content_fields_42": {
+    "sev": "Medium",
+    "domain": "Attendance",
+    "text": "Chennai regularisation spike (4.2× norm)"
+  },
+  "content_fields_43": {
+    "sev": "Medium",
+    "domain": "Performance",
+    "text": "Rating compression under 3 managers"
+  },
+  "content_fields_44": {
+    "sev": "Low",
+    "domain": "Wellbeing",
+    "text": "Overtime concentrated in 6% of staff"
+  },
+  "content_fields_45": {
+    "sev": "Low",
+    "domain": "Data Quality",
+    "text": "71 employee records missing emergency contact"
+  },
+  "content_text_46": "Autonomous Agents & Allowed Actions",
+  "content_text_47": "Transparent guardrails: every action logged and reversible",
+  "content_text_48": "Zero-Trust",
+  "content_text_49": "Agent Name",
+  "content_text_50": "Trigger Event",
+  "content_text_51": "Action Taken",
+  "content_text_52": "Approval Gate",
+  "content_text_53": "Roster Balancer",
+  "content_text_54": "Coverage gap found",
+  "content_text_55": "Proposes assignments",
+  "content_text_56": "Requires Human",
+  "content_text_57": "Query Assistant",
+  "content_text_58": "Employee question",
+  "content_text_59": "Answers from policy",
+  "content_text_60": "None Needed",
+  "content_text_61": "Onboarding Runner",
+  "content_text_62": "Offer accepted",
+  "content_text_63": "Creates tasks, assets",
+  "content_text_64": "None Needed",
+  "content_text_65": "Payroll Checker",
+  "content_text_66": "Pre-lock review",
+  "content_text_67": "Flags exceptions",
+  "content_text_68": "None Needed",
+  "content_text_69": "Retention Drafter",
+  "content_text_70": "Risk above 0.7",
+  "content_text_71": "Drafts manager brief",
+  "content_text_72": "Requires Human",
+  "content_text_73": "Comp or Exit Action",
+  "content_text_74": "Any trigger",
+  "content_text_75": "Direct write to master",
+  "content_text_76": "BLOCKED (Not Permitted)",
+  "content_text_77": "Model Register & Audit History",
+  "content_text_78": "Production model accuracy, cadence and bias audits",
+  "content_text_79": "DPDP 2023 Compliant",
+  "content_text_80": "Model Key",
+  "content_text_81": "Purpose",
+  "content_text_82": "Last Trained",
+  "content_text_83": "Accuracy Metric",
+  "content_text_84": "Review Cadence",
+  "content_text_85": "Attrition Risk",
+  "content_text_86": "Ranking, not decisions",
+  "content_text_87": "01 Sep 2026",
+  "content_text_88": "0.81 AUC",
+  "content_text_89": "Quarterly",
+  "content_text_90": "Candidate Match",
+  "content_text_91": "Shortlist ordering",
+  "content_text_92": "18 Aug 2026",
+  "content_text_93": "0.76 AUC",
+  "content_text_94": "Quarterly (Bias tested)",
+  "content_text_95": "Attendance Anomaly",
+  "content_text_96": "Flagging spikes",
+  "content_text_97": "Continuous",
+  "content_text_98": "4% False Pos",
+  "content_text_99": "Monthly",
+  "content_text_100": "Skill Inference",
+  "content_text_101": "Gap detection",
+  "content_text_102": "25 Aug 2026",
+  "content_text_103": "0.72 F1",
+  "content_text_104": "Quarterly",
+  "initialState_1": "Which teams lost the most people in their first year, and did it get worse after we moved to the new shift pattern?"
+}

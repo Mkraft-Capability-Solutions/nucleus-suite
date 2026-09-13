@@ -1,0 +1,452 @@
+.payrollContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: var(--card);
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.titleBlock h2 {
+    font-size: var(--t-h2);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.titleBlock p {
+    color: var(--text-2);
+    font-size: var(--t-small);
+    margin: 0.25rem 0 0;
+}
+
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.statCard {
+    background: var(--card);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.statLabel {
+    font-size: var(--t-small);
+    color: var(--text-2);
+    font-weight: 500;
+}
+
+.statValue {
+    font-size: 1.6rem;
+    font-weight: 600;
+    font-family: var(--f-num);
+    color: var(--text);
+}
+
+.statSub {
+    font-size: var(--t-micro);
+    color: var(--signal-ink);
+    font-family: var(--f-num);
+    font-weight: 600;
+}
+
+.aiAuditBanner {
+    background: var(--signal-wash);
+    border: 1px solid var(--signal);
+    border-radius: var(--r-card);
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--signal-ink);
+}
+
+.mainGrid {
+    display: grid;
+    grid-template-columns: 1.8fr 1.2fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .mainGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.leftCol, .rightCol {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    background: var(--card);
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 0.75rem;
+}
+
+.cardHeader h3 {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.earningRow {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: var(--t-small);
+}
+
+.earnLabel {
+    color: var(--text-2);
+}
+
+.earnVal {
+    font-weight: 600;
+    font-family: var(--f-num);
+    color: var(--text);
+}
+
+.ewaCard {
+    background: linear-gradient(135deg, var(--ink) 0%, var(--ink-2) 100%);
+    color: #ffffff;
+    border-radius: var(--r-card);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ewaInputGroup {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.ewaInput {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #ffffff;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--r-control);
+    font-size: var(--t-small);
+    outline: none;
+    flex: 1;
+}
+
+.btnPrimary {
+    background: var(--signal);
+    color: #ffffff;
+    border: none;
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--r-control);
+    font-weight: 600;
+    font-size: var(--t-small);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: var(--signal-ink);
+}
+
+.btnSecondary {
+    background: var(--card);
+    color: var(--text-2);
+    border: 1px solid var(--line);
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--r-control);
+    font-weight: 500;
+    font-size: var(--t-small);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2);
+    color: var(--text);
+    border-color: var(--text-3);
+}
+
+.payslipItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0.85rem;
+    background: var(--card-2);
+    border-radius: var(--r-control);
+    border: 1px solid var(--line-soft);
+    margin-bottom: 0.65rem;
+}
+
+/* --- Sprint 3: Subnavigation Tab Bar --- */
+.subTabsRow {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 0.5rem;
+    overflow-x: auto;
+}
+
+.subTabBtn {
+    background: transparent;
+    border: none;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-2);
+    cursor: pointer;
+    border-radius: var(--r-control, 6px);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.subTabBtn:hover {
+    color: var(--text);
+    background: var(--card-2);
+}
+
+.subTabActive {
+    color: var(--signal-ink);
+    background: var(--signal-wash);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+/* --- Badge Components --- */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.badgeSuccess {
+    background: rgba(16, 185, 129, 0.12);
+    color: #05CD99;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badgeWarning {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badgeDanger {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badgeInfo {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badgePurple {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+/* --- Tables --- */
+.tableContainer {
+    overflow-x: auto;
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+    background: var(--card);
+}
+
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+
+.dataTable th {
+    background: var(--card-2);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text-2);
+    border-bottom: 2px solid var(--line);
+}
+
+.dataTable td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--line-soft);
+    color: var(--text);
+}
+
+.dataTable tr:hover td {
+    background: var(--card-2);
+}
+
+/* --- Cards & Grid Layouts --- */
+.twoColGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+    .twoColGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.loanCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    box-shadow: var(--shadow-raise);
+}
+
+.guarantorLockBox {
+    background: rgba(239, 68, 68, 0.06);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: var(--r-control, 6px);
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: #b91c1c;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.noDuesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.noDuesCard {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control, 8px);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+}
+
+.modalContent {
+    background: var(--card);
+    border-radius: var(--r-card, 12px);
+    width: 680px;
+    max-width: 95vw;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
+    overflow: hidden;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.modalBody {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.formGroup label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.formInput {
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--r-control, 6px);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text);
+    font-size: 0.88rem;
+    outline: none;
+}
+
+.formInput:focus {
+    border-color: var(--signal);
+}

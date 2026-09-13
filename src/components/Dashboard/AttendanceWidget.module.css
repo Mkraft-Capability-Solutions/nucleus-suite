@@ -1,0 +1,117 @@
+.card {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.title {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+}
+
+.sessionGrid {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.sessionItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.status {
+    font-size: 0.75rem;
+    color: #22c55e;
+}
+
+.durationBar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    margin: 0.5rem 0;
+}
+
+.durationProgress {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 2px;
+}
+
+.subtext {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.punchBtn {
+    background: #ef4444;
+    /* Or gradient if desired, but user wireframe implies punch out needs to be distinct */
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
+    transition: transform 0.2s;
+}
+
+.punchBtn:hover {
+    transform: translateY(-2px);
+}
+
+.workingHours {
+    margin-top: 1rem;
+}
+
+.whHeader {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.whBar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.whProgress {
+    height: 100%;
+    background: var(--gradient-accent);
+    /* Gradient for main progress */
+    border-radius: 4px;
+}
+
+.statusFooter {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.onTime {
+    color: #22c55e;
+    font-weight: 500;
+    margin-left: 0.5rem;
+}

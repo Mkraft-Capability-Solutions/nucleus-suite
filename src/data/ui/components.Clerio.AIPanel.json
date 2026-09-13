@@ -1,0 +1,132 @@
+{
+  "messages_fields_1": {
+    "id": 1,
+    "text": "Hello! I am your Nucleus HR & Capability Copilot. You can ask me to navigate to any module, check your leave balance, review payroll, or see your MCI score.",
+    "sender": "bot"
+  },
+  "time_2": {
+    "hour": "2-digit",
+    "minute": "2-digit"
+  },
+  "scrollToBottom_3": {
+    "behavior": "smooth"
+  },
+  "userMsg_fields_4": {
+    "sender": "user"
+  },
+  "time_5": {
+    "hour": "2-digit",
+    "minute": "2-digit"
+  },
+  "response_fields_6": {
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "handleSendText_8": {
+    "type": "NAVIGATE",
+    "payload": "payroll"
+  },
+  "handleSendText_9": {
+    "type": "NAVIGATE",
+    "payload": "leaves"
+  },
+  "handleSendText_10": {
+    "type": "NAVIGATE",
+    "payload": "attendance"
+  },
+  "handleSendText_11": {
+    "type": "NAVIGATE",
+    "payload": "recruitment"
+  },
+  "handleSendText_12": {
+    "type": "NAVIGATE",
+    "payload": "performance"
+  },
+  "handleSendText_13": {
+    "type": "NAVIGATE",
+    "payload": "experience"
+  },
+  "handleSendText_14": {
+    "type": "NAVIGATE",
+    "payload": "dashboard"
+  },
+  "botMsg_fields_15": {
+    "sender": "bot"
+  },
+  "time_16": {
+    "hour": "2-digit",
+    "minute": "2-digit"
+  },
+  "handleSendText_fields_17": {
+    "text": "Here are some quick areas you can explore: People Core, Global Payroll, Talent Acquisition, or Vedic Wellbeing.",
+    "sender": "bot"
+  },
+  "time_18": {
+    "hour": "2-digit",
+    "minute": "2-digit"
+  },
+  "suggestions_19": [
+    "Go to Payroll & EWA",
+    "Check my leaves",
+    "Show MCI capability score",
+    "Open Talent Acquisition",
+    "Show Vedic wellbeing"
+  ],
+  "ledgerActions_20": [
+    {
+      "id": "ACT-9021",
+      "agent": "Attendance Steward",
+      "principal": "Trisha Khanna (Super Admin)",
+      "action": "Auto-Regularize Biometric Punch",
+      "target": "Rahul S. (Pod Alpha)",
+      "time": "10 Mar 2026, 10:14 AM",
+      "diff": "Punch: 09:48 AM → Corrected: 09:00 AM (Beacon & Slack online confirmed)",
+      "status": "Executed",
+      "reversible": true
+    },
+    {
+      "id": "ACT-9020",
+      "agent": "Payroll Preparer",
+      "principal": "Vikram Joshi (Finance)",
+      "action": "Execute Pre-Payroll Audit DAG",
+      "target": "Feb 2026 Cycle (248 Employees)",
+      "time": "10 Mar 2026, 09:00 AM",
+      "diff": "Scanned 248 records; 0 critical anomalies; generated signed audit report",
+      "status": "Executed & Signed",
+      "reversible": false
+    },
+    {
+      "id": "ACT-9018",
+      "agent": "Onboarding Runner",
+      "principal": "Ananya Sharma (HR)",
+      "action": "Trigger Zero-Trust IT Provisioning",
+      "target": "Kavita S. (Lead Designer)",
+      "time": "09 Mar 2026, 15:30 PM",
+      "diff": "Created Okta profile + triggered MacBook Pro dispatch requisition",
+      "status": "Executed",
+      "reversible": true
+    }
+  ],
+  "applyReversal_fields_21": {
+    "status": "Reversed by Human Principal",
+    "reversible": false
+  },
+  "AIPanel_aria-label_22": "AI Assistant Chat",
+  "AIPanel_text_23": "Nucleus AI Assistant",
+  "AIPanel_text_24": "Online • Governed Agent Runtime",
+  "AIPanel_title_25": "Close Assistant",
+  "AIPanel_aria-label_26": "Close Assistant",
+  "AIPanel_text_27": "💬 Copilot Chat",
+  "AIPanel_text_28": "📜 Action Ledger (Auditable)",
+  "AIPanel_text_29": "Suggested Prompts",
+  "AIPanel_placeholder_30": "Ask Copilot or type command...",
+  "AIPanel_text_31": "🛡️ Section 6.2 Action Ledger:",
+  "AIPanel_text_32": " Append-only, queryable ledger recording autonomous agent actions with pre-execution diffs and human authorization handles.",
+  "AIPanel_text_33": "Agent: ",
+  "AIPanel_text_34": " · Auth: ",
+  "AIPanel_text_35": "↺ 1-Click Revert",
+  "initialState_1": "chat",
+  "fallback_1": "I've processed your request."
+}

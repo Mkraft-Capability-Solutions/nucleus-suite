@@ -1,0 +1,751 @@
+{
+  "ERP_FIELD_OWNERSHIP_POLICY_1": {
+    "ERP_OWNED": [
+      {
+        "field": "legalEntity",
+        "label": "Legal Entity",
+        "description": "Governed exclusively by ERP Company Code (e.g., SAP CC 1000 / NetSuite Subs 1)"
+      },
+      {
+        "field": "costCenterCode",
+        "label": "Cost Center Code",
+        "description": "Financial cost center routing (e.g., CC-101, CC-201)"
+      },
+      {
+        "field": "costCenterName",
+        "label": "Cost Center Name",
+        "description": "ERP General Ledger cost allocation dimension"
+      },
+      {
+        "field": "gradeBand",
+        "label": "Corporate Grade / Band",
+        "description": "Organization-wide compensation hierarchy (e.g., L3, L4, E5)"
+      },
+      {
+        "field": "currency",
+        "label": "Payroll Currency",
+        "description": "Base statutory transactional currency (INR)"
+      },
+      {
+        "field": "bankIfsc",
+        "label": "Bank IFSC Code",
+        "description": "Treasury disbursement clearance"
+      },
+      {
+        "field": "bankAccountNumber",
+        "label": "Bank Account Number",
+        "description": "Disbursement target account"
+      }
+    ],
+    "NUCLEUS_OWNED": [
+      {
+        "field": "attendanceLogs",
+        "label": "Attendance Logs",
+        "description": "Raw biometric edge recordings & daily time cards"
+      },
+      {
+        "field": "biometricPunches",
+        "label": "Biometric Machine Punches",
+        "description": "Time-office hardware punch stream"
+      },
+      {
+        "field": "shiftRoster",
+        "label": "Shift Roster",
+        "description": "Line manager shift assignments (A, B, C, G)"
+      },
+      {
+        "field": "overtimeHours",
+        "label": "Overtime Hours (OT)",
+        "description": "Computed 2.0x overtime hours from paired punches"
+      },
+      {
+        "field": "leaveBalances",
+        "label": "Leave Balances & Accruals",
+        "description": "Statutory EL, CL, SL accruals and FIFOs"
+      },
+      {
+        "field": "gatePasses",
+        "label": "Gate Passes",
+        "description": "On-duty & personal factory transit tokens"
+      }
+    ],
+    "SHARED_BIDIRECTIONAL": [
+      {
+        "field": "designation",
+        "label": "Designation Title",
+        "description": "Synchronized bidirectionally with latest timestamp priority"
+      },
+      {
+        "field": "department",
+        "label": "Department",
+        "description": "Synchronized bidirectionally with audit logging"
+      },
+      {
+        "field": "contactEmail",
+        "label": "Corporate Email",
+        "description": "SSO and primary enterprise identifier"
+      },
+      {
+        "field": "status",
+        "label": "Employment Status",
+        "description": "Active, On Notice, Terminated"
+      }
+    ]
+  },
+  "INITIAL_ERP_SYNC_LOGS_2": [
+    {
+      "batchId": "SYNC-SAP-20260310-0915",
+      "connector": "SAP S/4HANA (BAPI_EMPLOYEE_GETDATA)",
+      "timestamp": "2026-03-10T09:15:32Z",
+      "direction": "INBOUND",
+      "recordsReceived": 248,
+      "recordsUpdated": 14,
+      "conflictsBlocked": 3,
+      "status": "SUCCESS_WITH_WARNINGS",
+      "details": [
+        {
+          "empId": "EMP001",
+          "fieldsUpdated": [
+            "costCenterCode",
+            "gradeBand"
+          ],
+          "message": "Promoted to L5 in SAP; updated in Nucleus."
+        },
+        {
+          "empId": "EMP006",
+          "fieldsUpdated": [
+            "bankAccountNumber"
+          ],
+          "message": "Bank account updated from SAP Treasury master."
+        },
+        {
+          "empId": "EMP007",
+          "conflictsBlocked": [
+            "overtimeHours"
+          ],
+          "message": "Blocked inbound attempt to overwrite Nucleus-owned OT hours."
+        },
+        {
+          "empId": "EMP010",
+          "conflictsBlocked": [
+            "attendanceLogs",
+            "leaveBalances"
+          ],
+          "message": "Rejected ERP attempt to reset leave balance; Nucleus is Master of Record."
+        }
+      ]
+    },
+    {
+      "batchId": "SYNC-NS-20260301-0200",
+      "connector": "Oracle NetSuite (SuiteTalk REST API)",
+      "timestamp": "2026-03-01T02:00:15Z",
+      "direction": "INBOUND",
+      "recordsReceived": 248,
+      "recordsUpdated": 6,
+      "conflictsBlocked": 0,
+      "status": "SUCCESS",
+      "details": [
+        {
+          "empId": "EMP003",
+          "fieldsUpdated": [
+            "costCenterCode"
+          ],
+          "message": "Re-assigned to Cost Center #102 Operations."
+        },
+        {
+          "empId": "EMP009",
+          "fieldsUpdated": [
+            "gradeBand"
+          ],
+          "message": "Grade revision confirmed."
+        }
+      ]
+    }
+  ],
+  "syncReport_fields_3": {
+    "direction": "INBOUND"
+  },
+  "INITIAL_ERP_POSTING_QUEUE_4": [
+    {
+      "batchId": "GL-POST-2026-02-FINAL",
+      "period": "February 2026",
+      "targetErp": "SAP S/4HANA (FI/CO)",
+      "postingDate": "2026-03-02",
+      "status": "RECONCILED",
+      "ackReceiptId": "SAP-ACK-20260302-991823",
+      "ackTimestamp": "2026-03-02T11:45:10Z",
+      "reconciledBy": "Vikram Joshi (VP Finance)",
+      "totalDebits": 2854000,
+      "totalCredits": 2854000,
+      "variance": 0,
+      "costCenterSummary": {
+        "CC-101": {
+          "name": "Engineering & R&D",
+          "amount": 1450000
+        },
+        "CC-102": {
+          "name": "Operations & Supply Chain",
+          "amount": 620000
+        },
+        "CC-201": {
+          "name": "Plant Unit-1 (Bangalore)",
+          "amount": 540000
+        },
+        "CC-301": {
+          "name": "Corporate & Executive",
+          "amount": 244000
+        }
+      },
+      "lineItems": [
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 980000
+        },
+        {
+          "accountCode": "51002",
+          "accountName": "HRA Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 294000
+        },
+        {
+          "accountCode": "51003",
+          "accountName": "Conveyance & Special Allowance Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 200000
+        },
+        {
+          "accountCode": "51010",
+          "accountName": "Employer PF Contribution (12%)",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 117600
+        },
+        {
+          "accountCode": "51004",
+          "accountName": "Overtime Wages (2.0x)",
+          "costCenter": "CC-201",
+          "type": "DEBIT",
+          "amount": 142000
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-201",
+          "type": "DEBIT",
+          "amount": 310000
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-102",
+          "type": "DEBIT",
+          "amount": 480000
+        },
+        {
+          "accountCode": "51010",
+          "accountName": "Employer PF Contribution (12%)",
+          "costCenter": "CC-102",
+          "type": "DEBIT",
+          "amount": 57600
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-301",
+          "type": "DEBIT",
+          "amount": 200000
+        },
+        {
+          "accountCode": "51002",
+          "accountName": "HRA Expense",
+          "costCenter": "CC-301",
+          "type": "DEBIT",
+          "amount": 72800
+        },
+        {
+          "accountCode": "21001",
+          "accountName": "Net Salary Payable (Bank Clearing)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 2186000
+        },
+        {
+          "accountCode": "21010",
+          "accountName": "PF Payable (Employee + Employer)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 350400
+        },
+        {
+          "accountCode": "21011",
+          "accountName": "ESI Payable Account",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 32000
+        },
+        {
+          "accountCode": "21020",
+          "accountName": "TDS Salary Withholding Payable (CBDT)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 245000
+        },
+        {
+          "accountCode": "21030",
+          "accountName": "Professional Tax Payable (PT)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 40600
+        }
+      ]
+    },
+    {
+      "batchId": "GL-POST-2026-03-OFFCYCLE-OT",
+      "period": "March 2026 (Plant OT Off-Cycle Batch #1)",
+      "targetErp": "SAP S/4HANA (FI/CO)",
+      "postingDate": "2026-03-08",
+      "status": "ACKNOWLEDGED",
+      "ackReceiptId": "SAP-ACK-20260308-410291",
+      "ackTimestamp": "2026-03-08T16:20:00Z",
+      "reconciledBy": "Pending Month-End Close",
+      "totalDebits": 228000,
+      "totalCredits": 228000,
+      "variance": 0,
+      "costCenterSummary": {
+        "CC-201": {
+          "name": "Plant Unit-1 (Bangalore)",
+          "amount": 228000
+        }
+      },
+      "lineItems": [
+        {
+          "accountCode": "51004",
+          "accountName": "Factory Overtime Wages (Sec 59 2.0x)",
+          "costCenter": "CC-201",
+          "type": "DEBIT",
+          "amount": 228000
+        },
+        {
+          "accountCode": "21001",
+          "accountName": "Net Salary Payable (Off-Cycle Disbursed)",
+          "costCenter": "CC-201",
+          "type": "CREDIT",
+          "amount": 205200
+        },
+        {
+          "accountCode": "21020",
+          "accountName": "TDS Payable (Off-Cycle Withholding)",
+          "costCenter": "CC-201",
+          "type": "CREDIT",
+          "amount": 22800
+        }
+      ]
+    },
+    {
+      "batchId": "GL-POST-2026-03-CURRENT",
+      "period": "March 2026 (Provisional Regular Run)",
+      "targetErp": "SAP S/4HANA (FI/CO)",
+      "postingDate": "2026-03-11",
+      "status": "QUEUED",
+      "ackReceiptId": null,
+      "ackTimestamp": null,
+      "reconciledBy": null,
+      "totalDebits": 2940000,
+      "totalCredits": 2940000,
+      "variance": 0,
+      "costCenterSummary": {
+        "CC-101": {
+          "name": "Engineering & R&D",
+          "amount": 1520000
+        },
+        "CC-102": {
+          "name": "Operations & Supply Chain",
+          "amount": 640000
+        },
+        "CC-201": {
+          "name": "Plant Unit-1 (Bangalore)",
+          "amount": 520000
+        },
+        "CC-301": {
+          "name": "Corporate & Executive",
+          "amount": 260000
+        }
+      },
+      "lineItems": [
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 1020000
+        },
+        {
+          "accountCode": "51002",
+          "accountName": "HRA Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 306000
+        },
+        {
+          "accountCode": "51003",
+          "accountName": "Conveyance & Special Allowance Expense",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 100000
+        },
+        {
+          "accountCode": "51010",
+          "accountName": "Employer PF Contribution (12%)",
+          "costCenter": "CC-101",
+          "type": "DEBIT",
+          "amount": 122400
+        },
+        {
+          "accountCode": "51004",
+          "accountName": "Factory Overtime Wages (2.0x)",
+          "costCenter": "CC-201",
+          "type": "DEBIT",
+          "amount": 160000
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-201",
+          "type": "DEBIT",
+          "amount": 360000
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-102",
+          "type": "DEBIT",
+          "amount": 490000
+        },
+        {
+          "accountCode": "51010",
+          "accountName": "Employer PF Contribution (12%)",
+          "costCenter": "CC-102",
+          "type": "DEBIT",
+          "amount": 58800
+        },
+        {
+          "accountCode": "51001",
+          "accountName": "Basic Salary Expense",
+          "costCenter": "CC-301",
+          "type": "DEBIT",
+          "amount": 210000
+        },
+        {
+          "accountCode": "51002",
+          "accountName": "HRA Expense",
+          "costCenter": "CC-301",
+          "type": "DEBIT",
+          "amount": 78000
+        },
+        {
+          "accountCode": "51010",
+          "accountName": "Employer PF Contribution",
+          "costCenter": "CC-301",
+          "type": "DEBIT",
+          "amount": 34800
+        },
+        {
+          "accountCode": "21001",
+          "accountName": "Net Salary Payable (Bank Clearing)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 2248000
+        },
+        {
+          "accountCode": "21010",
+          "accountName": "PF Payable (Employee + Employer)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 362400
+        },
+        {
+          "accountCode": "21011",
+          "accountName": "ESI Payable Account",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 34200
+        },
+        {
+          "accountCode": "21020",
+          "accountName": "TDS Salary Withholding Payable",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 254000
+        },
+        {
+          "accountCode": "21030",
+          "accountName": "Professional Tax Payable (PT)",
+          "costCenter": "CORP",
+          "type": "CREDIT",
+          "amount": 41400
+        }
+      ]
+    }
+  ],
+  "workers_5": [
+    {
+      "tokenNo": "TK-0101",
+      "name": "Ramesh Pawar",
+      "sex": "M",
+      "group": "A",
+      "natureOfWork": "CNC Operator (Grade I)",
+      "relay": "Shift A (06:00 - 14:00)",
+      "totalDays": 26,
+      "normalHours": 208,
+      "otHours": 18.5,
+      "grossTokens": "TK-0101/P"
+    },
+    {
+      "tokenNo": "TK-0102",
+      "name": "Sunita Rao",
+      "sex": "F",
+      "group": "B",
+      "natureOfWork": "Quality Inspector (Grade II)",
+      "relay": "Shift B (14:00 - 22:00)",
+      "totalDays": 25,
+      "normalHours": 200,
+      "otHours": 8,
+      "grossTokens": "TK-0102/P"
+    },
+    {
+      "tokenNo": "TK-0103",
+      "name": "Rajesh Kumar",
+      "sex": "M",
+      "group": "C",
+      "natureOfWork": "Boiler Technician (Licensed)",
+      "relay": "Shift C (22:00 - 06:00)",
+      "totalDays": 26,
+      "normalHours": 208,
+      "otHours": 24,
+      "grossTokens": "TK-0103/P"
+    },
+    {
+      "tokenNo": "TK-0104",
+      "name": "Suresh Patil",
+      "sex": "M",
+      "group": "A",
+      "natureOfWork": "Press Shop Welder",
+      "relay": "Shift A (06:00 - 14:00)",
+      "totalDays": 24,
+      "normalHours": 192,
+      "otHours": 14,
+      "grossTokens": "TK-0104/P"
+    },
+    {
+      "tokenNo": "TK-0105",
+      "name": "Amit Verma",
+      "sex": "M",
+      "group": "General",
+      "natureOfWork": "Tool Room Machinist",
+      "relay": "General (09:00 - 17:30)",
+      "totalDays": 26,
+      "normalHours": 208,
+      "otHours": 6.5,
+      "grossTokens": "TK-0105/P"
+    },
+    {
+      "tokenNo": "TK-0106",
+      "name": "Kavitha Hegde",
+      "sex": "F",
+      "group": "General",
+      "natureOfWork": "Storekeeper & Assembly Lead",
+      "relay": "General (09:00 - 17:30)",
+      "totalDays": 25,
+      "normalHours": 200,
+      "otHours": 4,
+      "grossTokens": "TK-0106/P"
+    }
+  ],
+  "rosterDays_6": {
+    "length": 31
+  },
+  "attendanceDays_fields_7": {
+    "mark": "WO",
+    "hours": 0,
+    "ot": 0
+  },
+  "attendanceDays_fields_8": {
+    "mark": "CL",
+    "hours": 8,
+    "ot": 0
+  },
+  "attendanceDays_fields_9": {
+    "mark": "EL",
+    "hours": 8,
+    "ot": 0
+  },
+  "attendanceDays_fields_10": {
+    "mark": "P",
+    "hours": 8
+  },
+  "generateForm28MusterRoll_fields_11": {
+    "formName": "FORM 28 — REGISTER OF ADULT WORKERS / MUSTER ROLL",
+    "statutoryAuthority": "Factories Act, 1948 (Sections 62 & 83) and State Factory Rules (Rule 88)",
+    "factoryName": "Nucleus Heavy Engineering Works (A Division of Nucleus Technologies Ltd)",
+    "factoryRegistrationNo": "KA/BLR/FAC/2019/88412"
+  },
+  "INITIAL_STATUTORY_ACCIDENTS_FORM18_12": [
+    {
+      "noticeId": "FORM18-2026-001",
+      "dateOfOccurrence": "2026-02-14",
+      "exactTime": "11:20 AM",
+      "exactPlace": "Press Shop Line B (Hydraulic Press #4)",
+      "injuredPerson": {
+        "name": "Suresh Patil",
+        "tokenNo": "TK-0104",
+        "age": 38,
+        "sex": "Male",
+        "occupation": "Press Welder & Forming Operator"
+      },
+      "natureOfInjury": "Minor laceration on right forearm caused by sheet metal burr",
+      "causeOfAccident": "Secondary guard latch delayed spring return; interlock sensor tripped",
+      "lostWorkdays": 3,
+      "reportedToInspector": true,
+      "inspectorateFilingDate": "2026-02-15",
+      "investigatingOfficer": "R. K. Nair (Factory Safety Manager)",
+      "remedialActions": "Interlock microswitch replaced with magnetic proximity safety interlock. Heavy Kevlar safety sleeves mandated for operators."
+    },
+    {
+      "noticeId": "FORM18-2026-002",
+      "dateOfOccurrence": "2026-01-20",
+      "exactTime": "03:45 AM",
+      "exactPlace": "Boiler House 2 (Steam Header Gland)",
+      "injuredPerson": {
+        "name": "Rajesh Kumar",
+        "tokenNo": "TK-0103",
+        "age": 42,
+        "sex": "Male",
+        "occupation": "Certified Boiler Attendant"
+      },
+      "natureOfInjury": "First-degree superficial thermal burn on left thumb",
+      "causeOfAccident": "Steam condensate drain valve flange weep during nocturnal pressure cycle",
+      "lostWorkdays": 2,
+      "reportedToInspector": true,
+      "inspectorateFilingDate": "2026-01-21",
+      "investigatingOfficer": "R. K. Nair (Factory Safety Manager)",
+      "remedialActions": "Steam gasket repacked with spiral-wound graphite seal. Thermal insulation jacket reinforced."
+    }
+  ],
+  "INITIAL_INSPECTION_BOOK_FORM36_13": [
+    {
+      "inspectionId": "INSP-36-2026-01",
+      "inspectionDate": "2026-02-05",
+      "inspectorName": "Sri D. V. Mohan, Senior Inspector of Factories",
+      "inspectorOffice": "Office of the Deputy Chief Inspector of Factories, Peenya Circle, Bangalore",
+      "statutoryObservations": "1. Machine guarding on Lathe Bank #3 verified in good order. 2. Drinking water test certificate dated 15-Jan-2026 found satisfactory. 3. First aid boxes adequately provisioned with sterile dressings and burn creams.",
+      "remedialDirections": "Provide additional lux-level illumination (min 300 lux) over final quality inspection table by 15-Mar-2026.",
+      "complianceStatus": "CLOSED",
+      "closureDate": "2026-02-28",
+      "certifyingManager": "Pradeep Shenoy (Works Director)"
+    },
+    {
+      "inspectionId": "INSP-36-2025-04",
+      "inspectionDate": "2025-11-18",
+      "inspectorName": "Smt. R. Lakshmi, Inspector of Factories (Medical)",
+      "inspectorOffice": "Directorate of Industrial Safety & Health, Karnataka",
+      "statutoryObservations": "Audiometric examination logs of 48 press shop and boiler operators verified. No noise-induced hearing threshold shifts detected.",
+      "remedialDirections": "Continue bi-annual audiometric surveillance for high-decibel zones (>85 dBA).",
+      "complianceStatus": "COMPLIANT",
+      "closureDate": "2025-12-01",
+      "certifyingManager": "Dr. Ananth Rao (Occupational Health Physician)"
+    }
+  ],
+  "validateFormFNominees_14": {
+    "isValid": false,
+    "totalPercentage": 0,
+    "error": "At least one nominee is mandatory under Rule 6(1)."
+  },
+  "defaultWitnesses_15": [
+    {
+      "name": "Kavitha Hegde",
+      "address": "Plot 41, Industrial Layout, Bangalore",
+      "signatureDate": "2026-03-01"
+    },
+    {
+      "name": "Vikram Joshi",
+      "address": "402 Prestige Palms, Indiranagar, Bangalore",
+      "signatureDate": "2026-03-01"
+    }
+  ],
+  "generateFormFDeclaration_fields_16": {
+    "ruleReference": "Rule 6(1) of the Payment of Gratuity (Central) Rules, 1972",
+    "statutoryAct": "The Payment of Gratuity Act, 1972 (Act No. 39 of 1972)",
+    "establishment": {
+      "name": "Nucleus Technologies India Pvt Ltd (Heavy Engineering Division)",
+      "registeredAddress": "Plot 18/B, Peenya Industrial Area Phase II, Bangalore - 560058, Karnataka",
+      "registrationNumber": "KA/BLR/FAC/2019/88412"
+    }
+  },
+  "employerAcknowledgement_fields_18": {
+    "authorizedSignatory": "Ananya Sharma",
+    "designation": "Head of Human Resources & Factory Compliance Officer",
+    "seal": "OFFICIALLY VERIFIED & REGISTERED"
+  },
+  "SAMPLE_FORM_F_TEMPLATES_19": [
+    {
+      "label": "Single Primary Nominee (Spouse 100%)",
+      "nominees": [
+        {
+          "name": "Pooja Patil",
+          "relationship": "Spouse (Wife)",
+          "age": 34,
+          "sharePercent": 100,
+          "address": "H.No 124, 4th Main, Rajajinagar, Bangalore",
+          "contingency": "Demise of nominee prior to disbursement"
+        }
+      ]
+    },
+    {
+      "label": "Dual Nominees (Spouse 60% + Child 40%)",
+      "nominees": [
+        {
+          "name": "Sunita Kumar",
+          "relationship": "Spouse (Wife)",
+          "age": 39,
+          "sharePercent": 60,
+          "address": "Flat 302, Green Meadows, Jalahalli, Bangalore",
+          "contingency": "Demise of nominee"
+        },
+        {
+          "name": "Aditya Kumar",
+          "relationship": "Son (Minor, represented by Guardian)",
+          "age": 11,
+          "sharePercent": 40,
+          "address": "Flat 302, Green Meadows, Jalahalli, Bangalore",
+          "contingency": "Demise of minor"
+        }
+      ]
+    },
+    {
+      "label": "Dual Nominees (Mother 50% + Father 50%)",
+      "nominees": [
+        {
+          "name": "Savitri Pawar",
+          "relationship": "Mother",
+          "age": 62,
+          "sharePercent": 50,
+          "address": "Near Bus Stand, Belagavi Rural, Karnataka",
+          "contingency": "Demise of parent"
+        },
+        {
+          "name": "Kashinath Pawar",
+          "relationship": "Father",
+          "age": 68,
+          "sharePercent": 50,
+          "address": "Near Bus Stand, Belagavi Rural, Karnataka",
+          "contingency": "Demise of parent"
+        }
+      ]
+    }
+  ]
+}

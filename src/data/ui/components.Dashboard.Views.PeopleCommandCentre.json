@@ -1,0 +1,686 @@
+{
+  "legend_fields_2": {
+    "bottom": 0,
+    "data": [
+      "Q2 (Current)",
+      "Q1 (Previous)"
+    ]
+  },
+  "textStyle_fields_4": {
+    "fontSize": 11
+  },
+  "orgHealthRadarOption_fields_1": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Retention",
+          "max": 100
+        },
+        {
+          "name": "Capability",
+          "max": 100
+        },
+        {
+          "name": "Engagement",
+          "max": 100
+        },
+        {
+          "name": "Mobility",
+          "max": 100
+        },
+        {
+          "name": "Manager Quality",
+          "max": 100
+        },
+        {
+          "name": "Diversity",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "46%"
+      ],
+      "radius": "68%"
+    }
+  },
+  "series_fields_6": {
+    "type": "radar"
+  },
+  "data_fields_7": {
+    "value": [
+      82,
+      74,
+      74,
+      68,
+      88,
+      79
+    ],
+    "name": "Q2 (Current)"
+  },
+  "data_fields_8": {
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.22)"
+    }
+  },
+  "data_fields_11": {
+    "value": [
+      88,
+      70,
+      77,
+      60,
+      84,
+      76
+    ],
+    "name": "Q1 (Previous)"
+  },
+  "data_fields_12": {
+    "lineStyle": {
+      "type": "dashed"
+    },
+    "areaStyle": {
+      "color": "rgba(79, 182, 245, 0.12)"
+    }
+  },
+  "tooltip_fields_17": {
+    "trigger": "axis"
+  },
+  "legend_fields_18": {
+    "bottom": 0,
+    "data": [
+      "Actual",
+      "Plan",
+      "Modelled (80% band)"
+    ]
+  },
+  "textStyle_fields_20": {
+    "fontSize": 11
+  },
+  "headcountForecastOption_fields_16": {
+    "xAxis": {
+      "type": "category",
+      "data": [
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+      ]
+    }
+  },
+  "yAxis_fields_22": {
+    "type": "value",
+    "min": 1050,
+    "max": 1550
+  },
+  "lineStyle_fields_23": {
+    "type": "dashed"
+  },
+  "series_fields_24": {
+    "name": "Actual",
+    "type": "line",
+    "data": [
+      1109,
+      1152,
+      1204,
+      1246,
+      1284,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "series_fields_25": {
+    "lineStyle": {
+      "width": 3
+    }
+  },
+  "series_fields_28": {
+    "name": "Plan",
+    "type": "line",
+    "data": [
+      1100,
+      1160,
+      1220,
+      1280,
+      1340,
+      1400,
+      1450,
+      1490,
+      1530
+    ]
+  },
+  "series_fields_29": {
+    "lineStyle": {
+      "type": "dotted",
+      "width": 2
+    }
+  },
+  "series_fields_32": {
+    "name": "Modelled (80% band)",
+    "type": "line",
+    "data": [
+      null,
+      null,
+      null,
+      null,
+      1284,
+      1318,
+      1354,
+      1390,
+      1430
+    ]
+  },
+  "lineStyle_fields_35": {
+    "type": "dashed",
+    "width": 2.5
+  },
+  "series_fields_33": {
+    "areaStyle": {
+      "color": "rgba(155, 140, 255, 0.15)",
+      "origin": "auto"
+    }
+  },
+  "talentFlowOption_fields_37": {
+    "tooltip": {
+      "trigger": "item"
+    }
+  },
+  "series_fields_39": {
+    "type": "sankey",
+    "layout": "none",
+    "top": 20,
+    "bottom": 20,
+    "left": 10,
+    "right": 10,
+    "nodeWidth": 16,
+    "nodeGap": 14,
+    "emphasis": {
+      "focus": "adjacency"
+    }
+  },
+  "data_fields_42": {
+    "name": "External Hires (186)"
+  },
+  "data_fields_43": {
+    "name": "Internal Moves (74)"
+  },
+  "data_fields_44": {
+    "name": "Returning (12)"
+  },
+  "data_45": {
+    "name": "Active (1,284)",
+    "itemStyle": {
+      "color": "#05CD99"
+    }
+  },
+  "data_fields_46": {
+    "name": "Resignations (118)"
+  },
+  "data_fields_47": {
+    "name": "End of Contract (26)"
+  },
+  "data_fields_48": {
+    "name": "Retirement (8)"
+  },
+  "series_fields_40": {
+    "links": [
+      {
+        "source": "External Hires (186)",
+        "target": "Active (1,284)",
+        "value": 186
+      },
+      {
+        "source": "Internal Moves (74)",
+        "target": "Active (1,284)",
+        "value": 74
+      },
+      {
+        "source": "Returning (12)",
+        "target": "Active (1,284)",
+        "value": 12
+      },
+      {
+        "source": "Active (1,284)",
+        "target": "Resignations (118)",
+        "value": 118
+      },
+      {
+        "source": "Active (1,284)",
+        "target": "End of Contract (26)",
+        "value": 26
+      },
+      {
+        "source": "Active (1,284)",
+        "target": "Retirement (8)",
+        "value": 8
+      }
+    ],
+    "lineStyle": {
+      "color": "gradient",
+      "curveness": 0.5,
+      "opacity": 0.35
+    }
+  },
+  "label_fields_51": {
+    "fontSize": 10,
+    "fontFamily": "'Plex Sans', sans-serif"
+  },
+  "attritionByFunctionOption_fields_52": {
+    "tooltip": {
+      "trigger": "axis",
+      "formatter": "{b}: <strong>{c}%</strong> annualised"
+    },
+    "grid": {
+      "left": "22%",
+      "right": "12%",
+      "top": 15,
+      "bottom": 20
+    },
+    "xAxis": {
+      "type": "value",
+      "axisLabel": {
+        "formatter": "{value}%"
+      },
+      "max": 25
+    }
+  },
+  "yAxis_fields_56": {
+    "type": "category",
+    "data": [
+      "HR",
+      "Finance",
+      "Engineering",
+      "Operations",
+      "Sales",
+      "Support"
+    ]
+  },
+  "axisLabel_fields_58": {
+    "fontSize": 11
+  },
+  "series_fields_59": {
+    "type": "bar"
+  },
+  "data_fields_61": {
+    "value": 4.1
+  },
+  "data_fields_62": {
+    "value": 6.4
+  },
+  "data_fields_63": {
+    "value": 9.2
+  },
+  "data_fields_64": {
+    "value": 10.1
+  },
+  "data_fields_65": {
+    "value": 14.2
+  },
+  "data_fields_66": {
+    "value": 19.4
+  },
+  "label_fields_67": {
+    "show": true,
+    "position": "right",
+    "formatter": "{c}%"
+  },
+  "label_fields_68": {
+    "fontSize": 11,
+    "fontWeight": 600
+  },
+  "series_fields_60": {
+    "barWidth": 14
+  },
+  "payVsPerformanceOption_fields_69": {
+    "grid": {
+      "left": 45,
+      "right": 25,
+      "top": 25,
+      "bottom": 30
+    }
+  },
+  "xAxis_fields_71": {
+    "type": "value",
+    "name": "compa-ratio \u2192",
+    "min": 80,
+    "max": 120,
+    "axisLabel": {
+      "formatter": "{value}%"
+    }
+  },
+  "yAxis_fields_73": {
+    "type": "value",
+    "name": "performance \u2192",
+    "min": 2.5,
+    "max": 5
+  },
+  "series_fields_74": {
+    "type": "scatter"
+  },
+  "itemStyle_fields_75": {
+    "shadowBlur": 10,
+    "shadowColor": "rgba(0, 0, 0, 0.5)"
+  },
+  "label_fields_76": {
+    "show": true
+  },
+  "label_fields_77": {
+    "position": "top"
+  },
+  "label_fields_78": {
+    "fontSize": 10,
+    "fontWeight": 600
+  },
+  "locations_79": [
+    "Bengaluru",
+    "Pune",
+    "Hyderabad",
+    "Chennai",
+    "NCR",
+    "Remote"
+  ],
+  "functions_80": [
+    "Engineering",
+    "Sales",
+    "Operations",
+    "Support",
+    "Finance",
+    "HR"
+  ],
+  "heatData_81": [
+    [
+      0,
+      0,
+      9
+    ],
+    [
+      1,
+      0,
+      7
+    ],
+    [
+      2,
+      0,
+      11
+    ],
+    [
+      3,
+      0,
+      14
+    ],
+    [
+      4,
+      0,
+      8
+    ],
+    [
+      5,
+      0,
+      6
+    ],
+    [
+      0,
+      1,
+      16
+    ],
+    [
+      1,
+      1,
+      13
+    ],
+    [
+      2,
+      1,
+      12
+    ],
+    [
+      3,
+      1,
+      9
+    ],
+    [
+      4,
+      1,
+      18
+    ],
+    [
+      5,
+      1,
+      7
+    ],
+    [
+      0,
+      2,
+      8
+    ],
+    [
+      1,
+      2,
+      11
+    ],
+    [
+      2,
+      2,
+      9
+    ],
+    [
+      3,
+      2,
+      12
+    ],
+    [
+      4,
+      2,
+      7
+    ],
+    [
+      5,
+      2,
+      5
+    ],
+    [
+      0,
+      3,
+      19
+    ],
+    [
+      1,
+      3,
+      14
+    ],
+    [
+      2,
+      3,
+      22
+    ],
+    [
+      3,
+      3,
+      17
+    ],
+    [
+      4,
+      3,
+      12
+    ],
+    [
+      5,
+      3,
+      9
+    ],
+    [
+      0,
+      4,
+      6
+    ],
+    [
+      1,
+      4,
+      5
+    ],
+    [
+      2,
+      4,
+      8
+    ],
+    [
+      3,
+      4,
+      7
+    ],
+    [
+      4,
+      4,
+      6
+    ],
+    [
+      5,
+      4,
+      4
+    ],
+    [
+      0,
+      5,
+      4
+    ],
+    [
+      1,
+      5,
+      6
+    ],
+    [
+      2,
+      5,
+      5
+    ],
+    [
+      3,
+      5,
+      5
+    ],
+    [
+      4,
+      5,
+      4
+    ],
+    [
+      5,
+      5,
+      3
+    ]
+  ],
+  "tooltip_fields_83": {
+    "position": "top"
+  },
+  "attritionHeatmapOption_fields_82": {
+    "grid": {
+      "top": 20,
+      "bottom": 40,
+      "left": "20%",
+      "right": "6%"
+    }
+  },
+  "xAxis_fields_85": {
+    "type": "category"
+  },
+  "axisLabel_fields_87": {
+    "fontSize": 10,
+    "rotate": 15
+  },
+  "xAxis_fields_86": {
+    "splitArea": {
+      "show": true
+    }
+  },
+  "yAxis_fields_89": {
+    "type": "category"
+  },
+  "axisLabel_fields_91": {
+    "fontSize": 11
+  },
+  "yAxis_fields_90": {
+    "splitArea": {
+      "show": true
+    }
+  },
+  "visualMap_fields_93": {
+    "min": 3,
+    "max": 22,
+    "calculable": false,
+    "orient": "horizontal",
+    "left": "center",
+    "bottom": 0,
+    "itemWidth": 10,
+    "itemHeight": 80,
+    "inRange": {
+      "color": [
+        "#122B36",
+        "#1A4D4A",
+        "#2E9C84",
+        "#F2A93B",
+        "#F2647E"
+      ]
+    }
+  },
+  "textStyle_fields_95": {
+    "fontSize": 10
+  },
+  "series_fields_96": {
+    "type": "heatmap"
+  },
+  "label_fields_97": {
+    "show": true
+  },
+  "label_fields_98": {
+    "color": "#E6EDF6",
+    "fontSize": 10,
+    "fontWeight": 600
+  },
+  "content_text_99": " 3.0% vs Aug",
+  "content_text_100": "1,284",
+  "content_text_101": "Total headcount",
+  "content_text_102": " 1.8 pts vs Q1",
+  "content_text_103": "11.4",
+  "content_text_104": "%",
+  "content_text_105": "Annualised attrition",
+  "content_text_106": " 2.4 pts",
+  "content_text_107": "81.6",
+  "content_text_108": "%",
+  "content_text_109": "Attendance today",
+  "content_text_110": " +12 vs Aug",
+  "content_text_111": "42",
+  "content_text_112": "New hires \u00b7 Sep",
+  "content_text_113": "Nucleus AI Insight",
+  "content_text_114": "Flight risk is concentrating: 14 of 22 high-risk engineers report to two managers promoted in the last nine months.",
+  "content_text_115": "Manager capability is a stronger driver than compensation in this cohort.",
+  "content_text_116": "Explore signal ",
+  "content_text_117": "Dismiss",
+  "content_text_118": "Model Audit Trail:",
+  "content_text_119": " Query ID: ",
+  "content_text_120": "q_8f31c2",
+  "content_text_121": " \u2022 Data range: Jan 2025 \u2013 Sep 2026 \u2022 1,284 records evaluated \u2022 Excluded: 2 records with missing reason codes \u2022 Confidence: ",
+  "content_text_122": "High (0.84 AUC)",
+  "content_text_123": ".",
+  "content_text_124": "Workforce Momentum",
+  "content_text_125": "Headcount & forecast \u2022 6 months",
+  "content_text_126": "Org Health Index",
+  "content_text_127": "Q2 vs Q1 \u2022 Six dimensions",
+  "content_text_128": "Talent Flow (Last 12 Months)",
+  "content_text_129": "Inflow, active core (1,284), and attrition pathways",
+  "content_text_130": "12m",
+  "content_text_131": "Attrition by Function",
+  "content_text_132": "Annualised % \u2022 Sorted descending",
+  "content_text_133": "YTD",
+  "content_text_134": "Pay Position vs Performance",
+  "content_text_135": "Bubble size = headcount \u2022 Compa-ratio vs rating",
+  "content_text_136": "Attrition Heat: Function \u00d7 Location",
+  "content_text_137": "Annualised % \u2022 Click cell to inspect population",
+  "initialState_1": "FY27 Q2",
+  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+}

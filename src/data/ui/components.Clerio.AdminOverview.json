@@ -1,0 +1,12 @@
+{
+  "content": {
+    "eyebrow": "Workspace governance",
+    "description": "Manage workspace configuration, role visibility and integration previews from one place.",
+    "notice": "Local preview: permission changes reset on sign-out. Tenant isolation, audit persistence, outbox delivery and production security controls require the approved backend phase.",
+    "cards": [
+      { "target": "settings", "title": "Workspace settings", "description": "Review organization preferences and account settings.", "action": "Open settings" },
+      { "target": "access_control", "title": "Roles & access", "description": "Preview module permissions and console visibility for each role.", "action": "Review access" },
+      { "target": "integrations", "title": "Integrations", "description": "Inspect connector configuration and sample synchronization workflows.", "action": "Explore integrations" }
+    ]
+  }
+}

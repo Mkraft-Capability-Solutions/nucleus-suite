@@ -1,0 +1,787 @@
+.headerNav {
+    height: 60px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    z-index: 90;
+    justify-content: space-between;
+    gap: 1.25rem;
+    flex-shrink: 0;
+}
+
+.leftSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.modulesBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.85rem;
+    height: 36px;
+    background: var(--card-2, #14263D);
+    border: 1px solid var(--line, #1C3450);
+    border-radius: var(--r-control, 6px);
+    color: var(--text, #E6EDF6);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.modulesBtn:hover {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+.modulesBtnActive {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+.modulesShortcut {
+    font-size: 0.65rem;
+    color: var(--text-3, #5C7896);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--line, #1C3450);
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+}
+
+/* Console Selector in TopNav */
+.consoleSelectorBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.35rem 0.85rem;
+    height: 36px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.consoleSelectorBtn:hover {
+    border-color: var(--signal);
+    background: var(--card-2);
+}
+
+.consoleSelectorBtnActive {
+    border-color: var(--signal);
+    background: var(--signal-wash);
+    box-shadow: 0 0 12px var(--line-glow);
+}
+
+.consoleBadge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--signal);
+    background: var(--signal-wash);
+    border: 1px solid var(--line-glow);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+}
+
+.consoleTitle {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    max-width: 240px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.consoleDropdownMenu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 360px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: 0 16px 40px rgba(6, 13, 24, 0.85), 0 0 0 1px rgba(45, 212, 168, 0.2);
+    z-index: 10000;
+    overflow: hidden;
+    animation: fadeInMenu 0.15s ease-out;
+}
+
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.consoleDropdownHeader {
+    padding: 0.75rem 1rem;
+    background: var(--card-2);
+    border-bottom: 1px solid var(--line);
+    font-size: 0.78rem;
+    color: var(--text);
+}
+
+.consoleList {
+    max-height: 380px;
+    overflow-y: auto;
+    padding: 0.4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.consoleList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.consoleList::-webkit-scrollbar-thumb {
+    background: var(--rule);
+    border-radius: 4px;
+}
+
+.consoleItem {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.55rem 0.65rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: all 0.12s ease;
+}
+
+.consoleItem:hover {
+    background: var(--card-2);
+    border-color: var(--line-glow);
+}
+
+.consoleItemActive {
+    background: var(--signal-wash);
+    border-color: var(--line-glow);
+}
+
+.consoleItemBadge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #9B8CFF;
+    background: rgba(155, 140, 255, 0.12);
+    border: 1px solid rgba(155, 140, 255, 0.25);
+    padding: 0.15rem 0.35rem;
+    border-radius: 3px;
+    min-width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.consoleItemActive .consoleItemBadge {
+    color: var(--signal);
+    background: var(--signal-wash);
+    border-color: var(--signal);
+}
+
+.consoleItemText {
+    flex: 1;
+    min-width: 0;
+}
+
+.consoleItemTitle {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.consoleItemSub {
+    font-size: 0.66rem;
+    color: var(--text-3);
+    margin-top: 0.1rem;
+}
+
+.consoleItem:hover .consoleItemSub {
+    color: var(--text-2);
+}
+
+.toggleSideBtn {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-control);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-2);
+    transition: all 0.15s ease;
+}
+
+.toggleSideBtn:hover {
+    background: var(--card);
+    border-color: var(--text-3);
+    color: var(--text);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+}
+
+.logoMark {
+    width: 32px;
+    height: 32px;
+    background: var(--signal);
+    border-radius: var(--r-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(15, 110, 92, 0.25);
+}
+
+.logoInner {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.brandName {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+}
+
+/* Pillar Tabs */
+.pillarTabs {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: var(--card-2);
+    padding: 0.25rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+}
+
+@media (max-width: 1200px) {
+    .pillarTabs {
+        display: none;
+    }
+}
+
+.pillarBtn {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--r-data);
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: var(--t-small);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+}
+
+.pillarBtn:hover {
+    color: var(--text);
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.pillarBtn.activePillar {
+    background: var(--card);
+    color: var(--signal);
+    font-weight: 600;
+    box-shadow: var(--shadow-raise);
+}
+
+/* Search Bar */
+.searchBarWrapper {
+    flex: 1;
+    max-width: 440px;
+    min-width: 260px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+@media (max-width: 900px) {
+    .searchBarWrapper {
+        display: none;
+    }
+}
+
+.searchIcon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-3);
+    font-size: 0.85rem;
+}
+
+.searchInput {
+    width: 100%;
+    height: 34px;
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    padding-left: 2.15rem;
+    padding-right: 4rem;
+    font-family: inherit;
+    font-size: var(--t-small);
+    color: var(--text);
+    outline: none;
+    transition: all 0.15s;
+}
+
+.searchInput:focus {
+    background: var(--card);
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px var(--signal-wash);
+}
+
+.cmdShortcut {
+    position: absolute;
+    right: 0.5rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-data);
+    padding: 0.1rem 0.35rem;
+    font-size: var(--t-micro);
+    color: var(--text-2);
+    font-family: var(--f-num);
+    font-weight: 500;
+}
+
+/* Right Actions */
+.rightActions {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.iconBtn {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-2);
+    position: relative;
+    transition: all 0.15s;
+}
+
+.iconBtn:hover {
+    background: var(--card-2);
+    border-color: var(--text-3);
+    color: var(--text);
+}
+
+.iconBtnActive {
+    background: var(--signal-wash);
+    border-color: var(--signal);
+    color: var(--signal);
+}
+
+.badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
+    background: var(--flag);
+    border-radius: 50%;
+    border: 1.5px solid var(--card);
+}
+
+.quickActionBtn {
+    background: var(--signal);
+    color: #ffffff;
+    border: none;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-control);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(15, 110, 92, 0.25);
+    transition: background 0.15s;
+}
+
+.quickActionBtn:hover {
+    background: var(--signal-ink);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 44px;
+    right: 0;
+    width: 220px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 0.4rem;
+    box-shadow: var(--shadow-overlay);
+    z-index: 100;
+}
+
+.dropdownItem {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border-radius: var(--r-control);
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-size: var(--t-small);
+    color: var(--text);
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.12s ease;
+}
+
+.dropdownItem:hover {
+    background: var(--card-2);
+    color: var(--signal);
+}
+
+.profileWrapper {
+    position: relative;
+}
+
+.profileBtn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.2rem 0.4rem 0.2rem 0.5rem;
+    border-radius: var(--r-pill);
+    transition: all 0.15s ease;
+}
+
+.profileBtn:hover {
+    background: var(--card-2);
+    border-color: var(--line);
+}
+
+.roleBadge {
+    padding: 0.15rem 0.5rem;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid transparent;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    box-shadow: var(--shadow-raise);
+}
+
+.userTextCol {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin: 0 0.25rem 0 0.15rem;
+    line-height: 1.25;
+}
+
+@media (max-width: 800px) {
+    .userTextCol {
+        display: none;
+    }
+}
+
+.userNameText {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+.userRoleSub {
+    font-size: var(--t-micro);
+    font-weight: 500;
+    color: var(--text-2);
+    text-transform: capitalize;
+}
+
+.chevronIcon {
+    color: var(--text-3);
+    transition: transform 0.2s ease;
+}
+
+.chevronRotated {
+    transform: rotate(180deg);
+}
+
+/* PROFILE DROPDOWN */
+.profileDropdown {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    width: 300px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    box-shadow: var(--shadow-overlay);
+    z-index: 1000;
+    overflow: hidden;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.profileHeader {
+    padding: 0.85rem 1rem;
+    background: var(--card-2);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dropdownAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid var(--card);
+    box-shadow: var(--shadow-raise);
+}
+
+.profileInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    overflow: hidden;
+}
+
+.profileName {
+    font-size: var(--t-body);
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profileEmail {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+    font-family: var(--f-num);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profileRolePill {
+    display: inline-block;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    text-transform: uppercase;
+    width: fit-content;
+    margin-top: 0.25rem;
+}
+
+/* ROLE SWITCHER SECTION */
+.roleSection {
+    padding: 0.65rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.roleSectionTitle {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 0.5rem 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.roleList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.roleList::-webkit-scrollbar {
+    width: 4px;
+}
+
+.roleList::-webkit-scrollbar-thumb {
+    background: var(--rule);
+    border-radius: 4px;
+}
+
+.roleItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--r-control);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.12s ease;
+}
+
+.roleItem:hover {
+    background: var(--card-2);
+}
+
+.roleItem.roleActive {
+    background: var(--signal-wash);
+}
+
+.roleLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.roleIconWrap {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--r-data);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.roleText {
+    display: flex;
+    flex-direction: column;
+}
+
+.roleLabel {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.roleDesc {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+}
+
+.roleActiveCheck {
+    color: var(--signal-ink);
+    display: flex;
+    align-items: center;
+}
+
+/* QUICK LINKS */
+.menuLinks {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.menuLinkItem {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--r-control);
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--t-small);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    text-align: left;
+}
+
+.menuLinkItem:hover {
+    background: var(--card-2);
+    color: var(--text);
+}
+
+/* LOGOUT SECTION */
+.logoutSection {
+    padding: 0.4rem 0.5rem;
+    background: var(--card);
+}
+
+.logoutBtn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--r-control);
+    border: none;
+    background: transparent;
+    color: var(--flag);
+    font-size: var(--t-small);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    text-align: left;
+}
+
+.logoutBtn:hover {
+    background: var(--flag-wash);
+    color: var(--flag);
+}
+
+/* Keep navigation controls reachable at compact widths. */
+@media (max-width: 1400px) {
+    .searchBarWrapper { min-width: 120px; max-width: 220px; }
+    .consoleTitle { max-width: 160px; }
+    .headerNav { gap: 0.6rem; padding-inline: 0.75rem; }
+    .leftSection { gap: 0.5rem; }
+}
+@media (max-width: 800px) {
+    .headerNav { gap: 0.35rem; padding-inline: 0.4rem; }
+    .modulesBtn { padding-inline: 0.45rem; }
+    .modulesBtn kbd, .consoleTitle, .consoleSelectorBtn > span:nth-child(2) { display: none; }
+    .consoleSelectorBtn { padding-inline: 0.4rem; }
+    .consoleDropdownMenu { position: fixed; top: 60px; left: 60px; right: 8px; width: auto; max-height: calc(100dvh - 76px); overflow-y: auto; }
+}
+@media (max-width: 640px) {
+    .headerNav { height: auto; min-height: 60px; flex-wrap: wrap; padding-block: 0.4rem; }
+    .rightActions { width: 100%; min-width: 0; justify-content: space-between; gap: 0.25rem; }
+    .rightActions .iconBtn > span { display: none; }
+}

@@ -1,0 +1,79 @@
+{
+  "REROUTE_TARGETS_1": [
+    {
+      "id": "vikram_joshi",
+      "name": "Vikram Joshi",
+      "role": "Finance Controller & Payroll Lead"
+    },
+    {
+      "id": "ananya_sharma",
+      "name": "Ananya Sharma",
+      "role": "Head of HRBP & Operations"
+    },
+    {
+      "id": "sarah_chen",
+      "name": "Sarah Chen",
+      "role": "VP Engineering & Architecture"
+    },
+    {
+      "id": "amit_verma",
+      "name": "Amit Verma",
+      "role": "Engineering Pod Lead"
+    },
+    {
+      "id": "statutory_cell",
+      "name": "Dr. Rajesh K.",
+      "role": "Statutory Health & Medical Committee"
+    },
+    {
+      "id": "dept_head",
+      "name": "Department Head / Skip-Level Manager",
+      "role": "Department Head"
+    }
+  ],
+  "handleSubmit_fields_2": {
+    "actionType": "approve"
+  },
+  "handleSubmit_fields_3": {
+    "actionType": "reject"
+  },
+  "handleSubmit_fields_4": {
+    "actionType": "reroute"
+  },
+  "getHeaderConfig_fields_5": {
+    "title": "Reject Approval Request",
+    "subtitle": "Decline request and log formal audit rejection reason"
+  },
+  "getHeaderConfig_fields_6": {
+    "title": "Re-route Approval Request",
+    "subtitle": "Reassign approval authority with compulsory handover notes"
+  },
+  "getHeaderConfig_fields_7": {
+    "title": "Approve Request",
+    "subtitle": "Confirm approval with optional comment"
+  },
+  "content_title_8": "Close modal",
+  "content_text_9": " Approve",
+  "content_text_10": " Reject",
+  "content_text_11": " Re-route",
+  "content_text_12": "Re-route Target Approver",
+  "content_text_13": "Compulsory *",
+  "content_text_14": "-- Select Designated Approver --",
+  "content_text_15": " — ",
+  "content_text_16": "Optional",
+  "content_text_17": "Compulsory *",
+  "content_text_18": "Compulsory *",
+  "content_text_19": "Cancel",
+  "content_text_20": " Confirm Approval",
+  "content_text_21": " Confirm Rejection",
+  "content_text_22": " Confirm Re-route",
+  "defaultValue_1": "approve",
+  "display_2": "• SLA",
+  "display_3": "Add an optional note or audit trail comment (leave blank to approve directly)...",
+  "display_4": "Enter specific reason for rejecting this request (mandatory)...",
+  "display_5": "Explain why this item is being re-routed and key details for the new approver (mandatory)...",
+  "fallback_1": "Approval Remarks",
+  "fallback_2": "Rejection Reason & Justification",
+  "fallback_3": "Re-route Handover Note & Justification",
+  "fallback_4": "approve"
+}

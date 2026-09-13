@@ -1,0 +1,404 @@
+{
+  "attendanceTrendOption_fields_1": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "cross"
+      }
+    }
+  },
+  "legend_fields_4": {
+    "bottom": 0,
+    "data": [
+      "Attendance %",
+      "Absenteeism %"
+    ]
+  },
+  "textStyle_fields_6": {
+    "fontSize": 11
+  },
+  "attendanceTrendOption_fields_2": {
+    "xAxis": {
+      "type": "category",
+      "data": [
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep"
+      ]
+    },
+    "yAxis": [
+      {
+        "type": "value",
+        "name": "Attendance",
+        "min": 0,
+        "max": 100,
+        "interval": 25,
+        "axisLabel": {
+          "formatter": "{value}%"
+        },
+        "splitLine": {
+          "lineStyle": {
+            "color": "rgba(28, 52, 80, 0.4)"
+          }
+        }
+      },
+      {
+        "type": "value",
+        "name": "Absenteeism",
+        "min": 0,
+        "max": 20,
+        "interval": 5,
+        "axisLabel": {
+          "formatter": "{value}%"
+        },
+        "splitLine": {
+          "show": false
+        }
+      }
+    ]
+  },
+  "series_fields_9": {
+    "name": "Attendance %",
+    "type": "line",
+    "smooth": true,
+    "data": [
+      84.2,
+      85.6,
+      87.1,
+      86.8,
+      87.1,
+      89.2
+    ]
+  },
+  "series_fields_10": {
+    "lineStyle": {
+      "width": 3
+    },
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.15)"
+    }
+  },
+  "series_fields_14": {
+    "name": "Absenteeism %",
+    "type": "line",
+    "smooth": true,
+    "yAxisIndex": 1,
+    "data": [
+      11.2,
+      10.1,
+      8.8,
+      9.4,
+      8.9,
+      6.8
+    ]
+  },
+  "series_fields_15": {
+    "lineStyle": {
+      "width": 2,
+      "type": "dashed"
+    }
+  },
+  "punctualityRadarOption_fields_18": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Bengaluru",
+          "max": 100
+        },
+        {
+          "name": "Pune",
+          "max": 100
+        },
+        {
+          "name": "Hyderabad",
+          "max": 100
+        },
+        {
+          "name": "Chennai",
+          "max": 100
+        },
+        {
+          "name": "NCR",
+          "max": 100
+        },
+        {
+          "name": "Remote",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "50%"
+      ],
+      "radius": "65%"
+    }
+  },
+  "series_fields_20": {
+    "type": "radar"
+  },
+  "data_fields_21": {
+    "value": [
+      94,
+      91,
+      88,
+      82,
+      89,
+      96
+    ],
+    "name": "On-Time Clock-in %"
+  },
+  "data_fields_22": {
+    "areaStyle": {
+      "color": "rgba(79, 182, 245, 0.25)"
+    }
+  },
+  "overtimeBarOption_fields_25": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow"
+      }
+    },
+    "grid": {
+      "left": "22%",
+      "right": "8%",
+      "top": "8%",
+      "bottom": "12%"
+    },
+    "xAxis": {
+      "type": "value",
+      "name": "Hours",
+      "splitLine": {
+        "lineStyle": {
+          "color": "rgba(28, 52, 80, 0.4)"
+        }
+      }
+    }
+  },
+  "yAxis_fields_29": {
+    "type": "category",
+    "data": [
+      "Finance",
+      "Field",
+      "Engineering",
+      "Operations",
+      "Support"
+    ]
+  },
+  "axisLabel_fields_31": {
+    "fontSize": 11
+  },
+  "series_fields_32": {
+    "type": "bar"
+  },
+  "data_fields_34": {
+    "value": 12
+  },
+  "data_fields_35": {
+    "value": 28
+  },
+  "data_fields_36": {
+    "value": 36
+  },
+  "data_fields_37": {
+    "value": 48
+  },
+  "data_fields_38": {
+    "value": 64
+  },
+  "series_fields_33": {
+    "barWidth": 14,
+    "label": {
+      "show": true,
+      "position": "right",
+      "formatter": "{c}h",
+      "color": "#E6EDF6",
+      "fontSize": 11
+    }
+  },
+  "shiftSchedule_fields_40": {
+    "time": "06:00",
+    "req": 12
+  },
+  "shiftSchedule_fields_41": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_42": {
+    "time": "08:00",
+    "req": 34
+  },
+  "shiftSchedule_fields_43": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_44": {
+    "time": "10:00",
+    "req": 58
+  },
+  "shiftSchedule_fields_45": {
+    "time": "12:00",
+    "req": 62
+  },
+  "shiftSchedule_fields_46": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_47": {
+    "time": "14:00",
+    "req": 60
+  },
+  "shiftSchedule_fields_48": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_49": {
+    "time": "16:00",
+    "req": 54
+  },
+  "shiftSchedule_fields_50": {
+    "time": "18:00",
+    "req": 38
+  },
+  "shiftSchedule_fields_51": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_52": {
+    "time": "20:00",
+    "req": 22
+  },
+  "shiftSchedule_fields_53": {
+    "gap": 0
+  },
+  "shiftSchedule_fields_54": {
+    "time": "22:00",
+    "req": 14
+  },
+  "shiftSchedule_fields_55": {
+    "time": "00:00",
+    "req": 8
+  },
+  "shiftSchedule_fields_56": {
+    "gap": 0
+  },
+  "content_text_57": "S3 Console",
+  "content_text_58": "Workforce Ops",
+  "content_text_59": "Sep 2026 to date • 6 sites • 14 shift patterns",
+  "content_text_60": "Attendance and Shift Intelligence",
+  "content_text_61": "All Sites (6)",
+  "content_text_62": "Bengaluru",
+  "content_text_63": "Pune",
+  "content_text_64": "Hyderabad",
+  "content_text_65": "Chennai",
+  "content_text_66": "Shift Planner →",
+  "content_text_67": "Attendance Rate",
+  "content_text_68": "89.2%",
+  "content_text_69": " +2.1 pts vs Aug",
+  "content_text_70": "Average Daily Hours",
+  "content_text_71": "8.4h",
+  "content_text_72": "Net of breaks",
+  "content_text_73": "Overtime Hours",
+  "content_text_74": "188h",
+  "content_text_75": "₹4.1 L cost (14% above cap)",
+  "content_text_76": "Late Clock-ins",
+  "content_text_77": "95",
+  "content_text_78": " +14 vs Aug",
+  "content_text_79": "Unapproved Leaves",
+  "content_text_80": "59",
+  "content_text_81": "21 repeat offenders",
+  "content_text_82": "Roster Fill Tomorrow",
+  "content_text_83": "Shift Coverage Tomorrow: Required vs Rostered",
+  "content_text_84": "Hour-by-hour staffing demand vs planned roster",
+  "content_text_85": "/ ",
+  "content_text_86": "Attendance vs Absenteeism (Last 6 Months)",
+  "content_text_87": "Dual-axis correlation scaled from zero",
+  "content_text_88": "Punctuality Profile by Site",
+  "content_text_89": "On-time clock-in % across operating locations",
+  "content_text_90": "Pattern Detection & Anomaly Signals",
+  "content_text_91": "Nucleus AI Feature",
+  "content_text_92": "3 behavioural anomalies surfaced by intelligence layer",
+  "content_text_93": "3 Findings",
+  "content_text_94": "Paired Punching Suspected",
+  "content_95": {
+    "signal": "Paired punching suspected",
+    "affectedEmployees": "9 employee pairs"
+  },
+  "content_text_96": "Review (9 Pairs) →",
+  "content_text_97": "9 employee pairs clocked in within 4 seconds of each other on the same biometric device, 22 times this month.",
+  "content_text_98": "Friday Support Absence Spike",
+  "content_99": {
+    "site": "Support",
+    "assignments": "Review Friday support coverage and resolve recurring absence gaps."
+  },
+  "content_text_100": "View Roster →",
+  "content_text_101": "Friday absence in Support runs 2.8× the weekly average and has persisted for 11 consecutive weeks.",
+  "content_text_102": "Burnout Risk (Overtime Concentration)",
+  "content_text_103": "Wellbeing Plan →",
+  "content_text_104": "Overtime is concentrated in 6% of staff. Four of them have booked zero leave in 8 months — burnout risk, not capacity.",
+  "content_text_105": "Overtime Hours by Department",
+  "content_text_106": "Current cycle overtime distribution (Total: 188h)",
+  "content_text_107": "Regularisation Requests Pending Approval",
+  "content_text_108": "Punches needing manager sign-off before attendance lock",
+  "content_text_109": "View All (24) →",
+  "content_text_110": "Employee",
+  "content_text_111": "Date",
+  "content_text_112": "Reason",
+  "content_text_113": "Filed",
+  "content_text_114": "Approver",
+  "content_text_115": "Status",
+  "content_text_116": "Ravi Kulkarni",
+  "content_text_117": "08 Sep",
+  "content_text_118": "Client site visit",
+  "content_text_119": "6d late",
+  "content_text_120": "N. Iyer",
+  "content_text_121": "Escalated",
+  "content_text_122": "Sneha Nair",
+  "content_text_123": "09 Sep",
+  "content_text_124": "Biometric turnstile failure",
+  "content_text_125": "2d late",
+  "content_text_126": "N. Iyer",
+  "content_text_127": "Pending",
+  "content_text_128": "Arjun Bhat",
+  "content_text_129": "10 Sep",
+  "content_text_130": "Travel, Pune branch",
+  "content_text_131": "1d late",
+  "content_text_132": "R. Deshpande",
+  "content_text_133": "Pending",
+  "content_text_134": "Mohan Joseph",
+  "content_text_135": "10 Sep",
+  "content_text_136": "Power outage, WFH",
+  "content_text_137": "Same day",
+  "content_text_138": "K. Rao",
+  "content_text_139": "Auto-approved",
+  "content_text_140": "Time-Office Engine Exceptions & Calculated Spans",
+  "content_text_141": "Ruleset ",
+  "content_text_142": "Cross-midnight pairing (e.g. 08:00 to 03:20 +1d), break extraction, late forgiveness, and category-based OT",
+  "content_text_143": "Open Full Time-Office Ledger →",
+  "content_text_144": "Worker & Designation",
+  "content_text_145": "Category / Plant",
+  "content_text_146": "Date & Shift",
+  "content_text_147": "Span & Breaks",
+  "content_text_148": "Net Hours",
+  "content_text_149": "Overtime",
+  "content_text_150": "Status / Ruleset Resolution",
+  "content_text_151": "h ",
+  "content_text_152": "m",
+  "content_text_153": " gross",
+  "content_text_154": "-",
+  "content_text_155": "m unpaid break",
+  "content_text_156": "+",
+  "content_text_157": "m gate pass",
+  "content_text_158": " OT",
+  "content_text_159": "None",
+  "initialState_1": "All",
+  "display_2": "100%",
+  "display_3": "96%",
+  "display_4": "0 gaps remaining",
+  "display_5": "3 gaps tomorrow",
+  "display_6": "All 10 Slots Fully Staffed",
+  "display_7": "3 Gaps Detected",
+  "display_8": "Roster Auto-Filled",
+  "display_9": "Auto-fill Roster",
+  "display_10": "✓ OK",
+  "fallback_1": "v1.2.0-2026.09",
+  "fallback_2": "(Auto-inferred)"
+}

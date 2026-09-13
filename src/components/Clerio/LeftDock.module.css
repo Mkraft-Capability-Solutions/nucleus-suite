@@ -1,0 +1,265 @@
+.dockContainer {
+    width: 68px;
+    height: 100vh;
+    background: var(--rail);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    padding: 0.85rem 0.55rem;
+    z-index: 100;
+    flex-shrink: 0;
+    user-select: none;
+    box-shadow: 2px 0 12px rgba(12, 28, 39, 0.15);
+    transition: width 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s ease;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+/* On hover or when expanded: smoothly expands from 68px to 250px with labels */
+.dockContainer:hover,
+.dockContainer.dockExpanded {
+    width: 250px;
+    box-shadow: var(--shadow-overlay);
+}
+
+.logoWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0 0.35rem;
+    cursor: pointer;
+    min-height: 42px;
+}
+
+.logoMark {
+    width: 38px;
+    height: 38px;
+    background: var(--signal);
+    border-radius: var(--r-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    box-shadow: 0 2px 8px rgba(15, 110, 92, 0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+}
+
+.logoWrapper:hover .logoMark {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(15, 110, 92, 0.5);
+}
+
+.logoInner {
+    font-family: var(--f-ui);
+    letter-spacing: -0.03em;
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    line-height: 1.25;
+}
+
+.dockContainer:hover .brandText,
+.dockContainer.dockExpanded .brandText {
+    opacity: 1;
+    max-width: 180px;
+}
+
+.brandTitle {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.12em;
+}
+
+.brandSubtitle {
+    font-size: var(--t-micro);
+    font-weight: 500;
+    color: #5E7684;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.dockNav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 100%;
+    flex: 1;
+}
+
+.dockBtn {
+    position: relative;
+    width: 100%;
+    height: 42px;
+    border-radius: var(--r-control);
+    border: none;
+    background: transparent;
+    color: var(--rail-text);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0.65rem;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.dockBtn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+}
+
+.dockBtnActive {
+    background: rgba(255, 255, 255, 0.10);
+    color: var(--rail-active);
+}
+
+.dockBtnActive:hover {
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.iconContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.dockBtn:hover .iconContainer {
+    transform: scale(1.08);
+}
+
+.btnLabel {
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--rail-text);
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    margin-left: 0.65rem;
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), max-width 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.dockContainer:hover .btnLabel,
+.dockContainer.dockExpanded .btnLabel {
+    opacity: 1;
+    max-width: 180px;
+}
+
+.dockBtnActive .btnLabel {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.activeIndicator {
+    position: absolute;
+    left: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--signal);
+    border-radius: 0 2px 2px 0;
+}
+
+/* Tooltip only shown when dock is in collapsed icon-only mode */
+.tooltip {
+    position: absolute;
+    left: calc(100% + 12px);
+    background: var(--ink);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: var(--t-small);
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--r-control);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-6px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    box-shadow: var(--shadow-overlay);
+    z-index: 100;
+}
+
+.dockContainer:not(:hover) .dockBtn:hover .tooltip {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.dockContainer:hover .tooltip,
+.dockContainer.dockExpanded .tooltip {
+    display: none !important;
+}
+
+.dockBottom {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: auto;
+    padding-bottom: 0.5rem;
+}
+
+.divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin-bottom: 0.65rem;
+}
+
+@media (max-width: 640px) {
+    .dockContainer {
+        width: 56px;
+        padding: 0.6rem 0.4rem;
+    }
+
+    .dockContainer:hover,
+    .dockContainer.dockExpanded {
+        width: 56px;
+    }
+
+    .brandText,
+    .dockContainer:hover .brandText,
+    .dockContainer.dockExpanded .brandText,
+    .dockContainer:hover .btnLabel,
+    .dockContainer.dockExpanded .btnLabel {
+        display: none;
+    }
+
+    .logoWrapper {
+        justify-content: center;
+        padding: 0;
+        margin-bottom: 1rem;
+    }
+
+    .dockBtn {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .activeIndicator {
+        left: 0;
+    }
+}
+
+.logoWrapper { border: 0; background: transparent; font: inherit; color: inherit; text-align: left; }
+.logoMark { background: #fff; border-radius: 8px; box-shadow: none; }

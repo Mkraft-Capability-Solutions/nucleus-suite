@@ -1,0 +1,76 @@
+{
+  "dockItems_fields_1": {
+    "id": "dashboard",
+    "label": "Dashboard"
+  },
+  "dockItems_fields_2": {
+    "tag": "Home"
+  },
+  "dockItems_fields_3": {
+    "id": "catalog",
+    "label": "Feature Catalog"
+  },
+  "dockItems_fields_4": {
+    "tag": "Catalog",
+    "isCatalogToggle": true
+  },
+  "dockItems_fields_5": {
+    "id": "core_hr",
+    "label": "Core HR"
+  },
+  "dockItems_fields_6": {
+    "tag": "Core HR",
+    "aliases": [
+      "people"
+    ]
+  },
+  "dockItems_fields_8": {
+    "id": "talent",
+    "label": "Talent"
+  },
+  "dockItems_fields_9": {
+    "tag": "Talent"
+  },
+  "dockItems_fields_10": {
+    "id": "payroll_finance",
+    "label": "Payroll & Finance"
+  },
+  "dockItems_fields_11": {
+    "tag": "Payroll",
+    "aliases": [
+      "payroll"
+    ]
+  },
+  "dockItems_fields_13": {
+    "id": "workforce_ops",
+    "label": "Workforce Operations"
+  },
+  "dockItems_fields_14": {
+    "tag": "Workforce"
+  },
+  "dockItems_fields_15": {
+    "id": "analytics_ai",
+    "label": "Analytics & AI"
+  },
+  "dockItems_fields_16": {
+    "tag": "Analytics",
+    "aliases": [
+      "analytics"
+    ]
+  },
+  "LeftDock_aria-label_18": "Navigation Dock",
+  "LeftDock_title_19": "Nucleus HRMS",
+  "LeftDock_text_20": "N",
+  "LeftDock_text_21": "Nucleus HRMS",
+  "LeftDock_text_22": "Workforce OS",
+  "LeftDock_aria-label_23": "Platform (Admin & Integrations)",
+  "LeftDock_text_24": "Platform",
+  "LeftDock_text_25": "Platform",
+  "defaultValue_1": "dashboard",
+  "display_2": "page",
+  "display_3": 2.3,
+  "display_4": 1.8,
+  "display_5": "Platform",
+  "display_6": 2.3,
+  "display_7": 1.8
+}

@@ -1,0 +1,405 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  /* ============================================================
+     NUCLEUS DESIGN TOKENS
+     Every colour is a semantic variable.
+     ============================================================ */
+  /* Base palette */
+  --ink: #10222F;
+  --ink-2: #1B3444;
+  --slate: #5A6B78;
+  --slate-2: #8395A1;
+  --paper: #F3F5F4;
+  --surface: #FFFFFF;
+  --surface-2: #F8FAFA;
+  --rule: rgba(16, 34, 47, 0.09);
+  --rule-2: rgba(16, 34, 47, 0.045);
+  --signal: #2563EB;
+  --signal-ink: #1D4ED8;
+  --signal-wash: #EFF6FF;
+  --status-ok: #10B981;
+  --status-ok-ink: #047857;
+  --status-ok-wash: #ECFDF5;
+  --flag: #A8341F;
+  --flag-wash: #F8E9E5;
+  --pending: #8A6416;
+  --pending-wash: #F7EFDE;
+  --info: #1B6CA8;
+  --info-wash: #E7F0F7;
+  --agent: #5B3FA8;
+  --agent-wash: #EFEBF9;
+
+  /* Semantic aliases */
+  --bg: var(--paper);
+  --card: var(--surface);
+  --card-2: var(--surface-2);
+  --text: var(--ink);
+  --text-2: var(--slate);
+  --text-3: var(--slate-2);
+  --line: rgba(16, 34, 47, 0.09);
+  --line-soft: rgba(16, 34, 47, 0.045);
+  --line-glow: rgba(37, 99, 235, 0.25);
+  --rail: #0C1C27;
+  --rail-text: #9FB2BD;
+  --rail-active: #FFFFFF;
+  --hero-bg: linear-gradient(135deg, #0C1C27 0%, #1B3444 65%, #183344 100%);
+
+  /* Type scale & fonts: Montserrat for Headings / Display, Lato for Body / UI */
+  --t-display: clamp(1.65rem, 2vw, 2.25rem);
+  --t-h1: clamp(1.35rem, 1.45vw, 1.75rem);
+  --t-h2: clamp(1.08rem, 1.12vw, 1.3rem);
+  --t-h3: clamp(.92rem, 1vw, 1.05rem);
+  --t-body: clamp(.8125rem, .86vw, .9375rem);
+  --t-small: clamp(.75rem, .78vw, .8125rem);
+  --t-micro: .6875rem;
+  --f-display: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --f-heading: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --f-sans: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-ui: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-body: 'Lato', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --f-num: 'IBM Plex Mono', 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* Space - 4px base */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  /* Fluid Modern Radii & Elevation Shadows */
+  --r-data: 6px;
+  --r-control: 8px;
+  --r-card: 14px;
+  --r-overlay: 20px;
+  --r-pill: 9999px;
+  --shadow-subtle: 0 1px 2px rgba(16, 34, 47, 0.04);
+  --shadow-surface: 0 1px 3px rgba(16, 34, 47, 0.04), 0 4px 14px -2px rgba(16, 34, 47, 0.04);
+  --shadow-raise: 0 3px 10px -2px rgba(16, 34, 47, 0.07), 0 1px 3px rgba(16, 34, 47, 0.04);
+  --shadow-overlay: 0 20px 48px -10px rgba(16, 34, 47, 0.16), 0 6px 16px rgba(16, 34, 47, 0.06);
+  --row-h: 38px;
+  --pad-cell: 10px;
+
+  /* Legacy aliases mapping to Nucleus tokens */
+  --primary: var(--signal);
+  --secondary: var(--slate);
+  --accent: var(--flag);
+  --success: var(--status-ok);
+  --background: var(--bg);
+  --text-primary: var(--text);
+  --text-secondary: var(--text-2);
+  --text-muted: var(--text-3);
+  --gradient-bg: var(--bg);
+  --glass-bg: rgba(255, 255, 255, 0.92);
+  --glass-border: var(--line);
+  --glass-shadow: var(--shadow-raise);
+  --backdrop-blur: 8px;
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.22s ease;
+}
+
+[data-theme="dark"] {
+  /* Base palette inversion for dark mode */
+  --ink: #E8EEF0;
+  --ink-2: #CAD6DD;
+  --slate: #9FB2BD;
+  --slate-2: #6E8593;
+  --paper: #0B1720;
+  --surface: #122431;
+  --surface-2: #0F1E29;
+  --rule: #22394A;
+  --rule-2: #1A2F3D;
+
+  /* Semantic aliases */
+  --bg: #070B0E;
+  --paper: #090F14;
+  --card: rgba(13, 22, 33, 0.68);
+  --card-hover: rgba(18, 30, 46, 0.78);
+  --card-2: rgba(10, 18, 27, 0.72);
+  --card-raised: rgba(16, 28, 42, 0.75);
+  --text: #F1F5F9;
+  --text-2: #94A3B8;
+  --text-3: #64748B;
+  --rule: rgba(255, 255, 255, 0.08);
+  --rule-2: rgba(255, 255, 255, 0.04);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-soft: rgba(255, 255, 255, 0.05);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --line-glow: rgba(56, 189, 248, 0.35);
+
+  /* Rail Navigation */
+  --rail: #05080B;
+  --rail-text: #7E96A4;
+  --rail-active: #FFFFFF;
+
+  /* Calibrated Semantic Status Tokens */
+  --signal: #38BDF8;
+  --signal-ink: #38BDF8;
+  --signal-wash: rgba(56, 189, 248, 0.12);
+  --status-ok: #10B981;
+  --status-ok-ink: #34D399;
+  --status-ok-wash: rgba(16, 185, 129, 0.15);
+  --flag: #D9705A;
+  --flag-wash: #2E1A16;
+  --pending: #C9A24B;
+  --pending-wash: #2A2216;
+  --info: #38BDF8;
+  --info-wash: #122836;
+  --agent: #9B85E0;
+  --agent-wash: #1D1832;
+
+  /* Hero & Depth */
+  --hero-bg: linear-gradient(135deg, rgba(8, 18, 28, 0.95) 0%, rgba(13, 24, 38, 0.9) 65%, rgba(16, 32, 50, 0.85) 100%);
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-surface: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --shadow-raise: 0 8px 30px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  --shadow-hover: 0 12px 36px -4px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 0 24px rgba(56, 189, 248, 0.12);
+  --shadow-overlay: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.6);
+  --glass-bg: rgba(13, 22, 33, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-hover: rgba(255, 255, 255, 0.2);
+  --glass-shadow: var(--shadow-raise);
+  --backdrop-blur: 16px;
+}
+
+[data-density="compact"] {
+  --row-h: 30px;
+  --pad-cell: 6px;
+  --t-body: 12px;
+  --t-small: 11px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6,
+.display, .screenTitle, .modalTitle, .headerTitle {
+  font-family: var(--f-heading);
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  color: var(--text);
+}
+
+h1 {
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  font-size: var(--t-h1);
+  line-height: 1.2;
+}
+
+h2 { font-size: var(--t-h2); line-height: 1.28; }
+h3 { font-size: var(--t-h3); line-height: 1.35; }
+h4, h5, h6 { font-size: var(--t-small); line-height: 1.4; }
+p { color: var(--text-2); }
+
+body {
+  font-family: var(--f-ui);
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+}
+
+button, input, select, textarea {
+  font-family: var(--f-ui);
+}
+
+button, [role="button"] {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  min-height: 2.25rem;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+button:disabled, [role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: .58;
+}
+
+a {
+  color: var(--signal);
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+  border-radius: var(--r-data);
+}
+
+.num {
+  font-family: var(--f-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Status Pills */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--r-pill);
+  font-size: var(--t-micro);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.pill::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.pill-ok {
+  background: var(--status-ok-wash);
+  color: var(--status-ok-ink);
+}
+
+.metric-value {
+  font-family: var(--f-num);
+  font-weight: 700;
+  font-size: 1.6rem;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.pill-pend {
+  background: var(--pending-wash);
+  color: var(--pending);
+}
+
+.pill-flag {
+  background: var(--flag-wash);
+  color: var(--flag);
+}
+
+.pill-info {
+  background: var(--info-wash);
+  color: var(--info);
+}
+
+.pill-agent {
+  background: var(--agent-wash);
+  color: var(--agent);
+}
+
+.pill-mute {
+  background: var(--card-2);
+  color: var(--text-2);
+  border: 1px solid var(--line);
+}
+
+/* Rounded Soft Containers */
+.glass-panel {
+  background: var(--card);
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-surface);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel:hover {
+  background: var(--card-hover);
+  border-color: var(--glass-border-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Fluid Soft Buttons */
+button, .btn, [class*="btn"], [class*="Btn"] {
+  border-radius: var(--r-control);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:hover:not(:disabled) { filter: brightness(.98); }
+button:active:not(:disabled) { transform: translateY(1px); }
+
+/* Inputs & Form Controls */
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: var(--text);
+  border-radius: var(--r-control);
+  border: 1px solid var(--line);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--signal);
+  box-shadow: 0 0 0 3px var(--signal-wash);
+  outline: none;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: var(--r-control);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-2);
+}
+
+/* Shared layout guardrails. Component styles define appearance; these rules
+   keep controls, content width and tables usable in both themes and on small screens. */
+button svg { flex: 0 0 auto; }
+button > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+input, select, textarea { font-size: max(16px, var(--t-body)); min-height: 2.4rem; }
+textarea { min-height: 5.5rem; line-height: 1.45; }
+table { color: var(--text); }
+th { color: var(--text-2); }
+
+@media (max-width: 720px) {
+  :root { --s5: 18px; --s6: 24px; --s7: 32px; }
+  button, [role="button"] { min-height: 2.5rem; }
+  input, select, textarea { min-height: 2.65rem; }
+  [class*="headerRow"], [class*="headerActions"], [class*="toolbar"], [class*="action"] {
+    flex-wrap: wrap;
+  }
+  [class*="tableWrapper"], [class*="tableWrap"] { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 480px) {
+  :root { --r-card: 12px; --pad-cell: 8px; }
+  [class*="formGrid"], [class*="form-grid"] { grid-template-columns: minmax(0, 1fr) !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}

@@ -1,0 +1,215 @@
+{
+  "DEFAULT_CONTEXT_1": {
+    "periodStart": "2026-09-01",
+    "periodEnd": "2026-09-13",
+    "asOfAt": "2026-09-13T18:00:00+05:30",
+    "legalEntity": "Nucleus India",
+    "location": "All permitted locations",
+    "timezone": "Asia/Kolkata",
+    "sourceSystem": "Nucleus MIS master"
+  },
+  "RISK_STATES_2": [
+    "Unreviewed",
+    "Acknowledged",
+    "Mitigation planned",
+    "Escalated",
+    "Closed"
+  ],
+  "sourceRuns_fields_3": {
+    "id": "run-current-mtd",
+    "fileName": "Nucleus_MIS_Report_MTD",
+    "status": "Published"
+  },
+  "sourceRuns_fields_4": {
+    "rejected": 0
+  },
+  "sourceRuns_fields_5": {
+    "completedAt": "13 Sep 2026, 18:00"
+  },
+  "canViewCompensation_6": [
+    "SUPER_ADMIN",
+    "HR_MANAGER",
+    "FINANCE_MANAGER"
+  ],
+  "canViewRisk_7": [
+    "SUPER_ADMIN",
+    "HR_MANAGER"
+  ],
+  "workbook_8": {
+    "type": "array"
+  },
+  "rows_9": {
+    "defval": ""
+  },
+  "run_fields_10": {
+    "status": "Published"
+  },
+  "exportReport_11": {
+    "type": "text/csv;charset=utf-8"
+  },
+  "content_text_12": "Analytics & intelligence \u00b7 governed reporting",
+  "content_text_13": "MTD MIS Reporting Centre",
+  "content_text_14": " to ",
+  "content_text_15": " \u00b7 ",
+  "content_text_16": " \u00b7 ",
+  "content_text_17": " Import CSV/XLSX",
+  "content_text_18": " Export XLSX",
+  "content_aria-label_19": "MIS reporting sections",
+  "content_20": [
+    [
+      "report",
+      "Report detail"
+    ],
+    [
+      "catalogue",
+      "Report catalogue"
+    ],
+    [
+      "sources",
+      "Data sources"
+    ],
+    [
+      "quality",
+      "Quality queue"
+    ],
+    [
+      "risk",
+      "Flight-risk review"
+    ]
+  ],
+  "content_text_21": "Permitted scope",
+  "content_text_22": " \u00b7 ",
+  "content_text_23": " \u00b7 ",
+  "content_text_24": "Data freshness",
+  "content_text_25": " \u00b7 ",
+  "content_text_26": "View lineage ",
+  "content_text_27": "Scoped employees",
+  "content_text_28": "Population after filters",
+  "content_text_29": "Average attendance",
+  "content_text_30": "%",
+  "content_text_31": "Calculated from visible records",
+  "content_text_32": "Approved OT reported",
+  "content_text_33": " h",
+  "content_text_34": "Trace each value to the OT register",
+  "content_text_35": "High flight risk",
+  "content_text_36": " Department",
+  "content_text_37": "All permitted departments",
+  "content_text_38": "Flight risk",
+  "content_text_39": "All permitted risk bands",
+  "content_text_40": "High",
+  "content_text_41": "Medium",
+  "content_text_42": "Low",
+  "content_placeholder_43": "Employee, ID, designation or department",
+  "content_text_44": " CSV",
+  "content_text_45": "MTD employee report",
+  "content_text_46": "Open a row for source measures, protected information and approved actions.",
+  "content_text_47": " rows",
+  "content_text_48": "%",
+  "content_text_49": " h",
+  "content_50": [
+    [
+      "Executive MTD overview",
+      "Published",
+      "Headcount, attendance, OT, CTC, performance and risk"
+    ],
+    [
+      "Attendance & overtime control",
+      "Published",
+      "Attendance detail, exception and approved OT trace"
+    ],
+    [
+      "Payroll cost & currency review",
+      "Draft",
+      "CTC, reporting-currency conversion and OT payment status"
+    ],
+    [
+      "Performance & flight-risk review",
+      "Published",
+      "Calibrated rating, risk score, reviewer and mitigation"
+    ]
+  ],
+  "content_text_51": "Open ",
+  "content_text_52": "Dataset runs and lineage",
+  "content_text_53": "Each run retains source, period, validation outcome and publication evidence.",
+  "content_text_54": " Add source",
+  "content_text_55": " \u00b7 ",
+  "content_text_56": " to ",
+  "content_text_57": " accepted / ",
+  "content_text_58": " rejected",
+  "content_text_59": "Publish ",
+  "content_text_60": " valid rows",
+  "content_text_61": " accepted",
+  "content_text_62": " rejected",
+  "content_text_63": " period start",
+  "content_text_64": " legal entity",
+  "content_text_65": "Rows requiring correction",
+  "content_text_66": "Rejected rows cannot be published. Correct the source and import a new validation run.",
+  "content_text_67": "Row ",
+  "content_text_68": " \u00b7 ",
+  "content_text_69": "No row issues were found. The source is ready to publish.",
+  "content_text_70": "Flight-risk review queue",
+  "content_text_71": "Scores are restricted to authorised HR reviewers and must be reviewed before action.",
+  "riskCase_72": {
+    "state": "Unreviewed",
+    "owner": "HRBP",
+    "note": ""
+  },
+  "content_text_73": " \u00b7 ",
+  "content_text_74": " \u00b7 model score ",
+  "content_text_75": "%",
+  "content_text_76": "Case status",
+  "content_text_77": "Mitigation owner",
+  "content_text_78": "Review evidence ",
+  "content_text_79": "Your role cannot view flight-risk cases. Access requests are recorded through the platform access workflow.",
+  "content_aria-label_80": "Employee MIS detail",
+  "content_text_81": " \u00b7 ",
+  "content_text_82": "Attendance",
+  "content_text_83": "%",
+  "content_text_84": "Open daily trace",
+  "content_text_85": "Overtime",
+  "content_text_86": " h",
+  "content_text_87": "Open OT register",
+  "content_text_88": "Performance",
+  "content_text_89": "Open performance",
+  "content_text_90": "Gross CTC",
+  "content_text_91": "Open compensation",
+  "content_text_92": "Source and audit evidence",
+  "content_text_93": "Source: ",
+  "content_text_94": " \u00b7 Row ",
+  "content_text_95": "Period: ",
+  "content_text_96": " to ",
+  "content_text_97": " \u00b7 ",
+  "content_text_98": "Flight risk: ",
+  "content_text_99": "Recent audit activity",
+  "content_text_100": " \u00b7 ",
+  "initialState_1": "report",
+  "initialState_2": "all",
+  "initialState_3": "all",
+  "display_4": "Restricted",
+  "display_5": "Requires reviewer follow-up",
+  "display_6": "Risk data is role protected",
+  "display_7": "Restricted",
+  "display_8": "Import validation preview",
+  "display_9": "No source awaiting review",
+  "display_10": "Import a CSV/XLSX file to create a reviewable validation run.",
+  "display_11": "Authorised",
+  "display_12": "Restricted",
+  "display_13": "Restricted by role policy.",
+  "fallback_1": "SUPER_ADMIN",
+  "fallback_2": "Choose a valid CSV or XLSX report.",
+  "fallback_3": "HRBP",
+  "fallback_4": "Not published",
+  "fallback_5": "Draft",
+  "fallback_6": "Missing",
+  "fallback_7": "Missing",
+  "fallback_8": "No employee ID",
+  "fallback_9": "n.a.",
+  "fallback_10": "Not supplied",
+  "fallback_11": "Not supplied",
+  "importSizeError": "Files must be 5 MB or smaller.",
+  "importTypeError": "Select a CSV, XLSX or XLS file.",
+  "importRowsError": "Import at most 10,000 rows per file.",
+  "exportError": "Export failed",
+  "exportRetry": "The report could not be generated. Please try again.",
+  "viewRecord": "View record for"
+}

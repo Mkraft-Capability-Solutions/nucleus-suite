@@ -1,0 +1,146 @@
+.catalogWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 0.5rem 0 3rem;
+}
+
+.filtersBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1rem;
+}
+
+.pillsRow {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filterPill {
+    padding: 0.35rem 0.85rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-2);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.filterPill:hover {
+    border-color: var(--text-3);
+    color: var(--text);
+    background: var(--card-2);
+}
+
+.filterPillActive {
+    background: var(--signal);
+    color: #ffffff;
+    border-color: var(--signal);
+    font-weight: 600;
+}
+
+.filterPillActive:hover {
+    background: var(--signal-ink);
+    border-color: var(--signal-ink);
+    color: #ffffff;
+}
+
+.countText {
+    font-size: var(--t-small);
+    color: var(--text-3);
+    font-family: var(--f-num);
+    font-weight: 500;
+}
+
+/* 4-column cards grid */
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 1500px) {
+    .cardsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 1100px) {
+    .cardsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .cardsGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cardItem {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1.25rem 1.35rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-raise);
+}
+
+.cardItem:hover {
+    transform: translateY(-2px);
+    border-color: var(--signal);
+    box-shadow: 0 8px 24px -6px rgba(16, 34, 47, 0.12);
+}
+
+.cardTopRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+}
+
+.iconCircle {
+    width: 36px;
+    height: 36px;
+    background: var(--card-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-control);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--signal);
+}
+
+.tagBadge {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--text-3);
+    font-family: var(--f-num);
+    text-transform: uppercase;
+}
+
+.cardTitle {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.01em;
+}
+
+.cardDesc {
+    font-size: var(--t-small);
+    color: var(--text-2);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.cardItem { text-align: left; font: inherit; color: inherit; }

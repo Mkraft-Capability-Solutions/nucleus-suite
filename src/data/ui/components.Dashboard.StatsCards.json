@@ -1,0 +1,31 @@
+{
+  "cards_fields_1": {
+    "title": "Attendance Status",
+    "value": "✅ Done",
+    "subtext": "In: 09:55 AM",
+    "progress": 85,
+    "color": "green"
+  },
+  "cards_fields_2": {
+    "title": "Leave Balance",
+    "value": "12 days",
+    "subtext": "8 used of 20",
+    "progress": 40,
+    "color": "orange"
+  },
+  "cards_fields_3": {
+    "title": "Hours Today",
+    "value": "2h 30m",
+    "subtext": "On track ✓",
+    "progress": 28,
+    "color": "blue"
+  },
+  "cards_fields_4": {
+    "title": "Recognition",
+    "value": "0 badges",
+    "subtext": "3rd in team",
+    "progress": 0,
+    "color": "purple"
+  },
+  "StatsCards_text_5": "💬 Ask AI ✨"
+}

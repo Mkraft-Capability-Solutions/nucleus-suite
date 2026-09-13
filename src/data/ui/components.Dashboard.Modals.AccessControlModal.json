@@ -1,0 +1,218 @@
+{
+  "ROLES_LIST_fields_1": {
+    "label": "HR Manager",
+    "name": "Ananya Sharma"
+  },
+  "ROLES_LIST_fields_2": {
+    "label": "Finance Manager",
+    "name": "Vikram Joshi"
+  },
+  "ROLES_LIST_fields_3": {
+    "label": "Project Manager",
+    "name": "Sarah Chen"
+  },
+  "ROLES_LIST_fields_4": {
+    "label": "Team Lead",
+    "name": "Amit Verma"
+  },
+  "ROLES_LIST_fields_5": {
+    "label": "Employee",
+    "name": "Priya Nair"
+  },
+  "ROLES_LIST_fields_6": {
+    "label": "Trainee / Intern",
+    "name": "Rohan Mehta"
+  },
+  "MODULES_LIST_fields_7": {
+    "key": "people_core",
+    "title": "People Core (Employee Directory)",
+    "desc": "Digital employee records, KYC, org reporting & profiles",
+    "tag": "Core HR"
+  },
+  "MODULES_LIST_fields_8": {
+    "key": "payroll",
+    "title": "Global Payroll & EWA",
+    "desc": "Salary register, tax deductions, pay slips & on-demand pay",
+    "tag": "Payroll"
+  },
+  "MODULES_LIST_fields_9": {
+    "key": "recruitment",
+    "title": "Talent Acquisition (ATS)",
+    "desc": "Job requisitions, candidate pipelines & scorecards",
+    "tag": "Talent"
+  },
+  "MODULES_LIST_fields_10": {
+    "key": "onboarding",
+    "title": "Onboarding & Lifecycle",
+    "desc": "Day-1 readiness, document verification & asset clearance",
+    "tag": "Lifecycle"
+  },
+  "MODULES_LIST_fields_11": {
+    "key": "performance",
+    "title": "Performance & OKRs",
+    "desc": "Quarterly appraisals, goals cascade & 9-Box talent calibration",
+    "tag": "Talent"
+  },
+  "MODULES_LIST_fields_12": {
+    "key": "attendance",
+    "title": "Smart Attendance & Rosters",
+    "desc": "Biometric punches, shift rosters & overtime ledger",
+    "tag": "Workforce"
+  },
+  "MODULES_LIST_fields_13": {
+    "key": "leaves",
+    "title": "Leave Management",
+    "desc": "Leave quotas, sandwich rule DAG & approval matrices",
+    "tag": "Workforce"
+  },
+  "MODULES_LIST_fields_14": {
+    "key": "analytics",
+    "title": "People Intelligence & Analytics",
+    "desc": "Executive headcount metrics, attrition models & flight risk",
+    "tag": "Analytics"
+  },
+  "MODULES_LIST_fields_15": {
+    "key": "learning",
+    "title": "Learning & Development (L&D)",
+    "desc": "Magnetix capability catalog & compliance training tracks",
+    "tag": "L&D"
+  },
+  "MODULES_LIST_fields_16": {
+    "key": "compensation",
+    "title": "Compensation & Benefits",
+    "desc": "Salary benchmarking, compa-ratios & flexible allowances",
+    "tag": "Finance"
+  },
+  "MODULES_LIST_fields_17": {
+    "key": "experience",
+    "title": "Employee Experience & Wellbeing",
+    "desc": "Mindfulness index, peer appreciation badges & surveys",
+    "tag": "Experience"
+  },
+  "MODULES_LIST_fields_18": {
+    "key": "integrations",
+    "title": "ERP & API Integrations",
+    "desc": "Webhooks, Slack, SAP, Workday & biometric terminal sync",
+    "tag": "Platform"
+  },
+  "MODULES_LIST_fields_19": {
+    "key": "compliance",
+    "title": "Statutory Labour Codes Simulator",
+    "desc": "2026 Labour Codes simulator, 50% wage floor & PF/ESI",
+    "tag": "Statutory"
+  },
+  "MODULES_LIST_fields_20": {
+    "key": "helpdesk",
+    "title": "Helpdesk & Grounded Policies",
+    "desc": "Service tickets, SLA tracking & AI policy assistant",
+    "tag": "Support"
+  },
+  "MODULES_LIST_fields_21": {
+    "key": "contract_workforce",
+    "title": "Contingent & Contract Workforce",
+    "desc": "Vendor staffing pools, compliance audits & contractor billing",
+    "tag": "Workforce"
+  },
+  "MODULES_LIST_fields_22": {
+    "key": "projects",
+    "title": "Agile Projects & Sprints",
+    "desc": "Pod allocations, sprint velocity & billable client hours",
+    "tag": "Projects"
+  },
+  "MODULES_LIST_fields_23": {
+    "key": "team",
+    "title": "Departments & Org Hierarchy",
+    "desc": "Interactive org graph, reporting tree & department rosters",
+    "tag": "Core HR"
+  },
+  "MODULES_LIST_fields_24": {
+    "key": "settings",
+    "title": "Settings & Security RBAC",
+    "desc": "Tenant preferences, multi-currency & 2FA security",
+    "tag": "Platform"
+  },
+  "CONSOLES_LIST_25": [
+    {
+      "id": "S1",
+      "title": "People Command Centre",
+      "persona": "Super Admin / CXO",
+      "desc": "Macro headcount, attrition signals & workforce FTE costs"
+    },
+    {
+      "id": "S2",
+      "title": "HR Operations Console",
+      "persona": "HRBP / Operations",
+      "desc": "Onboarding pipeline funnel, SLA approvals & breach triage"
+    },
+    {
+      "id": "S3",
+      "title": "Attendance & Time Intelligence",
+      "persona": "Workforce Ops",
+      "desc": "Paired punching anomaly, Friday spikes & overtime ledger"
+    },
+    {
+      "id": "S4",
+      "title": "Talent Acquisition Command",
+      "persona": "Talent Lead",
+      "desc": "Avg. Time to Fill, offer leakage bridge & recruitment stages"
+    },
+    {
+      "id": "S5",
+      "title": "Payroll Control Room",
+      "persona": "Finance / Payroll Admin",
+      "desc": "50% basic wage floor check, EPFO/ESIC calculations & net pay"
+    },
+    {
+      "id": "S6",
+      "title": "Performance & Talent Calibration",
+      "persona": "People & Talent Lead",
+      "desc": "9-Box talent matrix, OKR alignment & promotion readiness"
+    },
+    {
+      "id": "S7",
+      "title": "Manager Cockpit & Triage",
+      "persona": "Team Leads & Managers",
+      "desc": "Pod punch status, leave approvals, reject remarks & re-routing"
+    },
+    {
+      "id": "S8",
+      "title": "Employee Self-Service Home",
+      "persona": "All Employees",
+      "desc": "Shift clock-in, leave rings, payslip & weekly timesheet suite"
+    },
+    {
+      "id": "S9",
+      "title": "Magnetix Capability Hub",
+      "persona": "L&D Lead",
+      "desc": "Nucleus Capability Index, skill gap radar & compliance"
+    },
+    {
+      "id": "S10",
+      "title": "Workspace Governance",
+      "persona": "System / Workspace Administrator",
+      "desc": "Workspace settings, role access and integration previews"
+    }
+  ],
+  "content_text_26": "Access Control & Permissions Governance",
+  "content_text_27": "Configure module access & cockpit console visibility across roles & personas",
+  "content_title_28": "Close Access Control",
+  "content_text_29": "Target Role:",
+  "content_text_30": "Functional Modules (",
+  "content_text_31": ")",
+  "content_text_32": "Dashboard Cockpits S1\u2013S10 (",
+  "content_text_33": ")",
+  "content_placeholder_34": "Filter permissions...",
+  "content_text_35": "Reset to Defaults",
+  "content_title_36": "Instantly switch persona to test configured access",
+  "content_text_37": "Test as ",
+  "content_text_38": "Done & Save Matrix",
+  "initialState_1": "modules",
+  "display_2": "revoke",
+  "display_3": "grant",
+  "display_4": "Granted \u2713",
+  "display_5": "Restricted \u2715",
+  "display_6": "hide",
+  "display_7": "show",
+  "display_8": "Visible \u2713",
+  "display_9": "Hidden \u2715"
+}

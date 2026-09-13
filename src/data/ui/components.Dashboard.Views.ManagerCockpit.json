@@ -1,0 +1,258 @@
+{
+  "approvals_1": [
+    {
+      "id": 1,
+      "name": "Ravi K.",
+      "type": "3 days, planned",
+      "age": "6d",
+      "isSLA": true
+    },
+    {
+      "id": 2,
+      "name": "Sneha N.",
+      "type": "\u20b918,400 travel",
+      "age": "3d",
+      "isSLA": false
+    },
+    {
+      "id": 3,
+      "name": "Arjun B.",
+      "type": "Comp-off",
+      "age": "2d",
+      "isSLA": false
+    },
+    {
+      "id": 4,
+      "name": "Priya T.",
+      "type": "WFH, 2 weeks",
+      "age": "1d",
+      "isSLA": false
+    }
+  ],
+  "capacityOption_fields_2": {
+    "tooltip": {
+      "trigger": "axis",
+      "axisPointer": {
+        "type": "shadow"
+      }
+    }
+  },
+  "legend_fields_5": {
+    "bottom": 0,
+    "data": [
+      "Delivering",
+      "On Leave",
+      "In Training"
+    ]
+  },
+  "textStyle_fields_7": {
+    "fontSize": 10
+  },
+  "capacityOption_fields_3": {
+    "grid": {
+      "left": 35,
+      "right": 15,
+      "top": 15,
+      "bottom": 25
+    }
+  },
+  "xAxis_fields_9": {
+    "type": "category",
+    "data": [
+      "Wk 37",
+      "Wk 38",
+      "Wk 39",
+      "Wk 40"
+    ]
+  },
+  "axisLabel_fields_11": {
+    "fontSize": 11
+  },
+  "yAxis_fields_12": {
+    "type": "value",
+    "max": 80,
+    "axisLabel": {
+      "formatter": "{value}d"
+    }
+  },
+  "series_fields_14": {
+    "name": "Delivering",
+    "type": "bar",
+    "stack": "total",
+    "data": [
+      64,
+      58,
+      62,
+      60
+    ]
+  },
+  "series_fields_16": {
+    "name": "On Leave",
+    "type": "bar",
+    "stack": "total",
+    "data": [
+      6,
+      12,
+      4,
+      8
+    ]
+  },
+  "series_fields_18": {
+    "name": "In Training",
+    "type": "bar",
+    "stack": "total",
+    "data": [
+      4,
+      4,
+      8,
+      6
+    ]
+  },
+  "skillRadarOption_fields_20": {
+    "radar": {
+      "indicator": [
+        {
+          "name": "Backend",
+          "max": 100
+        },
+        {
+          "name": "Data",
+          "max": 100
+        },
+        {
+          "name": "Cloud",
+          "max": 100
+        },
+        {
+          "name": "Frontend",
+          "max": 100
+        },
+        {
+          "name": "Security",
+          "max": 100
+        },
+        {
+          "name": "Testing",
+          "max": 100
+        }
+      ],
+      "center": [
+        "50%",
+        "50%"
+      ],
+      "radius": "65%"
+    }
+  },
+  "series_fields_22": {
+    "type": "radar"
+  },
+  "data_fields_23": {
+    "value": [
+      88,
+      54,
+      78,
+      92,
+      42,
+      70
+    ],
+    "name": "Team Coverage vs Role Target"
+  },
+  "data_fields_24": {
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.22)"
+    }
+  },
+  "content_text_27": "Manager Cockpit",
+  "content_text_28": "14 direct, 41 total \u2022 Engineering, Bengaluru",
+  "content_text_29": "View: Direct + Skip",
+  "content_text_30": " Team report",
+  "content_text_31": " Start a 1:1",
+  "content_text_32": "\u2713 ",
+  "content_text_33": "Undo",
+  "content_text_34": "Awaiting your approval",
+  "content_text_35": " 2 breach SLA today",
+  "content_text_36": "Oldest: 6 days",
+  "content_text_37": "Team present today",
+  "content_text_38": "12 / 14",
+  "content_text_39": "1 leave, 1 unrecorded",
+  "content_text_40": "85.7% active focus",
+  "content_text_41": "Goals on track",
+  "content_text_42": "9 / 14",
+  "content_text_43": "3 stale >30d",
+  "content_text_44": "Q3 sprint milestones",
+  "content_text_45": "1:1s this month",
+  "content_text_46": "11 / 14",
+  "content_text_47": "3 not scheduled",
+  "content_text_48": "Cadence: Bi-weekly",
+  "content_text_49": " Three things for this week",
+  "content_text_50": "Urgency \u00d7 Impact Capped",
+  "content_text_51": "\u25c6 ",
+  "content_text_52": "Ravi's leave request",
+  "content_text_53": " has been open six days and now breaches SLA. ",
+  "content_text_54": "Sneha has worked 14 hours of overtime",
+  "content_text_55": " for three consecutive weeks and has taken no leave since March. ",
+  "content_text_56": "Arjun's goal on the migration project",
+  "content_text_57": " hasn't been updated in 34 days while its dependency slipped \u2014 worth ten minutes in your next one-to-one.",
+  "content_text_58": "Approvals Waiting on You",
+  "content_text_59": "Approve without leaving the row",
+  "content_text_60": "\u2713 All approvals cleared! Zero items waiting.",
+  "content_title_61": "Approve request (optional remarks)",
+  "content_text_62": "Approve",
+  "content_title_63": "Reject request (compulsory remarks)",
+  "content_text_64": "Reject",
+  "content_title_65": "Re-route request (compulsory target & remarks)",
+  "content_text_66": "Re-route",
+  "content_text_67": "Team Capacity",
+  "content_text_68": "Next 4 weeks forecast",
+  "content_text_69": "Team Skill Coverage",
+  "content_text_70": "vs Role requirements",
+  "content_text_71": "My Team",
+  "content_text_72": "Click a row for full profile \u2022 Signals column indicates condition, not raw score",
+  "content_text_73": "Name",
+  "content_text_74": "Role",
+  "content_text_75": "Attendance",
+  "content_text_76": "Goals",
+  "content_text_77": "Last 1:1",
+  "content_text_78": "Learning",
+  "content_text_79": "Signals",
+  "content_text_80": "Ravi Kulkarni",
+  "content_text_81": "Senior Engineer",
+  "content_text_82": "96%",
+  "content_text_83": "3/3 on track",
+  "content_text_84": "4 Sep",
+  "content_text_85": "2 in progress",
+  "content_text_86": "\u2014",
+  "content_text_87": "Sneha Nair",
+  "content_text_88": "Engineer II",
+  "content_text_89": "99%",
+  "content_text_90": "2/3 on track",
+  "content_text_91": "28 Aug",
+  "content_text_92": "1 overdue",
+  "content_text_93": "Overtime 3 wks",
+  "content_text_94": "Arjun Bhat",
+  "content_text_95": "Engineer II",
+  "content_text_96": "91%",
+  "content_text_97": "1/3 stale",
+  "content_text_98": "17 Jul",
+  "content_text_99": "\u2014",
+  "content_text_100": " Flight risk 0.74 (Comp & Stale Goal)",
+  "content_text_101": "Priya Thomas",
+  "content_text_102": "Senior Engineer",
+  "content_text_103": "97%",
+  "content_text_104": "3/3 on track",
+  "content_text_105": "8 Sep",
+  "content_text_106": "Certified",
+  "content_text_107": "Ready for lead",
+  "content_text_108": "Mohan Joseph",
+  "content_text_109": "Engineer I",
+  "content_text_110": "88%",
+  "content_text_111": "2/2 on track",
+  "content_text_112": "2 Sep",
+  "content_text_113": "3 in progress",
+  "content_text_114": "Probation ends 30 Sep",
+  "initialState_1": "approve",
+  "defaultValue_2": "approve",
+  "display_3": "\u2022 SLA",
+  "fallback_1": "span-5",
+  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+}

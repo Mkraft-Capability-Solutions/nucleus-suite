@@ -1,0 +1,412 @@
+{
+  "MODULE_REGISTRY_1": [
+    {
+      "key": "people_core",
+      "name": "Core HR & Employee Directory",
+      "category": "Core HR",
+      "desc": "Central employee directory, profiles, master records"
+    },
+    {
+      "key": "team",
+      "name": "Org Chart & Team Hierarchy",
+      "category": "Core HR",
+      "desc": "Department tree, reporting lines, manager allocations"
+    },
+    {
+      "key": "onboarding",
+      "name": "Lifecycle & Digital Onboarding",
+      "category": "Core HR",
+      "desc": "Candidate verification, document vault, letters"
+    },
+    {
+      "key": "contract_workforce",
+      "name": "Contingent & Agency Workforce",
+      "category": "Core HR",
+      "desc": "Contractor roster, vendor compliance, daily wagers"
+    },
+    {
+      "key": "attendance",
+      "name": "Attendance & Shift Rosters",
+      "category": "Workforce Operations",
+      "desc": "Biometric punches, shift rotation, geo-fencing"
+    },
+    {
+      "key": "leaves",
+      "name": "Leaves & Time Off Engine",
+      "category": "Workforce Operations",
+      "desc": "Leave applications, policy balance, team approvals"
+    },
+    {
+      "key": "projects",
+      "name": "Project Timesheets & Billing",
+      "category": "Workforce Operations",
+      "desc": "Weekly task hour logs, client billing, sprint allocation"
+    },
+    {
+      "key": "payroll",
+      "name": "Global Payroll & Payouts",
+      "category": "Finance & Payroll",
+      "desc": "One-click payroll run, payout execution, salary slips"
+    },
+    {
+      "key": "compensation",
+      "name": "Compensation & Expense Claims",
+      "category": "Finance & Payroll",
+      "desc": "Salary benchmarking, expense claims, advance EWA"
+    },
+    {
+      "key": "compliance",
+      "name": "Statutory Compliance Engine",
+      "category": "Finance & Payroll",
+      "desc": "PF, ESI, TDS, PT filings and 4 Labour Codes"
+    },
+    {
+      "key": "recruitment",
+      "name": "Talent Acquisition & ATS",
+      "category": "Talent & Growth",
+      "desc": "Job requisitions, pipeline, scorecards, offers"
+    },
+    {
+      "key": "performance",
+      "name": "Performance & 9-Box Calibration",
+      "category": "Talent & Growth",
+      "desc": "OKRs, quarterly reviews, 9-box talent matrix"
+    },
+    {
+      "key": "learning",
+      "name": "Magnetix Capability & L&D",
+      "category": "Talent & Growth",
+      "desc": "Learning paths, compliance courses, skill progression"
+    },
+    {
+      "key": "experience",
+      "name": "Experience & Vedic MCI Wellbeing",
+      "category": "Talent & Growth",
+      "desc": "Pulse checks, burnout radar, engagement metrics"
+    },
+    {
+      "key": "analytics",
+      "name": "People Intelligence & Analytics",
+      "category": "Platform & Intelligence",
+      "desc": "Attrition forecaster, headcount analytics, exec deck"
+    },
+    {
+      "key": "helpdesk",
+      "name": "Grounded Policy Helpdesk",
+      "category": "Platform & Intelligence",
+      "desc": "AI query assistant, tickets, dispute resolution"
+    },
+    {
+      "key": "integrations",
+      "name": "Enterprise Integrations Platform",
+      "category": "Platform & Intelligence",
+      "desc": "ERP sync (SAP/Workday), webhooks, API tokens"
+    },
+    {
+      "key": "settings",
+      "name": "System Settings & Security",
+      "category": "Platform & Intelligence",
+      "desc": "Tenant configurations, audit logs, notification rules"
+    }
+  ],
+  "COCKPIT_REGISTRY_2": [
+    {
+      "id": "S1",
+      "name": "People Command Centre",
+      "persona": "CHRO / Executive",
+      "color": "var(--status-ok)",
+      "desc": "Boardroom metrics, workforce runway, macro attrition"
+    },
+    {
+      "id": "S2",
+      "name": "HR Operations Console",
+      "persona": "HR Manager",
+      "color": "#4FB6F5",
+      "desc": "Daily tickets, compliance alerts, new joinee queue"
+    },
+    {
+      "id": "S3",
+      "name": "Attendance Intelligence",
+      "persona": "Operations Lead",
+      "color": "#9B8CFF",
+      "desc": "Real-time plant floor roster, shift variance, punch anomalies"
+    },
+    {
+      "id": "S4",
+      "name": "Talent Acquisition Cockpit",
+      "persona": "Talent Lead",
+      "color": "#F2A93B",
+      "desc": "Candidate pipeline, time-to-hire, offer acceptance"
+    },
+    {
+      "id": "S5",
+      "name": "Payroll Control Room",
+      "persona": "Finance Manager",
+      "color": "var(--status-ok)",
+      "desc": "Pre-flight anomaly checks, tax deductions, banking disbursement"
+    },
+    {
+      "id": "S6",
+      "name": "Performance Calibration",
+      "persona": "Talent Partner",
+      "color": "#EC4899",
+      "desc": "Bell-curve calibration, promotion approvals, PIP monitors"
+    },
+    {
+      "id": "S7",
+      "name": "Manager Cockpit",
+      "persona": "Team Lead / Line Mgr",
+      "color": "#4FB6F5",
+      "desc": "Team attendance, 1-click approvals, timesheet sign-offs"
+    },
+    {
+      "id": "S8",
+      "name": "Employee Self-Service Home",
+      "persona": "Employee / Contributor",
+      "color": "#38BDF8",
+      "desc": "Punch-in/out, leave balance, payslips, personal tasks"
+    },
+    {
+      "id": "S9",
+      "name": "Magnetix Capability Hub",
+      "persona": "L&D Admin",
+      "color": "#F59E0B",
+      "desc": "Capability index (NCI), skill gap closure, conversion"
+    },
+    {
+      "id": "S10",
+      "name": "Nucleus AI Governance",
+      "persona": "System / Workspace Administrator",
+      "color": "var(--status-ok)",
+      "desc": "Workspace settings, role access and integration previews"
+    }
+  ],
+  "DATA_SCOPES_3": [
+    {
+      "id": "ALL_ORG",
+      "label": "Organization-Wide (Unrestricted)",
+      "desc": "Access to records across all business units and international sites"
+    },
+    {
+      "id": "DEPARTMENT",
+      "label": "Department / Business Unit Only",
+      "desc": "Scoped to current department and its nested sub-teams"
+    },
+    {
+      "id": "DIRECT_REPORTS",
+      "label": "Direct Reports & Pod Only",
+      "desc": "Team Lead scope: access only to managed employees"
+    },
+    {
+      "id": "SELF_ONLY",
+      "label": "Self-Service Only",
+      "desc": "Strict employee boundary: can only access personal data"
+    }
+  ],
+  "ROLE_LIST_4": [
+    {
+      "key": "SUPER_ADMIN",
+      "label": "Superadmin",
+      "color": "var(--signal)"
+    },
+    {
+      "key": "ADMIN",
+      "label": "Admin",
+      "color": "var(--signal)"
+    },
+    {
+      "key": "HR_MANAGER",
+      "label": "HR Manager",
+      "color": "var(--signal)"
+    },
+    {
+      "key": "MANAGER",
+      "label": "Manager",
+      "color": "var(--signal)"
+    },
+    {
+      "key": "EMPLOYEE",
+      "label": "Employee",
+      "color": "var(--signal)"
+    }
+  ],
+  "defaultProfiles_5": [
+    {
+      "role": "SUPER_ADMIN",
+      "email": "superadmin@nucleus.com",
+      "name": "Superadmin",
+      "employeeId": null,
+      "id": "DEMO-SUPER_ADMIN",
+      "designation": "System Administrator",
+      "dept": "Platform",
+      "defaultConsole": "S10",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    {
+      "role": "ADMIN",
+      "email": "admin@nucleus.com",
+      "name": "Admin",
+      "employeeId": null,
+      "id": "DEMO-ADMIN",
+      "designation": "Workspace Owner",
+      "dept": "Administration",
+      "defaultConsole": "S10",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    {
+      "role": "HR_MANAGER",
+      "email": "hr@nucleus.com",
+      "name": "Sunita Verma",
+      "employeeId": "MK-102",
+      "id": "MK-102",
+      "designation": "Head of HR",
+      "dept": "Human Resources",
+      "defaultConsole": "S2",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    {
+      "role": "MANAGER",
+      "email": "manager@nucleus.com",
+      "name": "Ramesh Nair",
+      "employeeId": "MK-104",
+      "id": "MK-104",
+      "designation": "Weaving Supervisor",
+      "dept": "Weaving",
+      "defaultConsole": "S7",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    {
+      "role": "EMPLOYEE",
+      "email": "employee@nucleus.com",
+      "name": "Vikas Yadav",
+      "employeeId": "MK-107",
+      "id": "MK-107",
+      "designation": "Master Loom Technician",
+      "dept": "Weaving",
+      "defaultConsole": "S8",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    }
+  ],
+  "getEffectiveModulePerm_6": {
+    "allowed": false,
+    "source": "INHERITED"
+  },
+  "getEffectiveModulePerm_7": {
+    "allowed": true,
+    "source": "SUPER_ADMIN"
+  },
+  "getEffectiveModulePerm_fields_8": {
+    "source": "INHERITED"
+  },
+  "getEffectiveConsolePerm_9": {
+    "allowed": false,
+    "source": "INHERITED"
+  },
+  "getEffectiveConsolePerm_10": {
+    "allowed": true,
+    "source": "SUPER_ADMIN"
+  },
+  "getEffectiveConsolePerm_fields_11": {
+    "source": "INHERITED"
+  },
+  "content_text_12": " PLATFORM SECURITY & RBAC GOVERNANCE",
+  "content_text_13": "Access Control Studio",
+  "content_text_14": "Configure granular authorization and view rights for ",
+  "content_text_15": "any user on the platform",
+  "content_text_16": ", or establish enterprise role baseline matrices across all 18 modules and 10 executive cockpits.",
+  "content_title_17": "Reset all role baselines and user overrides",
+  "content_text_18": " Reset All Defaults",
+  "content_title_19": "Back to System Settings",
+  "content_text_20": " Back to Settings",
+  "content_text_21": "Total Platform Users",
+  "content_text_22": "Custom Overrides Active",
+  "content_text_23": "Security Compliance",
+  "content_text_24": "98.4%",
+  "content_text_25": "RBAC Standard",
+  "content_text_26": "SOC-2 / ISO-27001",
+  "content_text_27": "Individual User Access",
+  "content_text_28": "Global Role Baselines (RBAC)",
+  "content_text_29": "7 Roles",
+  "content_text_30": "Security & Audit Trail",
+  "content_placeholder_31": "Search by name, role, email...",
+  "content_text_32": "All Users",
+  "content_text_33": "\u26a1 Overridden (",
+  "content_text_34": ")",
+  "content_text_35": "Engineering",
+  "content_text_36": "Product",
+  "content_text_37": "HR",
+  "content_text_38": " \u2022 ",
+  "content_title_39": "User has custom permission overrides",
+  "content_text_40": "\u26a1 Override",
+  "content_text_41": "\u26a1 Custom Override Active",
+  "content_text_42": "\u2022",
+  "content_text_43": "\u2022",
+  "content_text_44": "\u2022",
+  "content_text_45": "ID: ",
+  "content_title_46": "Impersonate and preview app as this user",
+  "content_text_47": " Test as User",
+  "content_title_48": "Grant full access across all modules",
+  "content_text_49": " Grant All Access",
+  "content_title_50": "Clear user overrides and restore role inheritance",
+  "content_text_51": " Reset Overrides",
+  "content_text_52": " Data Access Visibility Scope",
+  "content_text_53": " Quick Access Level Preset",
+  "content_text_54": "Configured Permissions (",
+  "content_text_55": " Overrides)",
+  "content_text_56": "\u26a1 Grant All Modules & Consoles",
+  "content_text_57": "\ud83d\udd12 Restrict to Self-Service Only",
+  "content_text_58": "\u27f2 Reset to Role Baseline",
+  "content_text_59": " Functional Feature Modules (18 Enterprise Modules)",
+  "content_text_60": "Click any toggle switch to grant or revoke specific module access for ",
+  "content_text_61": ".",
+  "content_text_62": " of 18 Modules Allowed",
+  "content_text_63": "\u26a1 ",
+  "content_text_64": "Inherited (",
+  "content_text_65": ")",
+  "content_title_66": "Clear override, inherit from role",
+  "content_text_67": "Revert",
+  "content_text_68": " Executive Cockpit Consoles (S1 through S10)",
+  "content_text_69": "Assign specialized dashboard control rooms to ",
+  "content_text_70": ".",
+  "content_text_71": " of 10 Cockpits Enabled",
+  "content_text_72": "Target: ",
+  "content_text_73": "\u26a1 ",
+  "content_text_74": "Inherited",
+  "content_text_75": "Select an employee from the directory on the left to configure access permissions.",
+  "content_text_76": " Organization-Wide Role Baseline Permissions Matrix",
+  "content_text_77": "Configure default module access across all 7 platform roles. Changes here apply immediately to all users who inherit role baselines.",
+  "content_text_78": "Feature Module",
+  "content_text_79": "Category",
+  "content_title_80": "Super Admin has unconditional root access",
+  "content_text_81": "\u2713 ROOT",
+  "content_text_82": " Real-Time Access & Permission Audit Trail",
+  "content_text_83": "Tamper-evident cryptographic log of all role adjustments and per-user permission overrides.",
+  "content_text_84": "POLICY_OVERRIDE_SYNC",
+  "content_text_85": "Super Admin (",
+  "content_text_86": "Trisha Khanna",
+  "content_text_87": ") loaded Access Control Governance Studio with active local storage persistence.",
+  "content_text_88": "Just now \u2022 127.0.0.1",
+  "content_text_89": "RBAC_INITIALIZATION",
+  "content_text_90": "Role baselines verified across 7 roles and 18 operational feature modules. SOC-2 compliance check passed.",
+  "content_text_91": "12 Sep 2026, 00:30:00 IST",
+  "content_text_92": "TENANT_ROOT_VERIFICATION",
+  "content_text_93": "Root persona granted universal switcher across S1..S10 cockpits. Zero unauthenticated leakages detected.",
+  "content_text_94": "11 Sep 2026, 23:55:12 IST",
+  "initialState_1": "user_access",
+  "initialState_2": "ALL",
+  "initialState_3": "EMP-105",
+  "display_4": "U",
+  "display_5": "var(--status-ok)",
+  "display_6": "#475569",
+  "display_7": "ALL_ORG",
+  "display_8": "DEPARTMENT",
+  "display_9": "Custom Granted",
+  "display_10": "Custom Revoked",
+  "display_11": "revoke",
+  "display_12": "grant",
+  "display_13": "Custom Enabled",
+  "display_14": "Custom Blocked",
+  "fallback_1": "Operations",
+  "fallback_2": "Engineering",
+  "fallback_3": "Bengaluru"
+}

@@ -1,0 +1,59 @@
+{
+  "MIS_COLUMN_LABELS_1": {
+    "empId": "Emp ID",
+    "name": "Employee Name",
+    "dept": "Department",
+    "role": "Designation",
+    "attendancePct": "Attendance %",
+    "overtimeHrs": "Overtime (Hrs)",
+    "grossCtc": "Gross CTC",
+    "performanceRating": "Performance Rating",
+    "flightRisk": "Flight Risk"
+  },
+  "HEADER_MAP_2": {
+    "empid": "empId",
+    "employeeid": "empId",
+    "employeecode": "empId",
+    "staffcode": "empId",
+    "staffnumber": "empId",
+    "employeename": "name",
+    "fullname": "name",
+    "name": "name",
+    "candidatename": "name",
+    "department": "dept",
+    "dept": "dept",
+    "designation": "role",
+    "role": "role",
+    "title": "role",
+    "attendance": "attendancePct",
+    "attendancepct": "attendancePct",
+    "attendanceratio": "attendancePct",
+    "overtime": "overtimeHrs",
+    "overtimehrs": "overtimeHrs",
+    "othours": "overtimeHrs",
+    "grossctc": "grossCtc",
+    "grosscompensation": "grossCtc",
+    "salary": "grossCtc",
+    "performancerating": "performanceRating",
+    "finalrating": "performanceRating",
+    "rating": "performanceRating",
+    "flightrisk": "flightRisk",
+    "attritionrisk": "flightRisk",
+    "retentionriskscore": "flightRisk"
+  },
+  "REQUIRED_FIELDS_3": [
+    "empId",
+    "name",
+    "dept",
+    "role",
+    "attendancePct",
+    "overtimeHrs",
+    "grossCtc",
+    "performanceRating",
+    "flightRisk"
+  ],
+  "content_4": {
+    "headers": [],
+    "rows": []
+  }
+}

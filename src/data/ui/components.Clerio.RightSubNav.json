@@ -1,0 +1,508 @@
+{
+  "ROLE_PERMITTED_CONSOLES_1": {
+    "SUPER_ADMIN": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9",
+      "S10"
+    ],
+    "HR_MANAGER": [
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+    ],
+    "FINANCE_MANAGER": [
+      "S5",
+      "S7",
+      "S8"
+    ],
+    "PROJECT_MANAGER": [
+      "S7",
+      "S8"
+    ],
+    "TEAM_LEAD": [
+      "S7",
+      "S8"
+    ],
+    "EMPLOYEE": [
+      "S8"
+    ],
+    "ADMIN": [
+      "S10"
+    ],
+    "MANAGER": [
+      "S7",
+      "S3",
+      "S6",
+      "S8"
+    ]
+  },
+  "dashboard_fields_2": {
+    "title": "Role Consoles",
+    "subtitle": "MultipliersKraft Dashboard Consoles (S1\u2013S10)"
+  },
+  "groups_fields_3": {
+    "heading": "EXECUTIVE & LEADERSHIP"
+  },
+  "items_fields_4": {
+    "id": "s1",
+    "label": "People Command Centre"
+  },
+  "items_fields_5": {
+    "desc": "S1 \u2022 CHRO & C-Suite Leadership",
+    "highlight": true
+  },
+  "items_fields_6": {
+    "id": "s2",
+    "label": "HR Operations Console"
+  },
+  "items_fields_7": {
+    "desc": "S2 \u2022 HRBP & Daily Operations"
+  },
+  "items_fields_8": {
+    "id": "s3",
+    "label": "Attendance & Shift Intelligence"
+  },
+  "items_fields_9": {
+    "desc": "S3 \u2022 Workforce & Shifts"
+  },
+  "items_fields_10": {
+    "id": "s4",
+    "label": "Talent Acquisition Command"
+  },
+  "items_fields_11": {
+    "desc": "S4 \u2022 ATS & Recruiting Lead"
+  },
+  "items_fields_12": {
+    "id": "s5",
+    "label": "Payroll Control Room"
+  },
+  "items_fields_13": {
+    "desc": "S5 \u2022 Finance & Statutory"
+  },
+  "groups_fields_14": {
+    "heading": "MANAGERS, TALENT & AI"
+  },
+  "items_fields_15": {
+    "id": "s6",
+    "label": "Performance & Talent"
+  },
+  "items_fields_16": {
+    "desc": "S6 \u2022 9-Box Grid & Calibration"
+  },
+  "items_fields_17": {
+    "id": "s7",
+    "label": "Manager Cockpit"
+  },
+  "items_fields_18": {
+    "desc": "S7 \u2022 Team Lead 90-sec Triage"
+  },
+  "items_fields_19": {
+    "id": "s8",
+    "label": "Employee Home"
+  },
+  "items_fields_20": {
+    "desc": "S8 \u2022 Zero-Surveillance Self-Service"
+  },
+  "items_fields_21": {
+    "id": "s9",
+    "label": "Magnetix Capability"
+  },
+  "items_fields_22": {
+    "desc": "S9 \u2022 Skills & Capability Index"
+  },
+  "items_fields_23": {
+    "id": "s10",
+    "label": "S10: Workspace Governance"
+  },
+  "items_fields_24": {
+    "desc": "S10 \u2022 Model Governance",
+    "highlight": true
+  },
+  "core_hr_fields_25": {
+    "title": "Core HR",
+    "subtitle": "Foundation of employee management"
+  },
+  "groups_fields_26": {
+    "heading": "FOUNDATION & LIFECYCLE"
+  },
+  "items_fields_27": {
+    "id": "core_people",
+    "label": "People Core"
+  },
+  "items_fields_28": {
+    "desc": "Directory, employee records & profiles"
+  },
+  "items_fields_29": {
+    "id": "core_attendance",
+    "label": "Smart Attendance"
+  },
+  "items_fields_30": {
+    "desc": "Real-time punches & shift sync"
+  },
+  "items_fields_31": {
+    "id": "core_leaves",
+    "label": "Leave Management"
+  },
+  "items_fields_32": {
+    "desc": "Requests, balances & accruals"
+  },
+  "items_fields_33": {
+    "id": "core_onboarding",
+    "label": "Onboarding & Lifecycle"
+  },
+  "items_fields_34": {
+    "desc": "Pre-boarding to offboarding"
+  },
+  "groups_fields_35": {
+    "heading": "ORGANIZATION & GOVERNANCE"
+  },
+  "items_fields_36": {
+    "id": "core_org",
+    "label": "Organization Management"
+  },
+  "items_fields_37": {
+    "desc": "Departments, designations & teams"
+  },
+  "items_fields_38": {
+    "id": "core_workforce",
+    "label": "Workforce Management"
+  },
+  "items_fields_39": {
+    "desc": "Worker classification & rosters"
+  },
+  "items_fields_40": {
+    "id": "core_operations",
+    "label": "HR Operations"
+  },
+  "items_fields_41": {
+    "desc": "Helpdesk, letters & requests"
+  },
+  "items_fields_42": {
+    "id": "core_compliance",
+    "label": "Compliance"
+  },
+  "items_fields_43": {
+    "desc": "Statutory rules & 2026 codes",
+    "highlight": true
+  },
+  "talent_fields_44": {
+    "title": "Talent",
+    "subtitle": "Hiring, growth and development"
+  },
+  "groups_fields_45": {
+    "heading": "ACQUISITION & PERFORMANCE"
+  },
+  "items_fields_46": {
+    "id": "talent_ats",
+    "label": "Talent ATS"
+  },
+  "items_fields_47": {
+    "desc": "Requisitions, pipeline & scorecards",
+    "highlight": true
+  },
+  "items_fields_48": {
+    "id": "talent_performance",
+    "label": "Performance & OKRs"
+  },
+  "items_fields_49": {
+    "desc": "Goals, reviews & appraisals"
+  },
+  "items_fields_50": {
+    "id": "talent_learning",
+    "label": "Learning & L&D"
+  },
+  "items_fields_51": {
+    "desc": "Courses, certs & training tracks"
+  },
+  "items_fields_52": {
+    "id": "talent_skills",
+    "label": "Skills & Capability"
+  },
+  "items_fields_53": {
+    "desc": "NCI score & capability index"
+  },
+  "groups_fields_54": {
+    "heading": "GROWTH & RECOGNITION"
+  },
+  "items_fields_55": {
+    "id": "talent_succession",
+    "label": "Succession Planning"
+  },
+  "items_fields_56": {
+    "desc": "9-Box grid & talent calibration"
+  },
+  "items_fields_57": {
+    "id": "talent_mobility",
+    "label": "Career & Internal Mobility"
+  },
+  "items_fields_58": {
+    "desc": "Internal job post & growth"
+  },
+  "items_fields_59": {
+    "id": "talent_recognition",
+    "label": "Recognition & Feedback"
+  },
+  "items_fields_60": {
+    "desc": "Peer rewards & 360 feedback"
+  },
+  "payroll_finance_fields_61": {
+    "title": "Payroll & Finance",
+    "subtitle": "Salary, benefits and finance operations"
+  },
+  "groups_fields_62": {
+    "heading": "PAYROLL & COMPENSATION"
+  },
+  "items_fields_63": {
+    "id": "payroll_global",
+    "label": "Global Payroll"
+  },
+  "items_fields_64": {
+    "desc": "Gross-to-Net DAG & pay cycles",
+    "highlight": true
+  },
+  "items_fields_65": {
+    "id": "payroll_comp",
+    "label": "Compensation & Benefits"
+  },
+  "items_fields_66": {
+    "desc": "Salary bands & compa-ratio"
+  },
+  "items_fields_67": {
+    "id": "payroll_claims",
+    "label": "Reimbursements & Claims"
+  },
+  "items_fields_68": {
+    "desc": "Expense reports & receipts"
+  },
+  "items_fields_69": {
+    "id": "payroll_ewa",
+    "label": "Loans, Advances & EWA"
+  },
+  "items_fields_70": {
+    "desc": "Earned Wage Access liquidity"
+  },
+  "groups_fields_71": {
+    "heading": "STATUTORY & ACCOUNTING"
+  },
+  "items_fields_72": {
+    "id": "payroll_tax",
+    "label": "Tax & Statutory"
+  },
+  "items_fields_73": {
+    "desc": "PF, ESI, PT, TDS & challans"
+  },
+  "items_fields_74": {
+    "id": "payroll_accounting",
+    "label": "Payroll Accounting (GL & Cost Centers)"
+  },
+  "items_fields_75": {
+    "desc": "Balanced salary journal & ERP"
+  },
+  "items_fields_76": {
+    "id": "payroll_fnf",
+    "label": "Full & Final Settlement"
+  },
+  "items_fields_77": {
+    "desc": "Exit recovery & FnF DAG"
+  },
+  "workforce_ops_fields_78": {
+    "title": "Workforce Operations",
+    "subtitle": "Day-to-day workforce execution"
+  },
+  "groups_fields_79": {
+    "heading": "SCHEDULING & WORKFORCE"
+  },
+  "items_fields_80": {
+    "id": "ops_rosters",
+    "label": "Shift Planning & Rosters"
+  },
+  "items_fields_81": {
+    "desc": "Rosters, shift rotations & timings"
+  },
+  "items_fields_82": {
+    "id": "ops_projects",
+    "label": "Projects & Workforce Allocation"
+  },
+  "items_fields_83": {
+    "desc": "Agile pods, allocations & sprints"
+  },
+  "items_fields_84": {
+    "id": "ops_field",
+    "label": "Field Workforce"
+  },
+  "items_fields_85": {
+    "desc": "Geo-punches & route tracking"
+  },
+  "items_fields_86": {
+    "id": "ops_contract",
+    "label": "Contract & Contingent Workforce"
+  },
+  "items_fields_87": {
+    "desc": "Turnstile vs invoice reconciliation",
+    "highlight": true
+  },
+  "groups_fields_88": {
+    "heading": "OPERATIONS & ASSETS"
+  },
+  "items_fields_89": {
+    "id": "ops_assets",
+    "label": "Assets & Gate Passes"
+  },
+  "items_fields_90": {
+    "desc": "IT equipment custody & gate passes"
+  },
+  "items_fields_91": {
+    "id": "ops_travel",
+    "label": "Travel & Duty Management"
+  },
+  "items_fields_92": {
+    "desc": "Travel requests, bookings & per diem"
+  },
+  "items_fields_93": {
+    "id": "ops_timesheets",
+    "label": "Timesheets & Productivity"
+  },
+  "items_fields_94": {
+    "desc": "Task timers & billable hours"
+  },
+  "analytics_ai_fields_95": {
+    "title": "Analytics & AI",
+    "subtitle": "Insights, dashboards and AI intelligence"
+  },
+  "groups_fields_96": {
+    "heading": "DASHBOARDS & INTELLIGENCE"
+  },
+  "items_fields_97": {
+    "id": "analytics_exec",
+    "label": "Executive Dashboards"
+  },
+  "items_fields_98": {
+    "desc": "Headcount, cost & velocity metrics"
+  },
+  "items_fields_99": {
+    "id": "analytics_people",
+    "label": "People Intelligence"
+  },
+  "items_fields_100": {
+    "desc": "Diversity, attrition & trends"
+  },
+  "items_fields_101": {
+    "id": "analytics_workforce",
+    "label": "Workforce Analytics"
+  },
+  "items_fields_102": {
+    "desc": "Overtime & shift utilization"
+  },
+  "items_fields_103": {
+    "id": "analytics_payroll",
+    "label": "Payroll Analytics"
+  },
+  "items_fields_104": {
+    "desc": "Wage bill variance & liabilities"
+  },
+  "items_fields_105": {
+    "id": "analytics_talent",
+    "label": "Talent Analytics"
+  },
+  "items_fields_106": {
+    "desc": "Time-to-hire & conversion funnel"
+  },
+  "groups_fields_107": {
+    "heading": "AI & CUSTOM REPORTING"
+  },
+  "items_fields_108": {
+    "id": "analytics_copilot",
+    "label": "AI Copilot & Agents"
+  },
+  "items_fields_109": {
+    "desc": "Action ledger & autonomous agents",
+    "highlight": true
+  },
+  "items_fields_110": {
+    "id": "analytics_custom",
+    "label": "Custom Reports"
+  },
+  "items_fields_111": {
+    "desc": "Dynamic CMS reports builder"
+  },
+  "platform_fields_112": {
+    "title": "Platform",
+    "subtitle": "Administration, integrations and platform settings"
+  },
+  "groups_fields_113": {
+    "heading": "INTEGRATIONS & AUTOMATION"
+  },
+  "items_fields_114": {
+    "id": "platform_integrations",
+    "label": "Integrations & API"
+  },
+  "items_fields_115": {
+    "desc": "ERP connectors, webhooks & API"
+  },
+  "items_fields_116": {
+    "id": "platform_workflows",
+    "label": "Workflow Automation"
+  },
+  "items_fields_117": {
+    "desc": "Visual node flowchart studio",
+    "highlight": true
+  },
+  "items_fields_118": {
+    "id": "platform_roles",
+    "label": "Roles & Permissions"
+  },
+  "items_fields_119": {
+    "desc": "RBAC & field-level access"
+  },
+  "items_fields_120": {
+    "id": "platform_settings",
+    "label": "Settings & Configuration"
+  },
+  "items_fields_121": {
+    "desc": "Company entity & legal policies"
+  },
+  "groups_fields_122": {
+    "heading": "SECURITY & GOVERNANCE"
+  },
+  "items_fields_123": {
+    "id": "platform_security",
+    "label": "Security Center"
+  },
+  "items_fields_124": {
+    "desc": "SSO, 2FA & data encryption"
+  },
+  "items_fields_125": {
+    "id": "platform_notifications",
+    "label": "Notifications & Communication"
+  },
+  "items_fields_126": {
+    "desc": "Alert channels & email digests"
+  },
+  "items_fields_127": {
+    "id": "platform_audit",
+    "label": "Audit Logs & Activity Center"
+  },
+  "items_fields_128": {
+    "desc": "Immutable action ledger log"
+  },
+  "permittedConsoleIds_129": [
+    "S8"
+  ],
+  "RightSubNav_aria-label_130": "Contextual Sub-Navigation",
+  "RightSubNav_title_131": "Collapse side navigation",
+  "RightSubNav_aria-label_132": "Collapse side navigation",
+  "display_1": 2.2,
+  "display_2": 1.8,
+  "fallback_1": "SUPER_ADMIN"
+}

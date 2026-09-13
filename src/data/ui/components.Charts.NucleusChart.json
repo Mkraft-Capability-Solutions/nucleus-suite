@@ -1,0 +1,23 @@
+{
+  "resolvedTooltip_1": {
+    "confine": true
+  },
+  "content_fields_2": {
+    "confine": true
+  },
+  "content_fields_3": {
+    "confine": true
+  },
+  "animatedOption_fields_4": {
+    "animation": true,
+    "animationDuration": 900,
+    "animationDurationUpdate": 500,
+    "animationEasing": "cubicOut"
+  },
+  "content_5": {
+    "notMerge": true,
+    "lazyUpdate": true
+  },
+  "defaultValue_1": "svg",
+  "defaultValue_2": 0
+}

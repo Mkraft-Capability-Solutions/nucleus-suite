@@ -1,0 +1,3 @@
+CREATE POLICY memberships_owner_insert ON memberships FOR INSERT WITH CHECK (tenant_id = app.current_tenant_id() AND EXISTS (SELECT 1 FROM memberships actor WHERE actor.id = app.current_membership_id() AND actor.user_id = app.current_user_id() AND actor.tenant_id = memberships.tenant_id AND actor.role = 'owner' AND actor.status = 'active'));
+--> statement-breakpoint
+CREATE POLICY memberships_owner_update ON memberships FOR UPDATE USING (tenant_id = app.current_tenant_id() AND EXISTS (SELECT 1 FROM memberships actor WHERE actor.id = app.current_membership_id() AND actor.user_id = app.current_user_id() AND actor.tenant_id = memberships.tenant_id AND actor.role = 'owner' AND actor.status = 'active')) WITH CHECK (tenant_id = app.current_tenant_id());

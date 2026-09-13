@@ -1,0 +1,522 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 34, 47, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    padding: 1.25rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal {
+    background: var(--card, #ffffff);
+    width: 100%;
+    max-width: 1100px;
+    height: 88vh;
+    border-radius: var(--r-overlay, 11px);
+    box-shadow: var(--shadow-overlay, 0 12px 32px -8px rgba(16,34,47,.22));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line, #D8DEDA);
+    font-family: var(--f-ui, 'Archivo', sans-serif);
+}
+
+/* Header */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.75rem;
+    border-bottom: 1px solid var(--line-2, #E8EBE8);
+    background: var(--card-2, #F6F8F6);
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.headerIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-control, 5px);
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+}
+
+.header p {
+    margin: 0.15rem 0 0 0;
+    font-size: 0.8rem;
+    color: var(--text-2, #5A6B78);
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btnSimulate {
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--signal-ink, #0A5546);
+    background: var(--signal, #0F6E5C);
+    color: white;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    transition: all 0.15s;
+}
+
+.btnSimulate:hover {
+    background: var(--signal-ink, #0A5546);
+}
+
+.btnSimulate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btnSecondary {
+    padding: 0.5rem 0.95rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--line, #D8DEDA);
+    background: var(--card, #ffffff);
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text, #10222F);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2, #F6F8F6);
+    border-color: var(--slate-2, #8395A1);
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-2, #5A6B78);
+    padding: 0.35rem;
+    border-radius: var(--r-control, 5px);
+    transition: all 0.15s;
+}
+
+.closeBtn:hover {
+    background: var(--line-2, #E8EBE8);
+    color: var(--text, #10222F);
+}
+
+/* Workflow selector tab bar */
+.workflowTabs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.75rem;
+    background: var(--card, #ffffff);
+    border-bottom: 1px solid var(--line, #D8DEDA);
+    overflow-x: auto;
+}
+
+.wfTabBtn {
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--line, #D8DEDA);
+    background: var(--card-2, #F6F8F6);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-2, #5A6B78);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+    transition: all 0.15s;
+}
+
+.wfTabBtn:hover {
+    border-color: var(--signal, #0F6E5C);
+    color: var(--signal, #0F6E5C);
+}
+
+.wfTabBtn.active {
+    background: var(--signal-wash, #E4F0EC);
+    border-color: var(--signal, #0F6E5C);
+    color: var(--signal-ink, #0A5546);
+    font-weight: 700;
+}
+
+.statusBadgeActive {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    border-radius: var(--r-pill, 100px);
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+}
+
+.statusBadgeDraft {
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 0.12rem 0.45rem;
+    border-radius: var(--r-pill, 100px);
+    background: var(--card-2, #F6F8F6);
+    border: 1px solid var(--line, #D8DEDA);
+    color: var(--text-2, #5A6B78);
+}
+
+/* Split-pane Workspace */
+.workspace {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    overflow: hidden;
+    background: var(--paper, #EDF0EE);
+}
+
+/* Canvas Pane */
+.canvasArea {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.workflowMetaCard {
+    width: 100%;
+    max-width: 580px;
+    background: var(--card, #ffffff);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 0.85rem 1.1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.workflowMetaCard h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text, #10222F);
+    font-weight: 700;
+}
+
+.workflowMetaCard p {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    color: var(--text-2, #5A6B78);
+}
+
+/* Node Container & Cards */
+.nodeWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 580px;
+}
+
+.nodeCard {
+    width: 100%;
+    background: var(--card, #ffffff);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 0.85rem 1.1rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    transition: all 0.15s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+}
+
+.nodeCard:hover {
+    border-color: var(--signal, #0F6E5C);
+    transform: translateY(-1px);
+}
+
+.nodeCard.selected {
+    border-color: var(--signal, #0F6E5C);
+    box-shadow: 0 0 0 2px var(--signal-wash, #E4F0EC);
+    background: var(--card, #ffffff);
+}
+
+.nodeCard.activeSimulating {
+    border-color: var(--signal, #0F6E5C) !important;
+    background: var(--signal-wash, #E4F0EC) !important;
+    box-shadow: 0 0 0 3px var(--signal-wash, #E4F0EC) !important;
+}
+
+.nodeLeft {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nodeTypeIcon {
+    width: 34px;
+    height: 34px;
+    border-radius: var(--r-control, 5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nodeContent h5 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+}
+
+.nodeContent p {
+    margin: 0.15rem 0 0;
+    font-size: 0.76rem;
+    color: var(--text-2, #5A6B78);
+}
+
+.nodeRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.3rem;
+}
+
+.typeBadge {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 0.12rem 0.45rem;
+    border-radius: var(--r-data, 3px);
+    letter-spacing: 0.03em;
+}
+
+.slaBadge {
+    font-size: 0.7rem;
+    color: var(--text-2, #5A6B78);
+    background: var(--card-2, #F6F8F6);
+    border: 1px solid var(--line, #D8DEDA);
+    padding: 0.12rem 0.4rem;
+    border-radius: var(--r-data, 3px);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-family: var(--f-num, monospace);
+}
+
+/* Connectors between nodes */
+.connectorLine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 24px;
+    width: 2px;
+    background: var(--line, #D8DEDA);
+    margin: 2px 0;
+    position: relative;
+}
+
+.connectorLine::after {
+    content: '▼';
+    position: absolute;
+    bottom: -6px;
+    font-size: 8px;
+    color: var(--slate-2, #8395A1);
+}
+
+/* Append step bar */
+.appendNodeBar {
+    margin-top: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--card, #ffffff);
+    border: 1px dashed var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 0.65rem 1rem;
+}
+
+.appendNodeBtn {
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--line, #D8DEDA);
+    background: var(--card-2, #F6F8F6);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--text-2, #5A6B78);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.appendNodeBtn:hover {
+    border-color: var(--signal, #0F6E5C);
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+}
+
+/* Right Inspector Pane */
+.inspectorPane {
+    background: var(--card, #ffffff);
+    border-left: 1px solid var(--line, #D8DEDA);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.inspectorHeader {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--line-2, #E8EBE8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.inspectorHeader h4 {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+}
+
+.inspectorBody {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.inputLabel {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text, #10222F);
+}
+
+.textInput, .selectInput {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 5px);
+    font-size: 0.82rem;
+    color: var(--text, #10222F);
+    background: var(--card, #ffffff);
+}
+
+.textInput:focus, .selectInput:focus {
+    outline: none;
+    border-color: var(--signal, #0F6E5C);
+}
+
+.deleteBtn {
+    margin-top: auto;
+    padding: 0.5rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid rgba(168, 52, 31, 0.25);
+    background: var(--flag-wash, #F8E9E5);
+    color: var(--flag, #A8341F);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.15s;
+}
+
+.deleteBtn:hover {
+    background: #f1cfc8;
+}
+
+/* Audit Log Terminal in Inspector */
+.terminalCard {
+    background: var(--ink, #10222F);
+    color: var(--surface-2, #F6F8F6);
+    border-radius: var(--r-control, 5px);
+    padding: 0.85rem;
+    font-family: var(--f-num, monospace);
+    font-size: 0.74rem;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    border: 1px solid var(--ink-2, #1B3444);
+}
+
+.terminalLine {
+    display: flex;
+    gap: 0.5rem;
+    line-height: 1.4;
+}
+
+.logTimestamp {
+    color: var(--slate-2, #8395A1);
+}
+
+.logSuccess {
+    color: var(--signal, #0F6E5C);
+}
+
+.logInfo {
+    color: var(--info, #1B6CA8);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 2.5rem 1.25rem;
+    color: var(--text-2, #5A6B78);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.emptyState p {
+    margin: 0;
+    font-size: 0.82rem;
+}
+

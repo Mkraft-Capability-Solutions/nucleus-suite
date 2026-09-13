@@ -1,0 +1,203 @@
+.mainContainer {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  background: var(--bg);
+  position: relative;
+}
+
+.mainColumn {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.bodyLayout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  min-height: 0;
+}
+
+/* Workspace Zone fills the remaining width next to RightSubNav */
+.workspaceZone {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: 1.5rem 2rem 5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Scrollbar for workspace */
+.workspaceZone::-webkit-scrollbar {
+  width: 6px;
+}
+
+.workspaceZone::-webkit-scrollbar-thumb {
+  background: var(--rule);
+  border-radius: 4px;
+}
+
+/* Floating Action Buttons Stack (Bottom Right) */
+.fabStack {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.55rem;
+  z-index: 900; /* Below dialogs, including the MUI widget library. */
+}
+
+.fabBtn {
+  height: 38px;
+  padding: 0 1.15rem;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: var(--t-small);
+  box-shadow: 0 4px 16px rgba(16, 34, 47, 0.18);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.fabBtn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(16, 34, 47, 0.28);
+}
+
+.fabBtn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* AI Assistant FAB */
+.aiFab {
+  background: var(--agent);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(91, 63, 168, 0.35);
+}
+
+.aiFab:hover {
+  background: #4A3289;
+  box-shadow: 0 8px 24px rgba(91, 63, 168, 0.48);
+}
+
+.aiFab.fabActive {
+  background: var(--agent);
+  box-shadow: 0 0 0 3px var(--agent-wash), 0 8px 24px rgba(91, 63, 168, 0.55);
+}
+
+.aiFab:focus-visible {
+  outline: 2px solid var(--agent);
+  outline-offset: 2px;
+}
+
+/* Team Messages FAB */
+.messagesFab {
+  background: var(--signal);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 110, 92, 0.35);
+}
+
+.messagesFab:hover {
+  background: var(--signal-ink);
+  box-shadow: 0 8px 24px rgba(15, 110, 92, 0.48);
+}
+
+.messagesFab.fabActive {
+  background: var(--signal-ink);
+  box-shadow: 0 0 0 3px var(--signal-wash), 0 8px 24px rgba(15, 110, 92, 0.55);
+}
+
+.messagesFab:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}
+
+.messageBadge {
+  background: var(--flag);
+  color: #ffffff;
+  font-size: var(--t-micro);
+  font-family: var(--f-num);
+  font-weight: 700;
+  border-radius: var(--r-pill);
+  padding: 0.1rem 0.45rem;
+  margin-left: 0.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.fabLabel {
+  font-weight: 600;
+  font-size: var(--t-small);
+  letter-spacing: 0.01em;
+}
+
+.loading {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--t-h3);
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+/* Dedicated Fixed Overlay Layer for Floating Drawers (Never pushes flex flow) */
+.floatingOverlayLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 950; /* Drawers sit below modal dialogs. */
+}
+
+.floatingOverlayLayer > * {
+  pointer-events: auto;
+}
+
+@media (max-width: 960px) {
+  .workspaceZone {
+    padding: 1.25rem 1.25rem 5.5rem;
+  }
+
+  .fabStack {
+    right: 1.25rem;
+    bottom: 1.25rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .workspaceZone {
+    padding: 1rem 1rem 6rem;
+  }
+
+  .fabStack {
+    left: 1rem;
+    right: 1rem;
+    align-items: stretch;
+  }
+
+  .fabBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.demoNotice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: #172554; color: #fff; text-align: center; font-size: 11px; line-height: 20px; pointer-events: none; }
+.mainContainer { padding-bottom: 20px; }
+
+/* Keep the layout editor clear of floating operational shortcuts. */
+.mainContainer:has([data-dashboard-editing="true"]) .fabStack { display: none; }

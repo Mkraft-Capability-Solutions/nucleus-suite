@@ -1,0 +1,22 @@
+{
+  "handleBiometricLogin_fields_1": {
+    "action": "biometric"
+  },
+  "LoginView_text_2": "N",
+  "LoginView_text_3": "Welcome Back",
+  "LoginView_text_4": "Sign in to the Nucleus demo workspace",
+  "LoginView_placeholder_5": "Email Address",
+  "LoginView_placeholder_6": "Password",
+  "LoginView_text_7": "OR CONTINUE WITH AI",
+  "LoginView_text_8": "Voice ID",
+  "LoginView_text_9": "Face Match",
+  "LoginView_text_10": "Forgot password? ",
+  "LoginView_fields_11": {
+    "action": "passwordReset"
+  },
+  "LoginView_text_12": "Reset here",
+  "display_1": "Authenticating...",
+  "display_2": "Sign In",
+  "loginError": "Sign-in failed. Check your credentials and connection, then try again.",
+  "demoNotice": "Demo workspace \u00b7 Synthetic data. Changes stay in this browser session. Biometric sign-in and password recovery are not available."
+}

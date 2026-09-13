@@ -1,0 +1,574 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding-bottom: 2rem;
+    font-family: var(--f-ui, 'Archivo', sans-serif);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: var(--card, #FFFFFF);
+    padding: 1.5rem;
+    border-radius: var(--r-card, 7px);
+    border: 1px solid var(--line, #D8DEDA);
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.badgeRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.livePill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+    border-radius: var(--r-pill, 100px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    border: 1px solid rgba(15, 110, 92, 0.2);
+}
+
+.mfgPill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    background: var(--info-wash, #E7F0F7);
+    color: var(--info, #1B6CA8);
+    border-radius: var(--r-pill, 100px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    border: 1px solid rgba(27, 108, 168, 0.2);
+}
+
+.header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+    margin: 0 0 0.3rem 0;
+    letter-spacing: -0.02em;
+}
+
+.header p {
+    color: var(--text-2, #5A6B78);
+    font-size: 0.85rem;
+    margin: 0;
+    max-width: 800px;
+    line-height: 1.5;
+}
+
+.headerActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btnPrimary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    background: var(--signal, #0F6E5C);
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.84rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--signal-ink, #0A5546);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btnPrimary:hover {
+    background: var(--signal-ink, #0A5546);
+}
+
+.btnSecondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    background: var(--card, #FFFFFF);
+    color: var(--text, #10222F);
+    font-weight: 600;
+    font-size: 0.84rem;
+    border-radius: var(--r-control, 5px);
+    border: 1px solid var(--line, #D8DEDA);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2, #F6F8F6);
+    border-color: var(--slate-2, #8395A1);
+}
+
+.tabsRow {
+    display: flex;
+    gap: 0.5rem;
+    border-bottom: 1px solid var(--line, #D8DEDA);
+    padding-bottom: 0.25rem;
+}
+
+.tabBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1rem;
+    border: none;
+    background: transparent;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: var(--text-2, #5A6B78);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s ease;
+}
+
+.tabBtn:hover {
+    color: var(--text, #10222F);
+}
+
+.activeTab {
+    color: var(--signal, #0F6E5C);
+    border-bottom-color: var(--signal, #0F6E5C);
+    font-weight: 700;
+}
+
+/* Tab 1: Recon */
+.reconSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.reconBanner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--flag-wash, #F8E9E5);
+    border: 1px solid rgba(168, 52, 31, 0.2);
+    border-radius: var(--r-card, 7px);
+    color: var(--flag, #A8341F);
+    font-size: 0.85rem;
+}
+
+.reconGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.reconCard {
+    background: var(--card, #FFFFFF);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.reconCardHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.recId {
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-size: 0.72rem;
+    background: var(--card-2, #F6F8F6);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--r-data, 3px);
+    border: 1px solid var(--line, #D8DEDA);
+    color: var(--text-2, #5A6B78);
+    font-weight: 600;
+}
+
+.reconCardHead h4 {
+    margin: 0.3rem 0 0.2rem 0;
+    font-size: 0.98rem;
+    color: var(--text, #10222F);
+    letter-spacing: -0.01em;
+}
+
+.siteText {
+    font-size: 0.76rem;
+    color: var(--text-2, #5A6B78);
+}
+
+.statusBadge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--r-pill, 100px);
+    white-space: nowrap;
+}
+
+.stApproved {
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+}
+
+.stAction {
+    background: var(--flag-wash, #F8E9E5);
+    color: var(--flag, #A8341F);
+}
+
+.stDebit {
+    background: var(--pending-wash, #F7EFDE);
+    color: var(--pending, #8A6416);
+}
+
+.comparisonMetrics {
+    display: flex;
+    align-items: center;
+    background: var(--card-2, #F6F8F6);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 5px);
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.metricBlock {
+    flex: 1;
+    text-align: center;
+}
+
+.metricBlock span {
+    font-size: 0.72rem;
+    color: var(--text-2, #5A6B78);
+    display: block;
+    margin-bottom: 0.2rem;
+}
+
+.metricBlock strong {
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-size: 1.05rem;
+    color: var(--text, #10222F);
+}
+
+.metricCost {
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-size: 0.78rem;
+    color: var(--text-2, #5A6B78);
+    margin-top: 0.2rem;
+}
+
+.metricCostVerified {
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-size: 0.78rem;
+    color: var(--signal, #0F6E5C);
+    font-weight: 700;
+    margin-top: 0.2rem;
+}
+
+.arrowBlock {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--slate-2, #8395A1);
+    padding: 0 0.5rem;
+}
+
+.discrepancyBox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--flag-wash, #F8E9E5);
+    border: 1px solid rgba(168, 52, 31, 0.2);
+    border-radius: var(--r-control, 5px);
+    padding: 0.65rem 0.75rem;
+    font-size: 0.78rem;
+    color: var(--flag, #A8341F);
+    margin-bottom: 1rem;
+}
+
+.reconActions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.btnDebitNote {
+    width: 100%;
+    padding: 0.55rem;
+    background: var(--flag, #A8341F);
+    color: #FFFFFF;
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: var(--r-control, 5px);
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.btnDebitNote:hover {
+    background: #8b2816;
+}
+
+.btnInspect {
+    width: 100%;
+    padding: 0.55rem;
+    background: var(--card, #FFFFFF);
+    color: var(--text, #10222F);
+    font-weight: 600;
+    font-size: 0.8rem;
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 5px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btnInspect:hover {
+    background: var(--card-2, #F6F8F6);
+}
+
+/* Modals */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(16, 34, 47, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalLarge {
+    background: var(--card, #FFFFFF);
+    width: 800px;
+    max-width: 95vw;
+    border-radius: var(--r-overlay, 11px);
+    border: 1px solid var(--line, #D8DEDA);
+    overflow: hidden;
+    box-shadow: var(--shadow-overlay, 0 12px 32px -8px rgba(16,34,47,.22));
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--line, #D8DEDA);
+}
+
+.modalHeader h3 {
+    margin: 0 0 0.2rem 0;
+    font-size: 1.05rem;
+    color: var(--text, #10222F);
+}
+
+.modalHeader span {
+    font-size: 0.78rem;
+    color: var(--text-2, #5A6B78);
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    font-size: 1.15rem;
+    cursor: pointer;
+    color: var(--text-2, #5A6B78);
+}
+
+.closeBtn:hover {
+    color: var(--text, #10222F);
+}
+
+.modalBody {
+    padding: 1.5rem;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+}
+
+/* Tables */
+.tableCard {
+    background: var(--card, #FFFFFF);
+    border-radius: var(--r-card, 7px);
+    border: 1px solid var(--line, #D8DEDA);
+    overflow: hidden;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+}
+
+.tableHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.1rem 1.5rem;
+    border-bottom: 1px solid var(--line, #D8DEDA);
+}
+
+.tableHeader h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text, #10222F);
+}
+
+.searchInput {
+    padding: 0.45rem 0.85rem;
+    background: var(--card, #FFFFFF);
+    color: var(--text, #10222F);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 5px);
+    font-size: 0.82rem;
+    width: 280px;
+}
+
+.searchInput:focus {
+    outline: none;
+    border-color: var(--signal, #0F6E5C);
+}
+
+.dataTable {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.84rem;
+}
+
+.dataTable th {
+    background: var(--card-2, #F6F8F6);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text-2, #5A6B78);
+    border-bottom: 1px solid var(--line, #D8DEDA);
+}
+
+.dataTable td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--line-2, #E8EBE8);
+    color: var(--text, #10222F);
+}
+
+.boldCell {
+    font-weight: 700;
+    color: var(--text, #10222F);
+}
+
+.textRed {
+    color: var(--flag, #A8341F);
+    font-weight: 700;
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+}
+
+.tagRed {
+    background: var(--flag-wash, #F8E9E5);
+    color: var(--flag, #A8341F);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--r-data, 3px);
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+}
+
+.uanText {
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-size: 0.74rem;
+    color: var(--text-2, #5A6B78);
+}
+
+.bandPill {
+    font-size: 0.72rem;
+    color: var(--info, #1B6CA8);
+    background: var(--info-wash, #E7F0F7);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data, 3px);
+    display: inline-block;
+    margin-top: 0.2rem;
+    font-weight: 600;
+}
+
+/* Tab 3: Vendors */
+.vendorsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.vendorCard {
+    background: var(--card, #FFFFFF);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-card, 7px);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.vendorHead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.vendorHead h4 {
+    margin: 0 0 0.2rem 0;
+    font-size: 1rem;
+    color: var(--text, #10222F);
+}
+
+.vendorDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    background: var(--card-2, #F6F8F6);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 5px);
+    padding: 0.85rem;
+    font-size: 0.8rem;
+    color: var(--text, #10222F);
+    margin-bottom: 1rem;
+}
+
+.tagGreen {
+    background: var(--signal-wash, #E4F0EC);
+    color: var(--signal-ink, #0A5546);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data, 3px);
+    font-weight: 700;
+    font-size: 0.72rem;
+    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+}
+
+.tagBlue {
+    background: var(--info-wash, #E7F0F7);
+    color: var(--info, #1B6CA8);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--r-data, 3px);
+    font-weight: 700;
+    font-size: 0.72rem;
+}
+
+.vendorBottom {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.vendorBottom button {
+    flex: 1;
+}
+

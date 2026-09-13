@@ -1,0 +1,180 @@
+{
+  "PRIMARY_PILLARS_1": {
+    "people_core": "core_hr",
+    "attendance": "core_hr",
+    "leaves": "core_hr",
+    "recruitment": "talent",
+    "payroll": "finance",
+    "compliance": "capability",
+    "integrations": "capability"
+  },
+  "navSections_fields_2": {
+    "id": "overview",
+    "title": "Overview & Workspaces",
+    "pillar": "all"
+  },
+  "items_fields_3": {
+    "id": "dashboard",
+    "label": "Dashboard"
+  },
+  "items_fields_4": {
+    "id": "projects",
+    "label": "Projects & Kanban"
+  },
+  "items_fields_5": {
+    "badge": "Sprints"
+  },
+  "items_fields_6": {
+    "id": "team",
+    "label": "My Team"
+  },
+  "items_fields_7": {
+    "id": "helpdesk",
+    "label": "Helpdesk & Policies"
+  },
+  "items_fields_8": {
+    "badge": "RAG Bot"
+  },
+  "navSections_fields_9": {
+    "id": "core_hr",
+    "title": "Core HR & Lifecycle",
+    "pillar": "core_hr"
+  },
+  "items_fields_10": {
+    "id": "people_core",
+    "label": "1. People Core"
+  },
+  "items_fields_11": {
+    "badge": "Core"
+  },
+  "items_fields_12": {
+    "id": "attendance",
+    "label": "6. Smart Attendance"
+  },
+  "items_fields_13": {
+    "badge": "Biometric"
+  },
+  "items_fields_14": {
+    "id": "leaves",
+    "label": "Leave Management"
+  },
+  "items_fields_15": {
+    "id": "onboarding",
+    "label": "4. Onboarding"
+  },
+  "items_fields_16": {
+    "badge": "30-60-90"
+  },
+  "items_fields_17": {
+    "id": "compliance",
+    "label": "Compliance & Labour Codes"
+  },
+  "items_fields_18": {
+    "badge": "2026"
+  },
+  "items_fields_19": {
+    "id": "contract_workforce",
+    "label": "Contract Workforce"
+  },
+  "items_fields_20": {
+    "badge": "Gate Recon"
+  },
+  "navSections_fields_21": {
+    "id": "talent",
+    "title": "Talent, Performance & L&D",
+    "pillar": "talent"
+  },
+  "items_fields_22": {
+    "id": "recruitment",
+    "label": "3. Talent ATS"
+  },
+  "items_fields_23": {
+    "badge": "AI ATS"
+  },
+  "items_fields_24": {
+    "id": "performance",
+    "label": "5. Performance & OKRs"
+  },
+  "items_fields_25": {
+    "badge": "9-Box"
+  },
+  "items_fields_26": {
+    "id": "learning",
+    "label": "8. Learning & L&D"
+  },
+  "items_fields_27": {
+    "badge": "SCORM"
+  },
+  "navSections_fields_28": {
+    "id": "finance",
+    "title": "Finance & Compensation",
+    "pillar": "finance"
+  },
+  "items_fields_29": {
+    "id": "payroll",
+    "label": "2. Global Payroll"
+  },
+  "items_fields_30": {
+    "badge": "EWA"
+  },
+  "items_fields_31": {
+    "id": "compensation",
+    "label": "9. Compensation"
+  },
+  "items_fields_32": {
+    "badge": "Bands"
+  },
+  "navSections_fields_33": {
+    "id": "capability",
+    "title": "Intelligence & Platform",
+    "pillar": "capability"
+  },
+  "items_fields_34": {
+    "id": "analytics",
+    "label": "7. People Intelligence"
+  },
+  "items_fields_35": {
+    "badge": "90d ML"
+  },
+  "items_fields_36": {
+    "id": "experience",
+    "label": "10. Experience & MCI"
+  },
+  "items_fields_37": {
+    "badge": "Vedic"
+  },
+  "items_fields_38": {
+    "id": "integrations",
+    "label": "11. Integrations & API"
+  },
+  "items_fields_39": {
+    "badge": "OpenAPI"
+  },
+  "items_fields_40": {
+    "id": "settings",
+    "label": "Settings & Security"
+  },
+  "items_fields_41": {
+    "isSubmodule": true
+  },
+  "SideNav_aria-label_42": "Sidebar Sub Navigation",
+  "SideNav_text_43": "Attendance Status",
+  "SideNav_text_44": "Hours: ",
+  "SideNav_title_45": "Punch out session",
+  "SideNav_text_46": " Punch Out",
+  "SideNav_title_47": "Punch in session",
+  "SideNav_text_48": " Punch In",
+  "SideNav_text_49": " Collapse Sidebar",
+  "display_1": "page",
+  "display_2": 2.2,
+  "display_3": 1.8,
+  "display_4": "● In",
+  "display_5": "○ Out",
+  "display_6": "Punch Out",
+  "display_7": "Punch In",
+  "display_8": "Expand Sidebar (Ctrl+[)",
+  "display_9": "Collapse Sidebar",
+  "display_10": "Expand Sidebar",
+  "display_11": "Collapse Sidebar",
+  "fallback_1": "core_hr"
+}

@@ -1,0 +1,114 @@
+"use client";
+import { readData } from '../../services/workspace-data.mjs';
+
+import React from 'react';
+import { navigationDomains } from '@/lib/workspace-navigation';
+import X from '@mui/icons-material/Close';
+import ChevronRight from '@mui/icons-material/ChevronRight';
+import TrendingUp from '@mui/icons-material/TrendingUp';
+import { useAuth } from '@/context/AuthContext';
+import { canViewNavigationItem } from '@/lib/navigation-access';
+import styles from './RightSubNav.module.css';
+
+const ROLE_PERMITTED_CONSOLES = readData("components.Clerio.RightSubNav", "ROLE_PERMITTED_CONSOLES_1");
+
+const RightSubNav = ({
+    activeDomain,
+    activeSubFeature,
+    onSelectSubFeature,
+    isOpen = true,
+    onClose
+}) => {
+    const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
+    if (!isOpen) return null;
+
+    // Primary Categories with Exact Sub Modules
+    const domainConfigs = Object.fromEntries(navigationDomains.map(domain => [domain.id, { ...domain, title: domain.label, subtitle: domain.desc || domain.badge }]));
+
+    // Support aliases for smooth transitions
+    const resolvedDomain =
+        activeDomain === 'people' ? 'core_hr' :
+        activeDomain === 'payroll' ? 'payroll_finance' :
+        activeDomain === 'analytics' ? 'analytics_ai' :
+        activeDomain === 'compliance' ? 'core_hr' :
+        activeDomain === 'helpdesk' ? 'core_hr' :
+        activeDomain === 'settings' ? 'platform' :
+        activeDomain;
+
+    const userRole = user?.role || readData("components.Clerio.RightSubNav", "fallback_1");
+    const permittedConsoleIds = (ROLE_PERMITTED_CONSOLES[userRole] || readData("components.Clerio.RightSubNav", "permittedConsoleIds_129")).filter((consoleId) => isConsoleAllowed(consoleId, userRole, user?.id || user?.email));
+
+    const rawConfig = domainConfigs[resolvedDomain] || domainConfigs.core_hr;
+    const domainConfig = resolvedDomain === 'dashboard' ? {
+        ...rawConfig,
+        subtitle: `${userRole === 'SUPER_ADMIN' ? 'Universal Access' : userRole.replace('_', ' ')} • ${permittedConsoleIds.length} Consoles Available`,
+        groups: rawConfig.groups
+            .map(g => ({
+                ...g,
+                items: g.items.filter(item => permittedConsoleIds.includes(item.id.toUpperCase()))
+            }))
+            .filter(g => g.items.length > 0)
+    } : rawConfig;
+    const currentConfig = {
+        ...domainConfig,
+        groups: domainConfig.groups
+            .map((group) => ({ ...group, items: group.items.filter((item) => canViewNavigationItem(item, isModuleAllowed, user)) }))
+            .filter((group) => group.items.length > 0),
+    };
+
+    return (
+        <aside className={styles.rightNavContainer} aria-label={readData("components.Clerio.RightSubNav", "RightSubNav_aria-label_130")}>
+            {/* Header */}
+            <div className={styles.header}>
+                <div>
+                    <h3>{currentConfig.title}</h3>
+                    {currentConfig.subtitle && <p className={styles.subTitle}>{currentConfig.subtitle}</p>}
+                </div>
+                {onClose && (
+                    <button
+                        className={styles.closeBtn}
+                        onClick={onClose}
+                        title={readData("components.Clerio.RightSubNav", "RightSubNav_title_131")}
+                        aria-label={readData("components.Clerio.RightSubNav", "RightSubNav_aria-label_132")}
+                    >
+                        <X sx={{ fontSize: 16 }} />
+                    </button>
+                )}
+            </div>
+
+            {/* Scrollable Groups */}
+            <div className={styles.scrollArea}>
+                {currentConfig.groups.map((group, gIdx) => (
+                    <div key={gIdx} className={styles.navGroup}>
+                        <div className={styles.groupHeading}>{group.heading}</div>
+                        <div className={styles.itemsList}>
+                            {group.items.map((item) => {
+                                const Icon = item.icon;
+                                const isSelected = activeSubFeature === item.id;
+
+                                return (
+                                    <button
+                                        key={item.id}
+                                        className={`
+                                            ${styles.navItem}
+                                            ${isSelected ? styles.navItemActive : ''}
+                                            ${item.highlight && !isSelected ? styles.navItemHighlight : ''}
+                                        `}
+                                        onClick={() => onSelectSubFeature(item.id)}
+                                    >
+                                        <div className={styles.itemIcon}>
+                                            <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Clerio.RightSubNav", "display_1") : readData("components.Clerio.RightSubNav", "display_2")} />
+                                        </div>
+                                        <span className={styles.itemLabel}>{item.label}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </aside>
+    );
+};
+
+export default RightSubNav;

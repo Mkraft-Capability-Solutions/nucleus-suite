@@ -1,0 +1,108 @@
+{
+  "brand": "Nucleus",
+  "tagline": "People at the core.",
+  "nav": [{"label":"Home","href":"/"},{"label":"About","href":"/about"},{"label":"Features","href":"/features"},{"label":"Why Nucleus","href":"/why-nucleus"},{"label":"Docs","href":"/docs"},{"label":"Contact us","href":"/contact"}],
+  "login": "Log in",
+  "cta": "Explore the workspace",
+  "footer": "Nucleus · People, purpose, possibility.",
+  "preview": "Interactive product preview · Synthetic data",
+  "pages": {
+    "home": {
+      "eyebrow":"THE PEOPLE OPERATING SYSTEM",
+      "title":"Great work starts with your people.",
+      "description":"Bring your people, everyday operations and next big decisions into one thoughtful workspace. Less searching. More moving forward.",
+      "sectionTitle":"One connected place. Every working day.",
+      "sectionDescription":"From an employee’s first day to a team’s next milestone, give every person a clearer path to what matters.",
+      "cards":[
+        {"icon":"people","title":"A home for your people","description":"Bring employee profiles, onboarding and the moments that matter into a connected people experience.","href":"/features#people"},
+        {"icon":"clock","title":"Make the everyday flow","description":"Explore attendance, leave, shifts and approvals through workspaces designed around each role.","href":"/features#operations"},
+        {"icon":"insights","title":"See what needs attention","description":"Shape your dashboard around useful signals, clear context and the actions you take most.","href":"/features#insight"}
+      ],
+      "closingTitle":"Your role. Your rhythm. Your workspace.",
+      "closingDescription":"Build a dashboard that feels like yours, with components selected around your role and permissions."
+    },
+    "about": {
+      "eyebrow":"WHY WE’RE HERE",
+      "title":"People are the heart of every organization.",
+      "description":"Nucleus brings a simple idea to a complex working world: people systems should help people do their best work. We are building a connected HR experience with clarity at its core.",
+      "sectionTitle":"Designed with intention.",
+      "sectionDescription":"Our product principles guide what we build and how we make it useful.",
+      "cards":[
+        {"icon":"people","title":"Start with the person","description":"An employee, a manager and an HR professional have different responsibilities. Their workspace should reflect that."},
+        {"icon":"layers","title":"Connect the experience","description":"Make it easier to move between people records, operational work and decisions without losing context."},
+        {"icon":"shield","title":"Be clear about trust","description":"Show what a feature does, where its data comes from and which capabilities are previews. Avoid promises without evidence."}
+      ],
+      "closingTitle":"Built thoughtfully. Improved together.",
+      "closingDescription":"This interactive preview is a place to explore the experience and shape what comes next."
+    },
+    "features": {
+      "eyebrow":"EXPLORE NUCLEUS",
+      "title":"A connected toolkit for the entire people journey.",
+      "description":"Discover workspaces for employees, managers, HR teams and administrators. Explore the interface today; live services and persistence follow in a separate implementation phase.",
+      "sectionTitle":"A place for every part of people operations.",
+      "sectionDescription":"The preview includes navigation, synthetic records and interactive workflows. Availability depends on the active role.",
+      "cards":[
+        {"id":"people","icon":"people","title":"People & lifecycle","description":"Employee directory, onboarding, recruitment and performance views in a shared operational workspace."},
+        {"id":"operations","icon":"clock","title":"Time & workforce","description":"Attendance, leave, shifts and team workflows with contextual actions and clear status displays."},
+        {"icon":"wallet","title":"Pay & self-service","description":"Explore payroll and compensation views, alongside employee-facing leave and document experiences."},
+        {"id":"insight","icon":"insights","title":"Personal dashboards","description":"Add, move, resize and edit permitted widgets. Save layouts locally, switch presets and restore your defaults."},
+        {"icon":"school","title":"Growth & experience","description":"Learning, capability, feedback and employee experience views bring development into the everyday."},
+        {"icon":"shield","title":"Workspace governance","description":"Inspect role visibility and integration configuration. Production enforcement and live delivery remain future work."}
+      ],
+      "closingTitle":"Get a feel for your next workspace.",
+      "closingDescription":"Use a documented demo account to explore the role that matters to you."
+    },
+    "why-nucleus": {
+      "eyebrow":"A CLEARER WAY TO WORK",
+      "title":"Complex operations. A more human experience.",
+      "description":"Nucleus puts useful context near the next action, helping teams spend less effort navigating software and more attention on their people.",
+      "sectionTitle":"Designed around the way work happens.",
+      "sectionDescription":"Practical choices that make a difference to the experience.",
+      "cards":[
+        {"icon":"dashboard","title":"Relevant from the start","description":"HR, employee and system-administrator dashboards begin with different components and role-aware defaults."},
+        {"icon":"layers","title":"Flexible without the clutter","description":"Build a focused workspace with a widget library, editable cards, responsive sizes and saved personal layouts."},
+        {"icon":"keyboard","title":"More ways to make it yours","description":"Use pointer, touch or keyboard controls to arrange a dashboard. Clear labels and predictable navigation keep you oriented."},
+        {"icon":"shield","title":"Transparent by design","description":"Preview labels distinguish sample interactions from live operations. Sensitive production controls require separate implementation and validation."}
+      ],
+      "closingTitle":"Make room for work that matters.",
+      "closingDescription":"Explore a dashboard organized around your responsibilities."
+    },
+    "docs": {
+      "eyebrow":"NUCLEUS GUIDES",
+      "title":"A little guidance. A clearer start.",
+      "description":"Learn how to enter the preview, find your workspace and build a dashboard around your day.",
+      "sectionTitle":"Start here.",
+      "sectionDescription":"These guides describe the current product preview, not a live production service.",
+      "cards":[
+        {"icon":"dashboard","title":"1. Enter your workspace","description":"Open Login and use one of the five demo accounts documented in the repository’s ROLE_MODEL.md. Your role determines the starting console and available modules."},
+        {"icon":"layers","title":"2. Customize your dashboard","description":"Choose Customize on a supported dashboard. Add widgets from the library, drag their handles or use the move buttons, then adjust titles, width and detail density."},
+        {"icon":"check","title":"3. Save your layout","description":"Save commits your changes to this browser for your account and console. Cancel discards the current edit. Undo and redo let you explore safely."},
+        {"icon":"shield","title":"4. Understand the preview","description":"Dashboard layouts persist locally; operational records do not. Reloading requires signing in again. Only synthetic data should be used."},
+        {"icon":"keyboard","title":"5. Work with the keyboard","description":"Tab to a drag handle. Press Space to pick up, arrow keys to move and Space to drop. Escape cancels a drag. Move earlier/later buttons provide another option."},
+        {"icon":"insights","title":"6. Move a layout","description":"Export downloads presentation settings only. Import validates the file and removes widgets your role cannot use. Saving applies the imported draft."}
+      ],
+      "closingTitle":"Ready to explore?",
+      "closingDescription":"Your workspace is one sign-in away."
+    },
+    "contact": {
+      "eyebrow":"LET’S TALK PEOPLE",
+      "title":"What would a better working day look like?",
+      "description":"Tell us what your team needs, what you would like to explore or where the experience could be better.",
+      "sectionTitle":"Start a conversation.",
+      "sectionDescription":"The contact service is not connected in this preview. Prepare and download your message below; nothing is sent or uploaded.",
+      "cards":[],
+      "closingTitle":"Explore before you decide.",
+      "closingDescription":"See the interface for yourself in the Nucleus workspace."
+    }
+  },
+  "showcase": {
+    "label":"YOUR DAY, AT A GLANCE",
+    "title":"Make space for what matters.",
+    "badge":"A workspace shaped around you",
+    "tabs":["People","Work","Growth"],
+    "cards":[{"title":"Today’s focus","value":"Your priorities, together","detail":"A clearer view of your next step"},{"title":"Your workspace","value":"Built around your role","detail":"Choose the components you need"},{"title":"Keep moving","value":"From context to action","detail":"Connected people operations"}]
+  },
+  "contactForm": {
+    "name":"Your name","email":"Work email","topic":"What’s on your mind?","message":"Your message","topics":["Product walkthrough","Feature feedback","Implementation planning"],"submit":"Download message draft","success":"Your draft is ready. No message has been sent.","notice":"Please avoid including employee records, passwords or other sensitive information."
+  }
+}

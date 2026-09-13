@@ -1,0 +1,149 @@
+{
+  "SHIFT_RULES_1": {
+    "SHIFT-8H": {
+      "id": "SHIFT-8H",
+      "name": "General Day Shift (8h)",
+      "duration_minutes": 480,
+      "start_time": "09:00",
+      "end_time": "17:30",
+      "half_day_minutes": 450,
+      "absent_minutes": 270,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "07:30",
+        "latest_in": "10:30"
+      }
+    },
+    "SHIFT-9H": {
+      "id": "SHIFT-9H",
+      "name": "Standard Corporate Shift (9h)",
+      "duration_minutes": 540,
+      "start_time": "09:00",
+      "end_time": "18:30",
+      "half_day_minutes": 510,
+      "absent_minutes": 300,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "07:30",
+        "latest_in": "11:00"
+      }
+    },
+    "SHIFT-10H": {
+      "id": "SHIFT-10H",
+      "name": "Extended Operational Shift (10h)",
+      "duration_minutes": 600,
+      "start_time": "08:00",
+      "end_time": "18:30",
+      "half_day_minutes": 570,
+      "absent_minutes": 360,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "06:30",
+        "latest_in": "09:30"
+      }
+    },
+    "SHIFT-12H": {
+      "id": "SHIFT-12H",
+      "name": "Continuous Plant Shift (12h)",
+      "duration_minutes": 720,
+      "start_time": "08:00",
+      "end_time": "20:30",
+      "half_day_minutes": 690,
+      "absent_minutes": 390,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "06:00",
+        "latest_in": "09:30"
+      }
+    },
+    "SHIFT-B-EVENING": {
+      "id": "SHIFT-B-EVENING",
+      "name": "Evening Operations Shift (8h)",
+      "duration_minutes": 480,
+      "start_time": "14:00",
+      "end_time": "22:30",
+      "half_day_minutes": 450,
+      "absent_minutes": 270,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "13:00",
+        "latest_in": "15:30"
+      }
+    },
+    "SHIFT-C-NIGHT": {
+      "id": "SHIFT-C-NIGHT",
+      "name": "Cross-Midnight Night Shift (8h)",
+      "duration_minutes": 480,
+      "start_time": "22:00",
+      "end_time": "06:30",
+      "half_day_minutes": 450,
+      "absent_minutes": 270,
+      "grace_in_minutes": 15,
+      "grace_out_minutes": 15,
+      "window": {
+        "earliest_in": "20:30",
+        "latest_in": "23:30"
+      }
+    }
+  },
+  "content_fields_2": {
+    "inferred": false,
+    "reason": "Defaulted to assigned shift pattern"
+  },
+  "content_fields_3": {
+    "paid": false
+  },
+  "content_fields_4": {
+    "out_ts": null
+  },
+  "content_fields_5": {
+    "duration_minutes": 0,
+    "incomplete": true
+  },
+  "content_fields_6": {
+    "allowed": false
+  },
+  "content_fields_7": {
+    "allowed": false
+  },
+  "content_fields_8": {
+    "allowed": true
+  },
+  "content_fields_9": {
+    "status": "weekly_off"
+  },
+  "content_fields_10": {
+    "gross_minutes": 0,
+    "break_minutes": 0,
+    "net_minutes": 0,
+    "ot_minutes": 0,
+    "segments": [],
+    "breaks": []
+  },
+  "content_fields_11": {
+    "status": "holiday"
+  },
+  "content_fields_12": {
+    "gross_minutes": 0,
+    "break_minutes": 0,
+    "net_minutes": 0,
+    "ot_minutes": 0,
+    "segments": [],
+    "breaks": []
+  },
+  "content_fields_13": {
+    "status": "absent",
+    "status_reason": "No biometric punches recorded for scheduled working day",
+    "gross_minutes": 0,
+    "break_minutes": 0,
+    "net_minutes": 0,
+    "ot_minutes": 0,
+    "segments": [],
+    "breaks": []
+  }
+}

@@ -1,0 +1,310 @@
+{
+  "SYSTEM_FIELDS_1": [
+    {
+      "key": "__ignore__",
+      "label": "-- Skip / Do Not Ingest --"
+    },
+    {
+      "key": "empId",
+      "label": "Employee ID (Identifier Key)",
+      "required": true
+    },
+    {
+      "key": "name",
+      "label": "Full Name"
+    },
+    {
+      "key": "dept",
+      "label": "Department"
+    },
+    {
+      "key": "pod",
+      "label": "Pod / Functional Pod"
+    },
+    {
+      "key": "role",
+      "label": "Role / Designation"
+    },
+    {
+      "key": "presentDays",
+      "label": "Present Days"
+    },
+    {
+      "key": "attendancePct",
+      "label": "Attendance %"
+    },
+    {
+      "key": "overtimeHrs",
+      "label": "Overtime Hours"
+    },
+    {
+      "key": "leaveBalance",
+      "label": "Leave Balance"
+    },
+    {
+      "key": "grossCtc",
+      "label": "Gross CTC"
+    },
+    {
+      "key": "variableBonus",
+      "label": "Variable Bonus / Incentives"
+    },
+    {
+      "key": "performanceRating",
+      "label": "Performance Rating"
+    },
+    {
+      "key": "attritionRisk",
+      "label": "Attrition Risk Tier"
+    }
+  ],
+  "PRESET_DATASETS_2": {
+    "biometric": {
+      "id": "biometric",
+      "fileName": "biometric_punch_logs_feb2026.xlsx",
+      "title": "Vendor Biometric Machine Logs",
+      "desc": "Third-party fingerprint/facial scanner punch-in logs and overtime hours.",
+      "columns": [
+        "Staff_Code",
+        "Staff_Name",
+        "Present_Days_Count",
+        "Attendance_Ratio",
+        "Overtime_Hrs"
+      ],
+      "sampleRows": [
+        {
+          "Staff_Code": "EMP-101",
+          "Staff_Name": "Trisha Khanna",
+          "Present_Days_Count": 22,
+          "Attendance_Ratio": 97.2,
+          "Overtime_Hrs": 16
+        },
+        {
+          "Staff_Code": "EMP-102",
+          "Staff_Name": "Amit Verma",
+          "Present_Days_Count": 22,
+          "Attendance_Ratio": 98.5,
+          "Overtime_Hrs": 10
+        },
+        {
+          "Staff_Code": "EMP-103",
+          "Staff_Name": "Sarah Chen",
+          "Present_Days_Count": 21,
+          "Attendance_Ratio": 94,
+          "Overtime_Hrs": 14
+        },
+        {
+          "Staff_Code": "EMP-104",
+          "Staff_Name": "Rahul Saxena",
+          "Present_Days_Count": 22,
+          "Attendance_Ratio": 96,
+          "Overtime_Hrs": 8
+        },
+        {
+          "Staff_Code": "EMP-105",
+          "Staff_Name": "Priya Nair",
+          "Present_Days_Count": 20,
+          "Attendance_Ratio": 89,
+          "Overtime_Hrs": 20
+        },
+        {
+          "Staff_Code": "EMP-106",
+          "Staff_Name": "David Miller",
+          "Present_Days_Count": 22,
+          "Attendance_Ratio": 99.4,
+          "Overtime_Hrs": 24.5
+        },
+        {
+          "Staff_Code": "EMP-107",
+          "Staff_Name": "Ananya Sharma",
+          "Present_Days_Count": 21,
+          "Attendance_Ratio": 96,
+          "Overtime_Hrs": 5
+        },
+        {
+          "Staff_Code": "EMP-108",
+          "Staff_Name": "Vikram Joshi",
+          "Present_Days_Count": 22,
+          "Attendance_Ratio": 98.8,
+          "Overtime_Hrs": 18
+        }
+      ]
+    },
+    "payroll": {
+      "id": "payroll",
+      "fileName": "variable_bonus_q1_payout.csv",
+      "title": "Variable Pay & Overtime Ledger",
+      "desc": "Finance-approved performance bonus and updated gross compensation.",
+      "columns": [
+        "Emp_ID",
+        "Employee_Full_Name",
+        "Approved_Bonus",
+        "Revised_Gross_CTC"
+      ],
+      "sampleRows": [
+        {
+          "Emp_ID": "EMP-101",
+          "Employee_Full_Name": "Trisha Khanna",
+          "Approved_Bonus": "₹ 2,80,000",
+          "Revised_Gross_CTC": "₹ 29,50,000"
+        },
+        {
+          "Emp_ID": "EMP-102",
+          "Employee_Full_Name": "Amit Verma",
+          "Approved_Bonus": "₹ 5,50,000",
+          "Revised_Gross_CTC": "₹ 47,00,000"
+        },
+        {
+          "Emp_ID": "EMP-103",
+          "Employee_Full_Name": "Sarah Chen",
+          "Approved_Bonus": "$ 22,000",
+          "Revised_Gross_CTC": "$ 148,000"
+        },
+        {
+          "Emp_ID": "EMP-104",
+          "Employee_Full_Name": "Rahul Saxena",
+          "Approved_Bonus": "₹ 2,10,000",
+          "Revised_Gross_CTC": "₹ 23,20,000"
+        },
+        {
+          "Emp_ID": "EMP-105",
+          "Employee_Full_Name": "Priya Nair",
+          "Approved_Bonus": "₹ 1,50,000",
+          "Revised_Gross_CTC": "₹ 17,80,000"
+        },
+        {
+          "Emp_ID": "EMP-106",
+          "Employee_Full_Name": "David Miller",
+          "Approved_Bonus": "£ 11,000",
+          "Revised_Gross_CTC": "£ 92,000"
+        },
+        {
+          "Emp_ID": "EMP-107",
+          "Employee_Full_Name": "Ananya Sharma",
+          "Approved_Bonus": "₹ 1,80,000",
+          "Revised_Gross_CTC": "₹ 19,20,000"
+        },
+        {
+          "Emp_ID": "EMP-108",
+          "Employee_Full_Name": "Vikram Joshi",
+          "Approved_Bonus": "₹ 2,30,000",
+          "Revised_Gross_CTC": "₹ 21,80,000"
+        }
+      ]
+    },
+    "appraisal": {
+      "id": "appraisal",
+      "fileName": "annual_calibrated_ratings.xlsx",
+      "title": "Annual Appraisal & Retention Risk",
+      "desc": "Calibrated performance review scores and ML flight risk tags.",
+      "columns": [
+        "Staff_Number",
+        "Candidate_Name",
+        "Final_Rating",
+        "Retention_Risk_Score"
+      ],
+      "sampleRows": [
+        {
+          "Staff_Number": "EMP-101",
+          "Candidate_Name": "Trisha Khanna",
+          "Final_Rating": "4.9 / 5.0 (Top Exceeds)",
+          "Retention_Risk_Score": "Low (3%)"
+        },
+        {
+          "Staff_Number": "EMP-102",
+          "Candidate_Name": "Amit Verma",
+          "Final_Rating": "5.0 / 5.0 (Role Model)",
+          "Retention_Risk_Score": "Low (1%)"
+        },
+        {
+          "Staff_Number": "EMP-103",
+          "Candidate_Name": "Sarah Chen",
+          "Final_Rating": "4.7 / 5.0 (Exceeds)",
+          "Retention_Risk_Score": "Medium (14%)"
+        },
+        {
+          "Staff_Number": "EMP-104",
+          "Candidate_Name": "Rahul Saxena",
+          "Final_Rating": "4.5 / 5.0 (Exceeds)",
+          "Retention_Risk_Score": "Low (4%)"
+        },
+        {
+          "Staff_Number": "EMP-105",
+          "Candidate_Name": "Priya Nair",
+          "Final_Rating": "4.3 / 5.0 (Meets)",
+          "Retention_Risk_Score": "Medium (22%)"
+        },
+        {
+          "Staff_Number": "EMP-106",
+          "Candidate_Name": "David Miller",
+          "Final_Rating": "4.8 / 5.0 (Exceeds)",
+          "Retention_Risk_Score": "Low (5%)"
+        },
+        {
+          "Staff_Number": "EMP-107",
+          "Candidate_Name": "Ananya Sharma",
+          "Final_Rating": "4.6 / 5.0 (Exceeds)",
+          "Retention_Risk_Score": "Low (7%)"
+        },
+        {
+          "Staff_Number": "EMP-108",
+          "Candidate_Name": "Vikram Joshi",
+          "Final_Rating": "4.7 / 5.0 (Exceeds)",
+          "Retention_Risk_Score": "Low (3%)"
+        }
+      ]
+    }
+  },
+  "DataImportModal_text_3": "Bulk Data Ingestion & Field Mapping Wizard",
+  "DataImportModal_text_4": "Upload Excel / CSV data from external systems, map columns to Nucleus schema, and synchronize MIS reports.",
+  "DataImportModal_title_5": "Close Ingestion Wizard",
+  "DataImportModal_text_6": "Upload File",
+  "DataImportModal_text_7": "Field Mapping",
+  "DataImportModal_text_8": "Validation Preview",
+  "DataImportModal_text_9": "Sync Complete",
+  "DataImportModal_text_10": "Drag & Drop CSV / Excel File, or choose a preset below",
+  "DataImportModal_text_11": "Active File: ",
+  "DataImportModal_text_12": " (",
+  "DataImportModal_text_13": " rows, ",
+  "DataImportModal_text_14": " columns detected)",
+  "DataImportModal_text_15": "Select a Realistic Sample Dataset for Prototype Testing:",
+  "DataImportModal_text_16": "AI Auto-Match Active:",
+  "DataImportModal_text_17": " Our fuzzy-match algorithm detected and mapped source columns with >90% schema confidence. You can override any assignment below.",
+  "DataImportModal_text_18": "Source Column (In Uploaded File)",
+  "DataImportModal_text_19": "Mapped System Field (Nucleus MIS)",
+  "DataImportModal_text_20": "Mapping Status",
+  "DataImportModal_text_21": "Sample value: \"",
+  "DataImportModal_text_22": "\"",
+  "DataImportModal_text_23": "Ignored",
+  "DataImportModal_text_24": " Auto-Matched",
+  "DataImportModal_text_25": " Rows Verified",
+  "DataImportModal_text_26": "All employee keys matched master tenant directory",
+  "DataImportModal_text_27": "0 Schema Conflicts",
+  "DataImportModal_text_28": "Data types (number, currency, string) converted cleanly",
+  "DataImportModal_text_29": "Pre-Ingestion Data Preview (First 5 Rows to be Synchronized):",
+  "DataImportModal_text_30": "Status",
+  "DataImportModal_text_31": "✓ Valid",
+  "DataImportModal_text_32": "Data Ingested & Synchronized Successfully!",
+  "DataImportModal_text_33": " records",
+  "DataImportModal_text_34": " from ",
+  "DataImportModal_text_35": " have been merged into the central MIS master records. The Custom MIS Reports table has been updated in real-time.",
+  "DataImportModal_text_36": "Cancel",
+  "DataImportModal_text_37": "Next: Map Fields ",
+  "DataImportModal_text_38": " Back to Upload",
+  "DataImportModal_text_39": "Next: Validate Preview ",
+  "DataImportModal_text_40": " Back to Mapping",
+  "DataImportModal_text_41": " Commit & Ingest Data",
+  "DataImportModal_text_42": " View Synchronized MIS Report",
+  "initialState_1": 1,
+  "initialState_2": "biometric",
+  "display_3": "✓",
+  "display_4": "1",
+  "display_5": "✓",
+  "display_6": "2",
+  "display_7": "✓",
+  "display_8": "3",
+  "display_9": "✓",
+  "display_10": "4",
+  "fallback_1": "__ignore__",
+  "fallback_2": "-"
+}

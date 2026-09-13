@@ -1,0 +1,218 @@
+{
+  "groundedResult_1": {
+    "question": "Can I carry forward unused leaves to the next calendar year?",
+    "answer": "Yes. Up to a maximum of 45 days of Paid Leave (PL) can be carried forward into the next calendar year. Any accrued balance exceeding 45 days on December 31st will automatically lapse unless encashment is explicitly sanctioned under Grade L4+ retention policies.",
+    "citations": [
+      {
+        "doc": "Leave & Attendance Policy 2026",
+        "clause": "Section 4.2 (Annual Leave Rollover)",
+        "page": "Page 7",
+        "text": "An employee may carry forward an unutilized balance of Earned/Privilege Leave up to a maximum accumulation limit of 45 working days."
+      },
+      {
+        "doc": "HR Handbook & Statutory Guidelines",
+        "clause": "Clause 8.1 (Leave Encashment)",
+        "page": "Page 19",
+        "text": "Encashment of unavailed leave above statutory caps is computed on the revised basic wage base effective 2026."
+      }
+    ],
+    "confidence": "99.4% Grounded in Active Repository"
+  },
+  "tickets_2": [
+    {
+      "id": "TKT-1082",
+      "subject": "Tax Deduction anomaly on February Special Allowance",
+      "category": "Payroll",
+      "raisedBy": "Rahul Sharma (Senior Fullstack)",
+      "dept": "Engineering Pod Alpha",
+      "priority": "High",
+      "status": "In Progress",
+      "createdAt": "10 Mar 2026, 09:30 AM",
+      "slaRemaining": "2h 15m remaining",
+      "assignee": "Vikram Joshi (Finance)",
+      "messages": [
+        {
+          "sender": "Rahul Sharma",
+          "time": "10 Mar 09:30 AM",
+          "text": "My Feb payslip reflects \u20b94,200 additional TDS deduction compared to Jan. Has the new tax regime bracket changed?"
+        },
+        {
+          "sender": "Vikram Joshi (Finance)",
+          "time": "10 Mar 10:15 AM",
+          "text": "Hi Rahul, reviewing your tax projection. The marginal increase is due to the final Q4 investment proof verification cycle."
+        }
+      ]
+    },
+    {
+      "id": "TKT-1081",
+      "subject": "Maternity leave extension & flex-hours approval",
+      "category": "Leave",
+      "raisedBy": "Kavita Sundaram (Lead Product Designer)",
+      "dept": "Design Systems",
+      "priority": "Medium",
+      "status": "Open",
+      "createdAt": "10 Mar 2026, 11:10 AM",
+      "slaRemaining": "5h 40m remaining",
+      "assignee": "Ananya Sharma (HR)",
+      "messages": [
+        {
+          "sender": "Kavita Sundaram",
+          "time": "10 Mar 11:10 AM",
+          "text": "Requesting permission to utilize 2 weeks of accrued optional leaves followed by 4 weeks of half-day remote shifts upon return."
+        }
+      ]
+    },
+    {
+      "id": "TKT-1079",
+      "subject": "Emergency Medical Claim cashless pre-authorization",
+      "category": "Benefits",
+      "raisedBy": "Amit Verma (Engineering Manager)",
+      "dept": "Core Platform Pod",
+      "priority": "Critical",
+      "status": "In Progress",
+      "createdAt": "09 Mar 2026, 16:45 PM",
+      "slaRemaining": "45m remaining (Escalated)",
+      "assignee": "Ananya Sharma (HR)",
+      "messages": [
+        {
+          "sender": "Amit Verma",
+          "time": "09 Mar 16:45 PM",
+          "text": "Need urgent TPA approval code for dependent admission at Manipal Hospital Bengaluru."
+        },
+        {
+          "sender": "Ananya Sharma (HR)",
+          "time": "09 Mar 17:00 PM",
+          "text": "TPA Care Health insurance desk contacted. Authorization token issued: TPA-994102-BLR."
+        }
+      ]
+    },
+    {
+      "id": "TKT-1074",
+      "subject": "MacBook Pro M3 USB-C peripheral dock replacement",
+      "category": "IT Support",
+      "raisedBy": "Priya Nair (Frontend Engineer)",
+      "dept": "Pod Phoenix",
+      "priority": "Low",
+      "status": "Resolved",
+      "createdAt": "08 Mar 2026, 14:00 PM",
+      "slaRemaining": "Resolved on-time",
+      "assignee": "DevOps & IT Admin",
+      "messages": [
+        {
+          "sender": "Priya Nair",
+          "time": "08 Mar 14:00 PM",
+          "text": "Secondary display port flickering on the CalDigit dock."
+        },
+        {
+          "sender": "DevOps & IT Admin",
+          "time": "08 Mar 15:30 PM",
+          "text": "Replacement Belkin Thunderbolt hub dispatched via courier."
+        }
+      ]
+    }
+  ],
+  "sampleQueries_3": [
+    "Can I carry forward unused leaves to the next calendar year?",
+    "What is the daily per-diem allowance for travel to Mumbai or Delhi?",
+    "What is the notice period requirement during probation period?",
+    "How does paternity leave apply to adoptive parents?"
+  ],
+  "handleRunQuery_fields_4": {
+    "answer": "For Tier-1 metropolitan cities (Mumbai, Bengaluru, Delhi NCR), employees in Grades L3 to L6 are eligible for a per-diem boarding allowance of \u20b93,500/day plus actual lodging reimbursement capped at \u20b97,000/night upon submission of GST invoices.",
+    "citations": [
+      {
+        "doc": "Travel & Business Expense Policy",
+        "clause": "Section 3.1 (Domestic Per-Diem Rates)",
+        "page": "Page 4",
+        "text": "Tier 1 Metro classification entitles reimbursement of \u20b93,500 per diem without bills for food and incidentals."
+      }
+    ],
+    "confidence": "98.9% Grounded"
+  },
+  "handleRunQuery_fields_6": {
+    "answer": "During the initial 90-day probation period, either the employee or the company may terminate the assignment with a mandatory 15-day written notice or pay-in-lieu. Post-confirmation, the notice period expands to 60 days for all technical bands.",
+    "citations": [
+      {
+        "doc": "Employment Terms & Lifecycle Policy",
+        "clause": "Clause 6.3 (Probation and Notice)",
+        "page": "Page 12",
+        "text": "Probation separation requires 15 calendar days notice; confirmed status mandates 60 calendar days."
+      }
+    ],
+    "confidence": "99.1% Grounded"
+  },
+  "handleRunQuery_fields_8": {
+    "answer": "Yes. Up to a maximum of 45 days of Paid Leave (PL) can be carried forward into the next calendar year. Any accrued balance exceeding 45 days on December 31st will automatically lapse unless encashment is explicitly sanctioned under Grade L4+ retention policies.",
+    "citations": [
+      {
+        "doc": "Leave & Attendance Policy 2026",
+        "clause": "Section 4.2 (Annual Leave Rollover)",
+        "page": "Page 7",
+        "text": "An employee may carry forward an unutilized balance of Earned/Privilege Leave up to a maximum accumulation limit of 45 working days."
+      }
+    ],
+    "confidence": "99.4% Grounded"
+  },
+  "HelpdeskView_text_10": " Module 7: Employee Helpdesk",
+  "HelpdeskView_text_11": " Grounded Policy RAG Engine",
+  "HelpdeskView_text_12": "Helpdesk & Grounded Policy Assistant",
+  "HelpdeskView_text_13": "Unified employee service desk with SLA-governed ticket routing, multi-tier escalation, and an AI policy assistant that answers queries with verifiable source clause citations.",
+  "HelpdeskView_text_14": " Raise Support Ticket",
+  "HelpdeskView_text_15": " Support Tickets (",
+  "HelpdeskView_text_16": ")",
+  "HelpdeskView_text_17": " Grounded Policy Assistant & Clause Search",
+  "HelpdeskView_18": [
+    "all",
+    "payroll",
+    "leave",
+    "benefits",
+    "it support"
+  ],
+  "HelpdeskView_text_19": "By:",
+  "HelpdeskView_text_20": "Assignee:",
+  "HelpdeskView_text_21": "\u2715",
+  "HelpdeskView_text_22": "Raised By:",
+  "HelpdeskView_text_23": "Department:",
+  "HelpdeskView_text_24": "Category:",
+  "HelpdeskView_text_25": "Assigned To:",
+  "HelpdeskView_text_26": "SLA Status:",
+  "HelpdeskView_text_27": "Status:",
+  "HelpdeskView_text_28": "Conversation Thread",
+  "HelpdeskView_placeholder_29": "Type message or resolution notes...",
+  "HelpdeskView_text_30": " Send Reply",
+  "HelpdeskView_text_31": "Raise New Support Ticket",
+  "HelpdeskView_text_32": "\u2715",
+  "HelpdeskView_text_33": "Category",
+  "HelpdeskView_text_34": "Payroll & Taxes",
+  "HelpdeskView_text_35": "Leaves & Attendance",
+  "HelpdeskView_text_36": "Medical & Benefits",
+  "HelpdeskView_text_37": "IT & Hardware Provisioning",
+  "HelpdeskView_text_38": "Workplace Grievance & POSH",
+  "HelpdeskView_text_39": "Priority Level",
+  "HelpdeskView_text_40": "Low (SLA: 48h)",
+  "HelpdeskView_text_41": "Medium (SLA: 24h)",
+  "HelpdeskView_text_42": "High (SLA: 8h)",
+  "HelpdeskView_text_43": "Critical (SLA: 2h)",
+  "HelpdeskView_text_44": "Subject",
+  "HelpdeskView_placeholder_45": "Brief summary of request...",
+  "HelpdeskView_text_46": "Description",
+  "HelpdeskView_placeholder_47": "Describe the issue with any relevant reference details...",
+  "HelpdeskView_text_48": "Cancel",
+  "HelpdeskView_text_49": "Submit Ticket",
+  "HelpdeskView_placeholder_50": "Ask any policy question (e.g. leave carryover, per-diem, notice period, medical cover)...",
+  "HelpdeskView_text_51": " Grounded Query",
+  "HelpdeskView_text_52": "Sample Queries:",
+  "HelpdeskView_text_53": "Strict Source Grounding (Zero Hallucination)",
+  "HelpdeskView_text_54": "Verifiable Source Policy Clauses",
+  "HelpdeskView_text_55": " \u00b7 ",
+  "HelpdeskView_text_56": "\"",
+  "HelpdeskView_text_57": "\"",
+  "HelpdeskView_text_58": "Was this policy interpretation clear and helpful?",
+  "HelpdeskView_text_59": "\ud83d\udc4d Yes",
+  "HelpdeskView_text_60": "\ud83d\udc4e No",
+  "HelpdeskView_text_61": "Raise Support Ticket with Context \u2794",
+  "initialState_1": "tickets",
+  "initialState_2": "all",
+  "initialState_3": "Can I carry forward unused leaves to the next calendar year?",
+  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+}

@@ -1,0 +1,1223 @@
+"use client";
+import NextImage from 'next/image';
+
+import { readData } from '../../services/workspace-data.mjs';
+
+import React, { useState, useEffect } from 'react';
+import {
+    MoreHorizontal, Clock, Calendar, CheckCircle, AlertCircle, DollarSign,
+    Users, TrendingUp, Sun, Cloud, Mic, Sparkles, MapPin, Play, Bell,
+    ChevronRight, Megaphone, FileText, Target, Plus, Briefcase, CreditCard,
+    Layers, Filter, ChevronDown, ShieldCheck, Building2, RotateCcw, X, CalendarDays
+} from 'lucide-react';
+import shared from '../Dashboard/DashboardShared.module.css';
+import styles from './MainWorkspace.module.css';
+import AttendanceView from './AttendanceView';
+import LeaveView from './LeaveView';
+import PerformanceView from './PerformanceView';
+import PayrollView from './PayrollView';
+import ProjectView from './ProjectView';
+import TeamView from './TeamView';
+import SettingsView from './SettingsView';
+import PeopleCoreView from './PeopleCoreView';
+import RecruitmentView from './RecruitmentView';
+import OnboardingView from './OnboardingView';
+import AnalyticsView from './AnalyticsView';
+import LearningView from './LearningView';
+import CompensationView from './CompensationView';
+import ExperienceView from './ExperienceView';
+import IntegrationsView from './IntegrationsView';
+import ComplianceView from './ComplianceView';
+import HelpdeskView from './HelpdeskView';
+import ContractWorkforceView from './ContractWorkforceView';
+import CatalogGridView from './CatalogGridView';
+import CMSModal from './CMSModal';
+import NucleusActionModal from './ActionFormModal';
+import OperationalModuleView from './OperationalModuleView';
+import AccessControlModal from '../Dashboard/Modals/AccessControlModal';
+import AccessControlView from './AccessControlView';
+import AdminOverview from './AdminOverview';
+import PersonalDashboard from '../Dashboard/Personalization/PersonalDashboard';
+import PeopleCommandCentre from '../Dashboard/Views/PeopleCommandCentre';
+import HROpsConsole from '../Dashboard/Views/HROpsConsole';
+import AttendanceIntelligence from '../Dashboard/Views/AttendanceIntelligence';
+import TalentAcquisition from '../Dashboard/Views/TalentAcquisition';
+import PayrollControlRoom from '../Dashboard/Views/PayrollControlRoom';
+import PerformanceTalent from '../Dashboard/Views/PerformanceTalent';
+import ManagerCockpit from '../Dashboard/Views/ManagerCockpit';
+import EmployeeHome from '../Dashboard/Views/EmployeeHome';
+import MagnetixCapability from '../Dashboard/Views/MagnetixCapability';
+import NucleusIntelligence from '../Dashboard/Views/NucleusIntelligence';
+import { useHRMS } from '@/context/HRMSContext';
+import { useAuth } from '@/context/AuthContext';
+import RoleProtected from '../auth/RoleProtected';
+import { ROLES } from '@/utils/permissions';
+import { getOperationalModule } from '@/lib/operational-module-registry';
+
+const ROLE_FALLBACKS = readData("components.Clerio.MainWorkspace", "ROLE_FALLBACKS_1");
+
+const ROLE_PERMITTED_CONSOLES = readData("components.Clerio.MainWorkspace", "ROLE_PERMITTED_CONSOLES_2");
+
+const MainWorkspace = ({
+    activeTab,
+    onTabChange,
+    showCatalog = false,
+    onToggleCatalog,
+    activeDomain,
+    onSelectDomain,
+    searchQuery = '',
+    activeConsole = readData("components.Clerio.MainWorkspace", "defaultValue_1"),
+    onSelectConsole
+}) => {
+    const {
+        user, attendance, punchIn, punchOut,
+        leaves, projects, focusTasks, completeFocusTask,
+        announcements = [], showToast
+    } = useHRMS();
+    const {
+        user: authUser,
+        getPermittedConsoles,
+        isAccessControlOpen,
+        closeAccessControl,
+        openAccessControl
+    } = useAuth();
+    const currentRole = authUser?.role || ROLES.SUPER_ADMIN;
+    const activeProfile = ROLE_FALLBACKS[currentRole] || ROLE_FALLBACKS.SUPER_ADMIN;
+    const rawName = authUser?.name || user?.name || activeProfile.name;
+    const effectiveName = rawName || activeProfile.name;
+    const firstName = effectiveName.split(' ')[0];
+    const avatarUrl = authUser?.avatar || activeProfile.avatar;
+    const [isCMSModalOpen, setIsCMSModalOpen] = useState(false);
+    const [actionRequest, setActionRequest] = useState(null);
+    const operationalModule = getOperationalModule(activeTab);
+    const handleSetConsole = onSelectConsole;
+
+    useEffect(() => {
+        const openAction = (event) => setActionRequest(event.detail);
+        window.addEventListener('nucleus:open-action', openAction);
+        return () => window.removeEventListener('nucleus:open-action', openAction);
+    }, []);
+
+    const completeAction = ({ action, title, values, context }) => {
+        const record = { action, title, values, context, recordedAt: new Date().toISOString() };
+        window.dispatchEvent(new CustomEvent('nucleus:action-completed', { detail: record }));
+        showToast(title, readData("components.Clerio.MainWorkspace", "demoActionComplete"), 'info');
+    };
+
+    // Super Admin & Executive Telemetry Scope Filter States (4 Required Filters)
+    const [filterLocation, setFilterLocation] = useState(readData("components.Clerio.MainWorkspace", "initialState_2"));
+    const [filterDepartment, setFilterDepartment] = useState(readData("components.Clerio.MainWorkspace", "initialState_3"));
+    const [filterTenure, setFilterTenure] = useState(readData("components.Clerio.MainWorkspace", "initialState_4")); // '1 Month' | '3 Months' | '6 Months' | '1 Year' | 'Custom Calendar'
+    const [isCustomCalendarOpen, setIsCustomCalendarOpen] = useState(false);
+    const [customStartDate, setCustomStartDate] = useState(readData("components.Clerio.MainWorkspace", "initialState_5"));
+    const [customEndDate, setCustomEndDate] = useState(readData("components.Clerio.MainWorkspace", "initialState_6"));
+    const [filterBranch, setFilterBranch] = useState(readData("components.Clerio.MainWorkspace", "initialState_7"));
+
+    const activeFilterCount = (
+        (filterLocation !== 'All Locations' ? 1 : 0) +
+        (filterDepartment !== 'All Departments' ? 1 : 0) +
+        (filterTenure !== '3 Months' || isCustomCalendarOpen ? 1 : 0) +
+        (filterBranch !== 'All Branches' ? 1 : 0)
+    );
+
+    const handleResetFilters = () => {
+        setFilterLocation('All Locations');
+        setFilterDepartment('All Departments');
+        setFilterTenure('3 Months');
+        setIsCustomCalendarOpen(false);
+        setCustomStartDate('2026-06-01');
+        setCustomEndDate('2026-09-11');
+        setFilterBranch('All Branches');
+        showToast('Filters Reset', 'Restored global organization telemetry scope.', 'info');
+    };
+
+    const permittedConsoleIds = getPermittedConsoles ? getPermittedConsoles(currentRole) : (ROLE_PERMITTED_CONSOLES[currentRole] || readData("components.Clerio.MainWorkspace", "permittedConsoleIds_3"));
+
+    const getRoleDefaultScreen = (role) => {
+        switch (role) {
+            case ROLES.FINANCE_MANAGER: return 'S5';
+            case ROLES.HR_MANAGER: return 'S2';
+            case ROLES.PROJECT_MANAGER:
+            case ROLES.TEAM_LEAD: return 'S7';
+            case ROLES.EMPLOYEE: return 'S8';
+            case ROLES.SUPER_ADMIN:
+            default: return 'S1';
+        }
+    };
+
+    const safeActiveConsole = permittedConsoleIds.includes(activeConsole) ? activeConsole : (permittedConsoleIds[0] || readData("components.Clerio.MainWorkspace", "fallback_2"));
+    const activeDashboardScreen = safeActiveConsole || getRoleDefaultScreen(currentRole);
+
+    // --- UNIFIED COCKPIT & ROLE-BASED DASHBOARD RENDERER ---
+    const [personalDashboard, setPersonalDashboard] = useState(true);
+    const supportsPersonalDashboard = (currentRole === ROLES.SUPER_ADMIN && activeDashboardScreen === 'S10') || (currentRole === ROLES.HR_MANAGER && activeDashboardScreen === 'S2') || (currentRole === ROLES.EMPLOYEE && activeDashboardScreen === 'S8');
+    const renderDashboard = () => {
+        if (supportsPersonalDashboard && personalDashboard) return <PersonalDashboard key={`${authUser.email}:${activeDashboardScreen}`} consoleId={activeDashboardScreen} onNavigate={onTabChange} onShowConsole={() => setPersonalDashboard(false)} />;
+        if (activeDashboardScreen === 'S10' && [ROLES.SUPER_ADMIN, ROLES.ADMIN].includes(currentRole)) return <AdminOverview user={authUser} onNavigate={onTabChange} />;
+        const isEmployee = activeDashboardScreen === 'S8';
+        const isExecutive = activeDashboardScreen === 'S1' || (currentRole === ROLES.SUPER_ADMIN && !isEmployee);
+        const isManager = activeDashboardScreen === 'S7';
+
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
+
+                {/* 1. OPERATIONAL HERO & QUICK ACTIONS LAUNCHPAD */}
+                <div className={styles.heroSection} data-dashboard-hero style={{ marginBottom: 0, minHeight: 'auto', padding: 0 }}>
+                    <div className={styles.heroContent}>
+                        <div className={styles.heroLeft}>
+                            <div className={styles.heroAvatarWrapper}>
+                                <NextImage unoptimized width={48} height={48}
+                                    src={avatarUrl}
+                                    className={styles.heroAvatar}
+                                    alt={effectiveName}
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(effectiveName)}&background=2563ea&color=fff`;
+                                    }}
+                                />
+                                <div className={styles.heroOnline}></div>
+                            </div>
+                            <div className={styles.heroText}>
+                                {isExecutive ? (
+                                    <>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--status-ok)', boxShadow: '0 0 8px var(--status-ok)', display: 'inline-block' }} />
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_4")}</span>
+                                            <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_5")}</span>
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_6")}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                                            <h1 style={{ margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_7")}{firstName}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_8")}</h1>
+                                            <span style={{
+                                                padding: '0.2rem 0.6rem',
+                                                background: 'var(--signal-wash)',
+                                                color: 'var(--signal-ink)',
+                                                borderRadius: '6px',
+                                                fontSize: '0.74rem',
+                                                fontWeight: '700',
+                                                letterSpacing: '0.04em',
+                                                border: '1px solid var(--line-glow)'
+                                            }}>
+                                                {currentRole === 'SUPER_ADMIN' ? readData("components.Clerio.MainWorkspace", "display_8") : readData("components.Clerio.MainWorkspace", "display_9")}
+                                            </span>
+                                        </div>
+                                        <p style={{ margin: '0.25rem 0 0.85rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_9")}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
+                                                <Users size={13} color="var(--signal)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_10")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
+                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_11")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_12")}</button>
+                                            <button
+                                                className={shared.scopeBtn}
+                                                onClick={() => onTabChange('access_control')}
+                                                style={{
+                                                    borderColor: 'var(--line-glow)',
+                                                    color: 'var(--signal)',
+                                                    background: 'var(--signal-wash)'
+                                                }}
+                                                title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_13")}
+                                            >
+                                                <ShieldCheck size={13} color="var(--signal)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_14")}</button>
+                                        </div>
+                                    </>
+                                ) : isEmployee ? (
+                                    <>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4FB6F5', boxShadow: '0 0 8px #4FB6F5', display: 'inline-block' }} />
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_15")}</span>
+                                            <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_16")}</span>
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_17")}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                                            <h1 style={{ margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_18")}{firstName}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_19")}</h1>
+                                            <span style={{
+                                                padding: '0.2rem 0.6rem',
+                                                background: 'rgba(79, 182, 245, 0.15)',
+                                                color: '#4FB6F5',
+                                                borderRadius: '6px',
+                                                fontSize: '0.74rem',
+                                                fontWeight: '700',
+                                                letterSpacing: '0.04em',
+                                                border: '1px solid rgba(79, 182, 245, 0.3)'
+                                            }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_20")}</span>
+                                        </div>
+                                        <p style={{ margin: '0.25rem 0 0.85rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_21")}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <button
+                                                onClick={attendance.status === 'present' ? punchOut : punchIn}
+                                                style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '0.45rem',
+                                                    padding: '0.42rem 0.95rem',
+                                                    borderRadius: '9999px',
+                                                    fontSize: '0.78rem',
+                                                    fontWeight: '700',
+                                                    cursor: 'pointer',
+                                                    background: attendance.status === 'present' ? 'rgba(239, 68, 68, 0.22)' : 'var(--status-ok)',
+                                                    color: attendance.status === 'present' ? '#F43F5E' : '#060D18',
+                                                    border: attendance.status === 'present' ? '1px solid #F43F5E' : '1px solid var(--status-ok)',
+                                                    boxShadow: attendance.status === 'present' ? 'none' : '0 2px 10px rgba(16, 185, 129, 0.25)',
+                                                    transition: 'all 0.15s ease'
+                                                }}
+                                                title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_22")}
+                                            >
+                                                <Clock size={14} />
+                                                {attendance.status === 'present' ? `Punch Out (In: ${attendance.punchInTime || readData("components.Clerio.MainWorkspace", "fallback_3")})` : readData("components.Clerio.MainWorkspace", "display_10")}
+                                            </button>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('leaves')}>
+                                                <Sun size={13} color="#F2A93B" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_23")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('compensation')}>
+                                                <DollarSign size={13} color="#4FB6F5" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_24")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
+                                                <Users size={13} color="var(--signal)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_25")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
+                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_26")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_27")}</button>
+                                        </div>
+                                    </>
+                                ) : isManager ? (
+                                    <>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--status-ok)', boxShadow: '0 0 8px var(--status-ok)', display: 'inline-block' }} />
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_28")}</span>
+                                            <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_29")}</span>
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_30")}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                                            <h1 style={{ margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_31")}{firstName}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_32")}</h1>
+                                            <span style={{
+                                                padding: '0.2rem 0.6rem',
+                                                background: 'var(--signal-wash)',
+                                                color: 'var(--signal-ink)',
+                                                borderRadius: '6px',
+                                                fontSize: '0.74rem',
+                                                fontWeight: '700',
+                                                letterSpacing: '0.04em',
+                                                border: '1px solid var(--line-glow)'
+                                            }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_33")}</span>
+                                        </div>
+                                        <p style={{ margin: '0.25rem 0 0.85rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_34")}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('leaves')}>
+                                                <CheckCircle size={13} color="var(--status-ok)" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_35")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
+                                                <Users size={13} color="#4FB6F5" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_36")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
+                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_37")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_38")}</button>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.76rem', color: '#94A3B8', fontWeight: 600, marginBottom: '0.2rem' }}>
+                                            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#9B8CFF', boxShadow: '0 0 8px #9B8CFF', display: 'inline-block' }} />
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_39")}</span>
+                                            <span style={{ opacity: 0.4 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_40")}</span>
+                                            <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_41")}</span>
+                                        </div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flexWrap: 'wrap' }}>
+                                            <h1 style={{ margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_42")}{firstName}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_43")}</h1>
+                                            <span style={{
+                                                padding: '0.2rem 0.6rem',
+                                                background: 'rgba(155, 140, 255, 0.15)',
+                                                color: '#9B8CFF',
+                                                borderRadius: '6px',
+                                                fontSize: '0.74rem',
+                                                fontWeight: '700',
+                                                letterSpacing: '0.04em',
+                                                border: '1px solid rgba(155, 140, 255, 0.3)'
+                                            }}>
+                                                {currentRole.replace('_', ' ')}
+                                            </span>
+                                        </div>
+                                        <p style={{ margin: '0.25rem 0 0.85rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_44")}</p>
+                                        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                                            <button className={shared.scopeBtn} onClick={() => onTabChange('team')}>
+                                                <Users size={13} color="#05CD99" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_45")}</button>
+                                            <button className={shared.scopeBtn} onClick={() => setIsCMSModalOpen(true)}>
+                                                <Megaphone size={13} color="#9B8CFF" />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_46")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_47")}</button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={styles.heroActionsRight}>
+                            <div className={styles.cardRight}>
+                                <div className={styles.timeBig} style={{ fontSize: '1.6rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_48")}</div>
+                                <div className={styles.dateSmall} style={{ fontSize: '0.76rem' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_49")}</div>
+                                <div className={styles.locWeather} style={{ fontSize: '0.74rem' }}>
+                                    <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_50")}</span>
+                                    <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_51")}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 2. DEDICATED SUPER ADMIN & EXECUTIVE WORKFORCE FILTERS SECTION (4 REQUIRED FILTERS) */}
+                {(isExecutive || currentRole === 'SUPER_ADMIN') && (
+                    <div style={{
+                        background: 'linear-gradient(145deg, rgba(14, 29, 48, 0.95) 0%, rgba(10, 20, 35, 0.98) 100%)',
+                        border: '1px solid var(--line-glow)',
+                        borderRadius: '12px',
+                        padding: '1.1rem 1.35rem',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.35)',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '0.95rem',
+                        position: 'relative'
+                    }}>
+                        {/* Section Header */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '0.6rem',
+                            paddingBottom: '0.75rem',
+                            borderBottom: '1px solid rgba(255, 255, 255, 0.07)'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                                <div style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: '8px',
+                                    background: 'var(--signal-wash)',
+                                    border: '1px solid var(--line-glow)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'var(--signal)'
+                                }}>
+                                    <Filter size={16} />
+                                </div>
+                                <div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', flexWrap: 'wrap' }}>
+                                        <h3 style={{ margin: 0, fontSize: '0.92rem', fontWeight: 700, color: '#F1F5F9', letterSpacing: '0.02em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_52")}</h3>
+                                        <span style={{
+                                            fontSize: '0.65rem',
+                                            padding: '0.12rem 0.48rem',
+                                            borderRadius: '4px',
+                                            background: 'var(--signal-wash)',
+                                            color: 'var(--signal)',
+                                            fontWeight: 800,
+                                            letterSpacing: '0.05em',
+                                            border: '1px solid var(--line-glow)'
+                                        }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_53")}</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_54")}</span>
+                                </div>
+                            </div>
+
+                            {/* Active Status & Reset Button */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                                <span style={{
+                                    fontSize: '0.72rem',
+                                    color: '#CAD6DD',
+                                    background: 'rgba(255, 255, 255, 0.05)',
+                                    padding: '0.28rem 0.65rem',
+                                    borderRadius: '6px',
+                                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                                    fontWeight: 600
+                                }}>
+                                    {activeFilterCount > 0 ? (
+                                        <span style={{ color: 'var(--signal)' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_55")}{activeFilterCount}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_56")}{activeFilterCount > 1 ? readData("components.Clerio.MainWorkspace", "display_11") : ''}</span>
+                                    ) : (
+                                        <span style={{ color: '#94A3B8' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_57")}</span>
+                                    )}
+                                </span>
+
+                                <button
+                                    onClick={handleResetFilters}
+                                    style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        gap: '0.35rem',
+                                        padding: '0.28rem 0.7rem',
+                                        borderRadius: '6px',
+                                        background: 'rgba(255, 255, 255, 0.04)',
+                                        border: '1px solid rgba(255, 255, 255, 0.14)',
+                                        color: '#94A3B8',
+                                        fontSize: '0.72rem',
+                                        fontWeight: 600,
+                                        cursor: 'pointer',
+                                        transition: 'all 0.15s ease'
+                                    }}
+                                    title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_58")}
+                                >
+                                    <RotateCcw size={12} />{readData("components.Clerio.MainWorkspace", "renderDashboard_text_59")}</button>
+                            </div>
+                        </div>
+
+                        {/* 4 Dedicated Filter Cards Grid */}
+                        <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+                            gap: '0.85rem'
+                        }}>
+                            {/* FILTER 1: LOCATION */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.35rem',
+                                background: 'rgba(0, 0, 0, 0.22)',
+                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                borderRadius: '8px',
+                                padding: '0.65rem 0.85rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <MapPin size={14} color="#4FB6F5" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#4FB6F5', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_60")}</span>
+                                    </div>
+                                    {filterLocation !== 'All Locations' && (
+                                        <button
+                                            onClick={() => { setFilterLocation('All Locations'); showToast('Location Cleared', 'Reset to All Locations.', 'info'); }}
+                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_61")}
+                                        >
+                                            <X size={12} />
+                                        </button>
+                                    )}
+                                </div>
+                                <select
+                                    value={filterLocation}
+                                    onChange={(e) => {
+                                        setFilterLocation(e.target.value);
+                                        showToast('Location Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: '#060D18',
+                                        border: '1px solid rgba(79, 182, 245, 0.35)',
+                                        borderRadius: '6px',
+                                        padding: '0.42rem 0.65rem',
+                                        color: '#E6EDF6',
+                                        fontSize: '0.78rem',
+                                        fontWeight: 600,
+                                        outline: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="All Locations">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_62")}</option>
+                                    <option value="Bengaluru Campus (HQ)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_63")}</option>
+                                    <option value="Pune Tech Park">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_64")}</option>
+                                    <option value="Hyderabad R&D Hub">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_65")}</option>
+                                    <option value="Chennai Terminal">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_66")}</option>
+                                    <option value="NCR Delhi Hub">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_67")}</option>
+                                    <option value="Mumbai Financial Center">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_68")}</option>
+                                    <option value="Remote & Field Network">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_69")}</option>
+                                </select>
+                            </div>
+
+                            {/* FILTER 2: DEPARTMENT */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.35rem',
+                                background: 'rgba(0, 0, 0, 0.22)',
+                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                borderRadius: '8px',
+                                padding: '0.65rem 0.85rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <Layers size={14} color="var(--signal)" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: 'var(--signal)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_70")}</span>
+                                    </div>
+                                    {filterDepartment !== 'All Departments' && (
+                                        <button
+                                            onClick={() => { setFilterDepartment('All Departments'); showToast('Department Cleared', 'Reset to All Departments.', 'info'); }}
+                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_71")}
+                                        >
+                                            <X size={12} />
+                                        </button>
+                                    )}
+                                </div>
+                                <select
+                                    value={filterDepartment}
+                                    onChange={(e) => {
+                                        setFilterDepartment(e.target.value);
+                                        showToast('Department Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: '#060D18',
+                                        border: '1px solid var(--line-glow)',
+                                        borderRadius: '6px',
+                                        padding: '0.42rem 0.65rem',
+                                        color: '#E6EDF6',
+                                        fontSize: '0.78rem',
+                                        fontWeight: 600,
+                                        outline: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="All Departments">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_72")}</option>
+                                    <option value="Engineering & Architecture">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_73")}</option>
+                                    <option value="Product & UX Design">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_74")}</option>
+                                    <option value="Sales & Enterprise Growth">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_75")}</option>
+                                    <option value="Customer Operations & Support">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_76")}</option>
+                                    <option value="Finance, Tax & Legal">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_77")}</option>
+                                    <option value="People & Culture (HR)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_78")}</option>
+                                    <option value="DevOps & Cloud Infra">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_79")}</option>
+                                </select>
+                            </div>
+
+                            {/* FILTER 3: TENURE & TIMEFRAME (WITH 1M, 3M, AND CALENDAR SELECTOR) */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.35rem',
+                                background: 'rgba(0, 0, 0, 0.22)',
+                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                borderRadius: '8px',
+                                padding: '0.65rem 0.85rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <CalendarDays size={14} color="#F2A93B" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#F2A93B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_80")}</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.66rem', color: '#94A3B8' }}>
+                                        {isCustomCalendarOpen ? readData("components.Clerio.MainWorkspace", "display_12") : filterTenure}
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                    {readData("components.Clerio.MainWorkspace", "renderDashboard_81").map((t) => {
+                                        const isSelected = filterTenure === t && !isCustomCalendarOpen;
+                                        return (
+                                            <button
+                                                key={t}
+                                                onClick={() => {
+                                                    setFilterTenure(t);
+                                                    setIsCustomCalendarOpen(false);
+                                                    showToast('Tenure Filter Applied', `Scope set to: ${t}`, 'info');
+                                                }}
+                                                style={{
+                                                    flex: 1,
+                                                    padding: '0.38rem 0.35rem',
+                                                    borderRadius: '5px',
+                                                    fontSize: '0.72rem',
+                                                    fontWeight: isSelected ? 700 : 500,
+                                                    cursor: 'pointer',
+                                                    background: isSelected ? 'rgba(242, 169, 59, 0.2)' : '#060D18',
+                                                    border: isSelected ? '1px solid #F2A93B' : '1px solid rgba(28, 52, 80, 0.8)',
+                                                    color: isSelected ? '#F2A93B' : '#CAD6DD',
+                                                    transition: 'all 0.12s ease',
+                                                    textAlign: 'center'
+                                                }}
+                                            >
+                                                {t.replace(' Months', 'M').replace(' Month', 'M').replace(' Year', 'Y')}
+                                            </button>
+                                        );
+                                    })}
+                                    {/* Calendar Date Selector Toggle */}
+                                    <button
+                                        onClick={() => setIsCustomCalendarOpen(!isCustomCalendarOpen)}
+                                        style={{
+                                            padding: '0.38rem 0.55rem',
+                                            borderRadius: '5px',
+                                            fontSize: '0.72rem',
+                                            fontWeight: isCustomCalendarOpen ? 700 : 600,
+                                            cursor: 'pointer',
+                                            background: isCustomCalendarOpen ? 'var(--signal-wash)' : 'rgba(255, 255, 255, 0.04)',
+                                            border: isCustomCalendarOpen ? '1px solid var(--signal)' : '1px solid rgba(255, 255, 255, 0.12)',
+                                            color: isCustomCalendarOpen ? 'var(--signal)' : '#E6EDF6',
+                                            display: 'inline-flex',
+                                            alignItems: 'center',
+                                            gap: '0.25rem'
+                                        }}
+                                        title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_82")}
+                                    >
+                                        <Calendar size={13} />
+                                        <span>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_83")}</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* FILTER 4: BRANCH / LEGAL ENTITY */}
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.35rem',
+                                background: 'rgba(0, 0, 0, 0.22)',
+                                border: '1px solid rgba(28, 52, 80, 0.75)',
+                                borderRadius: '8px',
+                                padding: '0.65rem 0.85rem'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <Building2 size={14} color="#9B8CFF" />
+                                        <span style={{ fontSize: '0.68rem', fontWeight: 700, color: '#9B8CFF', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_84")}</span>
+                                    </div>
+                                    {filterBranch !== 'All Branches' && (
+                                        <button
+                                            onClick={() => { setFilterBranch('All Branches'); showToast('Branch Cleared', 'Reset to All Branches.', 'info'); }}
+                                            style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: 0 }}
+                                            title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_85")}
+                                        >
+                                            <X size={12} />
+                                        </button>
+                                    )}
+                                </div>
+                                <select
+                                    value={filterBranch}
+                                    onChange={(e) => {
+                                        setFilterBranch(e.target.value);
+                                        showToast('Branch Entity Scope Applied', `Telemetry filtered to: ${e.target.value}`, 'info');
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: '#060D18',
+                                        border: '1px solid rgba(155, 140, 255, 0.35)',
+                                        borderRadius: '6px',
+                                        padding: '0.42rem 0.65rem',
+                                        color: '#E6EDF6',
+                                        fontSize: '0.78rem',
+                                        fontWeight: 600,
+                                        outline: 'none',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <option value="All Branches">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_86")}</option>
+                                    <option value="Asteria India Pvt Ltd (HQ)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_87")}</option>
+                                    <option value="Asteria Tech Labs UK Ltd">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_88")}</option>
+                                    <option value="MultipliersKraft Cloud US Inc">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_89")}</option>
+                                    <option value="Asteria APAC Pte Ltd">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_90")}</option>
+                                    <option value="Asteria Global SEZ Unit">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_91")}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* INTERACTIVE CALENDAR DATE RANGE SELECTOR POPDOWN */}
+                        {isCustomCalendarOpen && (
+                            <div style={{
+                                padding: '0.75rem 1rem',
+                                background: 'rgba(6, 13, 24, 0.85)',
+                                border: '1px solid var(--line-glow)',
+                                borderRadius: '8px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                flexWrap: 'wrap',
+                                gap: '0.75rem',
+                                animation: 'fadeIn 0.2s ease-in-out'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ fontSize: '0.72rem', color: '#93A6BF', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_92")}</span>
+                                        <input
+                                            type="date"
+                                            value={customStartDate}
+                                            onChange={(e) => setCustomStartDate(e.target.value)}
+                                            style={{
+                                                background: '#0E1D30',
+                                                border: '1px solid #1C3450',
+                                                borderRadius: '5px',
+                                                padding: '0.35rem 0.55rem',
+                                                color: '#F1F5F9',
+                                                fontSize: '0.76rem',
+                                                fontWeight: 600
+                                            }}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                        <span style={{ fontSize: '0.72rem', color: '#93A6BF', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_93")}</span>
+                                        <input
+                                            type="date"
+                                            value={customEndDate}
+                                            onChange={(e) => setCustomEndDate(e.target.value)}
+                                            style={{
+                                                background: '#0E1D30',
+                                                border: '1px solid #1C3450',
+                                                borderRadius: '5px',
+                                                padding: '0.35rem 0.55rem',
+                                                color: '#F1F5F9',
+                                                fontSize: '0.76rem',
+                                                fontWeight: 600
+                                            }}
+                                        />
+                                    </div>
+
+                                    <button
+                                        onClick={() => {
+                                            setFilterTenure(`Custom (${customStartDate} to ${customEndDate})`);
+                                            showToast('Custom Range Applied', `Window set to: ${customStartDate} to ${customEndDate}`, 'success');
+                                        }}
+                                        style={{
+                                            padding: '0.38rem 0.85rem',
+                                            background: 'var(--signal)',
+                                            border: 'none',
+                                            borderRadius: '5px',
+                                            color: '#060D18',
+                                            fontSize: '0.74rem',
+                                            fontWeight: 700,
+                                            cursor: 'pointer'
+                                        }}
+                                    >{readData("components.Clerio.MainWorkspace", "renderDashboard_text_94")}</button>
+                                </div>
+
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                    <span style={{ fontSize: '0.72rem', color: 'var(--signal)', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_95")}{customStartDate}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_96")}{customEndDate}
+                                    </span>
+                                    <button
+                                        onClick={() => setIsCustomCalendarOpen(false)}
+                                        style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', padding: '0.2rem' }}
+                                        title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_97")}
+                                    >
+                                        <X size={14} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* ACTIVE FILTER SUMMARY STRIP */}
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexWrap: 'wrap',
+                            gap: '0.5rem',
+                            paddingTop: '0.45rem',
+                            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
+                            fontSize: '0.72rem'
+                        }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+                                <span style={{ color: '#94A3B8', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_98")}</span>
+                                <span style={{
+                                    padding: '0.15rem 0.5rem',
+                                    borderRadius: '4px',
+                                    background: filterLocation === 'All Locations' ? 'rgba(255,255,255,0.04)' : 'rgba(79, 182, 245, 0.15)',
+                                    color: filterLocation === 'All Locations' ? '#94A3B8' : '#4FB6F5',
+                                    border: filterLocation === 'All Locations' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(79, 182, 245, 0.3)'
+                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_99")}{filterLocation}
+                                </span>
+                                <span style={{
+                                    padding: '0.15rem 0.5rem',
+                                    borderRadius: '4px',
+                                    background: filterDepartment === 'All Departments' ? 'rgba(255,255,255,0.04)' : 'var(--signal-wash)',
+                                    color: filterDepartment === 'All Departments' ? '#94A3B8' : 'var(--signal)',
+                                    border: filterDepartment === 'All Departments' ? '1px solid rgba(255,255,255,0.08)' : '1px solid var(--line-glow)'
+                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_100")}{filterDepartment}
+                                </span>
+                                <span style={{
+                                    padding: '0.15rem 0.5rem',
+                                    borderRadius: '4px',
+                                    background: 'rgba(242, 169, 59, 0.15)',
+                                    color: '#F2A93B',
+                                    border: '1px solid rgba(242, 169, 59, 0.3)'
+                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_101")}{isCustomCalendarOpen ? `${customStartDate}..${customEndDate}` : filterTenure}
+                                </span>
+                                <span style={{
+                                    padding: '0.15rem 0.5rem',
+                                    borderRadius: '4px',
+                                    background: filterBranch === 'All Branches' ? 'rgba(255,255,255,0.04)' : 'rgba(155, 140, 255, 0.15)',
+                                    color: filterBranch === 'All Branches' ? '#94A3B8' : '#9B8CFF',
+                                    border: filterBranch === 'All Branches' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(155, 140, 255, 0.3)'
+                                }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_102")}{filterBranch}
+                                </span>
+                            </div>
+
+                            <span style={{ color: '#5F7691', fontWeight: 600 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_103")}</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* 3. ROLE-BASED ANALYTICAL CHARTS SUITE */}
+                {activeDashboardScreen === 'S1' && <PeopleCommandCentre onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S2' && <HROpsConsole onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S3' && <AttendanceIntelligence onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S4' && <TalentAcquisition onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S5' && <PayrollControlRoom onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S6' && <PerformanceTalent onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S7' && <ManagerCockpit onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S8' && <EmployeeHome onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S9' && <MagnetixCapability onNavigate={onTabChange} />}
+            {activeDashboardScreen === 'S10' && <NucleusIntelligence onNavigate={onTabChange} />}
+
+            {/* 3. GROUNDED OPERATIONAL CARDS */}
+            <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+                    gap: '12px',
+                    width: '100%',
+                    marginTop: '0.5rem'
+                }}>
+                    {/* Today's Focus Checklist */}
+                    <div style={{
+                        background: 'var(--card, #0E1D30)',
+                        border: '1px solid var(--line, #1C3450)',
+                        borderRadius: '8px',
+                        padding: '1rem 1.25rem'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <CheckCircle size={16} color="#2DD4A8" />
+                                <h3 style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text, #E6EDF6)', margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_104")}</h3>
+                            </div>
+                            <span style={{
+                                fontSize: '0.72rem',
+                                padding: '0.15rem 0.5rem',
+                                background: 'rgba(242, 169, 59, 0.15)',
+                                color: '#F2A93B',
+                                borderRadius: '4px',
+                                fontWeight: 700
+                            }}>
+                                {focusTasks.filter(t => !t.completed).length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_105")}</span>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                            {focusTasks.map(t => (
+                                <div
+                                    key={t.id}
+                                    onClick={() => completeFocusTask(t.id)}
+                                    style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.65rem',
+                                        padding: '0.45rem 0.6rem',
+                                        borderRadius: '5px',
+                                        background: 'rgba(0,0,0,0.2)',
+                                        border: '1px solid rgba(28, 52, 80, 0.4)',
+                                        cursor: 'pointer',
+                                        opacity: t.completed ? 0.45 : 1
+                                    }}
+                                >
+                                    <input
+                                        type="checkbox"
+                                        checked={t.completed || false}
+                                        onChange={() => {}}
+                                        style={{ accentColor: '#2DD4A8', cursor: 'pointer' }}
+                                    />
+                                    <span style={{
+                                        fontSize: '0.78rem',
+                                        color: 'var(--text, #E6EDF6)',
+                                        textDecoration: t.completed ? 'line-through' : 'none',
+                                        flex: 1
+                                    }}>
+                                        {t.title}
+                                    </span>
+                                    <span style={{
+                                        fontSize: '0.68rem',
+                                        color: '#93A6BF',
+                                        background: 'rgba(255,255,255,0.05)',
+                                        padding: '0.1rem 0.4rem',
+                                        borderRadius: '3px'
+                                    }}>
+                                        {t.due || readData("components.Clerio.MainWorkspace", "fallback_4")}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Company Broadcasts & Notices */}
+                    <div style={{
+                        background: 'var(--card, #0E1D30)',
+                        border: '1px solid var(--line, #1C3450)',
+                        borderRadius: '8px',
+                        padding: '1rem 1.25rem'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Megaphone size={16} color="#F2A93B" />
+                                <h3 style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text, #E6EDF6)', margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_106")}</h3>
+                            </div>
+                            <button
+                                onClick={() => setIsCMSModalOpen(true)}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: '#2DD4A8',
+                                    fontSize: '0.74rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                }}
+                            >{readData("components.Clerio.MainWorkspace", "renderDashboard_text_107")}{announcements.length}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_108")}</button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                            {announcements.slice(0, 3).map(ann => (
+                                <div
+                                    key={ann.id}
+                                    onClick={() => setIsCMSModalOpen(true)}
+                                    style={{
+                                        padding: '0.5rem 0.65rem',
+                                        borderRadius: '5px',
+                                        background: ann.pinned ? 'rgba(155, 140, 255, 0.08)' : 'rgba(0,0,0,0.2)',
+                                        border: ann.pinned ? '1px solid rgba(155, 140, 255, 0.25)' : '1px solid rgba(28, 52, 80, 0.4)',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <strong style={{ fontSize: '0.78rem', color: 'var(--text, #E6EDF6)' }}>{ann.title}</strong>
+                                        {ann.pinned && (
+                                            <span style={{ fontSize: '0.65rem', color: '#9B8CFF', fontWeight: 700, textTransform: 'uppercase' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_109")}</span>
+                                        )}
+                                    </div>
+                                    <div style={{ fontSize: '0.7rem', color: '#93A6BF', marginTop: '0.2rem' }}>
+                                        {ann.author}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_110")}{ann.date}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Sprint Velocity & Active Pod Allocations */}
+                    <div style={{
+                        background: 'var(--card, #0E1D30)',
+                        border: '1px solid var(--line, #1C3450)',
+                        borderRadius: '8px',
+                        padding: '1rem 1.25rem'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Briefcase size={16} color="#9B8CFF" />
+                                <h3 style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text, #E6EDF6)', margin: 0 }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_111")}</h3>
+                            </div>
+                            <button
+                                onClick={() => onTabChange('projects')}
+                                style={{
+                                    background: 'transparent',
+                                    border: 'none',
+                                    color: '#2DD4A8',
+                                    fontSize: '0.74rem',
+                                    fontWeight: 700,
+                                    cursor: 'pointer'
+                                }}
+                            >{readData("components.Clerio.MainWorkspace", "renderDashboard_text_112")}</button>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                            {projects.slice(0, 2).map(p => (
+                                <div key={p.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.76rem' }}>
+                                        <strong style={{ color: 'var(--text, #E6EDF6)' }}>{p.name}</strong>
+                                        <span style={{ color: '#2DD4A8', fontWeight: 700 }}>{p.progress}{readData("components.Clerio.MainWorkspace", "renderDashboard_text_113")}</span>
+                                    </div>
+                                    <div style={{ height: 6, background: '#14263D', borderRadius: 3, overflow: 'hidden' }}>
+                                        <div style={{ width: `${p.progress}%`, height: '100%', background: '#2DD4A8' }} />
+                                    </div>
+                                    <div style={{ fontSize: '0.68rem', color: '#93A6BF' }}>{readData("components.Clerio.MainWorkspace", "renderDashboard_text_114")}{p.lead}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+        </div>
+    );
+};
+
+    // --- OTHER TABS (Placeholders) ---
+    const renderTeam = () => (
+        <div style={{ padding: '2rem' }}><h2>{readData("components.Clerio.MainWorkspace", "renderTeam_text_115")}</h2></div>
+    );
+    const renderLeaves = () => (
+        <div style={{ padding: '2rem' }}><h2>{readData("components.Clerio.MainWorkspace", "renderLeaves_text_116")}</h2></div>
+    );
+    const renderPayroll = () => (
+        <div style={{ padding: '2rem' }}><h2>{readData("components.Clerio.MainWorkspace", "renderPayroll_text_117")}</h2></div>
+    );
+    const renderPerformance = () => (
+        <div style={{ padding: '2rem' }}><h2>{readData("components.Clerio.MainWorkspace", "renderPerformance_text_118")}</h2></div>
+    );
+
+    const formatTabName = (tab) => {
+        const names = readData("components.Clerio.MainWorkspace", "names_119");
+        return names[tab] || tab.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    };
+
+    return (
+        <div className={styles.workspace}>
+            {showCatalog ? (
+                <CatalogGridView
+                    onSelectFeature={(targetTab, domain, itemId) => {
+                        onTabChange(targetTab, domain, itemId);
+                    }}
+                    searchQuery={searchQuery}
+                />
+            ) : (
+                <>
+                    {/* Breadcrumb back to catalog if in a module */}
+                    {activeTab !== 'dashboard' && (
+                        <div className={styles.breadcrumbBar}>
+                            <button
+                                className={styles.backToCatalogBtn}
+                                onClick={onToggleCatalog}
+                                title={readData("components.Clerio.MainWorkspace", "MainWorkspace_title_120")}
+                            >
+                                <Layers size={14} />
+                                <span>{readData("components.Clerio.MainWorkspace", "MainWorkspace_text_121")}</span>
+                            </button>
+                            <span className={styles.breadcrumbSep}>{readData("components.Clerio.MainWorkspace", "MainWorkspace_text_122")}</span>
+                            <span className={styles.breadcrumbCurrent}>{formatTabName(activeTab)}</span>
+                        </div>
+                    )}
+
+                    {/* Display Content based on Active Tab */}
+                    {activeTab === 'dashboard' && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>Return to my dashboard</button>}{renderDashboard()}</>}
+
+            {/* Module 1: People Core */}
+            {activeTab === 'people_core' && (
+                <RoleProtected moduleKey="people_core" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
+                    <PeopleCoreView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 2: Global Payroll & EWA */}
+            {activeTab === 'payroll' && (
+                <RoleProtected moduleKey="payroll" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.FINANCE_MANAGER, ROLES.HR_MANAGER, ROLES.EMPLOYEE, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
+                    <PayrollView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 3: Talent Acquisition / ATS */}
+            {activeTab === 'recruitment' && (
+                <RoleProtected moduleKey="recruitment" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
+                    <RecruitmentView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 4: Onboarding & Lifecycle */}
+            {activeTab === 'onboarding' && (
+                <RoleProtected moduleKey="onboarding" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
+                    <OnboardingView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 5: Performance & OKRs */}
+            {activeTab === 'performance' && (
+                <RoleProtected moduleKey="performance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
+                    <PerformanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 6: Attendance & Leaves */}
+            {activeTab === 'attendance' && (
+                <RoleProtected moduleKey="attendance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <AttendanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+            {activeTab === 'leaves' && (
+                <RoleProtected moduleKey="leaves" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <LeaveView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 7: People Intelligence / Analytics */}
+                {activeTab === 'analytics' && (
+                    <RoleProtected moduleKey="analytics" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER]}>
+                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    </RoleProtected>
+                )}
+
+                {activeTab === 'operational_reports' && (
+                    <RoleProtected moduleKey="analytics" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER]}>
+                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    </RoleProtected>
+                )}
+
+            {/* Module 8: Learning & Development (L&D) */}
+            {activeTab === 'learning' && (
+                <RoleProtected moduleKey="learning" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <LearningView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 9: Compensation & Benefits */}
+            {activeTab === 'compensation' && (
+                <RoleProtected moduleKey="compensation" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <CompensationView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 10: Experience, MCI & Vedic Wellbeing */}
+            {activeTab === 'experience' && (
+                <RoleProtected moduleKey="experience" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <ExperienceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 11: Integrations & API Platform */}
+            {activeTab === 'integrations' && (
+                <RoleProtected moduleKey="integrations" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER]}>
+                    <IntegrationsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 6: Statutory Compliance Engine & Labour Codes Simulator */}
+            {activeTab === 'compliance' && (
+                <RoleProtected moduleKey="compliance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER]}>
+                    <ComplianceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 7: Helpdesk & Grounded Policy Assistant */}
+            {activeTab === 'helpdesk' && (
+                <RoleProtected moduleKey="helpdesk" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
+                    <HelpdeskView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Module 13: Contract & Contingent Workforce */}
+            {activeTab === 'contract_workforce' && (
+                <RoleProtected moduleKey="contract_workforce" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
+                    <ContractWorkforceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Workspaces, Teams & Settings */}
+            {activeTab === 'projects' && (
+                <RoleProtected moduleKey="projects" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
+                    <ProjectView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {activeTab === 'team' && (
+                <RoleProtected moduleKey="team" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
+                    <TeamView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {activeTab === 'settings' && (
+                <RoleProtected moduleKey="settings" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
+                    <SettingsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+            {/* Platform Security & Access Control Governance Studio (Dedicated Page) */}
+            {activeTab === 'access_control' && (
+                <RoleProtected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN]}>
+                    <AccessControlView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                </RoleProtected>
+            )}
+
+                {operationalModule && activeTab !== 'operational_reports' && (
+                <RoleProtected moduleKey={operationalModule.primary} allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
+                    <OperationalModuleView key={operationalModule.id} module={operationalModule} onNavigate={onTabChange} />
+                </RoleProtected>
+            )}
+
+            {/* Enterprise Content & Policy CMS Modal */}
+            <CMSModal
+                isOpen={isCMSModalOpen}
+                onClose={() => setIsCMSModalOpen(false)}
+            />
+
+            {/* Enterprise Access Control & Permissions Governance Modal */}
+            <AccessControlModal
+                isOpen={isAccessControlOpen}
+                onClose={closeAccessControl}
+            />
+            <NucleusActionModal
+                request={actionRequest}
+                onClose={() => setActionRequest(null)}
+                onComplete={completeAction}
+            />
+                </>
+            )}
+        </div>
+    );
+};
+
+export default MainWorkspace;

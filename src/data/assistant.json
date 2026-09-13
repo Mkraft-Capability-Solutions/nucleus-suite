@@ -1,0 +1,136 @@
+{
+  "routes": [
+    {
+      "keywords": [],
+      "reply": "Opening Payroll.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "payroll"
+      }
+    },
+    {
+      "keywords": [
+        "leave",
+        "vacation",
+        "holiday",
+        "time off",
+        "pto"
+      ],
+      "reply": "Opening Leave Management.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "leaves"
+      }
+    },
+    {
+      "keywords": [
+        "attendance",
+        "clock",
+        "punch",
+        "shift",
+        "biometric"
+      ],
+      "reply": "Opening Attendance.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "attendance"
+      }
+    },
+    {
+      "keywords": [
+        "recruit",
+        "hiring",
+        "candidate",
+        "job",
+        "ats"
+      ],
+      "reply": "Opening Recruitment.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "recruitment"
+      }
+    },
+    {
+      "keywords": [
+        "performance",
+        "okr",
+        "goal",
+        "9-box",
+        "appraisal"
+      ],
+      "reply": "Opening Performance.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "performance"
+      }
+    },
+    {
+      "keywords": [
+        "learn",
+        "course",
+        "training",
+        "magnetix",
+        "skill"
+      ],
+      "reply": "Opening Learning.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "learning"
+      }
+    },
+    {
+      "keywords": [
+        "mci",
+        "wellbeing",
+        "vedic",
+        "experience",
+        "mental"
+      ],
+      "reply": "Opening Employee Experience.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "experience"
+      }
+    },
+    {
+      "keywords": [
+        "team",
+        "pod",
+        "directory",
+        "colleague",
+        "who is"
+      ],
+      "reply": "Opening Team Directory.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "team"
+      }
+    },
+    {
+      "keywords": [
+        "dashboard",
+        "console"
+      ],
+      "reply": "Opening Dashboard.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "dashboard"
+      }
+    },
+    {
+      "keywords": [
+        "setting",
+        "security",
+        "rbac",
+        "profile"
+      ],
+      "reply": "Opening Settings.",
+      "action": {
+        "type": "NAVIGATE",
+        "payload": "settings"
+      }
+    }
+  ],
+  "greeting": "How can I help you navigate the workspace?",
+  "fallback": "Ask me to open a module such as Payroll, Leave, Attendance, or Performance. I cannot confirm personal balances or execute approvals."
+}

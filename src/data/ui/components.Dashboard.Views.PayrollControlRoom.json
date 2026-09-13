@@ -1,0 +1,424 @@
+{
+  "steps_1": [
+    {
+      "label": "Inputs frozen",
+      "date": "05 Sep",
+      "status": "completed"
+    },
+    {
+      "label": "Attendance locked",
+      "date": "08 Sep",
+      "status": "completed"
+    },
+    {
+      "label": "Variables loaded",
+      "date": "09 Sep",
+      "status": "completed"
+    },
+    {
+      "label": "Exceptions review",
+      "date": "Today",
+      "status": "active"
+    },
+    {
+      "label": "Approval",
+      "date": "26 Sep",
+      "status": "upcoming"
+    },
+    {
+      "label": "Bank file",
+      "date": "28 Sep",
+      "status": "upcoming"
+    },
+    {
+      "label": "Payslips released",
+      "date": "30 Sep",
+      "status": "upcoming"
+    },
+    {
+      "label": "Statutory filed",
+      "date": "15 Oct",
+      "status": "upcoming"
+    }
+  ],
+  "tooltip_fields_3": {
+    "trigger": "axis",
+    "axisPointer": {
+      "type": "shadow"
+    }
+  },
+  "waterfallOption_fields_2": {
+    "grid": {
+      "left": 45,
+      "right": 15,
+      "top": 20,
+      "bottom": 25
+    }
+  },
+  "xAxis_fields_6": {
+    "type": "category",
+    "data": [
+      "Aug Gross",
+      "New Hires",
+      "Exits",
+      "Increments",
+      "Overtime",
+      "LOP",
+      "Bonus Rev",
+      "Sep Gross"
+    ]
+  },
+  "axisLabel_fields_8": {
+    "fontSize": 10,
+    "rotate": 10
+  },
+  "yAxis_fields_9": {
+    "type": "value",
+    "min": 270,
+    "max": 305,
+    "axisLabel": {
+      "formatter": "₹{value}L"
+    }
+  },
+  "series_11": {
+    "name": "Placeholder",
+    "type": "bar",
+    "stack": "Total",
+    "itemStyle": {
+      "borderColor": "transparent",
+      "color": "transparent"
+    },
+    "emphasis": {
+      "itemStyle": {
+        "color": "transparent"
+      }
+    },
+    "data": [
+      0,
+      290,
+      293,
+      293,
+      302,
+      303,
+      296,
+      0
+    ]
+  },
+  "series_fields_12": {
+    "name": "Amount",
+    "type": "bar",
+    "stack": "Total"
+  },
+  "label_fields_14": {
+    "show": true,
+    "position": "top"
+  },
+  "label_fields_15": {
+    "fontSize": 10
+  },
+  "data_fields_16": {
+    "value": 290
+  },
+  "data_fields_17": {
+    "value": 14
+  },
+  "data_fields_18": {
+    "value": 11
+  },
+  "data_fields_19": {
+    "value": 9
+  },
+  "data_fields_20": {
+    "value": 4
+  },
+  "data_fields_21": {
+    "value": 3
+  },
+  "data_fields_22": {
+    "value": 7
+  },
+  "data_fields_23": {
+    "value": 296
+  },
+  "series_fields_13": {
+    "barWidth": 20
+  },
+  "costDonutOption_fields_24": {
+    "tooltip": {
+      "trigger": "item",
+      "formatter": "{b}: <strong>₹{c} Cr</strong> ({d}%)"
+    }
+  },
+  "legend_fields_26": {
+    "orient": "vertical",
+    "right": 10,
+    "top": "center"
+  },
+  "textStyle_fields_27": {
+    "fontSize": 11
+  },
+  "series_fields_28": {
+    "name": "Cost Breakdown",
+    "type": "pie",
+    "radius": [
+      "55%",
+      "80%"
+    ],
+    "center": [
+      "35%",
+      "50%"
+    ],
+    "avoidLabelOverlap": false,
+    "itemStyle": {
+      "borderRadius": 4,
+      "borderColor": "#0E1D30",
+      "borderWidth": 2
+    }
+  },
+  "label_fields_32": {
+    "show": true,
+    "position": "center",
+    "formatter": "₹2.86 Cr\nSep Gross",
+    "fontSize": 13,
+    "fontWeight": 700
+  },
+  "data_fields_33": {
+    "value": 2.12,
+    "name": "Fixed Pay (74.1%)"
+  },
+  "data_fields_34": {
+    "value": 0.34,
+    "name": "Variable (11.9%)"
+  },
+  "data_fields_35": {
+    "value": 0.24,
+    "name": "Employer PF/ESI (8.4%)"
+  },
+  "data_fields_36": {
+    "value": 0.11,
+    "name": "Allowances (3.8%)"
+  },
+  "data_fields_37": {
+    "value": 0.05,
+    "name": "Overtime (1.7%)"
+  },
+  "costByFunctionOption_fields_38": {
+    "tooltip": {
+      "trigger": "axis",
+      "formatter": "{b}: <strong>₹{c} L</strong> / employee"
+    },
+    "grid": {
+      "left": 45,
+      "right": 15,
+      "top": 15,
+      "bottom": 25
+    }
+  },
+  "xAxis_fields_41": {
+    "type": "category",
+    "data": [
+      "Eng",
+      "Sales",
+      "Ops",
+      "Fin",
+      "Sup",
+      "HR"
+    ]
+  },
+  "axisLabel_fields_43": {
+    "fontSize": 11
+  },
+  "yAxis_fields_44": {
+    "type": "value",
+    "axisLabel": {
+      "formatter": "₹{value}L"
+    }
+  },
+  "series_fields_46": {
+    "type": "bar"
+  },
+  "data_fields_48": {
+    "value": 32
+  },
+  "data_fields_49": {
+    "value": 22
+  },
+  "data_fields_50": {
+    "value": 14
+  },
+  "data_fields_51": {
+    "value": 18
+  },
+  "data_fields_52": {
+    "value": 12
+  },
+  "data_fields_53": {
+    "value": 15
+  },
+  "series_fields_47": {
+    "barWidth": 16
+  },
+  "label_fields_54": {
+    "show": true,
+    "position": "top",
+    "formatter": "₹{c}L"
+  },
+  "label_fields_55": {
+    "fontSize": 10
+  },
+  "accuracyOption_fields_56": {
+    "tooltip": {
+      "trigger": "axis",
+      "formatter": "{b}: <strong>{c}</strong> corrections / 1k"
+    },
+    "grid": {
+      "left": 35,
+      "right": 15,
+      "top": 15,
+      "bottom": 25
+    }
+  },
+  "xAxis_fields_59": {
+    "type": "category",
+    "data": [
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep"
+    ]
+  },
+  "axisLabel_fields_61": {
+    "fontSize": 10
+  },
+  "yAxis_fields_62": {
+    "type": "value",
+    "min": 0,
+    "max": 14
+  },
+  "series_fields_63": {
+    "type": "line",
+    "data": [
+      12,
+      9,
+      7,
+      4,
+      3,
+      1
+    ]
+  },
+  "series_fields_64": {
+    "lineStyle": {
+      "width": 3
+    },
+    "areaStyle": {
+      "color": "rgba(45, 212, 168, 0.12)"
+    }
+  },
+  "content_text_68": "Payroll Control Room",
+  "content_text_69": "September 2026 • 1,284 employees • 3 entities",
+  "content_text_70": "Entity: MKraft LLP",
+  "content_text_71": "Cycle: Sep 2026",
+  "content_72": {
+    "period": "September 2026"
+  },
+  "content_text_73": " Preview register",
+  "content_fields_74": {
+    "period": "September 2026"
+  },
+  "content_text_75": "Gross payroll",
+  "content_text_76": "₹2.86 Cr",
+  "content_text_77": " -1.2%",
+  "content_text_78": "vs Plan ₹2.90 Cr",
+  "content_text_79": "Net disbursement",
+  "content_text_80": "₹2.41 Cr",
+  "content_text_81": "1,281 verified",
+  "content_text_82": "Ready for bank release",
+  "content_text_83": "Statutory liability",
+  "content_text_84": "₹38.2 L",
+  "content_text_85": "Due 15 Sep",
+  "content_text_86": "EPFO, ESIC & PT",
+  "content_text_87": "Open exceptions",
+  "content_text_88": "Mandatory pre-lock gate",
+  "content_text_89": "Why the Cost Moved",
+  "content_text_90": "Aug to Sep cost bridge (₹ Lakh)",
+  "content_text_91": "Cost Composition",
+  "content_text_92": "September gross breakdown",
+  "content_text_93": "Exceptions to Clear Before Lock",
+  "content_text_94": "Hard distinction: Blocking vs Review",
+  "content_text_95": "Exception",
+  "content_text_96": "Count",
+  "content_text_97": "Value",
+  "content_text_98": "Detected By",
+  "content_text_99": "Type",
+  "content_text_100": "Duplicate bank account",
+  "content_text_101": "Across 2 distinct PANs",
+  "content_text_102": "2",
+  "content_text_103": "₹1.84 L",
+  "content_text_104": " Nucleus AI",
+  "content_text_105": "Blocking",
+  "content_text_106": "Net pay below statutory minimum wage",
+  "content_text_107": "1",
+  "content_text_108": "₹14,200",
+  "content_text_109": "Rule engine",
+  "content_text_110": "Blocking",
+  "content_text_111": "Salary change without approval record",
+  "content_text_112": "1",
+  "content_text_113": "₹92,000",
+  "content_text_114": "Rule engine",
+  "content_text_115": "Blocking",
+  "content_text_116": "Variance > 40% vs last month",
+  "content_text_117": "9",
+  "content_text_118": "₹6.20 L",
+  "content_text_119": " Nucleus AI",
+  "content_text_120": "Review",
+  "content_text_121": "LOP with no attendance record",
+  "content_text_122": "14",
+  "content_text_123": "₹2.10 L",
+  "content_text_124": "Rule engine",
+  "content_text_125": "Review",
+  "content_text_126": "Statutory Calendar (Next 45 Days)",
+  "content_text_127": "PF, ESI, Multi-state PT, TDS 24Q",
+  "content_text_128": "PF ECR & Challan",
+  "content_text_129": " (EPFO)",
+  "content_text_130": "15 Sep",
+  "content_text_131": "Due 4d",
+  "content_text_132": "ESI Contribution",
+  "content_text_133": " (ESIC)",
+  "content_text_134": "15 Sep",
+  "content_text_135": "Due 4d",
+  "content_text_136": "Professional Tax",
+  "content_text_137": " (KA, MH, TS)",
+  "content_text_138": "20 Sep",
+  "content_text_139": "Pending",
+  "content_text_140": "TDS Deposit, 24Q",
+  "content_text_141": " (Income Tax)",
+  "content_text_142": "07 Oct",
+  "content_text_143": "Upcoming",
+  "content_text_144": "LWF Remittance",
+  "content_text_145": " (Karnataka)",
+  "content_text_146": "Filed",
+  "content_text_147": "Completed",
+  "content_text_148": "Gratuity Actuarial Refresh",
+  "content_text_149": " (AS 15)",
+  "content_text_150": "31 Oct",
+  "content_text_151": "Scheduled",
+  "content_text_152": "Cost per Employee by Function",
+  "content_text_153": "₹ Lakh, annualised",
+  "content_text_154": "Payroll accuracy trend",
+  "content_text_155": "Off-cycle corrections per 1,000 payslips",
+  "display_1": "All blocking exceptions are cleared.",
+  "display_2": "3 blocking exceptions remain and must be reviewed before release.",
+  "display_3": "Release authorized",
+  "display_4": "Lock and release",
+  "display_5": "✓",
+  "display_6": "4",
+  "display_7": "7",
+  "display_8": "0 blocking",
+  "display_9": "3 must clear",
+  "display_10": "Reset to Unresolved",
+  "display_11": "Simulate Cleared",
+  "fallback_1": "span-7",
+  "fallback_2": "span-5"
+}

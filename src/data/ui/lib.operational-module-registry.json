@@ -1,0 +1,2916 @@
+{
+  "modules": [
+    {
+      "id": "access_scope",
+      "screenId": "SCR-005",
+      "title": "Access scope administration",
+      "primary": "people_core",
+      "endpoint": "/api/v1/identity/memberships",
+      "fields": [
+        {
+          "key": "principal",
+          "label": "Principal",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "role",
+          "label": "Role template",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location scope",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "description": "Manage access scope administration with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Active",
+        "Scheduled",
+        "Revoked"
+      ],
+      "actions": [
+        "Grant scope",
+        "Revoke scope"
+      ],
+      "columns": [
+        "Principal",
+        "Scope",
+        "Status",
+        "Effective from"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "person_record",
+      "screenId": "SCR-010",
+      "title": "Employee record",
+      "primary": "people_core",
+      "endpoint": "/api/v1/people",
+      "fields": [
+        {
+          "key": "employeeCode",
+          "label": "Employee code",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "fullName",
+          "label": "Full name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "gender",
+          "label": "Gender",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "dateOfBirth",
+          "label": "Date of birth",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "mobile",
+          "label": "Mobile",
+          "required": true,
+          "type": "tel"
+        },
+        {
+          "key": "personalEmail",
+          "label": "Personal email",
+          "required": false,
+          "type": "email"
+        },
+        {
+          "key": "address",
+          "label": "Present address",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "emergencyContact",
+          "label": "Emergency contact",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "ifsc",
+          "label": "IFSC",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage employee record with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Active",
+        "On leave",
+        "Separated",
+        "Archived"
+      ],
+      "actions": [
+        "Create employee",
+        "Request edit"
+      ],
+      "columns": [
+        "Employee",
+        "Department",
+        "Assignment",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "assignment_admin",
+      "screenId": "SCR-011",
+      "title": "Assignment and policy attributes",
+      "primary": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "designation",
+          "label": "Designation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollGroup",
+          "label": "Payroll group",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "manager",
+          "label": "Reporting manager",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "workerClass",
+          "label": "Worker class",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "changeReason",
+          "label": "Change reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage assignment and policy attributes with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Effective",
+        "Scheduled",
+        "Superseded"
+      ],
+      "actions": [
+        "Add assignment",
+        "Schedule change"
+      ],
+      "columns": [
+        "Employee",
+        "Position",
+        "Location",
+        "Effective from"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "position_register",
+      "screenId": "SCR-012",
+      "title": "Position register",
+      "primary": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "positionCode",
+          "label": "Position code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "title",
+          "label": "Position title",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "headcount",
+          "label": "Approved headcount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "description": "Manage position register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Open",
+        "Filled",
+        "Frozen",
+        "Abolished"
+      ],
+      "actions": [
+        "Create position",
+        "Freeze position"
+      ],
+      "columns": [
+        "Position",
+        "Incumbent",
+        "Vacancy",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "sanctioned_strength",
+      "screenId": "SCR-013",
+      "title": "Sanctioned strength board",
+      "primary": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "designation",
+          "label": "Designation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "sanctioned",
+          "label": "Sanctioned strength",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Approval reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage sanctioned strength board with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Within headroom",
+        "At limit",
+        "Over plan"
+      ],
+      "actions": [
+        "Set sanctioned strength",
+        "Review headroom"
+      ],
+      "columns": [
+        "Organisation",
+        "Sanctioned",
+        "Filled",
+        "Open"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "document_vault",
+      "screenId": "SCR-014",
+      "title": "Document vault",
+      "primary": "people_core",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "documentType",
+          "label": "Document type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "issuedOn",
+          "label": "Issued on",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "key": "expiresOn",
+          "label": "Expires on",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "key": "classification",
+          "label": "Access classification",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "file",
+          "label": "File",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "description": "Manage document vault with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Pending verification",
+        "Verified",
+        "Expired",
+        "Replaced"
+      ],
+      "actions": [
+        "Upload document",
+        "Verify document"
+      ],
+      "columns": [
+        "Document",
+        "Employee",
+        "Expiry",
+        "Verification"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "attendance_detail",
+      "screenId": "SCR-022",
+      "title": "Attendance day detail",
+      "primary": "attendance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "appliedShift",
+          "label": "Applied shift",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Override or recompute reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage attendance day detail with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Computed",
+        "Exception",
+        "Locked"
+      ],
+      "actions": [
+        "Regularise day",
+        "Recompute day"
+      ],
+      "columns": [
+        "Employee",
+        "Date",
+        "Net hours",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "overtime_register",
+      "screenId": "SCR-024",
+      "title": "Overtime register",
+      "primary": "attendance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "minutes",
+          "label": "Approved overtime minutes",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "multiplier",
+          "label": "Multiplier",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payRun",
+          "label": "Payroll run",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage overtime register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Pending approval",
+        "Approved",
+        "Tagged to run",
+        "Paid"
+      ],
+      "actions": [
+        "Approve overtime",
+        "Tag payroll run"
+      ],
+      "columns": [
+        "Employee",
+        "Date",
+        "Overtime",
+        "Run"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "attendance_exceptions",
+      "screenId": "SCR-025",
+      "title": "Attendance exception queue",
+      "primary": "attendance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "exceptionType",
+          "label": "Exception type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage attendance exception queue with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Open",
+        "Proposed",
+        "Resolved",
+        "Rejected"
+      ],
+      "actions": [
+        "Accept proposal",
+        "Resolve exception"
+      ],
+      "columns": [
+        "Exception",
+        "Employee",
+        "Age",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "recompute_monitor",
+      "screenId": "SCR-026",
+      "title": "Attendance recompute monitor",
+      "primary": "attendance",
+      "endpoint": "/api/v1/ops/scheduled-tasks",
+      "fields": [
+        {
+          "key": "employeeScope",
+          "label": "Employee or scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Recompute reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage attendance recompute monitor with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Queued",
+        "Running",
+        "Completed",
+        "Blocked"
+      ],
+      "actions": [
+        "Queue recompute",
+        "Inspect delta"
+      ],
+      "columns": [
+        "Job",
+        "Scope",
+        "Delta",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "team_history",
+      "screenId": "SCR-027",
+      "title": "Team history",
+      "primary": "attendance",
+      "endpoint": "/api/v1/reports/team-history",
+      "fields": [
+        {
+          "key": "team",
+          "label": "Team",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "member",
+          "label": "Team member",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage team history with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Ready",
+        "Scheduled",
+        "Expired"
+      ],
+      "actions": [
+        "Run report",
+        "Export history"
+      ],
+      "columns": [
+        "Team member",
+        "Attendance",
+        "Leave",
+        "Overtime"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "leave_policy_admin",
+      "screenId": "SCR-032",
+      "title": "Leave policy configuration",
+      "primary": "leaves",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "accrualPolicy",
+          "label": "Accrual policy",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "carryForward",
+          "label": "Carry-forward cap",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "changeReason",
+          "label": "Change reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage leave policy configuration with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Simulated",
+        "Effective",
+        "Superseded"
+      ],
+      "actions": [
+        "Create policy",
+        "Simulate policy"
+      ],
+      "columns": [
+        "Policy",
+        "Leave type",
+        "Effective from",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "tax_declarations",
+      "screenId": "SCR-054",
+      "title": "Tax declaration and projection",
+      "primary": "payroll",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "financialYear",
+          "label": "Financial year",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "taxRegime",
+          "label": "Tax regime",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "declarationType",
+          "label": "Declaration type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "amount",
+          "label": "Declared amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "proof",
+          "label": "Proof document",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "description": "Manage tax declaration and projection with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Submitted",
+        "Verified",
+        "Rejected"
+      ],
+      "actions": [
+        "Add declaration",
+        "Review proof"
+      ],
+      "columns": [
+        "Employee",
+        "Regime",
+        "Projected TDS",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "bank_disbursement",
+      "screenId": "SCR-055",
+      "title": "Bank disbursement control",
+      "primary": "payroll",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "bankGateway",
+          "label": "Bank gateway",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "checksum",
+          "label": "File checksum",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "makerReference",
+          "label": "Maker reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "checkerReference",
+          "label": "Checker reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage bank disbursement control with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Prepared",
+        "Verified",
+        "Released",
+        "Failed"
+      ],
+      "actions": [
+        "Generate bank file",
+        "Verify and release"
+      ],
+      "columns": [
+        "Run",
+        "Bank file",
+        "Total",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "policy_acknowledgements",
+      "screenId": "SCR-062",
+      "title": "Policy acknowledgements",
+      "primary": "onboarding",
+      "endpoint": "/api/v1/announcements",
+      "fields": [
+        {
+          "key": "policy",
+          "label": "Policy version",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "audience",
+          "label": "Audience rule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "acknowledgedOn",
+          "label": "Acknowledged on",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "comment",
+          "label": "Employee comment",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage policy acknowledgements with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Published",
+        "Pending acknowledgement",
+        "Acknowledged",
+        "Overdue"
+      ],
+      "actions": [
+        "Publish acknowledgement",
+        "Record acknowledgement"
+      ],
+      "columns": [
+        "Policy",
+        "Audience",
+        "Acknowledged",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "rule_pack_manager",
+      "screenId": "SCR-070",
+      "title": "Rule-pack manager",
+      "primary": "compliance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "packName",
+          "label": "Rule-pack name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "jurisdiction",
+          "label": "Jurisdiction",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "version",
+          "label": "Version",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "changeSummary",
+          "label": "Change summary",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage rule-pack manager with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Tested",
+        "Reviewed",
+        "Published",
+        "Effective",
+        "Superseded"
+      ],
+      "actions": [
+        "Draft rule pack",
+        "Run test suite"
+      ],
+      "columns": [
+        "Pack",
+        "Jurisdiction",
+        "Version",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "golden_case_library",
+      "screenId": "SCR-071",
+      "title": "Golden-case library",
+      "primary": "compliance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "caseName",
+          "label": "Case name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "domain",
+          "label": "Domain",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "sourceData",
+          "label": "Input fixture",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "expectedResult",
+          "label": "Expected result",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "statuteReference",
+          "label": "Statute reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage golden-case library with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Passing",
+        "Mismatch",
+        "Retired"
+      ],
+      "actions": [
+        "Add golden case",
+        "Run comparison"
+      ],
+      "columns": [
+        "Case",
+        "Domain",
+        "Last run",
+        "Outcome"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "sync_monitor",
+      "screenId": "SCR-101",
+      "title": "Integration sync monitor",
+      "primary": "integrations",
+      "endpoint": "/api/v1/webhooks/deliveries",
+      "fields": [
+        {
+          "key": "connection",
+          "label": "Connection",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "externalCode",
+          "label": "External record code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "conflictField",
+          "label": "Conflict field",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage integration sync monitor with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Applied",
+        "Conflict",
+        "Held",
+        "Replayed"
+      ],
+      "actions": [
+        "Resolve conflict",
+        "Replay delivery"
+      ],
+      "columns": [
+        "Batch",
+        "Connection",
+        "Rows",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "gl_mapping",
+      "screenId": "SCR-102",
+      "title": "GL mapping and journal",
+      "primary": "payroll",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "payComponent",
+          "label": "Pay component",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "ledgerAccount",
+          "label": "GL account",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "costCentreSource",
+          "label": "Cost-centre source",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "drCr",
+          "label": "Debit or credit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "description": "Manage gl mapping and journal with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Validated",
+        "Posted",
+        "Superseded"
+      ],
+      "actions": [
+        "Add mapping",
+        "Validate journal"
+      ],
+      "columns": [
+        "Component",
+        "GL account",
+        "Dimension",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "reconciliation",
+      "screenId": "SCR-103",
+      "title": "Payroll reconciliation",
+      "primary": "payroll",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reconciliationType",
+          "label": "Reconciliation type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "variance",
+          "label": "Variance amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage payroll reconciliation with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Open",
+        "Explained",
+        "Reconciled",
+        "Escalated"
+      ],
+      "actions": [
+        "Run reconciliation",
+        "Resolve variance"
+      ],
+      "columns": [
+        "Control",
+        "Expected",
+        "Actual",
+        "Variance"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "approval_inbox",
+      "screenId": "SCR-040",
+      "title": "Unified approval inbox",
+      "primary": "team",
+      "endpoint": "/api/v1/notifications",
+      "fields": [
+        {
+          "key": "requestType",
+          "label": "Request type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "decision",
+          "label": "Decision",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Decision reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage unified approval inbox with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Pending",
+        "Delegated",
+        "Approved",
+        "Rejected",
+        "Returned"
+      ],
+      "actions": [
+        "Review item",
+        "Delegate item"
+      ],
+      "columns": [
+        "Request",
+        "Requester",
+        "Due",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "joining_chain",
+      "screenId": "SCR-060",
+      "title": "Joining chain console",
+      "primary": "onboarding",
+      "endpoint": "/api/v1/onboarding/instances",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "joiningDate",
+          "label": "Joining date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "blocker",
+          "label": "Blocker notes",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage joining chain console with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Not started",
+        "In progress",
+        "Blocked",
+        "Ready"
+      ],
+      "actions": [
+        "Create joining chain",
+        "Reassign step"
+      ],
+      "columns": [
+        "Joiner",
+        "Readiness",
+        "Owner",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "clearance_board",
+      "screenId": "SCR-061",
+      "title": "Clearance board",
+      "primary": "onboarding",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Leaver",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "department",
+          "label": "Department owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "blocking",
+          "label": "Blocking item",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "recoveryAmount",
+          "label": "Recovery amount",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "waiverReason",
+          "label": "Waiver reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage clearance board with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Open",
+        "Cleared",
+        "Waived",
+        "Held"
+      ],
+      "actions": [
+        "Clear item",
+        "Waive item"
+      ],
+      "columns": [
+        "Leaver",
+        "Owner",
+        "Blocking",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "asset_register",
+      "screenId": "SCR-064",
+      "title": "Asset register",
+      "primary": "onboarding",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "assetTag",
+          "label": "Asset tag",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "assetType",
+          "label": "Asset type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "employee",
+          "label": "Allocated employee",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "condition",
+          "label": "Condition",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "returnedOn",
+          "label": "Returned on",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "description": "Manage asset register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Available",
+        "Allocated",
+        "Returned",
+        "Written off"
+      ],
+      "actions": [
+        "Allocate asset",
+        "Record return"
+      ],
+      "columns": [
+        "Asset",
+        "Holder",
+        "Condition",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "recognition_register",
+      "screenId": "SCR-065",
+      "title": "Recognition register",
+      "primary": "experience",
+      "endpoint": "/api/v1/recognition-events",
+      "fields": [
+        {
+          "key": "nominee",
+          "label": "Nominee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "programme",
+          "label": "Programme",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "citation",
+          "label": "Citation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "awardValue",
+          "label": "Award value",
+          "required": false,
+          "type": "number"
+        }
+      ],
+      "description": "Manage recognition register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Nominated",
+        "Approved",
+        "Published",
+        "Paid"
+      ],
+      "actions": [
+        "Nominate employee",
+        "Approve award"
+      ],
+      "columns": [
+        "Nominee",
+        "Programme",
+        "Award",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "letters_register",
+      "screenId": "SCR-067",
+      "title": "Letters and issue register",
+      "primary": "onboarding",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "template",
+          "label": "Template",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveDate",
+          "label": "Effective date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "approver",
+          "label": "Approver",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage letters and issue register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending approval",
+        "Issued",
+        "Reissued"
+      ],
+      "actions": [
+        "Draft letter",
+        "Issue letter"
+      ],
+      "columns": [
+        "Letter",
+        "Employee",
+        "Version",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "statutory_register",
+      "screenId": "SCR-073",
+      "title": "Statutory forms and registers",
+      "primary": "compliance",
+      "endpoint": "/api/v1/compliance/forms",
+      "fields": [
+        {
+          "key": "formCode",
+          "label": "Form code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "jurisdiction",
+          "label": "Jurisdiction",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "acknowledgement",
+          "label": "Acknowledgement reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage statutory forms and registers with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Generated",
+        "Prepared",
+        "Filed",
+        "Accepted"
+      ],
+      "actions": [
+        "Generate form",
+        "Record filing"
+      ],
+      "columns": [
+        "Form",
+        "Period",
+        "Jurisdiction",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "loans_advances",
+      "screenId": "SCR-080",
+      "title": "Loans and advances",
+      "primary": "payroll",
+      "endpoint": "/api/v1/loans",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "purpose",
+          "label": "Purpose",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "principal",
+          "label": "Principal amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "tenureMonths",
+          "label": "Tenure in months",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "guarantorOne",
+          "label": "Guarantor one",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "guarantorTwo",
+          "label": "Guarantor two",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage loans and advances with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Applied",
+        "Guarantors pending",
+        "Sanction pending",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Apply for loan",
+        "Review sanction"
+      ],
+      "columns": [
+        "Employee",
+        "Principal",
+        "Outstanding",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "requisitions",
+      "screenId": "SCR-090",
+      "title": "Recruitment requisitions",
+      "primary": "recruitment",
+      "endpoint": "/api/v1/requisitions",
+      "fields": [
+        {
+          "key": "type",
+          "label": "Replacement or addition",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "overrideReason",
+          "label": "Override reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage recruitment requisitions with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Blocked",
+        "Submitted",
+        "Approved",
+        "Filled"
+      ],
+      "actions": [
+        "Raise requisition",
+        "Approve requisition"
+      ],
+      "columns": [
+        "Requisition",
+        "Position",
+        "Headroom",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "referrals",
+      "screenId": "SCR-091",
+      "title": "Referral tracking",
+      "primary": "recruitment",
+      "endpoint": "/api/v1/referrals",
+      "fields": [
+        {
+          "key": "candidate",
+          "label": "Candidate",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "referrer",
+          "label": "Referrer",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "relationship",
+          "label": "Relationship",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage referral tracking with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Referred",
+        "Screening",
+        "Interviewing",
+        "Hired",
+        "Awarded"
+      ],
+      "actions": [
+        "Refer candidate",
+        "Award referral"
+      ],
+      "columns": [
+        "Candidate",
+        "Referrer",
+        "Stage",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "contractor_reconciliation",
+      "screenId": "SCR-095",
+      "title": "Contractor engagement and invoice",
+      "primary": "contract_workforce",
+      "endpoint": "/api/v1/contractors/invoices",
+      "fields": [
+        {
+          "key": "agency",
+          "label": "Agency",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "contract",
+          "label": "Contract reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "invoice",
+          "label": "Invoice reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "variance",
+          "label": "Attendance variance",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage contractor engagement and invoice with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Submitted",
+        "Variance held",
+        "Approved",
+        "Paid"
+      ],
+      "actions": [
+        "Reconcile invoice",
+        "Approve invoice"
+      ],
+      "columns": [
+        "Agency",
+        "Invoice",
+        "Variance",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "integration_config",
+      "screenId": "SCR-100",
+      "title": "Integration configuration",
+      "primary": "integrations",
+      "endpoint": "/api/v1/integrations/connections",
+      "fields": [
+        {
+          "key": "connection",
+          "label": "Connection",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "masterDataMode",
+          "label": "Master-data mode",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fieldOwner",
+          "label": "Field ownership",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "syncSchedule",
+          "label": "Sync schedule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "secretReference",
+          "label": "Secret reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage integration configuration with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Validated",
+        "Connected",
+        "Paused"
+      ],
+      "actions": [
+        "Configure connection",
+        "Validate connection"
+      ],
+      "columns": [
+        "Connection",
+        "Mode",
+        "Last sync",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "agent_ledger",
+      "screenId": "SCR-110",
+      "title": "Agent console and action ledger",
+      "primary": "analytics",
+      "endpoint": "/api/v1/ai/actions",
+      "fields": [
+        {
+          "key": "agent",
+          "label": "Agent",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "tool",
+          "label": "Tool",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "label": "Permitted scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "approvalThreshold",
+          "label": "Approval threshold",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "reversalReason",
+          "label": "Reversal reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage agent console and action ledger with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Planned",
+        "Gated",
+        "Simulated",
+        "Awaiting approval",
+        "Executed",
+        "Reversed"
+      ],
+      "actions": [
+        "Review action diff",
+        "Reverse action"
+      ],
+      "columns": [
+        "Agent",
+        "Action",
+        "Approver",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "operational_reports",
+      "screenId": "SCR-111",
+      "title": "Operational reports",
+      "primary": "analytics",
+      "endpoint": "/api/v1/analytics/metrics",
+      "fields": [
+        {
+          "key": "report",
+          "label": "Report type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "label": "Scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "schedule",
+          "label": "Schedule",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage operational reports with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Ready",
+        "Queued",
+        "Scheduled",
+        "Expired"
+      ],
+      "actions": [
+        "Run report",
+        "Schedule report"
+      ],
+      "columns": [
+        "Report",
+        "Scope",
+        "Generated",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "check_in_out",
+      "screenId": "SCR-020",
+      "title": "Check in and check out",
+      "primary": "attendance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "punchType",
+          "label": "Punch type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "punchedAt",
+          "label": "Timestamp",
+          "required": true,
+          "type": "datetime-local"
+        },
+        {
+          "key": "source",
+          "label": "Source",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "locationEvidence",
+          "label": "Location evidence",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage check in and check out with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Queued offline",
+        "Ingested",
+        "Computed",
+        "Rejected"
+      ],
+      "actions": [
+        "Record punch",
+        "Retry queued punch"
+      ],
+      "columns": [
+        "Employee",
+        "Punch",
+        "Source",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "my_attendance",
+      "screenId": "SCR-021",
+      "title": "My attendance history",
+      "primary": "attendance",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage my attendance history with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Computed",
+        "Exception",
+        "Locked"
+      ],
+      "actions": [
+        "View history",
+        "Raise regularisation"
+      ],
+      "columns": [
+        "Date",
+        "Net hours",
+        "Overtime",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "gate_passes",
+      "screenId": "SCR-023",
+      "title": "Gate pass register",
+      "primary": "attendance",
+      "endpoint": "/api/v1/gate-passes",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "fromTime",
+          "label": "From time",
+          "required": true,
+          "type": "time"
+        },
+        {
+          "key": "toTime",
+          "label": "To time",
+          "required": true,
+          "type": "time"
+        },
+        {
+          "key": "type",
+          "label": "Pass type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage gate pass register with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending approval",
+        "Approved",
+        "Rejected",
+        "Credited"
+      ],
+      "actions": [
+        "Request gate pass",
+        "Review gate pass"
+      ],
+      "columns": [
+        "Employee",
+        "Date",
+        "Minutes",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "leave_requests",
+      "screenId": "SCR-030",
+      "title": "Leave requests",
+      "primary": "leaves",
+      "endpoint": "/api/v1/leave-requests",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "contact",
+          "label": "Contact during leave",
+          "required": false,
+          "type": "tel"
+        }
+      ],
+      "description": "Manage leave requests with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Validated",
+        "Pending approval",
+        "Approved",
+        "Availed",
+        "Closed"
+      ],
+      "actions": [
+        "Apply for leave",
+        "Record early return"
+      ],
+      "columns": [
+        "Employee",
+        "Leave type",
+        "Dates",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "leave_ledger",
+      "screenId": "SCR-031",
+      "title": "Leave balance and ledger",
+      "primary": "leaves",
+      "endpoint": "/api/v1/leave-balances",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "asAtDate",
+          "label": "Balance as at",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage leave balance and ledger with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Projected",
+        "Expired",
+        "Encashed",
+        "Reversed"
+      ],
+      "actions": [
+        "View ledger",
+        "Export ledger"
+      ],
+      "columns": [
+        "Leave type",
+        "Credit",
+        "Debit",
+        "Balance"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "payroll_runs",
+      "screenId": "SCR-050",
+      "title": "Payroll run cockpit",
+      "primary": "payroll",
+      "endpoint": "/api/v1/payroll-runs",
+      "fields": [
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Payroll period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollGroup",
+          "label": "Payroll group",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "runType",
+          "label": "Run type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payDate",
+          "label": "Pay date",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "description": "Manage payroll run cockpit with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Inputs locked",
+        "Pre-audit",
+        "Calculated",
+        "Review",
+        "Approved",
+        "Disbursed",
+        "Closed"
+      ],
+      "actions": [
+        "Create payroll run",
+        "Advance run"
+      ],
+      "columns": [
+        "Period",
+        "Run type",
+        "Population",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "pre_payroll_audit",
+      "screenId": "SCR-051",
+      "title": "Pre-payroll audit",
+      "primary": "payroll",
+      "endpoint": "/api/v1/payroll-anomalies",
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "severity",
+          "label": "Severity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Resolution owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution or waiver reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "description": "Manage pre-payroll audit with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Open",
+        "Assigned",
+        "Resolved",
+        "Waived"
+      ],
+      "actions": [
+        "Log audit finding",
+        "Resolve finding"
+      ],
+      "columns": [
+        "Finding",
+        "Severity",
+        "Owner",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "salary_simulator",
+      "screenId": "SCR-052",
+      "title": "Salary structure simulator",
+      "primary": "compensation",
+      "endpoint": "/api/v1/wage-simulations",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "basic",
+          "label": "Basic pay",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "hra",
+          "label": "HRA",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "specialAllowance",
+          "label": "Special allowance",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "description": "Manage salary structure simulator with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Simulated",
+        "Submitted",
+        "Adopted"
+      ],
+      "actions": [
+        "Run simulation",
+        "Submit structure"
+      ],
+      "columns": [
+        "Employee",
+        "Gross",
+        "Take home",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "payslips",
+      "screenId": "SCR-053",
+      "title": "Payslips",
+      "primary": "payroll",
+      "endpoint": "/api/v1/payslips",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Pay period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage payslips with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Generated",
+        "Published",
+        "Viewed",
+        "Archived"
+      ],
+      "actions": [
+        "Open payslip",
+        "Explain line item"
+      ],
+      "columns": [
+        "Employee",
+        "Period",
+        "Net pay",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "full_and_final",
+      "screenId": "SCR-056",
+      "title": "Full and final settlement",
+      "primary": "payroll",
+      "endpoint": null,
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Leaver",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "lastWorkingDay",
+          "label": "Last working day",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "payrollRun",
+          "label": "Settlement run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "recoveryAmount",
+          "label": "Recovery amount",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "approvalReference",
+          "label": "Approval reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage full and final settlement with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Held",
+        "Ready",
+        "Approved",
+        "Settled"
+      ],
+      "actions": [
+        "Compute settlement",
+        "Settle F&F"
+      ],
+      "columns": [
+        "Leaver",
+        "Blocking items",
+        "Net settlement",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "assistant_helpdesk",
+      "screenId": "SCR-041",
+      "title": "Assistant and helpdesk",
+      "primary": "helpdesk",
+      "endpoint": "/api/v1/ai/knowledge",
+      "fields": [
+        {
+          "key": "question",
+          "label": "Question",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "actionRequest",
+          "label": "Requested action",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "ticketSubject",
+          "label": "Ticket subject",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "ticketDescription",
+          "label": "Ticket description",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "description": "Manage assistant and helpdesk with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Answered",
+        "Action pending",
+        "Ticket raised",
+        "Resolved"
+      ],
+      "actions": [
+        "Ask assistant",
+        "Raise ticket"
+      ],
+      "columns": [
+        "Request",
+        "Channel",
+        "Owner",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "employee_home",
+      "screenId": "SCR-042",
+      "title": "Employee home actions",
+      "primary": "people_core",
+      "endpoint": "/api/v1/home",
+      "fields": [
+        {
+          "key": "action",
+          "label": "Action",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "context",
+          "label": "Context",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "requestedAt",
+          "label": "Requested at",
+          "required": true,
+          "type": "datetime-local"
+        }
+      ],
+      "description": "Manage employee home actions with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Available",
+        "Queued offline",
+        "Completed",
+        "Needs attention"
+      ],
+      "actions": [
+        "Start employee action",
+        "Review pending action"
+      ],
+      "columns": [
+        "Action",
+        "Context",
+        "Updated",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "learning_paths",
+      "screenId": "SCR-063",
+      "title": "My learning",
+      "primary": "learning",
+      "endpoint": "/api/v1/enrollments",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "learningPath",
+          "label": "Learning path",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "course",
+          "label": "Course",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "evidence",
+          "label": "Completion evidence",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "description": "Manage my learning with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Assigned",
+        "In progress",
+        "Completed",
+        "Verified",
+        "Certified"
+      ],
+      "actions": [
+        "Assign learning",
+        "Record completion"
+      ],
+      "columns": [
+        "Learning path",
+        "Due date",
+        "Progress",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "announcement_management",
+      "screenId": "SCR-066",
+      "title": "Announcements",
+      "primary": "experience",
+      "endpoint": "/api/v1/announcements",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Announcement title",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "audience",
+          "label": "Audience rule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "channel",
+          "label": "Delivery channel",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "publishAt",
+          "label": "Publish at",
+          "required": true,
+          "type": "datetime-local"
+        }
+      ],
+      "description": "Manage announcements with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Scheduled",
+        "Published",
+        "Archived"
+      ],
+      "actions": [
+        "Create announcement",
+        "Publish announcement"
+      ],
+      "columns": [
+        "Announcement",
+        "Audience",
+        "Channel",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "obligation_calendar",
+      "screenId": "SCR-072",
+      "title": "Obligation calendar",
+      "primary": "compliance",
+      "endpoint": "/api/v1/compliance/obligations",
+      "fields": [
+        {
+          "key": "obligation",
+          "label": "Obligation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "state",
+          "label": "State",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "dueDate",
+          "label": "Due date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "evidence",
+          "label": "Evidence",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "description": "Manage obligation calendar with a scoped work queue, record history and controlled actions.",
+      "stateLabel": "Status",
+      "states": [
+        "Upcoming",
+        "In preparation",
+        "Filed",
+        "Overdue",
+        "Closed"
+      ],
+      "actions": [
+        "Create obligation",
+        "Record filing"
+      ],
+      "columns": [
+        "Obligation",
+        "Due date",
+        "Owner",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    }
+  ],
+  "groups": [
+    {
+      "title": "People & lifecycle",
+      "primary": "people_core",
+      "ids": [
+        "access_scope",
+        "person_record",
+        "assignment_admin",
+        "position_register",
+        "sanctioned_strength",
+        "document_vault",
+        "joining_chain",
+        "clearance_board",
+        "asset_register",
+        "letters_register",
+        "policy_acknowledgements",
+        "employee_home"
+      ]
+    },
+    {
+      "title": "Attendance operations",
+      "primary": "attendance",
+      "ids": [
+        "check_in_out",
+        "my_attendance",
+        "attendance_detail",
+        "gate_passes",
+        "overtime_register",
+        "attendance_exceptions",
+        "recompute_monitor",
+        "team_history"
+      ]
+    },
+    {
+      "title": "Leave operations",
+      "primary": "leaves",
+      "ids": [
+        "leave_requests",
+        "leave_ledger",
+        "leave_policy_admin"
+      ]
+    },
+    {
+      "title": "Payroll & finance operations",
+      "primary": "payroll",
+      "ids": [
+        "payroll_runs",
+        "pre_payroll_audit",
+        "salary_simulator",
+        "payslips",
+        "tax_declarations",
+        "bank_disbursement",
+        "full_and_final",
+        "gl_mapping",
+        "reconciliation",
+        "loans_advances"
+      ]
+    },
+    {
+      "title": "Talent & experience operations",
+      "primary": "recruitment",
+      "ids": [
+        "requisitions",
+        "referrals",
+        "learning_paths",
+        "recognition_register",
+        "announcement_management"
+      ]
+    },
+    {
+      "title": "Compliance engineering",
+      "primary": "compliance",
+      "ids": [
+        "rule_pack_manager",
+        "golden_case_library",
+        "obligation_calendar",
+        "statutory_register"
+      ]
+    },
+    {
+      "title": "Integration operations",
+      "primary": "integrations",
+      "ids": [
+        "integration_config",
+        "sync_monitor"
+      ]
+    },
+    {
+      "title": "Intelligence operations",
+      "primary": "analytics",
+      "ids": [
+        "assistant_helpdesk",
+        "agent_ledger",
+        "operational_reports"
+      ]
+    }
+  ],
+  "domains": {
+    "core_hr": [
+      "people_core",
+      "attendance",
+      "leaves"
+    ],
+    "talent": [
+      "recruitment"
+    ],
+    "payroll_finance": [
+      "payroll"
+    ],
+    "workforce_ops": [],
+    "analytics_ai": [
+      "analytics",
+      "helpdesk"
+    ],
+    "platform": [
+      "compliance",
+      "integrations"
+    ]
+  }
+}

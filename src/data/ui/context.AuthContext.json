@@ -1,0 +1,125 @@
+{
+  "AuthContext_fields_1": {
+    "user": null
+  },
+  "AuthContext_fields_2": {
+    "isLoading": true
+  },
+  "AuthContext_fields_3": {
+    "isAccessControlOpen": false
+  },
+  "roleProfiles_4": {
+    "SUPER_ADMIN": {
+      "role": "SUPER_ADMIN",
+      "email": "superadmin@nucleus.com",
+      "name": "Superadmin",
+      "employeeId": null,
+      "id": "DEMO-SUPER_ADMIN",
+      "designation": "System Administrator",
+      "dept": "Platform",
+      "defaultConsole": "S10",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    "ADMIN": {
+      "role": "ADMIN",
+      "email": "admin@nucleus.com",
+      "name": "Admin",
+      "employeeId": null,
+      "id": "DEMO-ADMIN",
+      "designation": "Workspace Owner",
+      "dept": "Administration",
+      "defaultConsole": "S10",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    "HR_MANAGER": {
+      "role": "HR_MANAGER",
+      "email": "hr@nucleus.com",
+      "name": "Sunita Verma",
+      "employeeId": "MK-102",
+      "id": "MK-102",
+      "designation": "Head of HR",
+      "dept": "Human Resources",
+      "defaultConsole": "S2",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    "MANAGER": {
+      "role": "MANAGER",
+      "email": "manager@nucleus.com",
+      "name": "Ramesh Nair",
+      "employeeId": "MK-104",
+      "id": "MK-104",
+      "designation": "Weaving Supervisor",
+      "dept": "Weaving",
+      "defaultConsole": "S7",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    "EMPLOYEE": {
+      "role": "EMPLOYEE",
+      "email": "employee@nucleus.com",
+      "name": "Vikas Yadav",
+      "employeeId": "MK-107",
+      "id": "MK-107",
+      "designation": "Master Loom Technician",
+      "dept": "Weaving",
+      "defaultConsole": "S8",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    }
+  },
+  "userConfig_5": {
+    "modules": {},
+    "consoles": {},
+    "dataScope": "DEPARTMENT"
+  },
+  "userConfig_6": {
+    "modules": {},
+    "consoles": {},
+    "dataScope": "DEPARTMENT"
+  },
+  "userConfig_7": {
+    "modules": {},
+    "consoles": {}
+  },
+  "userId_fields_8": {
+    "dataScope": "ALL_ORG"
+  },
+  "userId_fields_9": {
+    "dataScope": "SELF_ONLY"
+  },
+  "getPermittedConsoles_10": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10"
+  ],
+  "allKeys_11": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7",
+    "S8",
+    "S9",
+    "S10"
+  ],
+  "response_fields_12": {
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  },
+  "targetUser_fields_14": {
+    "dept": "Operations",
+    "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=250&auto=format&fit=crop&q=80"
+  },
+  "openAccessControl_15": {
+    "detail": "access_control"
+  }
+}

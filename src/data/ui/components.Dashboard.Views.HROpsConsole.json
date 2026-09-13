@@ -1,0 +1,801 @@
+{
+  "approvalList_1": [
+    {
+      "id": 1,
+      "name": "Ravi Kulkarni",
+      "type": "LOP reversal",
+      "age": "6d",
+      "isBreach": true
+    },
+    {
+      "id": 2,
+      "name": "Sneha Nair",
+      "type": "Relocation claim",
+      "age": "3d",
+      "isBreach": false
+    },
+    {
+      "id": 3,
+      "name": "Arjun Bhat",
+      "type": "Comp-off carry",
+      "age": "2d",
+      "isBreach": false
+    },
+    {
+      "id": 4,
+      "name": "Priya T",
+      "type": "Maternity extension",
+      "age": "1d",
+      "isBreach": false
+    },
+    {
+      "id": 5,
+      "name": "Mohan J",
+      "type": "Shift change",
+      "age": "4h",
+      "isBreach": false
+    }
+  ],
+  "onboardingStages_2": {
+    "value": 36,
+    "name": "Offered",
+    "rate": "100%",
+    "color": "#05CD99",
+    "drop": null
+  },
+  "onboardingStages_fields_3": {
+    "value": 31,
+    "name": "Offer Accepted",
+    "rate": "86.1%"
+  },
+  "onboardingStages_fields_4": {
+    "drop": "-5"
+  },
+  "onboardingStages_fields_5": {
+    "value": 28,
+    "name": "Docs Verified",
+    "rate": "90.3%"
+  },
+  "onboardingStages_fields_6": {
+    "drop": "-3"
+  },
+  "onboardingStages_fields_7": {
+    "value": 22,
+    "name": "Assets Ready",
+    "rate": "78.6%"
+  },
+  "onboardingStages_fields_8": {
+    "drop": "-6"
+  },
+  "onboardingStages_fields_9": {
+    "value": 19,
+    "name": "Day-1 Ready",
+    "rate": "86.4%"
+  },
+  "onboardingStages_fields_10": {
+    "drop": "-3"
+  },
+  "tooltip_fields_11": {
+    "trigger": "item",
+    "confine": true,
+    "backgroundColor": "rgba(6, 13, 24, 0.95)",
+    "borderColor": "rgba(45, 212, 168, 0.4)",
+    "borderWidth": 1,
+    "padding": [
+      8,
+      12
+    ],
+    "textStyle": {
+      "color": "#F1F5F9",
+      "fontSize": 12
+    }
+  },
+  "series_fields_14": {
+    "name": "Pipeline",
+    "type": "funnel",
+    "left": "4%",
+    "top": 10,
+    "bottom": 10,
+    "width": "92%",
+    "min": 15,
+    "max": 38,
+    "minSize": "36%",
+    "maxSize": "100%",
+    "sort": "descending",
+    "gap": 4,
+    "label": {
+      "show": true,
+      "position": "inside",
+      "formatter": "{c}",
+      "color": "#060D18",
+      "fontWeight": 800,
+      "fontSize": 12
+    },
+    "itemStyle": {
+      "borderColor": "#0B1522",
+      "borderWidth": 2
+    },
+    "emphasis": {
+      "label": {
+        "fontSize": 13,
+        "fontWeight": 900
+      }
+    }
+  },
+  "days_18": [
+    "Mon",
+    "Tue",
+    "Wed",
+    "Thu",
+    "Fri",
+    "Sat",
+    "Sun"
+  ],
+  "weeks_19": {
+    "length": 12
+  },
+  "calendarData_20": [
+    [
+      0,
+      0,
+      14
+    ],
+    [
+      0,
+      1,
+      4
+    ],
+    [
+      0,
+      2,
+      6
+    ],
+    [
+      0,
+      3,
+      8
+    ],
+    [
+      0,
+      4,
+      11
+    ],
+    [
+      0,
+      5,
+      0
+    ],
+    [
+      0,
+      6,
+      0
+    ],
+    [
+      1,
+      0,
+      17
+    ],
+    [
+      1,
+      1,
+      7
+    ],
+    [
+      1,
+      2,
+      9
+    ],
+    [
+      1,
+      3,
+      3
+    ],
+    [
+      1,
+      4,
+      14
+    ],
+    [
+      1,
+      5,
+      0
+    ],
+    [
+      1,
+      6,
+      0
+    ],
+    [
+      2,
+      0,
+      20
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      2,
+      2,
+      4
+    ],
+    [
+      2,
+      3,
+      6
+    ],
+    [
+      2,
+      4,
+      17
+    ],
+    [
+      2,
+      5,
+      0
+    ],
+    [
+      2,
+      6,
+      0
+    ],
+    [
+      3,
+      0,
+      15
+    ],
+    [
+      3,
+      1,
+      5
+    ],
+    [
+      3,
+      2,
+      7
+    ],
+    [
+      3,
+      3,
+      9
+    ],
+    [
+      3,
+      4,
+      12
+    ],
+    [
+      3,
+      5,
+      0
+    ],
+    [
+      3,
+      6,
+      0
+    ],
+    [
+      4,
+      0,
+      18
+    ],
+    [
+      4,
+      1,
+      8
+    ],
+    [
+      4,
+      2,
+      2
+    ],
+    [
+      4,
+      3,
+      4
+    ],
+    [
+      4,
+      4,
+      15
+    ],
+    [
+      4,
+      5,
+      0
+    ],
+    [
+      4,
+      6,
+      0
+    ],
+    [
+      5,
+      0,
+      21
+    ],
+    [
+      5,
+      1,
+      3
+    ],
+    [
+      5,
+      2,
+      5
+    ],
+    [
+      5,
+      3,
+      7
+    ],
+    [
+      5,
+      4,
+      18
+    ],
+    [
+      5,
+      5,
+      0
+    ],
+    [
+      5,
+      6,
+      0
+    ],
+    [
+      6,
+      0,
+      16
+    ],
+    [
+      6,
+      1,
+      6
+    ],
+    [
+      6,
+      2,
+      8
+    ],
+    [
+      6,
+      3,
+      2
+    ],
+    [
+      6,
+      4,
+      13
+    ],
+    [
+      6,
+      5,
+      0
+    ],
+    [
+      6,
+      6,
+      0
+    ],
+    [
+      7,
+      0,
+      19
+    ],
+    [
+      7,
+      1,
+      9
+    ],
+    [
+      7,
+      2,
+      3
+    ],
+    [
+      7,
+      3,
+      5
+    ],
+    [
+      7,
+      4,
+      16
+    ],
+    [
+      7,
+      5,
+      0
+    ],
+    [
+      7,
+      6,
+      0
+    ],
+    [
+      8,
+      0,
+      14
+    ],
+    [
+      8,
+      1,
+      4
+    ],
+    [
+      8,
+      2,
+      6
+    ],
+    [
+      8,
+      3,
+      8
+    ],
+    [
+      8,
+      4,
+      11
+    ],
+    [
+      8,
+      5,
+      0
+    ],
+    [
+      8,
+      6,
+      0
+    ],
+    [
+      9,
+      0,
+      17
+    ],
+    [
+      9,
+      1,
+      7
+    ],
+    [
+      9,
+      2,
+      9
+    ],
+    [
+      9,
+      3,
+      3
+    ],
+    [
+      9,
+      4,
+      14
+    ],
+    [
+      9,
+      5,
+      0
+    ],
+    [
+      9,
+      6,
+      0
+    ],
+    [
+      10,
+      0,
+      20
+    ],
+    [
+      10,
+      1,
+      2
+    ],
+    [
+      10,
+      2,
+      4
+    ],
+    [
+      10,
+      3,
+      6
+    ],
+    [
+      10,
+      4,
+      17
+    ],
+    [
+      10,
+      5,
+      0
+    ],
+    [
+      10,
+      6,
+      0
+    ],
+    [
+      11,
+      0,
+      15
+    ],
+    [
+      11,
+      1,
+      5
+    ],
+    [
+      11,
+      2,
+      7
+    ],
+    [
+      11,
+      3,
+      9
+    ],
+    [
+      11,
+      4,
+      12
+    ],
+    [
+      11,
+      5,
+      0
+    ],
+    [
+      11,
+      6,
+      0
+    ]
+  ],
+  "tooltip_fields_23": {
+    "position": "top"
+  },
+  "calendarHeatmapOption_fields_21": {
+    "grid": {
+      "top": 15,
+      "bottom": 25,
+      "left": 45,
+      "right": 15
+    }
+  },
+  "xAxis_fields_25": {
+    "type": "category"
+  },
+  "axisLabel_fields_27": {
+    "fontSize": 10
+  },
+  "xAxis_fields_26": {
+    "splitArea": {
+      "show": false
+    }
+  },
+  "yAxis_fields_29": {
+    "type": "category"
+  },
+  "axisLabel_fields_31": {
+    "fontSize": 10
+  },
+  "yAxis_fields_30": {
+    "splitArea": {
+      "show": false
+    }
+  },
+  "calendarHeatmapOption_fields_22": {
+    "visualMap": {
+      "min": 0,
+      "max": 22,
+      "show": false,
+      "inRange": {
+        "color": [
+          "#0E1D30",
+          "#1A4D4A",
+          "#2E9C84",
+          "#F2A93B",
+          "#F2647E"
+        ]
+      }
+    }
+  },
+  "series_fields_34": {
+    "type": "heatmap"
+  },
+  "series_fields_35": {
+    "itemStyle": {
+      "borderRadius": 2,
+      "borderColor": "#0E1D30",
+      "borderWidth": 2
+    }
+  },
+  "requestsByTypeOption_fields_37": {
+    "tooltip": {
+      "trigger": "axis",
+      "formatter": "{b}: <strong>{c}</strong> requests"
+    },
+    "grid": {
+      "left": "30%",
+      "right": "12%",
+      "top": 10,
+      "bottom": 20
+    },
+    "xAxis": {
+      "type": "value",
+      "max": 450
+    }
+  },
+  "yAxis_fields_41": {
+    "type": "category",
+    "data": [
+      "Policy Qs",
+      "Asset & Access",
+      "Letters & Proofs",
+      "Payslip & Tax",
+      "Attendance Fix",
+      "Leave & Comp-off"
+    ]
+  },
+  "axisLabel_fields_43": {
+    "fontSize": 11
+  },
+  "series_fields_44": {
+    "type": "bar"
+  },
+  "data_fields_46": {
+    "value": 74
+  },
+  "data_fields_47": {
+    "value": 96
+  },
+  "data_fields_48": {
+    "value": 144
+  },
+  "data_fields_49": {
+    "value": 198
+  },
+  "data_fields_50": {
+    "value": 286
+  },
+  "data_fields_51": {
+    "value": 412
+  },
+  "label_fields_52": {
+    "show": true,
+    "position": "right",
+    "formatter": "{c}"
+  },
+  "label_fields_53": {
+    "fontSize": 10,
+    "fontWeight": 600
+  },
+  "series_fields_45": {
+    "barWidth": 12
+  },
+  "content_text_54": "Operations Console",
+  "content_text_55": "Bengaluru + 5 sites \u2022 Friday, 11 Sep",
+  "content_text_56": "My queue: ",
+  "content_text_57": "SLA breach: 1",
+  "content_text_58": "24 New joiners",
+  "content_text_59": " + New joiner",
+  "content_text_60": "Present today",
+  "content_text_61": "1,048",
+  "content_text_62": "81.6%",
+  "content_text_63": "Active workforce",
+  "content_text_64": "On leave",
+  "content_text_65": "120",
+  "content_text_66": "32 unplanned",
+  "content_text_67": "9.3% rate",
+  "content_text_68": "Absent, no record",
+  "content_text_69": "80",
+  "content_text_70": "Needs follow-up",
+  "content_text_71": "6.2% rate",
+  "content_text_72": "Joining this week",
+  "content_text_73": "24",
+  "content_text_74": "6 no assets",
+  "content_text_75": "Day-1 ready: 18",
+  "content_text_76": "Exits in notice",
+  "content_text_77": "17",
+  "content_text_78": "4 open tasks",
+  "content_text_79": "Clearances underway",
+  "content_text_80": "Data completeness",
+  "content_text_81": "94%",
+  "content_text_82": "71 records short",
+  "content_text_83": "Statutory compliance",
+  "content_text_84": "Anomaly Detected",
+  "content_text_85": "31 attendance regularisations",
+  "content_text_86": " were filed after 6pm on 31 Aug at the Chennai site \u2014 ",
+  "content_text_87": "4.2\u00d7 that site's normal rate",
+  "content_text_88": ", and 27 of them came from a single reporting line.",
+  "content_text_89": "Review the 31",
+  "content_text_90": "Mark expected",
+  "content_text_91": "Approvals Waiting on You",
+  "content_text_92": "Oldest first \u2022 ",
+  "content_text_93": " items",
+  "content_title_94": "Approve request (optional remarks)",
+  "content_text_95": "Approve",
+  "content_title_96": "Reject request (compulsory remarks)",
+  "content_text_97": "Reject",
+  "content_title_98": "Re-route request (compulsory target & remarks)",
+  "content_text_99": "Re-route",
+  "content_text_100": "Onboarding Pipeline",
+  "content_text_101": "Next 30 days stage conversion",
+  "content_text_102": "52.8% Yield",
+  "content_text_103": "(",
+  "content_text_104": ")",
+  "content_text_105": "Offered to Day-1 Ready",
+  "content_text_106": "19 / 36 candidates (52.8%)",
+  "content_text_107": "Helpdesk SLA Performance",
+  "content_text_108": "This week vs target",
+  "content_text_109": "First response time",
+  "content_text_110": "82% ",
+  "content_text_111": "(target 90%)",
+  "content_text_112": "Resolution rate",
+  "content_text_113": "94% ",
+  "content_text_114": "(target 90%)",
+  "content_text_115": "Ticket reopened rate",
+  "content_text_116": "6% ",
+  "content_text_117": "(target <5%)",
+  "content_text_118": "Absence Density Calendar",
+  "content_text_119": "Last 12 weeks \u2022 Monday & Friday concentration",
+  "content_text_120": "All sites",
+  "content_text_121": "Documents & Statutory Renewals",
+  "content_text_122": "Upcoming horizons with owners",
+  "content_text_123": "Item",
+  "content_text_124": "Due Date",
+  "content_text_125": "Owner",
+  "content_text_126": "Status",
+  "content_text_127": "Shops & Est. renewal, Pune",
+  "content_text_128": "14 Sep",
+  "content_text_129": "Compliance",
+  "content_text_130": "Urgent",
+  "content_text_131": "POSH refresher (41 staff)",
+  "content_text_132": "30 Sep",
+  "content_text_133": "L&D",
+  "content_text_134": "Approaching",
+  "content_text_135": "Contractor MSA \u00d7 3",
+  "content_text_136": "04 Oct",
+  "content_text_137": "Procurement",
+  "content_text_138": "In Review",
+  "content_text_139": "Work permits \u00d7 6",
+  "content_text_140": "22 Oct",
+  "content_text_141": "Mobility",
+  "content_text_142": "On Track",
+  "content_text_143": "Requests by Category",
+  "content_text_144": "Volume & median close time",
+  "content_text_145": "This Week's People Moments",
+  "content_text_146": "Automated manager nudges",
+  "content_text_147": "Kavya V.",
+  "content_text_148": "5 years anniversary today",
+  "content_149": {
+    "recipient": "Kavya V."
+  },
+  "content_text_150": " Send note",
+  "content_text_151": "Rohit S.",
+  "content_text_152": "Confirmed after 6-month probation",
+  "content_153": {
+    "employee": "Rohit S."
+  },
+  "content_text_154": " Send note",
+  "content_text_155": "Neha M.",
+  "content_text_156": "Returning from parental leave Monday",
+  "content_157": {
+    "employee": "Neha M."
+  },
+  "content_text_158": "Plan return",
+  "content_text_159": "Girish D.",
+  "content_text_160": "Birthday tomorrow",
+  "content_text_161": "Auto-wish scheduled",
+  "initialState_1": "approve",
+  "defaultValue_2": "approve",
+  "display_3": "\u2022 SLA",
+  "fallback_1": "#05CD99",
+  "fallback_2": "100%",
+  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+}

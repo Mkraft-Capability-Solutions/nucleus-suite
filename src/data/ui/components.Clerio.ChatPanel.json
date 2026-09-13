@@ -1,0 +1,92 @@
+{
+  "initialConversations_1": {
+    "direct_trisha": {
+      "name": "Trisha Khanna",
+      "type": "direct",
+      "unread": 2,
+      "messages": [
+        {
+          "id": 1,
+          "sender": "Trisha Khanna",
+          "avatar": "https://ui-avatars.com/api/?name=Trisha+Khanna&background=0F6E5C&color=fff",
+          "text": "Hey! Did you check the updated OKR weights for Q1 2026?",
+          "time": "10:42 AM",
+          "isOwn": false
+        },
+        {
+          "id": 2,
+          "sender": "Trisha Khanna",
+          "avatar": "https://ui-avatars.com/api/?name=Trisha+Khanna&background=0F6E5C&color=fff",
+          "text": "Engineering pod health is currently at 85% on track (RAG Green). Let me know if we should calibrate.",
+          "time": "10:45 AM",
+          "isOwn": false
+        }
+      ]
+    },
+    "engineering": {
+      "name": "engineering-pods",
+      "type": "channel",
+      "unread": 0,
+      "messages": [
+        {
+          "id": 101,
+          "sender": "Amit Verma",
+          "avatar": "https://ui-avatars.com/api/?name=Amit+Verma&background=2563EB&color=fff",
+          "text": "Distributed payroll DAG run finished in 74s. Reconciled to zero paise residue for Feb 2026.",
+          "time": "09:30 AM",
+          "isOwn": false
+        },
+        {
+          "id": 102,
+          "sender": "David Miller",
+          "avatar": "https://ui-avatars.com/api/?name=David+Miller&background=7C3AED&color=fff",
+          "text": "Kafka event stream is live with 340/340 golden compliance tests passing.",
+          "time": "09:34 AM",
+          "isOwn": false
+        }
+      ]
+    },
+    "hr_ops": {
+      "name": "hr-operations",
+      "type": "channel",
+      "unread": 0,
+      "messages": [
+        {
+          "id": 201,
+          "sender": "Sarah Chen",
+          "avatar": "https://ui-avatars.com/api/?name=Sarah+Chen&background=EC4899&color=fff",
+          "text": "3 candidate offers dispatched via Day-0 pre-boarding portal. Digital signatures pending.",
+          "time": "Yesterday",
+          "isOwn": false
+        }
+      ]
+    }
+  },
+  "scrollToBottom_2": {
+    "behavior": "smooth"
+  },
+  "newMsg_fields_3": {
+    "sender": "You",
+    "avatar": "https://ui-avatars.com/api/?name=Admin&background=10222F&color=fff"
+  },
+  "time_5": {
+    "hour": "2-digit",
+    "minute": "2-digit"
+  },
+  "newMsg_fields_4": {
+    "isOwn": true
+  },
+  "activeChannel_fields_6": {
+    "unread": 0
+  },
+  "key_fields_7": {
+    "unread": 0
+  },
+  "ChatPanel_aria-label_8": "Team Messages",
+  "ChatPanel_text_9": "Team Messages",
+  "ChatPanel_text_10": "Encrypted • Internal Channel",
+  "ChatPanel_title_11": "Close messages",
+  "ChatPanel_aria-label_12": "Close messages",
+  "ChatPanel_aria-label_13": "Send message",
+  "initialState_1": "direct_trisha"
+}

@@ -1,0 +1,130 @@
+{
+  "PAYROLL_RUN_TYPES_1": {
+    "REGULAR": {
+      "id": "REGULAR",
+      "label": "Regular Monthly Cycle",
+      "description": "Standard monthly salary run (1st–30th/31st) across all cost centers",
+      "disbursementDay": 30,
+      "color": "#10b981"
+    },
+    "OFF_CYCLE_OT": {
+      "id": "OFF_CYCLE_OT",
+      "label": "Off-Cycle Overtime Run",
+      "description": "Dedicated OT disbursement batch post-salary cycle with independent NEFT file",
+      "disbursementDay": 10,
+      "color": "#3b82f6"
+    },
+    "ARREARS": {
+      "id": "ARREARS",
+      "label": "Retro Arrears Run",
+      "description": "Retroactive pay increments, revised DA revisions, and missed attendance adjustments",
+      "disbursementDay": 15,
+      "color": "#f59e0b"
+    },
+    "FNF": {
+      "id": "FNF",
+      "label": "Full & Final (F&F) Settlement",
+      "description": "Same-day exit settlement batch executed upon 4-department no-dues sign-off",
+      "disbursementDay": "On Exit Clearance",
+      "color": "#8b5cf6"
+    }
+  },
+  "NO_DUES_DEPARTMENTS_2": [
+    {
+      "id": "IT",
+      "name": "IT Infrastructure & Assets",
+      "lead": "David Miller",
+      "requiresSerialNo": true
+    },
+    {
+      "id": "FINANCE",
+      "name": "Finance & Accounts",
+      "lead": "Vikram Joshi",
+      "requiresSerialNo": false
+    },
+    {
+      "id": "HOD",
+      "name": "Department / HOD (Knowledge Transfer)",
+      "lead": "Amit Verma",
+      "requiresSerialNo": false
+    },
+    {
+      "id": "HR",
+      "name": "HR & People Operations",
+      "lead": "Ananya Sharma",
+      "requiresSerialNo": false
+    }
+  ],
+  "HO_ROLES_3": [
+    "ADMIN",
+    "HR_ADMIN",
+    "HO_HR_ADMIN",
+    "CORP_PAYROLL_MANAGER",
+    "CHRO",
+    "FINANCE_CONTROLLER",
+    "DIRECTOR",
+    "EXECUTIVE"
+  ],
+  "content_fields_4": {
+    "_isMasked": false,
+    "_scopeBadge": "HO_UNRESTRICTED"
+  },
+  "content_fields_5": {
+    "_isMasked": true,
+    "_scopeBadge": "RESTRICTED_PLANT_SCOPE",
+    "basicSalary": "••••••",
+    "grossSalary": "••••••",
+    "netPayable": "••••••",
+    "netDisbursal": "••••••",
+    "ctc": "••••••",
+    "hourlyRate": "••••••",
+    "otPayout": "••••••",
+    "gratuityAmount": "••••••",
+    "leaveEncashment": "••••••",
+    "loanDeduction": "••••••"
+  },
+  "content_fields_6": {
+    "isLocked": true
+  },
+  "content_fields_7": {
+    "isValid": false
+  },
+  "emp_fields_8": {
+    "basicSalaryNumeric": 40000
+  },
+  "content_fields_9": {
+    "status": "PROCESSED"
+  },
+  "content_fields_10": {
+    "disbursementDate": "10th of following month"
+  },
+  "content_fields_11": {
+    "status": "READY_FOR_BANK_FILE"
+  },
+  "processedItems_fields_12": {
+    "status": "PROCESSED"
+  },
+  "content_fields_13": {
+    "disbursementDate": "15th of month"
+  },
+  "content_fields_14": {
+    "status": "READY_FOR_BANK_FILE"
+  },
+  "departments_15": [
+    "IT",
+    "FINANCE",
+    "HOD",
+    "HR"
+  ],
+  "item_16": {
+    "status": "PENDING",
+    "remarks": "Awaiting inspection"
+  },
+  "content_fields_17": {
+    "eligible": false,
+    "amount": 0
+  },
+  "content_fields_18": {
+    "eligible": true
+  }
+}

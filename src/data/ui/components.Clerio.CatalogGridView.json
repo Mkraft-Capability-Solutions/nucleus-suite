@@ -1,0 +1,487 @@
+{
+  "catalogCards_fields_1": {
+    "id": "core_people",
+    "domain": "core_hr",
+    "title": "People Core",
+    "desc": "Central employee directory, personal details, documents and profiles.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_2": {
+    "iconColor": "#3b82f6",
+    "targetTab": "people_core"
+  },
+  "catalogCards_fields_3": {
+    "id": "core_attendance",
+    "domain": "core_hr",
+    "title": "Smart Attendance",
+    "desc": "Real-time clock-in/out, biometric turnstile sync, overtime and exceptions.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_4": {
+    "iconColor": "#0ea5e9",
+    "targetTab": "attendance"
+  },
+  "catalogCards_fields_5": {
+    "id": "core_leaves",
+    "domain": "core_hr",
+    "title": "Leave Management",
+    "desc": "Leave policies, annual rollover accrual, approval matrices and balances.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_6": {
+    "iconColor": "var(--signal)",
+    "targetTab": "leaves"
+  },
+  "catalogCards_fields_7": {
+    "id": "core_onboarding",
+    "domain": "core_hr",
+    "title": "Onboarding & Lifecycle",
+    "desc": "New hire onboarding workflows, document checklist, probation and exits.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_8": {
+    "iconColor": "#8b5cf6",
+    "targetTab": "onboarding"
+  },
+  "catalogCards_fields_9": {
+    "id": "core_org",
+    "domain": "core_hr",
+    "title": "Organization Management",
+    "desc": "Departments, designations, reporting lines, cost centers and visual org chart.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_10": {
+    "iconColor": "#6366f1",
+    "targetTab": "team"
+  },
+  "catalogCards_fields_11": {
+    "id": "core_workforce",
+    "domain": "core_hr",
+    "title": "Workforce Management",
+    "desc": "Statutory worker classification, wage types, contractor pools and staffing.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_12": {
+    "iconColor": "#a855f7",
+    "targetTab": "contract_workforce"
+  },
+  "catalogCards_fields_13": {
+    "id": "core_operations",
+    "domain": "core_hr",
+    "title": "HR Operations",
+    "desc": "Employee service desk, query resolution, bonafide letters and HR requests.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_14": {
+    "iconColor": "#f59e0b",
+    "targetTab": "helpdesk"
+  },
+  "catalogCards_fields_15": {
+    "id": "core_compliance",
+    "domain": "core_hr",
+    "title": "Compliance",
+    "desc": "2026 Labour Codes simulator, 50% wage floor test, PF/ESI filing and TRRN.",
+    "tag": "CORE HR"
+  },
+  "catalogCards_fields_16": {
+    "iconColor": "#ef4444",
+    "targetTab": "compliance"
+  },
+  "catalogCards_fields_17": {
+    "id": "talent_ats",
+    "domain": "talent",
+    "title": "Talent ATS",
+    "desc": "Job openings, resume parsing, candidate kanban pipeline and interview kits.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_18": {
+    "iconColor": "#2563eb",
+    "targetTab": "recruitment"
+  },
+  "catalogCards_fields_19": {
+    "id": "talent_performance",
+    "domain": "talent",
+    "title": "Performance & OKRs",
+    "desc": "Objective Key Results, KRA/KPI tracking, continuous check-ins and reviews.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_20": {
+    "iconColor": "var(--signal)",
+    "targetTab": "performance"
+  },
+  "catalogCards_fields_21": {
+    "id": "talent_learning",
+    "domain": "talent",
+    "title": "Learning & L&D",
+    "desc": "Corporate course catalog, micro-learning modules, mandatory certs and CME.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_22": {
+    "iconColor": "#f59e0b",
+    "targetTab": "learning"
+  },
+  "catalogCards_fields_23": {
+    "id": "talent_skills",
+    "domain": "talent",
+    "title": "Skills & Capability",
+    "desc": "Nucleus Capability Index (NCI) composite scoring and team skill taxonomy.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_24": {
+    "iconColor": "#8b5cf6",
+    "targetTab": "experience"
+  },
+  "catalogCards_fields_25": {
+    "id": "talent_succession",
+    "domain": "talent",
+    "title": "Succession Planning",
+    "desc": "9-Box talent calibration grid, critical role bench strength and readiness.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_26": {
+    "iconColor": "#ec4899",
+    "targetTab": "performance"
+  },
+  "catalogCards_fields_27": {
+    "id": "talent_mobility",
+    "domain": "talent",
+    "title": "Career & Internal Mobility",
+    "desc": "Internal job postings, skill-matching promotions and cross-pod transfers.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_28": {
+    "iconColor": "#0ea5e9",
+    "targetTab": "recruitment"
+  },
+  "catalogCards_fields_29": {
+    "id": "talent_recognition",
+    "domain": "talent",
+    "title": "Recognition & Feedback",
+    "desc": "Peer-to-peer kudos, awards, spot bonuses and 360-degree feedback reviews.",
+    "tag": "TALENT"
+  },
+  "catalogCards_fields_30": {
+    "iconColor": "#f97316",
+    "targetTab": "experience"
+  },
+  "catalogCards_fields_31": {
+    "id": "payroll_global",
+    "domain": "payroll_finance",
+    "title": "Global Payroll",
+    "desc": "100% accurate gross-to-net Directed Acyclic Graph (DAG) payroll calculation.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_32": {
+    "iconColor": "#2563eb",
+    "targetTab": "payroll"
+  },
+  "catalogCards_fields_33": {
+    "id": "payroll_comp",
+    "domain": "payroll_finance",
+    "title": "Compensation & Benefits",
+    "desc": "Salary structure grading, compa-ratio benchmarks, health insurance and perks.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_34": {
+    "iconColor": "var(--signal)",
+    "targetTab": "compensation"
+  },
+  "catalogCards_fields_35": {
+    "id": "payroll_claims",
+    "domain": "payroll_finance",
+    "title": "Reimbursements & Claims",
+    "desc": "Expense receipts, mileage, optical/wellness allowances and manager approvals.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_36": {
+    "iconColor": "#0ea5e9",
+    "targetTab": "payroll"
+  },
+  "catalogCards_fields_37": {
+    "id": "payroll_ewa",
+    "domain": "payroll_finance",
+    "title": "Loans, Advances & EWA",
+    "desc": "Zero-cost Earned Wage Access salary liquidity pool and interest-free loans.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_38": {
+    "iconColor": "#f59e0b",
+    "targetTab": "payroll"
+  },
+  "catalogCards_fields_39": {
+    "id": "payroll_tax",
+    "domain": "payroll_finance",
+    "title": "Tax & Statutory",
+    "desc": "EPF ECR, ESIC, Professional Tax, TDS 24Q and automated tax deductions.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_40": {
+    "iconColor": "#ef4444",
+    "targetTab": "compliance"
+  },
+  "catalogCards_fields_41": {
+    "id": "payroll_accounting",
+    "domain": "payroll_finance",
+    "title": "Payroll Accounting (GL & Cost Centers)",
+    "desc": "Balanced double-entry General Ledger salary journal with Tally Prime XML export.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_42": {
+    "iconColor": "#6366f1",
+    "targetTab": "payroll"
+  },
+  "catalogCards_fields_43": {
+    "id": "payroll_fnf",
+    "domain": "payroll_finance",
+    "title": "Full & Final Settlement",
+    "desc": "Automated exit clearance, leave encashment, gratuity and FnF recovery DAG.",
+    "tag": "PAYROLL & FINANCE"
+  },
+  "catalogCards_fields_44": {
+    "iconColor": "#a855f7",
+    "targetTab": "onboarding"
+  },
+  "catalogCards_fields_45": {
+    "id": "ops_rosters",
+    "domain": "workforce_ops",
+    "title": "Shift Planning & Rosters",
+    "desc": "Automated 24/7 rotational shift scheduling, coverage rules and swap requests.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_46": {
+    "iconColor": "#3b82f6",
+    "targetTab": "attendance"
+  },
+  "catalogCards_fields_47": {
+    "id": "ops_projects",
+    "domain": "workforce_ops",
+    "title": "Projects & Workforce Allocation",
+    "desc": "Agile pod assignments, resource allocation, project sprints and backlog tasks.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_48": {
+    "iconColor": "#0ea5e9",
+    "targetTab": "projects"
+  },
+  "catalogCards_fields_49": {
+    "id": "ops_field",
+    "domain": "workforce_ops",
+    "title": "Field Workforce",
+    "desc": "Geo-fenced mobile attendance, client visit tracking and offline punch sync.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_50": {
+    "iconColor": "var(--signal)",
+    "targetTab": "attendance"
+  },
+  "catalogCards_fields_51": {
+    "id": "ops_contract",
+    "domain": "workforce_ops",
+    "title": "Contract & Contingent Workforce",
+    "desc": "Turnstile biometric punches vs vendor invoice automated reconciliation.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_52": {
+    "iconColor": "#f59e0b",
+    "targetTab": "contract_workforce"
+  },
+  "catalogCards_fields_53": {
+    "id": "ops_assets",
+    "domain": "workforce_ops",
+    "title": "Assets & Gate Passes",
+    "desc": "IT hardware allocation, software licenses and digital QR gate passes.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_54": {
+    "iconColor": "#8b5cf6",
+    "targetTab": "onboarding"
+  },
+  "catalogCards_fields_55": {
+    "id": "ops_travel",
+    "domain": "workforce_ops",
+    "title": "Travel & Duty Management",
+    "desc": "Travel requisitions, ticketing, daily per diem expense calculation and hotel stay.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_56": {
+    "iconColor": "#6366f1",
+    "targetTab": "payroll"
+  },
+  "catalogCards_fields_57": {
+    "id": "ops_timesheets",
+    "domain": "workforce_ops",
+    "title": "Timesheets & Productivity",
+    "desc": "Task timers, billable client hours, timesheet approval flow and audit logs.",
+    "tag": "WORKFORCE OPS"
+  },
+  "catalogCards_fields_58": {
+    "iconColor": "#ec4899",
+    "targetTab": "projects"
+  },
+  "catalogCards_fields_59": {
+    "id": "analytics_exec",
+    "domain": "analytics_ai",
+    "title": "Executive Dashboards",
+    "desc": "Real-time executive summaries: headcount, payroll run cost and operational KPI.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_60": {
+    "iconColor": "#2563eb",
+    "targetTab": "dashboard"
+  },
+  "catalogCards_fields_61": {
+    "id": "analytics_people",
+    "domain": "analytics_ai",
+    "title": "People Intelligence",
+    "desc": "Headcount trends, diversity metrics, retention cohorts and flight risk.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_62": {
+    "iconColor": "var(--signal)",
+    "targetTab": "analytics"
+  },
+  "catalogCards_fields_63": {
+    "id": "analytics_workforce",
+    "domain": "analytics_ai",
+    "title": "Workforce Analytics",
+    "desc": "Shift absenteeism, overtime cost analysis and pod utilization heatmap.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_64": {
+    "iconColor": "#0ea5e9",
+    "targetTab": "analytics"
+  },
+  "catalogCards_fields_65": {
+    "id": "analytics_payroll",
+    "domain": "analytics_ai",
+    "title": "Payroll Analytics",
+    "desc": "Wage inflation variance, deduction breakdown and cost center allocations.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_66": {
+    "iconColor": "#f59e0b",
+    "targetTab": "analytics"
+  },
+  "catalogCards_fields_67": {
+    "id": "analytics_talent",
+    "domain": "analytics_ai",
+    "title": "Talent Analytics",
+    "desc": "Hiring funnel velocity, cost-per-hire and offer acceptance ratio.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_68": {
+    "iconColor": "#8b5cf6",
+    "targetTab": "analytics"
+  },
+  "catalogCards_fields_69": {
+    "id": "analytics_copilot",
+    "domain": "analytics_ai",
+    "title": "AI Copilot & Agents",
+    "desc": "Autonomous AI HR agents with verifiable Action Ledger and human oversight.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_70": {
+    "iconColor": "#ec4899",
+    "targetTab": "dashboard"
+  },
+  "catalogCards_fields_71": {
+    "id": "analytics_custom",
+    "domain": "analytics_ai",
+    "title": "Custom Reports",
+    "desc": "Dynamic enterprise report builder with multi-source filters and CSV/PDF export.",
+    "tag": "ANALYTICS & AI"
+  },
+  "catalogCards_fields_72": {
+    "iconColor": "#6366f1",
+    "targetTab": "analytics"
+  },
+  "catalogCards_fields_73": {
+    "id": "platform_integrations",
+    "domain": "platform",
+    "title": "Integrations & API",
+    "desc": "REST API, bi-directional webhooks and native connectors (SAP, Tally Prime, Slack).",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_74": {
+    "iconColor": "#2563eb",
+    "targetTab": "integrations"
+  },
+  "catalogCards_fields_75": {
+    "id": "platform_workflows",
+    "domain": "platform",
+    "title": "Workflow Automation",
+    "desc": "Visual node-based flowchart studio with multi-tier approval gates & SLA rules.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_76": {
+    "iconColor": "var(--signal)",
+    "targetTab": "onboarding"
+  },
+  "catalogCards_fields_77": {
+    "id": "platform_roles",
+    "domain": "platform",
+    "title": "Roles & Permissions",
+    "desc": "Granular Role-Based Access Control (RBAC) with instant persona switcher.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_78": {
+    "iconColor": "#8b5cf6",
+    "targetTab": "settings"
+  },
+  "catalogCards_fields_79": {
+    "id": "platform_settings",
+    "domain": "platform",
+    "title": "Settings & Configuration",
+    "desc": "Legal entity configurations, fiscal calendars, currency and localization.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_80": {
+    "iconColor": "#6366f1",
+    "targetTab": "settings"
+  },
+  "catalogCards_fields_81": {
+    "id": "platform_security",
+    "domain": "platform",
+    "title": "Security Center",
+    "desc": "SAML SSO, two-factor authentication (2FA), IP allowlisting and data encryption.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_82": {
+    "iconColor": "#ef4444",
+    "targetTab": "settings"
+  },
+  "catalogCards_fields_83": {
+    "id": "platform_notifications",
+    "domain": "platform",
+    "title": "Notifications & Communication",
+    "desc": "Automated notification rules, broadcast bulletins, email digests and templates.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_84": {
+    "iconColor": "#f59e0b",
+    "targetTab": "settings"
+  },
+  "catalogCards_fields_85": {
+    "id": "platform_audit",
+    "domain": "platform",
+    "title": "Audit Logs & Activity Center",
+    "desc": "Append-only immutable transaction audit trail with filterable historical logs.",
+    "tag": "PLATFORM"
+  },
+  "catalogCards_fields_86": {
+    "iconColor": "#475569",
+    "targetTab": "settings"
+  },
+  "categories_87": [
+    "ALL",
+    "CORE HR",
+    "TALENT",
+    "PAYROLL & FINANCE",
+    "WORKFORCE OPS",
+    "ANALYTICS & AI",
+    "PLATFORM"
+  ],
+  "CatalogGridView_text_88": "Showing ",
+  "CatalogGridView_text_89": " modules & features",
+  "initialState_1": "ALL"
+}

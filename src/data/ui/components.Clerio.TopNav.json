@@ -1,0 +1,203 @@
+{
+  "ROLE_TO_DEFAULT_CONSOLE_1": {
+    "SUPER_ADMIN": "S10",
+    "HR_MANAGER": "S2",
+    "FINANCE_MANAGER": "S5",
+    "PROJECT_MANAGER": "S7",
+    "TEAM_LEAD": "S7",
+    "EMPLOYEE": "S8",
+    "ADMIN": "S10",
+    "MANAGER": "S7"
+  },
+  "ROLE_PERMITTED_CONSOLES_2": {
+    "SUPER_ADMIN": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9",
+      "S10"
+    ],
+    "HR_MANAGER": [
+      "S2",
+      "S3",
+      "S4",
+      "S6",
+      "S7",
+      "S8",
+      "S9"
+    ],
+    "FINANCE_MANAGER": [
+      "S5",
+      "S7",
+      "S8"
+    ],
+    "PROJECT_MANAGER": [
+      "S7",
+      "S8"
+    ],
+    "TEAM_LEAD": [
+      "S7",
+      "S8"
+    ],
+    "EMPLOYEE": [
+      "S8"
+    ],
+    "ADMIN": [
+      "S10"
+    ],
+    "MANAGER": [
+      "S7",
+      "S3",
+      "S6",
+      "S8"
+    ]
+  },
+  "ALL_CONSOLES_3": [
+    {
+      "id": "S1",
+      "title": "People Command Centre",
+      "shortTitle": "S1 People Command",
+      "persona": "CHRO / Leadership"
+    },
+    {
+      "id": "S2",
+      "title": "HR Operations Console",
+      "shortTitle": "S2 HR Ops Console",
+      "persona": "HRBP / Operations"
+    },
+    {
+      "id": "S3",
+      "title": "Attendance & Shift Intelligence",
+      "shortTitle": "S3 Attendance & Shifts",
+      "persona": "Workforce Ops"
+    },
+    {
+      "id": "S4",
+      "title": "Talent Acquisition Command",
+      "shortTitle": "S4 Talent Acquisition",
+      "persona": "Recruiting / TA Lead"
+    },
+    {
+      "id": "S5",
+      "title": "Payroll Control Room",
+      "shortTitle": "S5 Payroll Control",
+      "persona": "Payroll & Finance"
+    },
+    {
+      "id": "S6",
+      "title": "Performance & Talent Calibration",
+      "shortTitle": "S6 Performance & Talent",
+      "persona": "Talent Admin / 9-Box"
+    },
+    {
+      "id": "S7",
+      "title": "Manager Cockpit",
+      "shortTitle": "S7 Manager Cockpit",
+      "persona": "People Manager / Team Lead"
+    },
+    {
+      "id": "S8",
+      "title": "Employee Home",
+      "shortTitle": "S8 Employee Home",
+      "persona": "Self-Service"
+    },
+    {
+      "id": "S9",
+      "title": "Magnetix Capability & L&D",
+      "shortTitle": "S9 Magnetix Capability",
+      "persona": "Capability & L&D"
+    },
+    {
+      "id": "S10",
+      "title": "Workspace Governance",
+      "shortTitle": "S10 Workspace Governance",
+      "persona": "System / Workspace Administrator"
+    }
+  ],
+  "permittedConsoleIds_4": [
+    "S8"
+  ],
+  "quickActions_fields_5": {
+    "id": "projects",
+    "label": "New Project"
+  },
+  "quickActions_fields_6": {
+    "iconColor": "var(--info)"
+  },
+  "quickActions_fields_7": {
+    "id": "leaves",
+    "label": "Apply Leave"
+  },
+  "quickActions_fields_8": {
+    "iconColor": "var(--status-ok)"
+  },
+  "quickActions_fields_9": {
+    "id": "payroll",
+    "label": "Draw EWA Salary"
+  },
+  "quickActions_fields_10": {
+    "iconColor": "var(--warn)"
+  },
+  "quickActions_fields_11": {
+    "id": "performance",
+    "label": "New OKR Goal"
+  },
+  "quickActions_fields_12": {
+    "iconColor": "var(--agent)"
+  },
+  "TopNav_placeholder_13": "Search employees, documents, tasks...",
+  "TopNav_aria-label_14": "Global search across all modules",
+  "TopNav_text_15": "\u2318K",
+  "TopNav_title_16": "Open Dual-Pane Navigator (\u2318M)",
+  "TopNav_aria-label_17": "Open Dual-Pane Navigator",
+  "TopNav_text_18": "Modules",
+  "TopNav_text_19": "\u2318M",
+  "TopNav_title_20": "Switch Dashboard Console (S1..S10)",
+  "TopNav_aria-label_21": "Switch Dashboard Console",
+  "TopNav_text_22": "Dashboards:",
+  "TopNav_text_23": "Dashboard Consoles (",
+  "TopNav_text_24": " Unlocked)",
+  "TopNav_title_25": "Configure Module & Cockpit Access Permissions",
+  "TopNav_text_26": "Access Control",
+  "TopNav_aria-label_27": "Toggle Appearance",
+  "TopNav_title_28": "Quick Actions",
+  "TopNav_aria-label_29": "Create new item or request",
+  "TopNav_title_30": "Notifications",
+  "TopNav_aria-label_31": "Notifications",
+  "TopNav_text_32": "Notifications & AI Insights",
+  "TopNav_text_33": "Pre-Payroll AI Audit Passed",
+  "TopNav_text_34": "0 anomalies detected for Feb cycle.",
+  "TopNav_text_35": "360 Review Reminder",
+  "TopNav_text_36": "Feedback due for sprint Q1 review.",
+  "TopNav_title_37": "User profile and account links",
+  "TopNav_alt_38": "User Avatar",
+  "TopNav_text_39": " Access Control & RBAC Studio",
+  "TopNav_text_40": " Account Settings & Security",
+  "TopNav_text_41": " My Team Directory",
+  "TopNav_text_42": " Sign Out of Nucleus",
+  "TopNav_aria-label_43": "Toggle navigation panel",
+  "defaultValue_1": "S1",
+  "display_2": "\ud83d\udc51 UNIVERSAL ACCESS",
+  "display_3": "Access all S1\u2013S10 operational cockpits and calibration views",
+  "display_4": "Dark",
+  "display_5": "Light",
+  "display_6": "Switch to Light Mode",
+  "display_7": "Switch to Dark Mode",
+  "display_8": "Hide navigation panel",
+  "display_9": "Show navigation panel",
+  "fallback_1": "SUPER_ADMIN",
+  "fallback_2": "S8",
+  "fallback_3": "Trisha",
+  "fallback_4": "Profile",
+  "fallback_5": "Trisha",
+  "fallback_6": "Trisha Khanna",
+  "fallback_7": "Trisha",
+  "fallback_8": "Trisha",
+  "fallback_9": "User Name",
+  "fallback_10": "user@nucleus.com"
+}

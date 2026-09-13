@@ -1,0 +1,95 @@
+{
+  "moduleSources_1": {
+    "access_scope": "02_Legal_Entities",
+    "person_record": "12_Employees",
+    "assignment_admin": "12_Employees",
+    "position_register": "11_Positions",
+    "sanctioned_strength": "10_Sanctioned_Manpower",
+    "document_vault": "32_Letter_Templates",
+    "check_in_out": "20_Punch_Events",
+    "my_attendance": "21_Expected_Attendance",
+    "attendance_detail": "21_Expected_Attendance",
+    "gate_passes": "22_Gate_Pass",
+    "overtime_register": "23_Overtime_Register",
+    "attendance_exceptions": "21_Expected_Attendance",
+    "recompute_monitor": "21_Expected_Attendance",
+    "team_history": "21_Expected_Attendance",
+    "leave_requests": "18_Leave_Requests",
+    "leave_ledger": "17_Leave_Ledger",
+    "leave_policy_admin": "15_Leave_Accrual_Policy",
+    "payroll_runs": "26_Payroll_Runs",
+    "pre_payroll_audit": "26_Payroll_Runs",
+    "salary_simulator": "13_Salary_Structure",
+    "payslips": "26_Payroll_Runs",
+    "tax_declarations": "13_Salary_Structure",
+    "bank_disbursement": "26_Payroll_Runs",
+    "full_and_final": "27_Exit_Clearance",
+    "gl_mapping": "35_GL_Mapping",
+    "reconciliation": "26_Payroll_Runs",
+    "loans_advances": "24_Loans",
+    "approval_inbox": "18_Leave_Requests",
+    "joining_chain": "34_Induction_Learning",
+    "clearance_board": "27_Exit_Clearance",
+    "asset_register": "33_Assets",
+    "recognition_register": "30_Recognition_Referral",
+    "letters_register": "32_Letter_Templates",
+    "policy_acknowledgements": "34_Induction_Learning",
+    "rule_pack_manager": "08_Attendance_Rules",
+    "golden_case_library": "01_Scenario_Map",
+    "obligation_calendar": "28_Statutory_Calendar",
+    "statutory_register": "29_Statutory_Forms",
+    "requisitions": "37_Requisitions",
+    "referrals": "30_Recognition_Referral",
+    "contractor_reconciliation": "36_ERP_Inbound_Master",
+    "integration_config": "36_ERP_Inbound_Master",
+    "sync_monitor": "36_ERP_Inbound_Master",
+    "assistant_helpdesk": "01_Scenario_Map",
+    "employee_home": "12_Employees",
+    "learning_paths": "34_Induction_Learning",
+    "announcement_management": "31_Announcements",
+    "agent_ledger": "01_Scenario_Map",
+    "operational_reports": "21_Expected_Attendance"
+  },
+  "content_2": [
+    "check_in_out",
+    "my_attendance",
+    "attendance_detail",
+    "attendance_exceptions",
+    "recompute_monitor",
+    "team_history",
+    "operational_reports"
+  ],
+  "content_fields_3": {
+    "Status": "Validated"
+  },
+  "content_fields_4": {
+    "Jurisdiction": "India"
+  },
+  "content_fields_5": {
+    "Status": "Effective"
+  },
+  "content_fields_6": {
+    "Owner": "Compliance"
+  },
+  "content_fields_7": {
+    "Last run": "15 Sep 2026"
+  },
+  "content_fields_8": {
+    "Channel": "Scenario map"
+  },
+  "content_fields_9": {
+    "Owner": "Demo administrator"
+  },
+  "content_fields_10": {
+    "Owner": "Demo tenant",
+    "Status": "Ready"
+  },
+  "content_fields_11": {
+    "updatedAt": "15 Sep 2026"
+  },
+  "detail_12": [
+    "Reference",
+    "Owner",
+    "Status"
+  ]
+}

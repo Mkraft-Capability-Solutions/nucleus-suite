@@ -1,0 +1,91 @@
+{
+  "itemModuleKeys_1": {
+    "dashboard": "dashboard",
+    "core_people": "people_core",
+    "core_attendance": "attendance",
+    "core_leaves": "leaves",
+    "core_onboarding": "onboarding",
+    "core_org": "team",
+    "core_workforce": "contract_workforce",
+    "core_operations": "helpdesk",
+    "core_compliance": "compliance",
+    "talent_ats": "recruitment",
+    "talent_performance": "performance",
+    "talent_learning": "learning",
+    "talent_skills": "experience",
+    "talent_succession": "performance",
+    "talent_mobility": "recruitment",
+    "talent_recognition": "experience",
+    "payroll_global": "payroll",
+    "payroll_comp": "compensation",
+    "payroll_claims": "payroll",
+    "payroll_ewa": "payroll",
+    "payroll_tax": "compliance",
+    "payroll_accounting": "payroll",
+    "payroll_fnf": "onboarding",
+    "ops_rosters": "attendance",
+    "ops_projects": "projects",
+    "ops_field": "attendance",
+    "ops_contract": "contract_workforce",
+    "ops_assets": "onboarding",
+    "ops_travel": "payroll",
+    "ops_timesheets": "projects",
+    "analytics_exec": "dashboard",
+    "analytics_people": "analytics",
+    "analytics_workforce": "analytics",
+    "analytics_payroll": "analytics",
+    "analytics_talent": "analytics",
+    "analytics_copilot": "analytics",
+    "analytics_custom": "analytics",
+    "platform_integrations": "integrations",
+    "platform_workflows": "onboarding",
+    "platform_roles": "settings",
+    "platform_settings": "settings",
+    "platform_security": "settings",
+    "platform_notifications": "settings",
+    "platform_audit": "settings"
+  },
+  "domainModuleKeys_2": {
+    "dashboard": [
+      "dashboard"
+    ],
+    "core_hr": [
+      "people_core",
+      "attendance",
+      "leaves",
+      "onboarding",
+      "team",
+      "contract_workforce",
+      "helpdesk",
+      "compliance"
+    ],
+    "talent": [
+      "recruitment",
+      "performance",
+      "learning",
+      "experience"
+    ],
+    "payroll_finance": [
+      "payroll",
+      "compensation",
+      "compliance",
+      "onboarding"
+    ],
+    "workforce_ops": [
+      "attendance",
+      "projects",
+      "contract_workforce",
+      "onboarding",
+      "payroll"
+    ],
+    "analytics_ai": [
+      "analytics",
+      "dashboard"
+    ],
+    "platform": [
+      "integrations",
+      "settings",
+      "onboarding"
+    ]
+  }
+}

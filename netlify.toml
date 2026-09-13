@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# The adapter packages Next.js server rendering and API routes as functions.
+# Do not replace this with a static export or an index.html catch-all redirect.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
