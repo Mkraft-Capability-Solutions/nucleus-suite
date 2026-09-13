@@ -255,7 +255,10 @@
           "key": "headcount",
           "label": "Approved headcount",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "step": 1
         },
         {
           "key": "effectiveFrom",
@@ -313,7 +316,10 @@
           "key": "sanctioned",
           "label": "Sanctioned strength",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "step": 1
         },
         {
           "key": "effectiveFrom",
@@ -485,7 +491,10 @@
           "key": "minutes",
           "label": "Approved overtime minutes",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "step": 1
         },
         {
           "key": "multiplier",
@@ -698,7 +707,10 @@
           "key": "carryForward",
           "label": "Carry-forward cap",
           "required": false,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "step": 0.5
         },
         {
           "key": "effectiveFrom",
@@ -768,7 +780,10 @@
           "key": "amount",
           "label": "Declared amount",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "proof",
@@ -1158,7 +1173,10 @@
           "key": "variance",
           "label": "Variance amount",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": -999999999.99,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "resolution",
@@ -1315,7 +1333,10 @@
           "key": "recoveryAmount",
           "label": "Recovery amount",
           "required": false,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "waiverReason",
@@ -1431,7 +1452,10 @@
           "key": "awardValue",
           "label": "Award value",
           "required": false,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         }
       ],
       "description": "Manage recognition register with a scoped work queue, record history and controlled actions.",
@@ -1581,13 +1605,19 @@
           "key": "principal",
           "label": "Principal amount",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "tenureMonths",
           "label": "Tenure in months",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 1000000,
+          "step": 1
         },
         {
           "key": "guarantorOne",
@@ -1764,7 +1794,10 @@
           "key": "variance",
           "label": "Attendance variance",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": -999999999.99,
+          "max": 1000000,
+          "step": 1
         },
         {
           "key": "resolution",
@@ -1880,7 +1913,10 @@
           "key": "approvalThreshold",
           "label": "Approval threshold",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "reversalReason",
@@ -2160,19 +2196,35 @@
           "key": "fromDate",
           "label": "From date",
           "required": true,
-          "type": "date"
+          "type": "date",
+          "defaultValue": "2026-09-13"
         },
         {
           "key": "toDate",
           "label": "To date",
           "required": true,
-          "type": "date"
+          "type": "date",
+          "defaultValue": "2026-09-13"
+        },
+        {
+          "key": "numberOfDays",
+          "label": "Number of Days",
+          "type": "number",
+          "required": true,
+          "min": 0.5,
+          "max": 1000000,
+          "step": 0.5,
+          "derive": {
+            "kind": "inclusiveDays",
+            "from": "fromDate",
+            "to": "toDate"
+          }
         },
         {
           "key": "reason",
           "label": "Reason",
           "required": false,
-          "type": "text"
+          "type": "textarea"
         },
         {
           "key": "contact",
@@ -2380,19 +2432,28 @@
           "key": "basic",
           "label": "Basic pay",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "hra",
           "label": "HRA",
           "required": true,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "specialAllowance",
           "label": "Special allowance",
           "required": false,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "effectiveFrom",
@@ -2496,7 +2557,10 @@
           "key": "recoveryAmount",
           "label": "Recovery amount",
           "required": false,
-          "type": "number"
+          "type": "number",
+          "min": 0,
+          "max": 999999999.99,
+          "step": 0.01
         },
         {
           "key": "approvalReference",

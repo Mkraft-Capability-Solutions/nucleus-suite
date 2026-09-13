@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
+  // Isolate local compiler verification from a running development server.
+  distDir: process.env.NUCLEUS_ISOLATED_BUILD === 'true' ? 'build' : '.next',
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'X-Content-Type-Options', value: 'nosniff' },

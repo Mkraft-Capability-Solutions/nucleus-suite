@@ -1,0 +1,779 @@
+{
+  "status": "not-refactored",
+  "scope": "Direct JSX text and common label attributes; conditional/template-generated labels require additional semantic review.",
+  "snapshotReads": 4576,
+  "directLabelLocations": 99,
+  "files": [
+    {
+      "path": "src/components/AppWorkspace.js",
+      "snapshotReads": 22,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/AppearanceToggle.tsx",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 14,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        }
+      ]
+    },
+    {
+      "path": "src/components/BrandLogo.js",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 4,
+          "kind": "jsx-attribute",
+          "attribute": "alt"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Charts/NucleusChart.js",
+      "snapshotReads": 7,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Charts/theme.js",
+      "snapshotReads": 26,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/AIPanel.js",
+      "snapshotReads": 28,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/AccessControlView.js",
+      "snapshotReads": 111,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ActionFormModal.js",
+      "snapshotReads": 7,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/AdminOverview.tsx",
+      "snapshotReads": 1,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/AttendanceFAB.js",
+      "snapshotReads": 13,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/AttendanceView.js",
+      "snapshotReads": 157,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/CMSModal.js",
+      "snapshotReads": 75,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/CatalogGridView.tsx",
+      "snapshotReads": 3,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ChatPanel.js",
+      "snapshotReads": 14,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/CompensationView.js",
+      "snapshotReads": 21,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ComplianceView.js",
+      "snapshotReads": 394,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ContractWorkforceView.js",
+      "snapshotReads": 72,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/DataImportModal.js",
+      "snapshotReads": 54,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ExperienceView.js",
+      "snapshotReads": 45,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/HelpdeskView.js",
+      "snapshotReads": 63,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/IntegrationsView.js",
+      "snapshotReads": 32,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/LearningView.js",
+      "snapshotReads": 17,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/LeaveView.js",
+      "snapshotReads": 196,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/LeftDock.js",
+      "snapshotReads": 28,
+      "hardcodedLabelLocations": [
+        {
+          "line": 54,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/LoginView.js",
+      "snapshotReads": 10,
+      "hardcodedLabelLocations": [
+        {
+          "line": 38,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/MainWorkspace.js",
+      "snapshotReads": 138,
+      "hardcodedLabelLocations": [
+        {
+          "line": 1058,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/MisReportingHub.js",
+      "snapshotReads": 131,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/OnboardingView.js",
+      "snapshotReads": 162,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/OperationalModuleView.js",
+      "snapshotReads": 31,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/PayrollView.js",
+      "snapshotReads": 314,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/PeopleCoreView.js",
+      "snapshotReads": 90,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/PerformanceView.js",
+      "snapshotReads": 46,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/ProcessGuide.js",
+      "snapshotReads": 2,
+      "hardcodedLabelLocations": [
+        {
+          "line": 11,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 15,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 15,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 15,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 15,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 17,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 17,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 17,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 18,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 18,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/ProjectView.js",
+      "snapshotReads": 122,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/RecruitmentView.js",
+      "snapshotReads": 139,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/RightSubNav.js",
+      "snapshotReads": 8,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/SettingsView.js",
+      "snapshotReads": 138,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/SideNav.js",
+      "snapshotReads": 61,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/TeamView.js",
+      "snapshotReads": 20,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/Toast.js",
+      "snapshotReads": 2,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/TopNav.js",
+      "snapshotReads": 57,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Clerio/WorkflowBuilderModal.js",
+      "snapshotReads": 49,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/AttendanceWidget.js",
+      "snapshotReads": 13,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Header.js",
+      "snapshotReads": 9,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/HeroSection.js",
+      "snapshotReads": 12,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Modals/AccessControlModal.js",
+      "snapshotReads": 43,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Modals/ApprovalActionModal.js",
+      "snapshotReads": 31,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Personalization/PersonalDashboard.tsx",
+      "snapshotReads": 1,
+      "hardcodedLabelLocations": [
+        {
+          "line": 49,
+          "kind": "jsx-attribute",
+          "attribute": "title"
+        },
+        {
+          "line": 167,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 170,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 171,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 172,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 172,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 173,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 174,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 175,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 177,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 181,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 182,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 182,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 182,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 182,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 183,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 183,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 183,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 183,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 184,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 184,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 184,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 184,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 184,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 185,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 186,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 186,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 187,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 188,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 198,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 198,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 204,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 206,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 206,
+          "kind": "jsx-attribute",
+          "attribute": "label"
+        },
+        {
+          "line": 208,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 208,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 209,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 210,
+          "kind": "jsx-attribute",
+          "attribute": "label"
+        },
+        {
+          "line": 211,
+          "kind": "jsx-attribute",
+          "attribute": "label"
+        },
+        {
+          "line": 211,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 211,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 211,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 212,
+          "kind": "jsx-attribute",
+          "attribute": "label"
+        },
+        {
+          "line": 212,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 212,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 212,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 212,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 213,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 213,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 214,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 214,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 214,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 214,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 214,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 215,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 215,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 215,
+          "kind": "jsx-attribute",
+          "attribute": "label"
+        },
+        {
+          "line": 215,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 215,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/Personalization/WidgetContent.tsx",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 7,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/StatsCards.js",
+      "snapshotReads": 5,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/TodaysFocus.js",
+      "snapshotReads": 20,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/UpcomingEvents.js",
+      "snapshotReads": 9,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/AttendanceIntelligence.js",
+      "snapshotReads": 154,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/EmployeeHome.js",
+      "snapshotReads": 194,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/HROpsConsole.js",
+      "snapshotReads": 153,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/MagnetixCapability.js",
+      "snapshotReads": 134,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/ManagerCockpit.js",
+      "snapshotReads": 108,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/NucleusIntelligence.js",
+      "snapshotReads": 99,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/PayrollControlRoom.js",
+      "snapshotReads": 150,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/PeopleCommandCentre.js",
+      "snapshotReads": 110,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/PerformanceTalent.js",
+      "snapshotReads": 80,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Dashboard/Views/TalentAcquisition.js",
+      "snapshotReads": 143,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/components/Navigation/DualPaneNav.js",
+      "snapshotReads": 25,
+      "hardcodedLabelLocations": [
+        {
+          "line": 142,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Website/PublicPage.tsx",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 24,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 26,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 28,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 29,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 34,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 37,
+          "kind": "jsx-attribute",
+          "attribute": "aria-label"
+        },
+        {
+          "line": 47,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 52,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 52,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/WorkspaceDataBoundary.js",
+      "snapshotReads": 0,
+      "hardcodedLabelLocations": [
+        {
+          "line": 22,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 23,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 24,
+          "kind": "jsx-text"
+        },
+        {
+          "line": 25,
+          "kind": "jsx-text"
+        }
+      ]
+    },
+    {
+      "path": "src/components/auth/RoleProtected.js",
+      "snapshotReads": 5,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/context/AuthContext.js",
+      "snapshotReads": 12,
+      "hardcodedLabelLocations": []
+    },
+    {
+      "path": "src/context/HRMSContext.js",
+      "snapshotReads": 160,
+      "hardcodedLabelLocations": []
+    }
+  ]
+}

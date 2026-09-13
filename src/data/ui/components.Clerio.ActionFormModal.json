@@ -91,7 +91,13 @@
           "headcount",
           "Approved headcount",
           "number",
-          true
+          true,
+          null,
+          {
+            "min": 0,
+            "max": 999999999,
+            "step": 1
+          }
         ],
         [
           "effectiveDate",
@@ -302,7 +308,13 @@
           "weight",
           "Weight percent",
           "number",
-          true
+          true,
+          null,
+          {
+            "min": 0,
+            "max": 100,
+            "step": 0.01
+          }
         ],
         [
           "keyResults",
@@ -367,7 +379,13 @@
           "budget",
           "Budget allocation",
           "number",
-          true
+          true,
+          null,
+          {
+            "min": 0,
+            "max": 999999999,
+            "step": 0.01
+          }
         ],
         [
           "eligiblePopulation",
@@ -504,7 +522,13 @@
           "amount",
           "Amount",
           "number",
-          true
+          true,
+          null,
+          {
+            "min": 0,
+            "max": 999999999,
+            "step": 0.01
+          }
         ],
         [
           "reason",
@@ -1247,7 +1271,13 @@
           "enrollmentYear",
           "Enrollment year",
           "number",
-          true
+          true,
+          null,
+          {
+            "min": 0,
+            "max": 9999,
+            "step": 1
+          }
         ],
         [
           "confirmation",

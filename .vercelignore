@@ -17,3 +17,7 @@
 # Local agent configuration
 /.codex/
 /.agents/
+
+# Local compiler output and migration review artifacts
+/build
+/plan

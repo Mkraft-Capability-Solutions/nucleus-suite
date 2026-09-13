@@ -1,10 +1,17 @@
 "use client";
+import { useState } from 'react';
+import { readData } from '@/services/workspace-data.mjs';
 import { navigationDomains } from '@/lib/workspace-navigation';
 import { canViewNavigationItem } from '@/lib/navigation-access';
 import { useAuth } from '@/context/AuthContext';
 import styles from './CatalogGridView.module.css';
 
-const CatalogGridView = ({ onSelectFeature, searchQuery = '' }) => {
+type CatalogGridViewProps = {
+    onSelectFeature?: (tab: string, domain: string, feature: string) => void;
+    searchQuery?: string;
+};
+
+const CatalogGridView = ({ onSelectFeature, searchQuery = '' }: CatalogGridViewProps) => {
     const [filterCategory, setFilterCategory] = useState(readData("components.Clerio.CatalogGridView", "initialState_1"));
 
     const { user, isModuleAllowed, isConsoleAllowed } = useAuth();

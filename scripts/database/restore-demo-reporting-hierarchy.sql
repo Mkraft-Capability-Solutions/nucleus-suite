@@ -1,3 +1,4 @@
+-- Synthetic demo data repair; never part of production schema migration.
 -- Restore the reporting hierarchy supplied in the employee master dataset.
 -- Employee codes are tenant-local, so the join cannot cross tenant boundaries.
 with manager_map(employee_code, manager_code) as (

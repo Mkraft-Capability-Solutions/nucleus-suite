@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "migrations": 19,
+  "tables": 331,
+  "checks": [
+    "Typed configuration rejects invalid values",
+    "Overlapping payroll effective dates rejected",
+    "Payroll profile cannot reference another tenant employee",
+    "Non-owner role sees only its tenant and cannot write another tenant",
+    "Runtime role cannot update, delete or truncate audit events"
+  ],
+  "fixtures": "All verification records rolled back; no synthetic HR records persisted."
+}

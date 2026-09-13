@@ -92,6 +92,48 @@
       "when": 1789102800000,
       "tag": "0012_inbound_intake",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1789102860000,
+      "tag": "0013_platform_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1789102920000,
+      "tag": "0014_vp_readiness_completion",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1789102980000,
+      "tag": "0016_localization_configuration",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1789103040000,
+      "tag": "0017_payroll_profiles",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1789103100000,
+      "tag": "0018_payroll_profile_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789103160000,
+      "tag": "0019_runtime_policy_schema",
+      "breakpoints": true
     }
   ]
 }
