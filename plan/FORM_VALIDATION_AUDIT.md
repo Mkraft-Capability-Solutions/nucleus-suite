@@ -33,3 +33,11 @@ The broader database-driven localization, full normalization and live workspace 
 ## Follow-up closure
 
 `node scripts/audit-forms.mjs` now reproduces the sweep across 440 source files, 22 native forms, 13 numeric/range controls and 22 metadata numeric fields. No missing numeric constraints or directly adjacent required-label mismatches were found. SCR-030 employee/type controls remain dropdowns when options are unavailable and reject stale selections. Shared validation rejects malformed clock values. The global boundary re-evaluates programmatically corrected values without retaining stale errors. Shared action dialogs reset through a keyed request lifecycle rather than effect-driven state resets.
+
+## Master QA follow-up — 13 September 2026
+
+The previous split between SCR-030 and the legacy policy workflow is superseded by `LeaveApplicationDialog` and `leave-workflow.ts`. Both application entrypoints now share required employee/type/date/quantity validation, optional reason/contact, asynchronous error handling and a serialized balance/workflow update. MUI dialogs provide focus containment/restoration for application and generic action forms. Generic action forms await completion and retain values after failure.
+
+The updated AST audit covers 460 JS/TS source files, 24 forms, 15 intrinsic/MUI numeric controls and 22 metadata numeric fields. Missing bounds/steps and adjacent required-label mismatches: zero. This does not prove business-rule correctness or server-side validation across all domain forms. Full coverage and unresolved acceptance criteria are tracked in `MASTER_QA_REQUIREMENTS.json` and `MASTER_QA_IMPLEMENTATION.md`.
+
+Current-turn verification supersedes earlier counts above: 806 unit tests passed (21 skipped), 31 UI contracts passed. See `MASTER_QA_REPORT.md` for final browser/build evidence. No database migrations or live database checks were performed in this follow-up.

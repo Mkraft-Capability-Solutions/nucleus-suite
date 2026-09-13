@@ -29,3 +29,7 @@ The screenshot lists RLS bypass, tenant management, audit logging, outbox delive
 Superadmin (S10), HR Manager (S2) and Employee (S8) have separate customizable dashboard presets. The widget catalogue in `src/data/ui/dashboard.widgets.json` requires both explicit role membership and a current module grant. Permission changes and imported/saved layouts are revalidated before rendering. Admin retains the governance console; Manager retains the manager cockpit.
 
 Each account can save up to six named layouts per console on its current browser. Layouts store presentation settings only, keyed by email, role and console. They are not synced across devices. The shared demo password above is also used by the local browser test configuration; the old credential image and retired Prisma seeders are not login sources.
+
+## Leave preview identities
+
+The leave adapter now has explicit synthetic accounts for MK-102, MK-104 and MK-107, and an explicit preview reporting relationship from MK-107 to MK-104. This mapping is confined to the leave preview and is not a verified foreign-key mapping for the legacy workbook. HR Manager and Superadmin can adjust known persona or source employee accounts with a reason and review another employee's requests sequentially. A manager can review the configured report's supervisor stage. Employees cannot approve themselves or adjust balances. Other legacy leave examples remain read-only until their accounts are reconciled.

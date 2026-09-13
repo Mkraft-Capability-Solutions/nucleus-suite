@@ -1,4 +1,5 @@
 "use client";
+import PublicMotion from "../Website/PublicMotion";
 import { readData } from '../../services/workspace-data.mjs';
 
 import {useTranslation} from '@/context/I18nContext';
@@ -34,16 +35,16 @@ const LoginView = () => {
     };
 
     return (
-        <div className={`${styles.loginWrapper} ${websiteStyles.site}`}>
+        <PublicMotion className={`${styles.loginWrapper} ${websiteStyles.site}`}>
             <PublicHeader />
             <main id="main-content" className={styles.loginLayout}>
-                <section className={styles.introduction} aria-labelledby="login-introduction-title">
+                <section data-reveal="slide" className={styles.introduction} aria-labelledby="login-introduction-title">
                     <span className={styles.eyebrow}>{translateText('login','eyebrow')}</span>
                     <h1 id="login-introduction-title">{translateText('login','title')}</h1>
                     <p>{translateText('login','description')}</p>
                     <ul>{['pointOne','pointTwo','pointThree'].map(key=><li key={key}><CheckCircleOutline fontSize="small" />{translateText('login',key)}</li>)}</ul>
                 </section>
-                <section className={styles.loginCard} aria-labelledby="login-form-title">
+                <section data-reveal="scale" className={styles.loginCard} aria-labelledby="login-form-title">
                 <div className={styles.brand}>
                     <BrandLogo size={64} />
                     <h2 id="login-form-title" className={styles.title}>{readData("components.Clerio.LoginView", "LoginView_text_3")}</h2>
@@ -87,7 +88,7 @@ const LoginView = () => {
                 </section>
             </main>
 
-        </div>
+        </PublicMotion>
     );
 };
 

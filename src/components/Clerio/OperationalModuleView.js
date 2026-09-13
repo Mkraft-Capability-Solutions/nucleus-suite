@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { initialFormValues, updateDerivedFields, validateForm } from '@/lib/form-validation';
+import LeaveWorkflowPanel from '@/components/Leave/LeaveWorkflowPanel';
 import ProcessGuide from './ProcessGuide';
 import { readData } from '../../services/workspace-data.mjs';
 
@@ -47,7 +48,12 @@ function recordValue(record, column) {
     return record[key] ?? record.attributes?.[key] ?? record.id ?? readData("components.Clerio.OperationalModuleView", "fallback_4");
 }
 
-export default function OperationalModuleView({ module, onNavigate }) {
+export default function OperationalModuleView(props) {
+    if (props.module.screenId === 'SCR-030') return <><ProcessGuide screenId={props.module.screenId} /><LeaveWorkflowPanel /></>;
+    return <OperationalModuleContent key={props.module.id} {...props} />;
+}
+
+function OperationalModuleContent({ module, onNavigate }) {
     const {t: translateText}=useTranslation();
 
     const [records, setRecords] = useState(() => fallbackRows(module));
@@ -58,7 +64,7 @@ export default function OperationalModuleView({ module, onNavigate }) {
     const [values, setValues] = useState({});
     const [notice, setNotice] = useState('');
     const [formErrors, setFormErrors] = useState({});
-    const formFields = module.fields.map(field => ({ ...field, options: getWorkbookFieldOptions(field.key) }));
+    const formFields = module.fields.map(field => ({ ...field, options: field.options?.length ? field.options.map(option => typeof option === 'string' ? {value:option,label:option} : option) : getWorkbookFieldOptions(field.key) }));
     const openCreate = () => { setValues(initialFormValues(formFields)); setFormErrors({}); setIsCreateOpen(true); };
     const updateField = (key, value) => { setValues(current => updateDerivedFields(formFields, current, key, value)); setFormErrors({}); };
 
@@ -91,7 +97,7 @@ export default function OperationalModuleView({ module, onNavigate }) {
         setFormErrors(errors);
         if (Object.keys(errors).length) return;
         const newRecord = {
-            id: `${module.id}-${Date.now()}`,
+            id: `${module.id}-${crypto.randomUUID()}`,
             reference: `${module.screenId}-${String(records.length + 1).padStart(3, '0')}`,
             owner: values.owner || readData("components.Clerio.OperationalModuleView", "fallback_5"),
             status: module.states[0],

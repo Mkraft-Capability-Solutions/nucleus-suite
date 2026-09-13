@@ -1,0 +1,145 @@
+{
+  "messages": {
+    "permission": "Your preview role cannot perform this leave action.",
+    "allocation": "No leave allocation exists for this employee and leave type. Ask HR to configure it.",
+    "balance": "The requested debit exceeds the available leave balance.",
+    "date": "Select valid dates in order, within the configured maximum duration.",
+    "type": "Select a configured leave type.",
+    "quantity": "Enter 0.5 to 366 days in half-day increments.",
+    "length": "The reason or contact text exceeds the permitted length.",
+    "notice": "The dates fall outside the configured application window.",
+    "overlap": "This employee already has an active request overlapping these dates.",
+    "nonworking": "This range contains no chargeable working days. Select working dates or an explicit half-day quantity.",
+    "missing": "The leave request is no longer available.",
+    "stale": "This request changed. Review its current status before trying again.",
+    "status": "This action is unavailable for the current leave status.",
+    "earlyReturn": "Leave has already started. Ask HR to process an early return.",
+    "saved": "Leave preview updated.",
+    "failed": "Leave could not be updated.",
+    "preview": "Synthetic preview: changes last until you reload. Balances and approval events are maintained together in this session.",
+    "allocationType": "Allocate a configured paid leave type. Comp-off requires a dated credit grant.",
+    "adjustment": "Enter a non-zero adjustment between -366 and 366 days in half-day steps.",
+    "adjustmentReason": "Provide an adjustment reason of at most 2000 characters.",
+    "employee": "Select an employee with an explicitly configured preview identity.",
+    "monthlyLimit": "The requested debit exceeds the workbook monthly limit for this leave type.",
+    "eligibility": "This leave type requires eligibility and allocation configuration before requests can be accepted.",
+    "reference": "This reference request needs ledger reconciliation before it can be changed.",
+    "birthday": "Birthday leave eligibility requires a recorded date of birth and dates within the birth month.",
+    "joined": "Leave cannot start before the employee joining date.",
+    "band": "This employee band is not eligible for the selected leave type.",
+    "waitingPeriod": "This employee has not completed the configured eligibility waiting period for this leave type.",
+    "combination": "Casual leave cannot be combined with earned or sick leave in one continuous absence. Select dates separated by a working day.",
+    "creditDate": "Comp-off requires enough earned credits that remain valid on each requested leave date."
+  },
+  "policy": {
+    "maxCalendarDays": 366,
+    "maxRequestedDays": 366,
+    "maxReasonLength": 2000,
+    "maxContactLength": 200,
+    "maxBackdatedDays": 365,
+    "maxAdvanceDays": 730,
+    "sandwichEnabled": true,
+    "holidays": [],
+    "weekendDays": [
+      0,
+      6
+    ],
+    "monthlyLimits": {
+      "CASUAL": 2,
+      "PRIVILEGE": 10,
+      "BIRTHDAY": 1
+    },
+    "source": "workbook:14_Leave_Types"
+  },
+  "reportingManagers": {
+    "MK-107": "MK-104"
+  },
+  "accounts": {
+    "MK-102": {
+      "sick": {
+        "available": 6,
+        "total": 6
+      },
+      "casual": {
+        "available": 6,
+        "total": 6
+      },
+      "privilege": {
+        "available": 16,
+        "total": 25
+      },
+      "wellness": {
+        "available": 3,
+        "total": 4
+      },
+      "comp_off": {
+        "available": 0,
+        "total": 0
+      }
+    },
+    "MK-104": {
+      "sick": {
+        "available": 6,
+        "total": 6
+      },
+      "casual": {
+        "available": 6,
+        "total": 6
+      },
+      "privilege": {
+        "available": 16,
+        "total": 25
+      },
+      "wellness": {
+        "available": 3,
+        "total": 4
+      },
+      "comp_off": {
+        "available": 0,
+        "total": 0
+      }
+    },
+    "MK-107": {
+      "sick": {
+        "available": 6,
+        "total": 6
+      },
+      "casual": {
+        "available": 6,
+        "total": 6
+      },
+      "privilege": {
+        "available": 16,
+        "total": 25
+      },
+      "wellness": {
+        "available": 3,
+        "total": 4
+      },
+      "comp_off": {
+        "available": 0,
+        "total": 0
+      }
+    }
+  },
+  "defaults": {
+    "fromDate": "2026-09-13",
+    "toDate": "2026-09-13"
+  },
+  "typeAliases": {
+    "EL": "PRIVILEGE",
+    "CL": "CASUAL",
+    "SL": "SICK",
+    "CO": "COMP_OFF",
+    "BL": "BIRTHDAY",
+    "ML": "MATERNITY",
+    "LOP": "LOP"
+  },
+  "statusAliases": {
+    "Availed, early return": "SHORT_CLOSED",
+    "Pending": "PENDING_SUPERVISOR",
+    "Rejected by rule": "REJECTED",
+    "Approved": "APPROVED",
+    "Availed": "APPROVED"
+  }
+}

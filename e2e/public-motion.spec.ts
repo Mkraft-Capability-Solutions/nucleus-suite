@@ -45,3 +45,15 @@ test('home lifecycle and FAQ reveal useful content with keyboard controls',async
  await question.focus();await question.press('Enter');
  await expect(page.getByText('Public pages, role-based workspaces, dashboard customization and synthetic HR workflows. Operational changes are temporary preview state.',{exact:true})).toBeVisible();
 });
+
+test('contextual reveals and pointer effects run without requiring reduced-motion users to animate',async({page},info)=>{
+ await page.emulateMedia({reducedMotion:'no-preference'});
+ await page.goto('/features');
+ const grid=page.locator('[data-stagger]').first();await grid.scrollIntoViewIfNeeded();
+ await expect(grid).toHaveAttribute('data-reveal','scale');
+ const card=page.locator('article[data-pointer="glow"]').first();const rect=await card.boundingBox();
+ if(info.project.name==='desktop'&&rect){await page.mouse.move(rect.x+rect.width*.75,rect.y+rect.height*.25);await expect.poll(()=>card.evaluate(el=>el.style.getPropertyValue('--pointer-x'))).not.toBe('');}
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect.poll(()=>page.locator('main').evaluate(el=>el.getAnimations({subtree:true}).filter(a=>a.playState==='running').length)).toBe(0);
+ await page.goto('/docs');await expect(page.locator('[data-stagger]').first()).toHaveAttribute('data-reveal','slide');
+});

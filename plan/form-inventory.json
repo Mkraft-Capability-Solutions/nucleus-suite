@@ -1,7 +1,22 @@
 {
-  "scope": "Static intrinsic forms/numeric inputs and both shared metadata engines; click-only domain commands require separate validation contracts.",
-  "filesScanned": 445,
+  "scope": "Static intrinsic and MUI numeric controls, forms and both shared metadata engines; click-only domain commands require separate validation contracts.",
+  "filesScanned": 460,
   "forms": [
+    {
+      "file": "src/components/Leave/LeaveApplicationDialog.tsx",
+      "line": 148,
+      "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Leave/LeaveBalancePanel.tsx",
+      "line": 173,
+      "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Leave/LeaveWorkflowPanel.tsx",
+      "line": 284,
+      "submit": "{confirm}"
+    },
     {
       "file": "src/components/Website/ContactForm.tsx",
       "line": 18,
@@ -16,46 +31,6 @@
       "file": "src/components/Dashboard/Modals/ApprovalActionModal.js",
       "line": 138,
       "submit": "{handleSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/OperationalModuleView.js",
-      "line": 160,
-      "submit": "{submit}"
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 603,
-      "submit": "{handleAssetSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 714,
-      "submit": "{handleAwardSubmit}"
-    },
-    {
-      "file": "src/components/Clerio/CMSModal.js",
-      "line": 132,
-      "submit": "{handlePublishAnnouncement}"
-    },
-    {
-      "file": "src/components/Clerio/CMSModal.js",
-      "line": 254,
-      "submit": "{handleUploadPolicy}"
-    },
-    {
-      "file": "src/components/Clerio/ProjectView.js",
-      "line": 678,
-      "submit": "{handleCreateTask}"
-    },
-    {
-      "file": "src/components/Clerio/ProjectView.js",
-      "line": 908,
-      "submit": "{handleCreateProject}"
-    },
-    {
-      "file": "src/components/Clerio/LeaveView.js",
-      "line": 27,
-      "submit": "{onSubmit}"
     },
     {
       "file": "src/components/Clerio/AttendanceView.js",
@@ -74,7 +49,7 @@
     },
     {
       "file": "src/components/Clerio/LoginView.js",
-      "line": 56,
+      "line": 57,
       "submit": "{handleLogin}"
     },
     {
@@ -109,32 +84,61 @@
     },
     {
       "file": "src/components/Clerio/ActionFormModal.js",
-      "line": 68,
+      "line": 61,
       "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Clerio/ProjectView.js",
+      "line": 678,
+      "submit": "{handleCreateTask}"
+    },
+    {
+      "file": "src/components/Clerio/ProjectView.js",
+      "line": 908,
+      "submit": "{handleCreateProject}"
+    },
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 166,
+      "submit": "{submit}"
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 603,
+      "submit": "{handleAssetSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 714,
+      "submit": "{handleAwardSubmit}"
+    },
+    {
+      "file": "src/components/Clerio/CMSModal.js",
+      "line": 132,
+      "submit": "{handlePublishAnnouncement}"
+    },
+    {
+      "file": "src/components/Clerio/CMSModal.js",
+      "line": 254,
+      "submit": "{handleUploadPolicy}"
     }
   ],
   "numeric": [
     {
+      "file": "src/components/Leave/LeaveApplicationDialog.tsx",
+      "line": 219,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Leave/LeaveBalancePanel.tsx",
+      "line": 205,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
       "file": "src/components/Dashboard/Views/EmployeeHome.js",
       "line": 1027,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/OperationalModuleView.js",
-      "line": 170,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 670,
-      "type": "\"number\"",
-      "missing": []
-    },
-    {
-      "file": "src/components/Clerio/OnboardingView.js",
-      "line": 744,
       "type": "\"number\"",
       "missing": []
     },
@@ -189,6 +193,24 @@
     {
       "file": "src/components/Clerio/PayrollView.js",
       "line": 1013,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OperationalModuleView.js",
+      "line": 176,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 670,
+      "type": "\"number\"",
+      "missing": []
+    },
+    {
+      "file": "src/components/Clerio/OnboardingView.js",
+      "line": 744,
       "type": "\"number\"",
       "missing": []
     }

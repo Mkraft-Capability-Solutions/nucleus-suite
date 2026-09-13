@@ -16,9 +16,9 @@ test('public website has working routes and contact prepares a draft without sen
     for (const path of ['/', '/about', '/features', '/why-nucleus', '/docs', '/contact']) {
         await page.goto(path);
         await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toBeVisible();
-        if (page.viewportSize()!.width < 700) await page.locator('summary').click();
+        if (page.viewportSize()!.width < 700) await page.getByRole('banner').locator('summary').click();
         await expect(page.getByRole('link', { name: 'Log in', exact: true }).first()).toBeVisible();
-        if (page.viewportSize()!.width < 700) await page.locator('summary').click();
+        if (page.viewportSize()!.width < 700) await page.getByRole('banner').locator('summary').click();
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBeTruthy();
     }
     expect(workspaceCalls).toBe(0);

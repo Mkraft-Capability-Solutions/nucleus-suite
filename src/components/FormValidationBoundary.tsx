@@ -1,4 +1,5 @@
 'use client';
+import { t } from '@/lib/i18n';
 import { useEffect, type ReactNode } from 'react';
 
 /** Client preflight only; command services must independently validate input. */
@@ -21,7 +22,7 @@ export default function FormValidationBoundary({children}: {children: ReactNode}
                 if ((control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement)
                     && control.required && !control.disabled
                     && !['checkbox', 'radio', 'file'].includes(control.type) && !control.value.trim()) {
-                    control.setCustomValidity('Please complete this required field.');
+                    control.setCustomValidity(t('validation','requiredGeneric'));
                     owned.add(control);
                 }
             }

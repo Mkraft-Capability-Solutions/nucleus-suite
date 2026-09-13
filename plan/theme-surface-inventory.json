@@ -221,32 +221,20 @@
     },
     {
       "file": "src/components/Clerio/LeaveView.js",
-      "line": 201,
+      "line": 157,
       "value": "rgba(245, 158, 11, 0.15)",
       "classification": "review-semantic-art-or-paper"
     },
     {
       "file": "src/components/Clerio/LeaveView.js",
-      "line": 347,
-      "value": "#16a34a",
-      "classification": "review-semantic-art-or-paper"
-    },
-    {
-      "file": "src/components/Clerio/LeaveView.js",
-      "line": 457,
+      "line": 321,
       "value": "rgba(37, 99, 235, 0.08)",
       "classification": "review-semantic-art-or-paper"
     },
     {
       "file": "src/components/Clerio/LeaveView.js",
-      "line": 463,
+      "line": 327,
       "value": "rgba(45, 212, 168, 0.12)",
-      "classification": "review-semantic-art-or-paper"
-    },
-    {
-      "file": "src/components/Clerio/LeaveView.js",
-      "line": 600,
-      "value": "rgba(245, 158, 11, 0.12)",
       "classification": "review-semantic-art-or-paper"
     },
     {

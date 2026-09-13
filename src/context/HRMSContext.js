@@ -1,6 +1,8 @@
 "use client";
 import { readData } from '../services/workspace-data.mjs';
 
+import { workbookLeaveReferences, workbookCompOffCredits } from '@/services/leave-reference';
+import { createLeavePreviewService, adjustLeaveBalance, createLeave, decideLeave, returnFromLeave } from '@/services/leave-workflow';
 import { useAuth } from './AuthContext';
 import { useAppearance } from './AppearanceContext';
 import React, { createContext, useContext, useState, useCallback } from 'react';
@@ -10,9 +12,7 @@ import {
     inferShift, validateGatePassQuota, formatMinutes, isGraceExempt
 } from '@/services/timeOfficeEngine';
 import {
-    computeAnnualCredit, evaluateCompOffValidity, consumeCompOffFIFO,
-    calculateLeaveSpan, processEarlyReturn, advanceApproval,
-    isExecutiveOrAbove, LEAVE_TYPES, LEAVE_RULESET_VERSION
+    evaluateCompOffValidity, LEAVE_TYPES, LEAVE_RULESET_VERSION
 } from '@/services/leaveEngine';
 import {
     PAYROLL_RULESET_VERSION, PAYROLL_RUN_TYPES, NO_DUES_DEPARTMENTS,
@@ -168,145 +168,34 @@ export const HRMSProvider = ({ children }) => {
     };
 
     // --- 3. LEAVES & ENTERPRISE ACCRUAL SUBSYSTEM (Blueprint Addendum G3) ---
-    const [leaves, setLeaves] = useState(readData("context.HRMSContext", "leaves_16"));
-
-    // Comp-off independent 60-day auto-lapse clock (Demo Point 6)
-    const [compOffCredits, setCompOffCredits] = useState(readData("context.HRMSContext", "compOffCredits_17"));
-
-    // Multi-tier applications & Early return records (Demo Points 5, 6, 7)
-    const [leaveApplications, setLeaveApplications] = useState(readData("context.HRMSContext", "leaveApplications_18"));
-
-    const applyLeaveWithWorkflow = ({
-        leaveTypeCode = readData("context.HRMSContext", "defaultValue_9"),
-        startDateStr,
-        endDateStr,
-        reason = '',
-        sandwichRuleEnabled = true,
-        employee = user
-    }) => {
+    const leaveActor = authenticatedUser ?? {id: '', employeeId: null, role: '', name: ''};
+    const [leaveService] = useState(() => createLeavePreviewService({
+        requests: [...readData('context.HRMSContext', 'leaveApplications_18').map(app => ({...app, version:1, contact:app.contact??'',reference_only:true})),...workbookLeaveReferences()],
+        balances: readData('leave.workflow', 'accounts'),
+        credits: [...readData('context.HRMSContext', 'compOffCredits_17'),...workbookCompOffCredits()],
+        events: [],
+    }));
+    const [leaveState, setLeaveState] = useState(() => leaveService.snapshot());
+    const leaveApplications = leaveState.requests.filter(app => ['HR_MANAGER','SUPER_ADMIN'].includes(leaveActor.role) || app.employee_id===leaveActor.employeeId || (leaveActor.role==='MANAGER' && readData('leave.workflow','reportingManagers')[app.employee_id]===leaveActor.employeeId));
+    const compOffCredits = evaluateCompOffValidity(leaveState.credits.filter(credit=>credit.employee_id===leaveActor.employeeId)).credits;
+    const emptyBalances = Object.fromEntries(Object.keys(readData('context.HRMSContext','leaves_16')).filter(key=>key!=='history').map(key=>[key,{available:0,total:0}]));
+    const leaves = {...emptyBalances, ...leaveState.balances[leaveActor.employeeId], history:leaveApplications.filter(app=>app.employee_id===leaveActor.employeeId).map(app=>({id:app.id,type:app.leave_type_label,date:`${app.start_date} – ${app.end_date}`,duration:app.chargeable_days,status:app.status,reason:app.reason}))};
+    const runLeave = async operation => {
         try {
-            const span = calculateLeaveSpan({
-                startDateStr,
-                endDateStr,
-                leaveTypeCode,
-                sandwichRuleEnabled
-            });
-
-            // If Comp-Off, consume FIFO
-            if (leaveTypeCode === 'COMP_OFF') {
-                const fifo = consumeCompOffFIFO(compOffCredits, span.chargeable_days);
-                if (!fifo.success) {
-                    showToast('Comp-Off Application Failed', fifo.reason, 'error');
-                    return { ...readData("context.HRMSContext", "applyLeaveWithWorkflow_fields_19"), reason: fifo.reason };
-                }
-                setCompOffCredits(fifo.updated_credits);
-            }
-
-            const newApp = {
-                id: `LA-2026-${String(leaveApplications.length + 101).padStart(3, '0')}`,
-                employee_id: employee.id || readData("context.HRMSContext", "fallback_3"),
-                employee_name: employee.name || readData("context.HRMSContext", "fallback_4"),
-                leave_type_code: leaveTypeCode,
-                leave_type_label: LEAVE_TYPES[leaveTypeCode]?.label || leaveTypeCode,
-                start_date: startDateStr,
-                end_date: endDateStr,
-                duration_days: span.total_calendar_days,
-                working_days: span.working_days,
-                weekend_days: span.weekend_days,
-                chargeable_days: span.chargeable_days,
-                sandwich_rule_applied: span.sandwich_rule_applied,
-                ...readData("context.HRMSContext", "newApp_fields_20"),
-                reason,
-                applied_at: new Date().toISOString()
-            };
-
-            setLeaveApplications(prev => [newApp, ...prev]);
-
-            // Deduct from balance
-            const balanceKey = leaveTypeCode === 'PRIVILEGE' ? 'privilege' : leaveTypeCode === 'SICK' ? 'sick' : leaveTypeCode === 'CASUAL' ? 'casual' : 'comp_off';
-            setLeaves(prev => ({
-                ...prev,
-                [balanceKey]: {
-                    ...prev[balanceKey],
-                    available: Math.max(0, (prev[balanceKey]?.available || 0) - span.chargeable_days)
-                },
-                history: [{ id: Date.now(), type: newApp.leave_type_label, date: `${startDateStr} - ${endDateStr}`, duration: `${span.chargeable_days} Days`, ...readData("context.HRMSContext", "history_fields_21"), reason }, ...prev.history]
-            }));
-
-            showToast(
-                'Leave Submitted (Tier 1)',
-                `Application routed to Supervisor. ${span.sandwich_rule_applied ? '(Sandwich rule added 2 weekend days)' : ''}`,
-                'success'
-            );
-            return { ...readData("context.HRMSContext", "applyLeaveWithWorkflow_fields_22"), application: newApp };
-        } catch (err) {
-            showToast('Application Error', err.message, 'error');
-            return { ...readData("context.HRMSContext", "applyLeaveWithWorkflow_fields_23"), reason: err.message };
+            const next=await leaveService.execute(operation);
+            setLeaveState(next);
+            showToast(readData('leave.workflow','messages').saved,readData('leave.workflow','messages').preview,'success');
+            return {success:true};
+        } catch(error) {
+            showToast(readData('leave.workflow','messages').failed,error.message,'error');
+            return {success:false,reason:error.message};
         }
     };
-
-    const advanceLeaveApproval = ({ applicationId, approverRole, action, remarks = '', reviewerName = '' }) => {
-        setLeaveApplications(prev => prev.map(app => {
-            if (app.id !== applicationId) return app;
-            const updated = advanceApproval({
-                application: app,
-                approverRole,
-                action,
-                remarks,
-                reviewerName
-            });
-            return updated;
-        }));
-        showToast(
-            action === 'APPROVE' ? 'Approval Recorded' : 'Leave Rejected',
-            `${approverRole} has ${action.toLowerCase()}d the leave request.`,
-            action === 'APPROVE' ? 'success' : 'info'
-        );
-    };
-
-    const processEarlyReturnApplication = ({ applicationId, actualReturnDateStr }) => {
-        const app = leaveApplications.find(a => a.id === applicationId);
-        if (!app) return readData("context.HRMSContext", "processEarlyReturnApplication_24");
-
-        try {
-            const currentBal = leaves.privilege.available;
-            const result = processEarlyReturn({
-                application: app,
-                actualReturnDateStr,
-                currentBalance: currentBal
-            });
-
-            setLeaveApplications(prev => prev.map(a => a.id === applicationId ? result.updated_application : a));
-            setLeaves(prev => ({
-                ...prev,
-                privilege: { ...prev.privilege, available: result.new_balance }
-            }));
-
-            showToast(
-                'Early Return Processed',
-                `Duty resumed on ${actualReturnDateStr}. ${result.days_recredited} days automatically re-credited to EL balance.`,
-                'success'
-            );
-            return { ...readData("context.HRMSContext", "processEarlyReturnApplication_fields_25"), result };
-        } catch (err) {
-            showToast('Early Return Error', err.message, 'error');
-            return { ...readData("context.HRMSContext", "processEarlyReturnApplication_fields_26"), reason: err.message };
-        }
-    };
-
-    const applyLeave = (type, date, duration, reason) => {
-        let key = 'sick';
-        if (type.includes('Casual')) key = 'casual';
-        if (type.includes('Privilege')) key = 'privilege';
-        if (type.includes('Wellness')) key = 'wellness';
-
-        setLeaves(prev => ({
-            ...prev,
-            [key]: { ...prev[key], available: Math.max(0, prev[key].available - (parseInt(duration) || readData("context.HRMSContext", "fallback_5"))) },
-            history: [{ id: Date.now(), type, date, duration, ...readData("context.HRMSContext", "history_fields_27"), reason }, ...prev.history]
-        }));
-        showToast('Leave Applied', `${type} request submitted for manager review.`, 'success');
-    };
+    const adjustLeaveAllocation = ({employeeId,code,days,reason}) => runLeave(state=>adjustLeaveBalance(state,leaveActor,employeeId,code,days,reason));
+    const applyLeaveWithWorkflow = input => runLeave(state=>createLeave(state,leaveActor,input));
+    const advanceLeaveApproval = ({applicationId,action,remarks='',expectedVersion}) => runLeave(state=>decideLeave(state,leaveActor,applicationId,action,remarks,expectedVersion));
+    const processEarlyReturnApplication = ({applicationId,actualReturnDateStr}) => runLeave(state=>returnFromLeave(state,leaveActor,applicationId,actualReturnDateStr));
+    const applyLeave = (type,date,duration,reason) => applyLeaveWithWorkflow({employee:{id:leaveActor.employeeId,name:leaveActor.name},leaveTypeCode:type,startDateStr:date,endDateStr:date,numberOfDays:Number(duration),reason});
 
     // --- 4. PEOPLE CORE (Module 1) ---
     const [employees, setEmployees] = useState(readData("context.HRMSContext", "employees_28"));
@@ -1004,7 +893,7 @@ export const HRMSProvider = ({ children }) => {
             shiftRules: SHIFT_RULES, rulesetVersion: RULESET_VERSION,
             computeAttendanceDay, isGraceExempt, formatMinutes,
             leaves, applyLeave,
-            leaveApplications, compOffCredits, applyLeaveWithWorkflow,
+            leaveApplications, leaveState, leaveActor, adjustLeaveAllocation, compOffCredits, applyLeaveWithWorkflow,
             advanceLeaveApproval, processEarlyReturnApplication,
             leaveRuleVersion: LEAVE_RULESET_VERSION, leaveTypes: LEAVE_TYPES,
             employees, positions, documents, auditLogs,

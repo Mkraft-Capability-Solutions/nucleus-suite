@@ -4,13 +4,13 @@
       "code": "PRIVILEGE",
       "label": "Privilege / Earned Leave (EL)",
       "encashable": true,
-      "carry_forward_max": 30,
+      "carry_forward_max": 45,
       "can_be_sandwich": true
     },
     "SICK": {
       "code": "SICK",
       "label": "Sick Leave (SL)",
-      "annual_quota": 10,
+      "annual_quota": 6,
       "encashable": false,
       "carry_forward_max": 0,
       "can_be_sandwich": false
@@ -18,7 +18,7 @@
     "CASUAL": {
       "code": "CASUAL",
       "label": "Casual Leave (CL)",
-      "annual_quota": 12,
+      "annual_quota": 6,
       "encashable": false,
       "carry_forward_max": 0,
       "can_be_sandwich": false
@@ -44,11 +44,27 @@
       "encashable": false,
       "carry_forward_max": 0,
       "can_be_sandwich": true
+    },
+    "BIRTHDAY": {
+      "code": "BIRTHDAY",
+      "label": "Birthday Leave",
+      "encashable": false,
+      "can_be_sandwich": false,
+      "requestable": true,
+      "annual_quota": 1,
+      "carry_forward_max": 0
+    },
+    "MATERNITY": {
+      "code": "MATERNITY",
+      "label": "Maternity Leave",
+      "encashable": false,
+      "can_be_sandwich": false,
+      "requestable": false
     }
   },
   "content_fields_2": {
-    "cl_credit": 12,
-    "sl_credit": 10,
+    "cl_credit": 6,
+    "sl_credit": 6,
     "wellness_credit": 4
   },
   "evaluated_fields_3": {
@@ -88,5 +104,19 @@
   },
   "content_fields_13": {
     "action": "APPROVED"
+  },
+  "errors": {
+    "date": "Select a valid calendar date.",
+    "range": "Select an ordered date range of at most 366 days.",
+    "quantity": "Enter a positive quantity in half-day increments.",
+    "credit": "The comp-off credit has an invalid remaining balance.",
+    "balance": "Insufficient available leave balance.",
+    "type": "Select a configured leave type.",
+    "status": "This request is not approved or has already been closed.",
+    "tier": "This action does not match the current approval stage.",
+    "action": "Select a supported leave action.",
+    "remarks": "A rejection reason is required.",
+    "sandwich": "Intervening non-working days are included by the configured sandwich policy.",
+    "standard": "Only scheduled working days are charged."
   }
 }

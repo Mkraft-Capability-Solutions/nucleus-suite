@@ -19,7 +19,7 @@ test('public pages and login fit narrow and short screens in either inherited th
    }
   }
  }
- await page.setViewportSize({width:320,height:568});await page.goto('/');await page.locator('summary').click();await expect(page.getByRole('link',{name:'Log in',exact:true})).toBeInViewport();
+ await page.setViewportSize({width:320,height:568});await page.goto('/');await page.getByRole('banner').locator('summary').click();await expect(page.getByRole('link',{name:'Log in',exact:true})).toBeInViewport();
  await page.screenshot({path:info.outputPath('mobile-public-menu.png'),fullPage:true});
 });
 

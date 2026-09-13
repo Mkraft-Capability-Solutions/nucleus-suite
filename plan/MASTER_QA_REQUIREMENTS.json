@@ -1,0 +1,756 @@
+[
+  {
+    "id": "R01",
+    "requirement": "CRITICAL INSTRUCTIONS",
+    "status": "ANALYZED",
+    "acceptance": "Before changing any code:\n\n1. **Inspect the entire existing codebase.**\n2. Understand the existing architecture, framework, database structure, routing, APIs, components, layouts, authentication, authorization, workflows, and reusable UI components.\n3. Review all existing public pages, authenticated pages, dashboards, forms, tables, workflows, and modules.\n4. Search the entire codebase for:\n\n   * TODO\n   * FIXME\n   * incomplete implementations\n   * placeholder functionality\n   * broken links\n   * empty handlers\n   * commented-out functionality\n   * validation gaps\n   * hardcoded values\n   * duplicate implementations\n   * inconsistent UI components\n   * leave-related code\n   * form validation\n   * approval workflows\n5. Review all requirements and instructions previously provided in this conversation/context.\n6. **Do not assume that the requirements mentioned in this prompt are the only requirements.**\n7. Do not remove previously implemented functionality unless it is demonstrably broken and replacing it is necessary.\n8. Do not create superficial mock implementations just to make a feature appear complete.\n9. Do not mark a task as complete simply because the application builds.\n10. Every requirement must be implemented and verified.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [
+      "A source inventory and targeted review are not line-by-line verification of every domain invariant."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R02",
+    "requirement": "FIRST: CREATE AN IMPLEMENTATION CHECKLIST",
+    "status": "VERIFIED",
+    "acceptance": "Before making major changes, create an internal requirements checklist covering:\n\n### A. Public UI/UX\n\n### B. Animations and interactions\n\n### C. Leave management\n\n### D. Forms and fields\n\n### E. Validation\n\n### F. Workflows\n\n### G. Permissions\n\n### H. Dashboards\n\n### I. Responsive behavior\n\n### J. Accessibility\n\n### K. Performance\n\n### L. Error handling\n\n### M. Notifications\n\n### N. Database/API consistency\n\n### O. Security\n\n### P. Regression testing\n\nTrack every requirement through:\n\n`DISCOVERED \u2192 ANALYZED \u2192 IMPLEMENTED \u2192 TESTED \u2192 VERIFIED`\n\nDo not skip requirements simply because they are not explicitly repeated in this prompt.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R03",
+    "requirement": "DO NOT START CODING BLINDLY",
+    "status": "VERIFIED",
+    "acceptance": "First inspect:\n\n* Project structure\n* Package/dependency files\n* Environment configuration\n* Database configuration\n* Routes\n* Controllers\n* Models\n* Services\n* APIs\n* Components\n* Templates\n* Layouts\n* CSS\n* JavaScript\n* Assets\n* Authentication\n* Authorization\n* Middleware\n* Existing UI framework\n* Existing animation libraries\n* Existing design system\n* Existing form components\n* Existing validation\n* Existing leave-related implementation\n* Existing notification system\n* Existing audit/logging system\n\nDetermine how the application currently works before modifying it.\n\nAvoid unnecessary rewrites.\n\nPrefer **incremental, maintainable improvements** over replacing the entire application.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R04",
+    "requirement": "PUBLIC PAGES \u2014 COMPLETE UI/UX TRANSFORMATION",
+    "status": "ANALYZED",
+    "acceptance": "There are currently effectively **no meaningful animations or interactive visual effects on the public-facing pages**.\n\nThis must be completely addressed.\n\nEvery public-facing page must be reviewed individually.\n\nDo not apply one generic animation globally and consider the task complete.\n\nEach page should have an appropriate visual interaction strategy.\n\nThe final result should feel:\n\n* Premium\n* Modern\n* Futuristic\n* Enterprise-grade\n* Interactive\n* Smooth\n* Sophisticated\n* Professional\n* Fast\n* Responsive\n\nThe design should resemble the quality expected from a **world-class SaaS based HRMS product**, not a basic CRUD application.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [
+      "Visual quality is subjective; public browser checks do not certify a best-in-world design."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R05",
+    "requirement": "IMPLEMENT CONTEXTUAL ANIMATIONS",
+    "status": "VERIFIED",
+    "acceptance": "Use different animations for different interaction types.\n\n## Mouse interactions\n\nWhere appropriate, implement:\n\n* Mouse-follow effects\n* Subtle cursor interactions\n* Magnetic buttons\n* Cursor-reactive elements\n* Interactive gradients\n* Hover tracking\n* Tilt effects\n* Perspective effects\n* Image movement\n* Background movement\n\nThese must remain subtle and professional.\n\nDo not overuse them.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R06",
+    "requirement": "SCROLL ANIMATIONS",
+    "status": "VERIFIED",
+    "acceptance": "Implement high-quality scroll-based interactions where they improve the experience.\n\nExamples:\n\n* Fade-in\n* Slide-in\n* Scale-in\n* Staggered reveal\n* Parallax\n* Text reveal\n* Image reveal\n* Card entrance\n* Progress indicators\n* Section transitions\n* Sticky interactive sections\n* Horizontal scroll sections where appropriate\n\nAnimations should trigger naturally as content enters the viewport.\n\nAvoid unnecessary animations on every single DOM element.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R07",
+    "requirement": "HOVER INTERACTIONS",
+    "status": "VERIFIED",
+    "acceptance": "Improve interactive elements such as:\n\n* Buttons\n* Cards\n* Images\n* Navigation items\n* Icons\n* Feature blocks\n* CTAs\n* Pricing elements\n* Testimonials\n* Statistics\n* Links\n\nUse:\n\n* Transform\n* Elevation\n* Glow\n* Border transitions\n* Background transitions\n* Icon movement\n* Scale\n* Shadow transitions\n* Gradient transitions\n\nHover effects must clearly communicate interactivity.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R08",
+    "requirement": "MICRO-INTERACTIONS",
+    "status": "ANALYZED",
+    "acceptance": "Add polished micro-interactions for:\n\n* Button clicks\n* Form submission\n* Dropdown opening\n* Modal opening\n* Modal closing\n* Tabs\n* Accordions\n* Toggles\n* Checkboxes\n* Radio buttons\n* Notifications\n* Success states\n* Error states\n* Loading states\n* Empty states\n\nThe interface should feel responsive and alive.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [
+      "Shared controls improved; every native control and every workflow-specific state has not been individually exercised."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R09",
+    "requirement": "PAGE TRANSITIONS",
+    "status": "VERIFIED",
+    "acceptance": "Implement smooth page/route transitions where technically appropriate.\n\nTransitions should:\n\n* Be fast\n* Feel natural\n* Not block navigation\n* Not create accessibility problems\n* Not negatively impact performance\n\nNever create animations that make users wait unnecessarily.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R10",
+    "requirement": "PERFORMANCE REQUIREMENTS FOR ANIMATIONS",
+    "status": "VERIFIED",
+    "acceptance": "Animations must be production-quality.\n\nPrefer:\n\n* CSS transforms\n* CSS opacity\n* GPU-friendly properties\n* IntersectionObserver\n* requestAnimationFrame where necessary\n\nAvoid:\n\n* Excessive DOM manipulation\n* Layout thrashing\n* Continuous expensive calculations\n* Excessive event listeners\n* Memory leaks\n* Large animation libraries when unnecessary\n\nImplement reduced-motion support:\n\n`prefers-reduced-motion`\n\nUsers who disable animations must still receive a complete and usable experience.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R11",
+    "requirement": "LEAVE MANAGEMENT \u2014 CRITICAL",
+    "status": "ANALYZED",
+    "acceptance": "A major requirement has previously been missed.\n\nYou must **revisit all previously explained leave-related requirements** and implement them completely.\n\nDo not assume the current leave module is correct.\n\nPerform a complete leave-management audit.\n\nInspect:\n\n* Leave database tables\n* Leave models\n* Leave controllers\n* Leave services\n* Leave APIs\n* Leave UI\n* Leave forms\n* Leave approval workflows\n* Leave balance calculations\n* Leave policies\n* Leave reports\n* Leave notifications\n* Leave permissions\n* Leave audit logs\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Leave remains an in-memory preview; source ledger reconciliation and advanced operations remain open."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R12",
+    "requirement": "LEAVE TYPES",
+    "status": "ANALYZED",
+    "acceptance": "Verify support for appropriate leave types such as:\n\n* Casual Leave\n* Sick Leave\n* Earned/Privilege Leave\n* Paid Leave\n* Unpaid Leave\n* Half-Day Leave\n* Optional/Holiday Leave\n* Comp-Off\n* Maternity/Paternity Leave\n* Organization-specific leave types\n\nDo not blindly add leave types if the existing business rules define different types.\n\nFollow the application's actual requirements.\n\nLeave types must be configurable where appropriate.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Source types retained. Maternity statutory eligibility and organization-specific type administration are not configured."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R13",
+    "requirement": "LEAVE APPLICATION",
+    "status": "ANALYZED",
+    "acceptance": "The leave application workflow must correctly handle:\n\n* Single-day leave\n* Multiple-day leave\n* Half-day leave\n* Start date\n* End date\n* Leave type\n* Reason\n* Supporting documents where required\n* Comments\n* Emergency leave\n* Backdated leave\n* Future leave\n* Holiday dates\n* Weekly offs\n* Company holidays\n\nValidate all combinations correctly.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Required dates/quantity and calendar rules implemented. Evidence uploads, emergency policy and conditional documentation are not configured."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R14",
+    "requirement": "LEAVE VALIDATION",
+    "status": "ANALYZED",
+    "acceptance": "Implement robust validation for:\n\n* Invalid dates\n* End date before start date\n* Overlapping leave\n* Duplicate leave requests\n* Insufficient balance\n* Leave beyond allowed limits\n* Invalid half-day combinations\n* Holiday conflicts\n* Weekly-off conflicts\n* Restricted dates\n* Notice-period rules\n* Probation restrictions\n* Employee eligibility\n* Department policies\n* Location-specific policies\n\nDo not rely solely on frontend validation.\n\nAll critical business rules must also be validated server-side.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Known source rules enforced. Notice-period and organization-specific restricted dates/evidence policies remain unspecified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R15",
+    "requirement": "LEAVE BALANCE",
+    "status": "ANALYZED",
+    "acceptance": "Audit the entire leave-balance calculation system.\n\nVerify:\n\n* Opening balance\n* Accrued balance\n* Allocated balance\n* Used balance\n* Pending balance\n* Available balance\n* Carry-forward\n* Expiry\n* Encashment where applicable\n* Adjustment\n* Manual correction\n* Cancellation restoration\n* Rejection behavior\n* Partial-day deduction\n\nThe same calculation must be consistently reflected across:\n\n* Employee dashboard\n* Leave application\n* Leave history\n* Manager dashboard\n* HR dashboard\n* Reports\n* APIs\n\nThere must be no conflicting balance calculations.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Reservation/restoration, manual adjustments and dated comp-off are implemented. Scheduled accrual/carry-forward/encashment and all-dashboard/API reconciliation remain open; the unused legacy annual-credit helper must not be used for posting."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R16",
+    "requirement": "LEAVE APPROVAL WORKFLOW",
+    "status": "ANALYZED",
+    "acceptance": "Verify and implement the correct workflow for:\n\n`Employee \u2192 Reporting Manager \u2192 HR/Admin`\n\nor the actual configured approval hierarchy.\n\nSupport where required:\n\n* Single-level approval\n* Multi-level approval\n* Approve\n* Reject\n* Request changes\n* Cancel\n* Withdraw\n* Delegate approval\n* Escalation\n* Approval comments\n* Approval history\n\nEvery status change must be traceable.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Sequential supervisor/HOD/HR review implemented. Configurable delegation/escalation, partial approval, request-changes and resubmission are not implemented end to end."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R17",
+    "requirement": "LEAVE STATUS MODEL",
+    "status": "ANALYZED",
+    "acceptance": "Use clear and consistent states such as:\n\n* Draft\n* Submitted\n* Pending Approval\n* Approved\n* Rejected\n* Cancelled\n* Withdrawn\n* Partially Approved\n* Expired\n\nOnly implement states that make sense for the existing business workflow.\n\nEnsure frontend, backend, database, reports, and APIs use the same status definitions.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Active preview states are consistent locally; deferred backend uses different status/type/employee contracts and is not integrated."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R18",
+    "requirement": "LEAVE CALENDAR",
+    "status": "ANALYZED",
+    "acceptance": "Review the leave calendar.\n\nIt should correctly display:\n\n* Employee leave\n* Team leave\n* Department leave\n* Holidays\n* Weekends\n* Pending requests\n* Approved requests\n* Leave conflicts\n\nProvide useful filtering where appropriate.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Employee calendar and permitted request filtering implemented. Full department scopes/conflict visualization are not delivered."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R19",
+    "requirement": "LEAVE NOTIFICATIONS",
+    "status": "ANALYZED",
+    "acceptance": "Verify notifications for:\n\n* Leave submitted\n* Leave approved\n* Leave rejected\n* Leave cancelled\n* Leave withdrawn\n* Approval pending\n* Approval reminder\n* Balance changes\n\nNotifications must not be duplicated.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "Session action notifications implemented. Durable outbox, email/push, pending reminders and escalation delivery remain deferred."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R20",
+    "requirement": "LEAVE AUDIT TRAIL",
+    "status": "ANALYZED",
+    "acceptance": "Every important leave action should be auditable.\n\nRecord where appropriate:\n\n* Who performed the action\n* What action occurred\n* Date/time\n* Previous status\n* New status\n* Comments/reason\n* Relevant request ID\n\nDo not allow important workflow history to be silently overwritten.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/services/leave-workflow.ts",
+      "src/services/leave-reference.ts",
+      "src/services/leave-workflow.test.ts",
+      "e2e/leave-form.spec.ts"
+    ],
+    "limitations": [
+      "New session mutations append actor/time/status/reason events. Imported history is read-only; durable audit storage is not active."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R21",
+    "requirement": "FORMS \u2014 COMPLETE APPLICATION-WIDE AUDIT",
+    "status": "ANALYZED",
+    "acceptance": "There are many issues in existing forms and fields.\n\nDo not fix only one or two forms.\n\nAudit **every form throughout the application**.\n\nFor every form inspect:\n\n### Fields\n\n* Correct field exists\n* Correct label\n* Correct placeholder\n* Correct type\n* Correct default\n* Correct required/optional state\n* Correct database mapping\n\n### Validation\n\n* Required validation\n* Format validation\n* Length validation\n* Range validation\n* Duplicate validation\n* Business-rule validation\n* Server-side validation\n\n### UX\n\n* Helpful error messages\n* Inline validation\n* Clear success messages\n* Loading states\n* Disabled submit during processing\n* Correct reset behavior\n* Correct edit behavior\n* Correct cancel behavior\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Static form inventory and shared renderer fixes do not establish every domain field/API mapping and business rule."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R22",
+    "requirement": "FIELD TYPES",
+    "status": "ANALYZED",
+    "acceptance": "Verify that every field uses the correct UI control.\n\nExamples:\n\n* Date \u2192 Date picker\n* Date/time \u2192 Date-time picker\n* Boolean \u2192 Switch/checkbox\n* Small fixed set \u2192 Select\n* Large dataset \u2192 Searchable select\n* Multiple values \u2192 Multi-select\n* Long text \u2192 Textarea/editor\n* Number \u2192 Numeric input\n* Currency \u2192 Currency input\n* Percentage \u2192 Percentage input\n* Email \u2192 Email input\n* Phone \u2192 Phone input\n* Password \u2192 Secure password field\n* File \u2192 File uploader\n* Rich content \u2192 Appropriate editor\n\nDo not use plain text inputs where a specialized control is more appropriate.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Leave employee selection is searchable and shared controls have appropriate types. All domain-specific file/rich-text/currency use cases are not separately verified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R23",
+    "requirement": "DROPDOWNS AND DEPENDENT FIELDS",
+    "status": "ANALYZED",
+    "acceptance": "Audit all dropdowns.\n\nCheck:\n\n* Correct options\n* Correct ordering\n* Correct default\n* Searchability\n* Empty state\n* Loading state\n* Error state\n* Dependent dropdown behavior\n* Cascading selections\n* Reset behavior\n\nExample:\n\n`Country \u2192 State \u2192 City`\n\nmust correctly update dependent fields.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Metadata options preserved and leave employee selection searchable. All geography/dependent dropdown business contracts remain unverified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R24",
+    "requirement": "FRONTEND/BACKEND CONSISTENCY",
+    "status": "ANALYZED",
+    "acceptance": "For every form verify:\n\n`UI \u2192 Request \u2192 API/Controller \u2192 Validation \u2192 Service \u2192 Database \u2192 Response \u2192 UI`\n\nMake sure:\n\n* Field names match\n* Types match\n* IDs match\n* Nullability matches\n* Validation matches\n* Error handling matches\n* Response structures match\n\nFix inconsistencies rather than adding hacks around them.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [
+      "Database/API activation is excluded by current repository instructions; UUID/type/status cutover mapping remains unresolved."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R25",
+    "requirement": "CRUD OPERATIONS",
+    "status": "ANALYZED",
+    "acceptance": "Audit every major CRUD workflow:\n\n* Create\n* Read\n* Update\n* Delete\n* Archive\n* Restore\n* Activate\n* Deactivate\n\nVerify:\n\n* Correct permissions\n* Correct validation\n* Correct database behavior\n* Correct UI updates\n* Correct confirmation dialogs\n* Correct error handling\n* Correct success feedback\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Shared submission and leave operations tested. Non-leave CRUD remains preview state without verified durable create/edit/archive/restore semantics."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R26",
+    "requirement": "TABLES AND DATA LISTS",
+    "status": "ANALYZED",
+    "acceptance": "Review all tables.\n\nVerify:\n\n* Correct columns\n* Correct data\n* Sorting\n* Filtering\n* Search\n* Pagination\n* Empty states\n* Loading states\n* Error states\n* Responsive behavior\n* Export where applicable\n* Row actions\n* Bulk actions\n* Column alignment\n\nAvoid tables that become unusable on smaller screens.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Navigation/responsiveness and leave filtering/export tested. Every table sort/pagination/bulk action contract has not been verified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R27",
+    "requirement": "DASHBOARDS",
+    "status": "ANALYZED",
+    "acceptance": "Audit every dashboard.\n\nVerify:\n\n* KPI accuracy\n* Data freshness\n* Charts\n* Filters\n* Date ranges\n* Empty states\n* Loading states\n* Error states\n* Role-based data\n* Responsive layout\n\nDo not display fake statistics or hardcoded production-looking values.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "Role dashboards render and layout preferences work. Synthetic KPI values are not production-fresh queries and all-domain data accuracy remains unverified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R28",
+    "requirement": "ROLE & PERMISSION AUDIT",
+    "status": "ANALYZED",
+    "acceptance": "Verify permissions for every important workflow.\n\nAt minimum review:\n\n* Employee\n* Manager\n* HR\n* Administrator\n* Super Administrator\n\nDo not rely solely on hiding buttons.\n\nUnauthorized backend/API access must also be blocked.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [
+      "Preview scope and leave mutation gates tested. React checks are not server authorization; production tenant/session enforcement remains deferred."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R29",
+    "requirement": "ERROR HANDLING",
+    "status": "ANALYZED",
+    "acceptance": "Every important operation must handle:\n\n* Validation failure\n* Authentication failure\n* Authorization failure\n* Network failure\n* Server error\n* Database error\n* Timeout\n* Empty response\n* Unexpected response\n\nProvide useful user-facing messages without exposing sensitive technical details.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Shared and leave forms retain values on failure. Real database/timeouts/all-domain error mappings remain unverified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R30",
+    "requirement": "LOADING & EMPTY STATES",
+    "status": "ANALYZED",
+    "acceptance": "Every asynchronous interface should have appropriate:\n\n* Loading state\n* Skeleton where appropriate\n* Empty state\n* Error state\n* Retry action where appropriate\n* Success state\n\nDo not leave users staring at a blank screen.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Shared busy/empty/error/retry states exercised. Every domain asynchronous state is not independently covered."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R31",
+    "requirement": "RESPONSIVE DESIGN",
+    "status": "ANALYZED",
+    "acceptance": "Test the entire application at:\n\n* Desktop\n* Laptop\n* Tablet\n* Mobile\n\nCheck:\n\n* Navigation\n* Sidebars\n* Forms\n* Tables\n* Cards\n* Modals\n* Dropdowns\n* Calendars\n* Charts\n* Buttons\n* Typography\n* Spacing\n\nNothing should overflow or become unusable.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "Public pages and 79 workspace views checked at emulated viewport sizes. Real iOS/device matrix and exhaustive control interactions remain unverified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R32",
+    "requirement": "ACCESSIBILITY",
+    "status": "ANALYZED",
+    "acceptance": "Implement appropriate:\n\n* Semantic HTML\n* Keyboard navigation\n* Focus states\n* ARIA labels where required\n* Accessible forms\n* Accessible error messages\n* Sufficient contrast\n* Reduced-motion support\n* Screen-reader compatibility\n\nDo not sacrifice accessibility for animations.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "MUI focus management, labels, theme contrast and reduced motion checked. No complete screen-reader audit or WCAG certification."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R33",
+    "requirement": "SECURITY",
+    "status": "ANALYZED",
+    "acceptance": "During the audit, identify and fix obvious security problems involving:\n\n* Authorization\n* Authentication\n* Input validation\n* SQL injection\n* XSS\n* CSRF\n* File uploads\n* Sensitive data exposure\n* Insecure direct object references\n* API authorization\n* Mass assignment\n* Unsafe redirects\n\nDo not expose credentials, secrets, tokens, or sensitive system information in frontend code.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [
+      "Preview permission/identity validation and CSV injection protection improved. No full penetration audit or production API security verification."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R34",
+    "requirement": "DATABASE & DATA INTEGRITY",
+    "status": "ANALYZED",
+    "acceptance": "Check that UI fixes do not introduce database inconsistencies.\n\nReview:\n\n* Foreign keys\n* Constraints\n* Nullability\n* Unique constraints\n* Transactions\n* Cascading behavior\n* Soft deletion\n* Audit records\n* Data types\n* Date/time handling\n\nImportant multi-step operations should use transactions where necessary.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/MASTER_QA_CODE_INVENTORY.json",
+      "docs/engineering/ARCHITECTURE.md"
+    ],
+    "limitations": [
+      "No schemas/migrations or database connections activated; database constraints/transactions remain outside this preview verification."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R35",
+    "requirement": "DO NOT BREAK EXISTING FUNCTIONALITY",
+    "status": "ANALYZED",
+    "acceptance": "This is critical.\n\nBefore modifying existing functionality:\n\n1. Understand how it works.\n2. Identify dependencies.\n3. Modify it safely.\n4. Test existing flows.\n5. Test related flows.\n\nDo not replace working functionality with simplified alternatives.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "Regression suite passed after targeted fixes. This is not proof of every existing business flow."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R36",
+    "requirement": "DO NOT USE QUICK FIXES",
+    "status": "ANALYZED",
+    "acceptance": "Avoid:\n\n* Arbitrary hardcoded values\n* Duplicate code\n* Copy-paste implementations\n* Temporary hacks\n* Fake API responses\n* Fake statistics\n* Disabled validation\n* Hidden errors\n* Commenting out broken functionality\n* Suppressing exceptions\n* CSS hacks that break other pages\n* JavaScript hacks tied to specific DOM positions\n\nImplement maintainable solutions.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md"
+    ],
+    "limitations": [
+      "Shared service replaces duplicate leave logic. Existing synthetic preview data and unrelated legacy domain implementations remain."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R37",
+    "requirement": "DESIGN SYSTEM CONSISTENCY",
+    "status": "ANALYZED",
+    "acceptance": "Create or strengthen reusable design patterns for:\n\n* Buttons\n* Inputs\n* Selects\n* Cards\n* Modals\n* Alerts\n* Tables\n* Tabs\n* Badges\n* Tooltips\n* Dropdowns\n* Navigation\n* Page headers\n* Empty states\n* Loading states\n\nAvoid every page having completely different UI behavior.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "plan/form-inventory.json",
+      "src/lib/form-validation.ts",
+      "src/components/Clerio/ActionFormModal.js"
+    ],
+    "limitations": [
+      "Shared MUI dialogs/searchable selection/validation strengthened. All legacy components have not been migrated."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R38",
+    "requirement": "ANIMATION DESIGN SYSTEM",
+    "status": "VERIFIED",
+    "acceptance": "Create reusable animation utilities/components rather than implementing hundreds of unrelated animations.\n\nDefine consistent patterns for:\n\n* Fade\n* Slide\n* Scale\n* Stagger\n* Reveal\n* Hover\n* Press\n* Modal\n* Page transition\n* Loading\n\nThen selectively apply them according to page context.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R39",
+    "requirement": "VISUAL QUALITY BAR",
+    "status": "ANALYZED",
+    "acceptance": "The final result should NOT look like:\n\n* A basic Bootstrap CRUD application\n* A generic admin template\n* A static corporate website\n* A collection of disconnected pages\n\nIt should feel like:\n\n**A premium, futuristic, intelligent enterprise HRMS platform.**\n\nThink in terms of:\n\n* SaaS-quality UX\n* Enterprise-grade interaction design\n* Modern motion design\n* Strong visual hierarchy\n* Intelligent information architecture\n* High-quality micro-interactions\n* Consistent component behavior\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [
+      "Improved contextual public motion and visual hierarchy; user design acceptance remains subjective."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R40",
+    "requirement": "DO NOT OVER-ANIMATE",
+    "status": "VERIFIED",
+    "acceptance": "Animations must improve UX.\n\nDo NOT:\n\n* Animate everything simultaneously\n* Create distracting backgrounds\n* Make text difficult to read\n* Delay navigation\n* Cause excessive CPU/GPU usage\n* Create motion sickness\n* Use animations where they do not add value\n\nUse animation with intent.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "src/components/Website/PublicMotion.tsx",
+      "src/components/Website/PublicMotion.module.css",
+      "e2e/public-motion.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R41",
+    "requirement": "TESTING REQUIREMENT",
+    "status": "ANALYZED",
+    "acceptance": "After implementation, perform comprehensive testing.\n\nAt minimum test:\n\n### Functional\n\n* Login\n* Logout\n* CRUD\n* Forms\n* Search\n* Filters\n* Pagination\n* Dashboards\n* Leave workflows\n* Notifications\n* Permissions\n\n### UI\n\n* Desktop\n* Tablet\n* Mobile\n* Hover\n* Scroll\n* Mouse interactions\n* Modals\n* Dropdowns\n* Forms\n\n### Edge cases\n\n* Empty data\n* Large data\n* Invalid data\n* Duplicate data\n* Missing fields\n* Network failure\n* Unauthorized access\n* Concurrent actions\n* Boundary dates\n* Leave conflicts\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "Broad unit/contracts/browser checks performed. Large-data/load, all-domain CRUD and live backend edge cases remain unverified."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R42",
+    "requirement": "AUTOMATED TESTS",
+    "status": "VERIFIED",
+    "acceptance": "Where the project has an existing test framework:\n\n* Run existing tests.\n* Add tests for newly fixed functionality.\n* Add regression tests for important bugs.\n* Fix failing tests where failures are caused by your changes.\n\nDo not simply delete or disable failing tests.\n\nIf no testing framework exists, create an appropriate minimal test strategy consistent with the project's technology stack.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R43",
+    "requirement": "BUILD & LINT",
+    "status": "ANALYZED",
+    "acceptance": "Before completion:\n\n* Run build\n* Run lint\n* Run type checking where applicable\n* Run tests\n* Check console errors\n* Check network errors\n* Check backend logs\n* Check database errors\n\nResolve issues introduced by your changes.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [
+      "Compiler/lint/tests/build evidence is recorded separately. Live backend and database logs cannot be verified in the inactive phase."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  },
+  {
+    "id": "R44",
+    "requirement": "BROWSER QA",
+    "status": "VERIFIED",
+    "acceptance": "Perform browser-level validation of the major flows.\n\nCheck for:\n\n* Console errors\n* Broken assets\n* Failed requests\n* Layout shifts\n* Broken animations\n* Incorrect responsive behavior\n* Form submission problems\n* Navigation issues\n* Modal issues\n* Dropdown issues\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md",
+      "e2e/responsive-interactions.spec.ts",
+      "e2e/appearance.spec.ts"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R45",
+    "requirement": "FINAL REQUIREMENTS RECONCILIATION",
+    "status": "VERIFIED",
+    "acceptance": "At the end, compare the implementation against the original requirements and your checklist.\n\nFor EVERY requirement determine:\n\n`IMPLEMENTED + VERIFIED`\n\nDo not leave requirements silently unresolved.\n\nIf something genuinely cannot be implemented because required information/code/dependency is missing, explicitly identify:\n\n* What is missing\n* Why it is required\n* Where it affects the system\n* What was completed instead\n\nDo not pretend it is complete.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R46",
+    "requirement": "FINAL RESPONSE FORMAT",
+    "status": "VERIFIED",
+    "acceptance": "When you finish, provide a concise but complete implementation report containing:\n\n## 1. Files Changed\n\nList important files/components modified.\n\n## 2. UI/UX Improvements\n\nSummarize animation and interaction improvements.\n\n## 3. Leave Management\n\nList every leave-related issue fixed.\n\n## 4. Forms & Fields\n\nList major form/field issues corrected.\n\n## 5. Validation\n\nList validation improvements.\n\n## 6. Security\n\nList security improvements or findings.\n\n## 7. Responsive Design\n\nList responsive improvements.\n\n## 8. Testing Performed\n\nInclude:\n\n* Tests run\n* Build status\n* Lint status\n* Type-check status\n* Browser QA\n* Regression testing\n\n## 9. Remaining Issues\n\nExplicitly list anything that could not be completed.\n\n## 10. Requirements Coverage\n\nProvide:\n\n`Total requirements identified: X`\n\n`Implemented: X`\n\n`Verified: X`\n\n`Remaining: X`\n\nDo not claim 100% completion unless you actually verified it.\n\n---",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md"
+    ],
+    "limitations": [],
+    "progress": "COMPLETE_WITHIN_STATED_SCOPE"
+  },
+  {
+    "id": "R47",
+    "requirement": "MOST IMPORTANT RULE",
+    "status": "ANALYZED",
+    "acceptance": "**DO NOT SKIP REQUIREMENTS.**\n\nThe previous implementation missed leave-related requirements and multiple form/field issues.\n\nThis must not happen again.\n\nBefore declaring the task complete, perform a final search through the entire codebase and requirements for all related functionality.\n\nIf a requirement was previously explained, **implement it even if it is not repeated word-for-word in this prompt**.\n\nThe expected outcome is not merely:\n\n> \"The application works.\"\n\nThe expected outcome is:\n\n> **\"The application works correctly, all previously specified requirements are implemented, the UI/UX is premium and interactive, leave management is complete, forms and fields are correct, the application is responsive and accessible, and the implementation has been systematically tested for regressions.\"**\n\nProceed systematically.\n\n**Inspect \u2192 Understand \u2192 Plan \u2192 Implement \u2192 Validate \u2192 Test \u2192 Audit \u2192 Fix \u2192 Re-test \u2192 Verify \u2192 Report.**",
+    "evidence": [
+      "plan/MASTER_QA_IMPLEMENTATION.md",
+      "plan/MASTER_QA_REPORT.md"
+    ],
+    "limitations": [
+      "The complete enterprise master scope is not finished; remaining items are explicitly retained rather than counted as implemented."
+    ],
+    "progress": "PARTIAL_OR_DEFERRED"
+  }
+]

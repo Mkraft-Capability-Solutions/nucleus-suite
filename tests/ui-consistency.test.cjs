@@ -15,7 +15,7 @@ test('global styles provide a responsive typography and control baseline', () =>
 test('leave application opens as a modal workflow rather than an inline form', () => {
     const source = read('src/components/Clerio/LeaveView.js');
     assert.match(source, /isApplyModalOpen/);
-    assert.match(source, /LeaveApplicationModal/);
+    assert.match(source, /LeaveApplicationDialog/);
     assert.match(source, /setIsApplyModalOpen\(true\)/);
 });
 

@@ -17,3 +17,7 @@
 .cancel, .submit { padding: .62rem .85rem; font: inherit; font-size: .8rem; font-weight: 800; }
 .submit { border: 1px solid var(--signal, #2dd4a8); border-radius: 7px; background: var(--signal, #2dd4a8); color: var(--on-signal); cursor: pointer; }
 @media (max-width: 580px) { .form { grid-template-columns: 1fr; } .footer { align-items: stretch; flex-direction: column; } .footer div { justify-content: flex-end; } }
+
+.form [role="alert"]{grid-column:1/-1;color:var(--text);background:var(--card-2);padding:12px;border-inline-start:3px solid var(--flag);border-radius:var(--r-control)}
+.field:has([aria-invalid="true"]) :is(input,select,textarea){border-color:var(--flag)}
+.submit:disabled{opacity:.6;cursor:wait}

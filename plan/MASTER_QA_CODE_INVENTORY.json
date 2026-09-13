@@ -1,0 +1,2950 @@
+{
+  "scope": "Source inventory and review signals; presence of a guard reference is not proof of authorization correctness.",
+  "files": [
+    {
+      "path": "src/app/(website)/about/page.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(website)/contact/page.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(website)/docs/page.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(website)/features/page.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(website)/why-nucleus/page.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(workspace)/layout.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/app/(workspace)/login/page.tsx",
+      "lines": 2
+    },
+    {
+      "path": "src/app/(workspace)/workspace/page.tsx",
+      "lines": 2
+    },
+    {
+      "path": "src/app/api/agent/route.js",
+      "lines": 14,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/auth/[...all]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/auth/login/route.js",
+      "lines": 44,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/actions/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/actions/[id]/execute/route.ts",
+      "lines": 23,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/actions/[id]/reverse/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/actions/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/actions/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/evals/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/evals/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/feedback/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/knowledge/route.ts",
+      "lines": 33,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/reviews/[id]/decide/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/reviews/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/runs/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ai/runs/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/analytics/capability-index/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/analytics/capability-index/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/analytics/metric-snapshots/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/analytics/metrics/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/announcements/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/applications/[id]/advance/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/applications/[id]/dispose/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/applications/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/applications/[id]/score/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/applications/route.ts",
+      "lines": 56,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/days/[id]/recompute/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/days/[id]/trace/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/days/[id]/transition/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/days/route.ts",
+      "lines": 36,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/punches/route.ts",
+      "lines": 28,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/attendance/team-summary/route.ts",
+      "lines": 36,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/auth/registration-state/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/benefits/claims/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/benefits/enrollments/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/benefits/options/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/benefits/plans/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/calibration-sessions/[id]/adjust/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/calibration-sessions/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/candidates/[id]/resume/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/candidates/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/checkins/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/coff-grants/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compensation/bands/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compensation/budgets/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compensation/cycles/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compensation/proposals/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compensation/proposals/route.ts",
+      "lines": 42,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compliance/evidence/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compliance/forms/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/compliance/obligations/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/contractors/agencies/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/contractors/assignments/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/contractors/contracts/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/contractors/invoices/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/courses/route.ts",
+      "lines": 30,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/delegations/[id]/revoke/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/delegations/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/documents/[id]/download/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/documents/[id]/scan/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/documents/route.ts",
+      "lines": 29,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/employee-skills/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/enrollments/[id]/complete/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/enrollments/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/exports/[id]/build/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/exports/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/exports/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/feedback/entries/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/feedback/route.ts",
+      "lines": 34,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/fx/rates/route.ts",
+      "lines": 44,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/gate-passes/[id]/decide/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/gate-passes/route.ts",
+      "lines": 28,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/home/route.ts",
+      "lines": 123,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/identity/context/route.ts",
+      "lines": 65,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/identity/memberships/route.ts",
+      "lines": 25,
+      "guardReferences": [
+        "getSession"
+      ]
+    },
+    {
+      "path": "src/app/api/v1/integrations/catalog/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/integrations/connections/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/interview-plans/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/interview-scores/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/interview-sessions/[id]/debrief/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/interview-sessions/[id]/scores/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/interview-sessions/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/invitations/[id]/revoke/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/invitations/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/job-descriptions/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/job-descriptions/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/job-postings/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/key-results/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/learning-paths/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/leave-balances/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/leave-requests/[id]/decide/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/leave-requests/[id]/early-return/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/leave-requests/route.ts",
+      "lines": 55,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/[id]/approve/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/[id]/consent/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/[id]/disburse/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/[id]/repay/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/loans/route.ts",
+      "lines": 50,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/memberships/roles/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/notifications/[id]/read/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/notifications/preferences/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/notifications/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/objectives/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/offboarding/cases/[id]/settle/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/offboarding/cases/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/offboarding/items/[id]/clear/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/offers/[id]/transition/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/offers/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/onboarding/instances/[id]/readiness/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/onboarding/instances/route.ts",
+      "lines": 56,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/onboarding/tasks/[id]/complete/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/onboarding/templates/[id]/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/onboarding/templates/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/access-events/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/audit-events/route.ts",
+      "lines": 34,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/outbox/[id]/retry/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/outbox/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/scheduled-tasks/[id]/cancel/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/ops/scheduled-tasks/route.ts",
+      "lines": 68,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/organization/departments/route.ts",
+      "lines": 29,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/organization/positions/route.ts",
+      "lines": 29,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/organization/tree/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-anomalies/[id]/resolve/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-anomalies/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-inputs/route.ts",
+      "lines": 33,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/calculate/route.ts",
+      "lines": 30,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/correct/route.ts",
+      "lines": 30,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/finalize/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/journal/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payroll-runs/route.ts",
+      "lines": 50,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/payslips/[id]/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/people/[id]/route.ts",
+      "lines": 37,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/people/import-apply/route.ts",
+      "lines": 28,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/people/import-preview/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/people/route.ts",
+      "lines": 67,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/platform/tenants/[tenantId]/route.ts",
+      "lines": 26,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/platform/tenants/[tenantId]/users/route.ts",
+      "lines": 34,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/platform/tenants/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/privacy/holds/[id]/release/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/privacy/holds/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/privacy/requests/[id]/close/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/privacy/requests/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/recognition-events/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/referrals/[id]/award/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/referrals/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/regularizations/[id]/decide/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/regularizations/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/reports/team-history/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/requisitions/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/requisitions/route.ts",
+      "lines": 28,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/review-cycles/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/review-participants/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/review-responses/route.ts",
+      "lines": 34,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/roles/[id]/permissions/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/roles/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/route.ts",
+      "lines": 59,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/salary-advances/[id]/approve/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/salary-advances/[id]/pay/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/salary-advances/[id]/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/salary-advances/route.ts",
+      "lines": 52,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/search/route.ts",
+      "lines": 30,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/shift-swaps/[id]/decide/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/shift-swaps/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/skill-evidence/[id]/verify/route.ts",
+      "lines": 22,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/skill-evidence/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/succession-plans/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/survey-responses/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/survey-runs/[id]/results/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/survey-runs/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/surveys/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/tenant/settings/route.ts",
+      "lines": 32,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/vp/readiness/route.ts",
+      "lines": 43,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/wage-simulations/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/deliveries/[id]/replay/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/deliveries/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/endpoints/route.ts",
+      "lines": 20,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/inbound/[connectionId]/route.ts",
+      "lines": 25,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/inbound/route.ts",
+      "lines": 17,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/secrets/route.ts",
+      "lines": 18,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/webhooks/subscriptions/route.ts",
+      "lines": 21,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/api/v1/workspace/bootstrap/route.ts",
+      "lines": 68,
+      "guardReferences": [
+        "getSession"
+      ]
+    },
+    {
+      "path": "src/app/api/workspace-data/route.ts",
+      "lines": 19,
+      "guardReferences": []
+    },
+    {
+      "path": "src/app/globals.css",
+      "lines": 427
+    },
+    {
+      "path": "src/app/layout.js",
+      "lines": 31
+    },
+    {
+      "path": "src/app/page.js",
+      "lines": 3
+    },
+    {
+      "path": "src/app/page.module.css",
+      "lines": 216
+    },
+    {
+      "path": "src/components/AppearanceToggle.module.css",
+      "lines": 7
+    },
+    {
+      "path": "src/components/AppearanceToggle.tsx",
+      "lines": 27
+    },
+    {
+      "path": "src/components/AppWorkspace.js",
+      "lines": 397
+    },
+    {
+      "path": "src/components/auth/PermissionProtected.js",
+      "lines": 14
+    },
+    {
+      "path": "src/components/auth/RoleProtected.js",
+      "lines": 69
+    },
+    {
+      "path": "src/components/BrandLogo.js",
+      "lines": 6
+    },
+    {
+      "path": "src/components/Charts/NucleusChart.js",
+      "lines": 113
+    },
+    {
+      "path": "src/components/Charts/theme.js",
+      "lines": 107
+    },
+    {
+      "path": "src/components/Clerio/AccessControlView.js",
+      "lines": 759,
+      "reviewMarkers": [
+        {
+          "line": 325,
+          "marker": "placeholder={readData(\"components.Clerio.AccessControlView\", \"content_placeholder_31\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/AccessControlView.module.css",
+      "lines": 792
+    },
+    {
+      "path": "src/components/Clerio/ActionFormModal.js",
+      "lines": 81
+    },
+    {
+      "path": "src/components/Clerio/ActionFormModal.module.css",
+      "lines": 23
+    },
+    {
+      "path": "src/components/Clerio/AdminOverview.tsx",
+      "lines": 43
+    },
+    {
+      "path": "src/components/Clerio/AIPanel.js",
+      "lines": 284,
+      "reviewMarkers": [
+        {
+          "line": 213,
+          "marker": "placeholder={readData(\"components.Clerio.AIPanel\", \"AIPanel_placeholder_30\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/AIPanel.module.css",
+      "lines": 298,
+      "reviewMarkers": [
+        {
+          "line": 271,
+          "marker": ".chatInput::placeholder {"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/AnalyticsView.js",
+      "lines": 14
+    },
+    {
+      "path": "src/components/Clerio/AnalyticsView.module.css",
+      "lines": 402
+    },
+    {
+      "path": "src/components/Clerio/AttendanceFAB.js",
+      "lines": 108,
+      "reviewMarkers": [
+        {
+          "line": 81,
+          "marker": "placeholder={attendance.status === 'present' ? readData(\"components.Clerio.AttendanceFAB\", \"display_3\") : readData(\"components.Clerio.AttendanceFAB\", \"display_4\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/AttendanceFAB.module.css",
+      "lines": 225
+    },
+    {
+      "path": "src/components/Clerio/AttendanceView.js",
+      "lines": 647,
+      "reviewMarkers": [
+        {
+          "line": 621,
+          "marker": "placeholder={readData(\"components.Clerio.AttendanceView\", \"AttendanceView_placeholder_132\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/AttendanceView.module.css",
+      "lines": 570
+    },
+    {
+      "path": "src/components/Clerio/CatalogGridView.module.css",
+      "lines": 150
+    },
+    {
+      "path": "src/components/Clerio/CatalogGridView.tsx",
+      "lines": 82
+    },
+    {
+      "path": "src/components/Clerio/ChatPanel.js",
+      "lines": 165,
+      "reviewMarkers": [
+        {
+          "line": 148,
+          "marker": "placeholder={translateText(\"components.Clerio.ChatPanel\",\"text_d869d3fc0f\", {value1: String(currentConv.name)})}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/ChatPanel.module.css",
+      "lines": 305,
+      "reviewMarkers": [
+        {
+          "line": 277,
+          "marker": ".chatInput::placeholder {"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/CMSModal.js",
+      "lines": 383,
+      "reviewMarkers": [
+        {
+          "line": 138,
+          "marker": "placeholder={readData(\"components.Clerio.CMSModal\", \"CMSModal_placeholder_10\")}"
+        },
+        {
+          "line": 186,
+          "marker": "placeholder={readData(\"components.Clerio.CMSModal\", \"CMSModal_placeholder_25\")}"
+        },
+        {
+          "line": 260,
+          "marker": "placeholder={readData(\"components.Clerio.CMSModal\", \"CMSModal_placeholder_34\")}"
+        },
+        {
+          "line": 284,
+          "marker": "placeholder={readData(\"components.Clerio.CMSModal\", \"CMSModal_placeholder_42\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/CMSModal.module.css",
+      "lines": 410
+    },
+    {
+      "path": "src/components/Clerio/CompensationView.js",
+      "lines": 127
+    },
+    {
+      "path": "src/components/Clerio/CompensationView.module.css",
+      "lines": 154
+    },
+    {
+      "path": "src/components/Clerio/ComplianceView.js",
+      "lines": 1458
+    },
+    {
+      "path": "src/components/Clerio/ComplianceView.module.css",
+      "lines": 1206
+    },
+    {
+      "path": "src/components/Clerio/ContractWorkforceView.js",
+      "lines": 277,
+      "reviewMarkers": [
+        {
+          "line": 195,
+          "marker": "placeholder={readData(\"components.Clerio.ContractWorkforceView\", \"ContractWorkforceView_placeholder_51\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/ContractWorkforceView.module.css",
+      "lines": 585
+    },
+    {
+      "path": "src/components/Clerio/DataImportModal.js",
+      "lines": 346
+    },
+    {
+      "path": "src/components/Clerio/DataImportModal.module.css",
+      "lines": 422
+    },
+    {
+      "path": "src/components/Clerio/ExperienceView.js",
+      "lines": 232,
+      "reviewMarkers": [
+        {
+          "line": 184,
+          "marker": "placeholder={readData(\"components.Clerio.ExperienceView\", \"ExperienceView_placeholder_41\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/ExperienceView.module.css",
+      "lines": 171
+    },
+    {
+      "path": "src/components/Clerio/HelpdeskView.js",
+      "lines": 317,
+      "reviewMarkers": [
+        {
+          "line": 186,
+          "marker": "placeholder={readData(\"components.Clerio.HelpdeskView\", \"HelpdeskView_placeholder_29\")}"
+        },
+        {
+          "line": 227,
+          "marker": "<input type=\"text\" placeholder={readData(\"components.Clerio.HelpdeskView\", \"HelpdeskView_placeholder_45\")} className={styles.formInput} />"
+        },
+        {
+          "line": 231,
+          "marker": "<textarea rows={4} placeholder={readData(\"components.Clerio.HelpdeskView\", \"HelpdeskView_placeholder_47\")} className={styles.formTextarea}></textarea>"
+        },
+        {
+          "line": 254,
+          "marker": "placeholder={readData(\"components.Clerio.HelpdeskView\", \"HelpdeskView_placeholder_50\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/HelpdeskView.module.css",
+      "lines": 684
+    },
+    {
+      "path": "src/components/Clerio/IntegrationsView.js",
+      "lines": 142
+    },
+    {
+      "path": "src/components/Clerio/IntegrationsView.module.css",
+      "lines": 160
+    },
+    {
+      "path": "src/components/Clerio/LearningView.js",
+      "lines": 118
+    },
+    {
+      "path": "src/components/Clerio/LearningView.module.css",
+      "lines": 124
+    },
+    {
+      "path": "src/components/Clerio/LeaveView.js",
+      "lines": 453
+    },
+    {
+      "path": "src/components/Clerio/LeaveView.module.css",
+      "lines": 524
+    },
+    {
+      "path": "src/components/Clerio/LeftDock.js",
+      "lines": 125
+    },
+    {
+      "path": "src/components/Clerio/LeftDock.module.css",
+      "lines": 270
+    },
+    {
+      "path": "src/components/Clerio/LoginView.js",
+      "lines": 95,
+      "reviewMarkers": [
+        {
+          "line": 64,
+          "marker": "placeholder={readData(\"components.Clerio.LoginView\", \"LoginView_placeholder_5\")}"
+        },
+        {
+          "line": 76,
+          "marker": "placeholder={readData(\"components.Clerio.LoginView\", \"LoginView_placeholder_6\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/LoginView.module.css",
+      "lines": 7,
+      "reviewMarkers": [
+        {
+          "line": 5,
+          "marker": ".brand{display:flex;flex-direction:column;align-items:flex-start;gap:.75rem}.title{margin:0;color:var(--text);font-size:1.75rem;line-height:1.3;letter-spacing:-.035em}.subtitle{col"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/MainWorkspace.js",
+      "lines": 1213
+    },
+    {
+      "path": "src/components/Clerio/MainWorkspace.module.css",
+      "lines": 1029
+    },
+    {
+      "path": "src/components/Clerio/MisReportingHub.js",
+      "lines": 223,
+      "reviewMarkers": [
+        {
+          "line": 204,
+          "marker": "<label className={styles.search}><Search size={15} /><input value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder={readData(\"components.Clerio.Mi"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/MisReportingHub.module.css",
+      "lines": 6
+    },
+    {
+      "path": "src/components/Clerio/OnboardingView.js",
+      "lines": 790,
+      "reviewMarkers": [
+        {
+          "line": 637,
+          "marker": "placeholder={readData(\"components.Clerio.OnboardingView\", \"OnboardingView_placeholder_121\")}"
+        },
+        {
+          "line": 649,
+          "marker": "placeholder={readData(\"components.Clerio.OnboardingView\", \"OnboardingView_placeholder_123\")}"
+        },
+        {
+          "line": 761,
+          "marker": "placeholder={readData(\"components.Clerio.OnboardingView\", \"OnboardingView_placeholder_145\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/OnboardingView.module.css",
+      "lines": 363
+    },
+    {
+      "path": "src/components/Clerio/OperationalModuleView.js",
+      "lines": 188
+    },
+    {
+      "path": "src/components/Clerio/OperationalModuleView.module.css",
+      "lines": 25
+    },
+    {
+      "path": "src/components/Clerio/PayrollView.js",
+      "lines": 1219,
+      "reviewMarkers": [
+        {
+          "line": 348,
+          "marker": "placeholder={readData(\"components.Clerio.PayrollView\", \"PayrollView_placeholder_45\")}"
+        },
+        {
+          "line": 1001,
+          "marker": "placeholder={readData(\"components.Clerio.PayrollView\", \"PayrollView_placeholder_208\")}"
+        },
+        {
+          "line": 1096,
+          "marker": "placeholder={readData(\"components.Clerio.PayrollView\", \"PayrollView_placeholder_224\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/PayrollView.module.css",
+      "lines": 460
+    },
+    {
+      "path": "src/components/Clerio/PeopleCoreView.js",
+      "lines": 475,
+      "reviewMarkers": [
+        {
+          "line": 160,
+          "marker": "placeholder={readData(\"components.Clerio.PeopleCoreView\", \"PeopleCoreView_placeholder_20\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/PeopleCoreView.module.css",
+      "lines": 298
+    },
+    {
+      "path": "src/components/Clerio/PerformanceView.js",
+      "lines": 221
+    },
+    {
+      "path": "src/components/Clerio/PerformanceView.module.css",
+      "lines": 221
+    },
+    {
+      "path": "src/components/Clerio/ProcessGuide.js",
+      "lines": 24
+    },
+    {
+      "path": "src/components/Clerio/ProcessGuide.module.css",
+      "lines": 10
+    },
+    {
+      "path": "src/components/Clerio/ProjectView.js",
+      "lines": 1106,
+      "reviewMarkers": [
+        {
+          "line": 123,
+          "marker": "todo: kanbanTasks.todo.filter(filterFn),"
+        },
+        {
+          "line": 361,
+          "marker": "<span className={styles.colCount}>{displayTasks.todo.length}</span>"
+        },
+        {
+          "line": 363,
+          "marker": "{displayTasks.todo.map(task => {"
+        },
+        {
+          "line": 371,
+          "marker": "onClick={() => moveTask(task.id, 'todo', 'inprogress')}"
+        },
+        {
+          "line": 398,
+          "marker": "onClick={(e) => advanceTask(e, task.id, 'todo')}"
+        },
+        {
+          "line": 416,
+          "marker": "{displayTasks.todo.length === 0 && ("
+        },
+        {
+          "line": 684,
+          "marker": "placeholder={readData(\"components.Clerio.ProjectView\", \"ProjectView_placeholder_46\")}"
+        },
+        {
+          "line": 813,
+          "marker": "placeholder={readData(\"components.Clerio.ProjectView\", \"ProjectView_placeholder_74\")}"
+        },
+        {
+          "line": 914,
+          "marker": "placeholder={readData(\"components.Clerio.ProjectView\", \"ProjectView_placeholder_82\")}"
+        },
+        {
+          "line": 935,
+          "marker": "placeholder={readData(\"components.Clerio.ProjectView\", \"ProjectView_placeholder_84\")}"
+        },
+        {
+          "line": 958,
+          "marker": "placeholder={readData(\"components.Clerio.ProjectView\", \"ProjectView_placeholder_86\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/ProjectView.module.css",
+      "lines": 302
+    },
+    {
+      "path": "src/components/Clerio/RecruitmentView.js",
+      "lines": 719,
+      "reviewMarkers": [
+        {
+          "line": 506,
+          "marker": "placeholder={readData(\"components.Clerio.RecruitmentView\", \"RecruitmentView_placeholder_88\")}"
+        },
+        {
+          "line": 572,
+          "marker": "placeholder={readData(\"components.Clerio.RecruitmentView\", \"RecruitmentView_placeholder_96\")}"
+        },
+        {
+          "line": 623,
+          "marker": "placeholder={readData(\"components.Clerio.RecruitmentView\", \"RecruitmentView_placeholder_112\")}"
+        },
+        {
+          "line": 671,
+          "marker": "placeholder={readData(\"components.Clerio.RecruitmentView\", \"RecruitmentView_placeholder_119\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/RecruitmentView.module.css",
+      "lines": 394
+    },
+    {
+      "path": "src/components/Clerio/RightSubNav.js",
+      "lines": 114
+    },
+    {
+      "path": "src/components/Clerio/RightSubNav.module.css",
+      "lines": 184
+    },
+    {
+      "path": "src/components/Clerio/SettingsView.js",
+      "lines": 610,
+      "reviewMarkers": [
+        {
+          "line": 294,
+          "marker": "<input type=\"password\" placeholder={readData(\"components.Clerio.SettingsView\", \"SettingsView_placeholder_51\")} className={styles.input} />"
+        },
+        {
+          "line": 298,
+          "marker": "<input type=\"password\" placeholder={readData(\"components.Clerio.SettingsView\", \"SettingsView_placeholder_53\")} className={styles.input} />"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/SettingsView.module.css",
+      "lines": 408
+    },
+    {
+      "path": "src/components/Clerio/SideNav.js",
+      "lines": 191
+    },
+    {
+      "path": "src/components/Clerio/SideNav.module.css",
+      "lines": 243
+    },
+    {
+      "path": "src/components/Clerio/TeamView.js",
+      "lines": 242,
+      "reviewMarkers": [
+        {
+          "line": 139,
+          "marker": "placeholder={readData(\"components.Clerio.TeamView\", \"TeamView_placeholder_11\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/TeamView.module.css",
+      "lines": 361
+    },
+    {
+      "path": "src/components/Clerio/Toast.js",
+      "lines": 36
+    },
+    {
+      "path": "src/components/Clerio/Toast.module.css",
+      "lines": 81
+    },
+    {
+      "path": "src/components/Clerio/TopNav.js",
+      "lines": 391,
+      "reviewMarkers": [
+        {
+          "line": 117,
+          "marker": "placeholder={readData(\"components.Clerio.TopNav\", \"TopNav_placeholder_13\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/TopNav.module.css",
+      "lines": 792
+    },
+    {
+      "path": "src/components/Clerio/WorkflowBuilderModal.js",
+      "lines": 401,
+      "reviewMarkers": [
+        {
+          "line": 342,
+          "marker": "placeholder={readData(\"components.Clerio.WorkflowBuilderModal\", \"WorkflowBuilderModal_placeholder_27\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Clerio/WorkflowBuilderModal.module.css",
+      "lines": 522
+    },
+    {
+      "path": "src/components/Dashboard/AttendanceWidget.js",
+      "lines": 49
+    },
+    {
+      "path": "src/components/Dashboard/AttendanceWidget.module.css",
+      "lines": 117
+    },
+    {
+      "path": "src/components/Dashboard/DashboardShared.module.css",
+      "lines": 942
+    },
+    {
+      "path": "src/components/Dashboard/Header.js",
+      "lines": 56,
+      "reviewMarkers": [
+        {
+          "line": 22,
+          "marker": "placeholder={readData(\"components.Dashboard.Header\", \"Header_placeholder_3\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/Header.module.css",
+      "lines": 147
+    },
+    {
+      "path": "src/components/Dashboard/HeroSection.js",
+      "lines": 62
+    },
+    {
+      "path": "src/components/Dashboard/HeroSection.module.css",
+      "lines": 153
+    },
+    {
+      "path": "src/components/Dashboard/Modals/AccessControlModal.js",
+      "lines": 267,
+      "reviewMarkers": [
+        {
+          "line": 166,
+          "marker": "placeholder={readData(\"components.Dashboard.Modals.AccessControlModal\", \"content_placeholder_34\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/Modals/AccessControlModal.module.css",
+      "lines": 370
+    },
+    {
+      "path": "src/components/Dashboard/Modals/ApprovalActionModal.js",
+      "lines": 279,
+      "reviewMarkers": [
+        {
+          "line": 231,
+          "marker": "placeholder={"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/Modals/ApprovalActionModal.module.css",
+      "lines": 382
+    },
+    {
+      "path": "src/components/Dashboard/Personalization/PersonalDashboard.module.css",
+      "lines": 16
+    },
+    {
+      "path": "src/components/Dashboard/Personalization/PersonalDashboard.tsx",
+      "lines": 223
+    },
+    {
+      "path": "src/components/Dashboard/Personalization/WidgetContent.tsx",
+      "lines": 12
+    },
+    {
+      "path": "src/components/Dashboard/StatsCards.js",
+      "lines": 60
+    },
+    {
+      "path": "src/components/Dashboard/StatsCards.module.css",
+      "lines": 127
+    },
+    {
+      "path": "src/components/Dashboard/TodaysFocus.js",
+      "lines": 76
+    },
+    {
+      "path": "src/components/Dashboard/TodaysFocus.module.css",
+      "lines": 194
+    },
+    {
+      "path": "src/components/Dashboard/UpcomingEvents.js",
+      "lines": 47
+    },
+    {
+      "path": "src/components/Dashboard/UpcomingEvents.module.css",
+      "lines": 113
+    },
+    {
+      "path": "src/components/Dashboard/Views/AttendanceIntelligence.js",
+      "lines": 511
+    },
+    {
+      "path": "src/components/Dashboard/Views/EmployeeHome.js",
+      "lines": 1132,
+      "reviewMarkers": [
+        {
+          "line": 396,
+          "marker": "placeholder={readData(\"components.Dashboard.Views.EmployeeHome\", \"content_placeholder_84\")}"
+        },
+        {
+          "line": 1007,
+          "marker": "placeholder={readData(\"components.Dashboard.Views.EmployeeHome\", \"content_placeholder_191\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Dashboard/Views/HROpsConsole.js",
+      "lines": 539
+    },
+    {
+      "path": "src/components/Dashboard/Views/MagnetixCapability.js",
+      "lines": 373
+    },
+    {
+      "path": "src/components/Dashboard/Views/ManagerCockpit.js",
+      "lines": 355
+    },
+    {
+      "path": "src/components/Dashboard/Views/NucleusIntelligence.js",
+      "lines": 311
+    },
+    {
+      "path": "src/components/Dashboard/Views/PayrollControlRoom.js",
+      "lines": 413
+    },
+    {
+      "path": "src/components/Dashboard/Views/PeopleCommandCentre.js",
+      "lines": 446
+    },
+    {
+      "path": "src/components/Dashboard/Views/PerformanceTalent.js",
+      "lines": 285
+    },
+    {
+      "path": "src/components/Dashboard/Views/TalentAcquisition.js",
+      "lines": 407
+    },
+    {
+      "path": "src/components/FormValidationBoundary.tsx",
+      "lines": 43
+    },
+    {
+      "path": "src/components/Leave/LeaveApplicationDialog.tsx",
+      "lines": 289
+    },
+    {
+      "path": "src/components/Leave/LeaveBalancePanel.tsx",
+      "lines": 236
+    },
+    {
+      "path": "src/components/Leave/LeaveCalendar.tsx",
+      "lines": 119
+    },
+    {
+      "path": "src/components/Leave/LeaveEmployeeSelect.tsx",
+      "lines": 38
+    },
+    {
+      "path": "src/components/Leave/LeavePolicyReference.tsx",
+      "lines": 69
+    },
+    {
+      "path": "src/components/Leave/LeaveWorkflowPanel.tsx",
+      "lines": 324
+    },
+    {
+      "path": "src/components/Navigation/DualPaneNav.js",
+      "lines": 297,
+      "reviewMarkers": [
+        {
+          "line": 139,
+          "marker": "placeholder={readData(\"components.Navigation.DualPaneNav\", \"content_placeholder_138\")}"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Navigation/DualPaneNav.module.css",
+      "lines": 686,
+      "reviewMarkers": [
+        {
+          "line": 135,
+          "marker": ".searchInput::placeholder {"
+        }
+      ]
+    },
+    {
+      "path": "src/components/Providers.js",
+      "lines": 8
+    },
+    {
+      "path": "src/components/Website/ContactForm.tsx",
+      "lines": 28
+    },
+    {
+      "path": "src/components/Website/HomePreview.module.css",
+      "lines": 22
+    },
+    {
+      "path": "src/components/Website/HomePreview.tsx",
+      "lines": 36
+    },
+    {
+      "path": "src/components/Website/HomeStory.module.css",
+      "lines": 20
+    },
+    {
+      "path": "src/components/Website/HomeStory.tsx",
+      "lines": 34
+    },
+    {
+      "path": "src/components/Website/LifecycleOrbit.tsx",
+      "lines": 23
+    },
+    {
+      "path": "src/components/Website/PublicHeader.tsx",
+      "lines": 33
+    },
+    {
+      "path": "src/components/Website/PublicMotion.module.css",
+      "lines": 19
+    },
+    {
+      "path": "src/components/Website/PublicMotion.tsx",
+      "lines": 109
+    },
+    {
+      "path": "src/components/Website/PublicPage.tsx",
+      "lines": 52
+    },
+    {
+      "path": "src/components/Website/Website.module.css",
+      "lines": 55
+    },
+    {
+      "path": "src/components/WorkspaceDataBoundary.js",
+      "lines": 32
+    },
+    {
+      "path": "src/components/WorkspaceEntry.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/components/WorkspaceShell.js",
+      "lines": 20
+    },
+    {
+      "path": "src/components/WorkspaceTheme.tsx",
+      "lines": 30
+    },
+    {
+      "path": "src/context/AppearanceContext.tsx",
+      "lines": 26
+    },
+    {
+      "path": "src/context/AuthContext.js",
+      "lines": 384
+    },
+    {
+      "path": "src/context/HRMSContext.js",
+      "lines": 947,
+      "reviewMarkers": [
+        {
+          "line": 599,
+          "marker": "todo: [newTask, ...prev.todo]"
+        }
+      ]
+    },
+    {
+      "path": "src/context/I18nContext.tsx",
+      "lines": 13
+    },
+    {
+      "path": "src/context/PublicSiteContext.tsx",
+      "lines": 7
+    },
+    {
+      "path": "src/data/appearance.json",
+      "lines": 140
+    },
+    {
+      "path": "src/data/assistant.json",
+      "lines": 136
+    },
+    {
+      "path": "src/data/demo-accounts.json",
+      "lines": 67
+    },
+    {
+      "path": "src/data/locales/en/interface.json",
+      "lines": 474
+    },
+    {
+      "path": "src/data/public-site.json",
+      "lines": 513
+    },
+    {
+      "path": "src/data/ui/components.AppWorkspace.json",
+      "lines": 24
+    },
+    {
+      "path": "src/data/ui/components.auth.RoleProtected.json",
+      "lines": 7
+    },
+    {
+      "path": "src/data/ui/components.Charts.NucleusChart.json",
+      "lines": 23
+    },
+    {
+      "path": "src/data/ui/components.Charts.theme.json",
+      "lines": 227
+    },
+    {
+      "path": "src/data/ui/components.Clerio.AccessControlView.json",
+      "lines": 412
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ActionFormModal.json",
+      "lines": 1430
+    },
+    {
+      "path": "src/data/ui/components.Clerio.AdminOverview.json",
+      "lines": 12
+    },
+    {
+      "path": "src/data/ui/components.Clerio.AIPanel.json",
+      "lines": 132
+    },
+    {
+      "path": "src/data/ui/components.Clerio.AttendanceFAB.json",
+      "lines": 18
+    },
+    {
+      "path": "src/data/ui/components.Clerio.AttendanceView.json",
+      "lines": 173
+    },
+    {
+      "path": "src/data/ui/components.Clerio.CatalogGridView.json",
+      "lines": 487
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ChatPanel.json",
+      "lines": 92
+    },
+    {
+      "path": "src/data/ui/components.Clerio.CMSModal.json",
+      "lines": 79
+    },
+    {
+      "path": "src/data/ui/components.Clerio.CompensationView.json",
+      "lines": 25
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ComplianceView.json",
+      "lines": 559
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ContractWorkforceView.json",
+      "lines": 247
+    },
+    {
+      "path": "src/data/ui/components.Clerio.DataImportModal.json",
+      "lines": 310
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ExperienceView.json",
+      "lines": 47
+    },
+    {
+      "path": "src/data/ui/components.Clerio.HelpdeskView.json",
+      "lines": 218
+    },
+    {
+      "path": "src/data/ui/components.Clerio.IntegrationsView.json",
+      "lines": 34
+    },
+    {
+      "path": "src/data/ui/components.Clerio.LearningView.json",
+      "lines": 19
+    },
+    {
+      "path": "src/data/ui/components.Clerio.LeaveView.json",
+      "lines": 202
+    },
+    {
+      "path": "src/data/ui/components.Clerio.LeftDock.json",
+      "lines": 76
+    },
+    {
+      "path": "src/data/ui/components.Clerio.LoginView.json",
+      "lines": 22
+    },
+    {
+      "path": "src/data/ui/components.Clerio.MainWorkspace.json",
+      "lines": 272,
+      "reviewMarkers": [
+        {
+          "line": 226,
+          "marker": "\"renderTeam_text_115\": \"My Team Content (Placeholder)\","
+        },
+        {
+          "line": 227,
+          "marker": "\"renderLeaves_text_116\": \"Leaves Content (Placeholder)\","
+        },
+        {
+          "line": 228,
+          "marker": "\"renderPayroll_text_117\": \"Payroll Content (Placeholder)\","
+        },
+        {
+          "line": 229,
+          "marker": "\"renderPerformance_text_118\": \"Performance Content (Placeholder)\","
+        }
+      ]
+    },
+    {
+      "path": "src/data/ui/components.Clerio.MisReportingHub.json",
+      "lines": 215
+    },
+    {
+      "path": "src/data/ui/components.Clerio.OnboardingView.json",
+      "lines": 213
+    },
+    {
+      "path": "src/data/ui/components.Clerio.OperationalModuleView.json",
+      "lines": 49
+    },
+    {
+      "path": "src/data/ui/components.Clerio.PayrollView.json",
+      "lines": 334
+    },
+    {
+      "path": "src/data/ui/components.Clerio.PeopleCoreView.json",
+      "lines": 92
+    },
+    {
+      "path": "src/data/ui/components.Clerio.PerformanceView.json",
+      "lines": 48
+    },
+    {
+      "path": "src/data/ui/components.Clerio.ProjectView.json",
+      "lines": 181,
+      "reviewMarkers": [
+        {
+          "line": 11,
+          "marker": "\"todo\","
+        }
+      ]
+    },
+    {
+      "path": "src/data/ui/components.Clerio.RecruitmentView.json",
+      "lines": 167
+    },
+    {
+      "path": "src/data/ui/components.Clerio.RightSubNav.json",
+      "lines": 508
+    },
+    {
+      "path": "src/data/ui/components.Clerio.SettingsView.json",
+      "lines": 150
+    },
+    {
+      "path": "src/data/ui/components.Clerio.SideNav.json",
+      "lines": 180
+    },
+    {
+      "path": "src/data/ui/components.Clerio.TeamView.json",
+      "lines": 51
+    },
+    {
+      "path": "src/data/ui/components.Clerio.Toast.json",
+      "lines": 4
+    },
+    {
+      "path": "src/data/ui/components.Clerio.TopNav.json",
+      "lines": 203
+    },
+    {
+      "path": "src/data/ui/components.Clerio.WorkflowBuilderModal.json",
+      "lines": 90
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.AttendanceWidget.json",
+      "lines": 15
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Header.json",
+      "lines": 11
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.HeroSection.json",
+      "lines": 14
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Modals.AccessControlModal.json",
+      "lines": 218
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Modals.ApprovalActionModal.json",
+      "lines": 79
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.StatsCards.json",
+      "lines": 31
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.TodaysFocus.json",
+      "lines": 22
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.UpcomingEvents.json",
+      "lines": 11
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.AttendanceIntelligence.json",
+      "lines": 404
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.EmployeeHome.json",
+      "lines": 638
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.HROpsConsole.json",
+      "lines": 801
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.MagnetixCapability.json",
+      "lines": 342
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.ManagerCockpit.json",
+      "lines": 258
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.NucleusIntelligence.json",
+      "lines": 189
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.PayrollControlRoom.json",
+      "lines": 424,
+      "reviewMarkers": [
+        {
+          "line": 84,
+          "marker": "\"name\": \"Placeholder\","
+        }
+      ]
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.PeopleCommandCentre.json",
+      "lines": 686
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.PerformanceTalent.json",
+      "lines": 311
+    },
+    {
+      "path": "src/data/ui/components.Dashboard.Views.TalentAcquisition.json",
+      "lines": 389
+    },
+    {
+      "path": "src/data/ui/components.Navigation.DualPaneNav.json",
+      "lines": 608
+    },
+    {
+      "path": "src/data/ui/context.AuthContext.json",
+      "lines": 125
+    },
+    {
+      "path": "src/data/ui/context.HRMSContext.json",
+      "lines": 2472,
+      "reviewMarkers": [
+        {
+          "line": 1774,
+          "marker": "\"todo\": ["
+        }
+      ]
+    },
+    {
+      "path": "src/data/ui/dashboard.widgets.json",
+      "lines": 59
+    },
+    {
+      "path": "src/data/ui/leave.workflow.json",
+      "lines": 145
+    },
+    {
+      "path": "src/data/ui/lib.demo-workbook-adapter.json",
+      "lines": 95
+    },
+    {
+      "path": "src/data/ui/lib.mis-reporting.json",
+      "lines": 59
+    },
+    {
+      "path": "src/data/ui/lib.navigation-access.json",
+      "lines": 91
+    },
+    {
+      "path": "src/data/ui/lib.operational-module-registry.json",
+      "lines": 2980
+    },
+    {
+      "path": "src/data/ui/navigation.catalog.json",
+      "lines": 1009
+    },
+    {
+      "path": "src/data/ui/process.requirements.json",
+      "lines": 6786
+    },
+    {
+      "path": "src/data/ui/services.erpAndComplianceService.json",
+      "lines": 751
+    },
+    {
+      "path": "src/data/ui/services.establishmentService.json",
+      "lines": 288
+    },
+    {
+      "path": "src/data/ui/services.leaveEngine.json",
+      "lines": 122
+    },
+    {
+      "path": "src/data/ui/services.payrollAdjacenciesService.json",
+      "lines": 130
+    },
+    {
+      "path": "src/data/ui/services.timeOfficeEngine.json",
+      "lines": 149
+    },
+    {
+      "path": "src/data/ui/services.workCalendarService.json",
+      "lines": 208
+    },
+    {
+      "path": "src/data/workbook.json",
+      "lines": 1,
+      "reviewMarkers": [
+        {
+          "line": 1,
+          "marker": "{\"source\":\"Nucleus_HRMS_Demo_Dataset_v1.0.xlsx\",\"sheets\":{\"00_README\":[{\"Nucleus HRMS — Demo Dataset v1.0\":\"Purpose\",\"__EMPTY\":\"Reference data for populating a Nucleus demo tenant."
+        }
+      ]
+    },
+    {
+      "path": "src/data/workspace-contract.mjs",
+      "lines": 5222
+    },
+    {
+      "path": "src/data/workspace-manifest.ts",
+      "lines": 157
+    },
+    {
+      "path": "src/hooks/useKeyboardShortcut.js",
+      "lines": 17
+    },
+    {
+      "path": "src/hooks/useRBAC.js",
+      "lines": 11
+    },
+    {
+      "path": "src/hooks/useScrollableTables.ts",
+      "lines": 46
+    },
+    {
+      "path": "src/lib/action-launcher.js",
+      "lines": 4
+    },
+    {
+      "path": "src/lib/ai/agent.js",
+      "lines": 116
+    },
+    {
+      "path": "src/lib/ai/memory.js",
+      "lines": 26
+    },
+    {
+      "path": "src/lib/ai/policy-corpus.ts",
+      "lines": 31
+    },
+    {
+      "path": "src/lib/ai/policy-graph.ts",
+      "lines": 60
+    },
+    {
+      "path": "src/lib/ai/policy.test.ts",
+      "lines": 22
+    },
+    {
+      "path": "src/lib/ai/prompts.js",
+      "lines": 22
+    },
+    {
+      "path": "src/lib/ai/tools.js",
+      "lines": 62
+    },
+    {
+      "path": "src/lib/appearance.test.ts",
+      "lines": 26
+    },
+    {
+      "path": "src/lib/appearance.ts",
+      "lines": 19
+    },
+    {
+      "path": "src/lib/auth-client.ts",
+      "lines": 6
+    },
+    {
+      "path": "src/lib/auth.ts",
+      "lines": 96
+    },
+    {
+      "path": "src/lib/client-api.test.ts",
+      "lines": 73
+    },
+    {
+      "path": "src/lib/client-api.ts",
+      "lines": 66
+    },
+    {
+      "path": "src/lib/dashboard-layout.test.ts",
+      "lines": 50
+    },
+    {
+      "path": "src/lib/dashboard-layout.ts",
+      "lines": 40
+    },
+    {
+      "path": "src/lib/db/identity-schema.ts",
+      "lines": 96
+    },
+    {
+      "path": "src/lib/db/index.ts",
+      "lines": 16
+    },
+    {
+      "path": "src/lib/db/schema.ts",
+      "lines": 523
+    },
+    {
+      "path": "src/lib/demo-workbook-adapter.mjs",
+      "lines": 166
+    },
+    {
+      "path": "src/lib/form-validation.test.ts",
+      "lines": 47
+    },
+    {
+      "path": "src/lib/form-validation.ts",
+      "lines": 46
+    },
+    {
+      "path": "src/lib/hr-rules.test.ts",
+      "lines": 107
+    },
+    {
+      "path": "src/lib/hr-rules.ts",
+      "lines": 333
+    },
+    {
+      "path": "src/lib/hrms-data.test.ts",
+      "lines": 14
+    },
+    {
+      "path": "src/lib/hrms-data.ts",
+      "lines": 260
+    },
+    {
+      "path": "src/lib/i18n.test.ts",
+      "lines": 17
+    },
+    {
+      "path": "src/lib/i18n.ts",
+      "lines": 20
+    },
+    {
+      "path": "src/lib/mis-reporting.mjs",
+      "lines": 161
+    },
+    {
+      "path": "src/lib/navigation-access.js",
+      "lines": 26
+    },
+    {
+      "path": "src/lib/navigation-catalog.test.ts",
+      "lines": 44
+    },
+    {
+      "path": "src/lib/navigation-catalog.ts",
+      "lines": 67
+    },
+    {
+      "path": "src/lib/operational-module-registry.js",
+      "lines": 9
+    },
+    {
+      "path": "src/lib/runtime-config.test.ts",
+      "lines": 52,
+      "reviewMarkers": [
+        {
+          "line": 32,
+          "marker": "expect(environmentProblems({ APP_DATA_MODE: 'database' }).join(' ')).toMatch(/not implemented/);"
+        }
+      ]
+    },
+    {
+      "path": "src/lib/runtime-config.ts",
+      "lines": 100,
+      "reviewMarkers": [
+        {
+          "line": 60,
+          "marker": "problems.push(\"APP_DATA_MODE must be json; the database workspace provider is not implemented.\");"
+        }
+      ]
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "lines": 1
+    },
+    {
+      "path": "src/lib/workspace-navigation.js",
+      "lines": 101
+    },
+    {
+      "path": "src/server/admin/live-verify.test.ts",
+      "lines": 89
+    },
+    {
+      "path": "src/server/admin/service.test.ts",
+      "lines": 29
+    },
+    {
+      "path": "src/server/admin/service.ts",
+      "lines": 197
+    },
+    {
+      "path": "src/server/advances/live-verify.test.ts",
+      "lines": 100
+    },
+    {
+      "path": "src/server/advances/service.test.ts",
+      "lines": 24
+    },
+    {
+      "path": "src/server/advances/service.ts",
+      "lines": 150
+    },
+    {
+      "path": "src/server/ai/agent-actions.test.ts",
+      "lines": 115
+    },
+    {
+      "path": "src/server/ai/assistant-contract.test.ts",
+      "lines": 100
+    },
+    {
+      "path": "src/server/ai/evals.test.ts",
+      "lines": 79
+    },
+    {
+      "path": "src/server/ai/evals.ts",
+      "lines": 104
+    },
+    {
+      "path": "src/server/ai/live-verify.test.ts",
+      "lines": 134
+    },
+    {
+      "path": "src/server/ai/service.ts",
+      "lines": 453
+    },
+    {
+      "path": "src/server/analytics/metrics.test.ts",
+      "lines": 66
+    },
+    {
+      "path": "src/server/analytics/service.ts",
+      "lines": 132
+    },
+    {
+      "path": "src/server/attendance/attendance-golden.test.ts",
+      "lines": 221
+    },
+    {
+      "path": "src/server/attendance/regularizations.ts",
+      "lines": 146
+    },
+    {
+      "path": "src/server/attendance/service.test.ts",
+      "lines": 92
+    },
+    {
+      "path": "src/server/attendance/service.ts",
+      "lines": 550
+    },
+    {
+      "path": "src/server/benefits/service.test.ts",
+      "lines": 30
+    },
+    {
+      "path": "src/server/benefits/service.ts",
+      "lines": 154
+    },
+    {
+      "path": "src/server/compensation/service.test.ts",
+      "lines": 36
+    },
+    {
+      "path": "src/server/compensation/service.ts",
+      "lines": 191
+    },
+    {
+      "path": "src/server/compliance/compliance.test.ts",
+      "lines": 85
+    },
+    {
+      "path": "src/server/compliance/live-verify.test.ts",
+      "lines": 134
+    },
+    {
+      "path": "src/server/compliance/service.ts",
+      "lines": 100
+    },
+    {
+      "path": "src/server/contractors/service.test.ts",
+      "lines": 31
+    },
+    {
+      "path": "src/server/contractors/service.ts",
+      "lines": 125
+    },
+    {
+      "path": "src/server/delegation/service.test.ts",
+      "lines": 20
+    },
+    {
+      "path": "src/server/delegation/service.ts",
+      "lines": 97
+    },
+    {
+      "path": "src/server/documents/documents.test.ts",
+      "lines": 95
+    },
+    {
+      "path": "src/server/engagement/engagement.test.ts",
+      "lines": 80
+    },
+    {
+      "path": "src/server/engagement/service.ts",
+      "lines": 230
+    },
+    {
+      "path": "src/server/exports/service.test.ts",
+      "lines": 14
+    },
+    {
+      "path": "src/server/exports/service.ts",
+      "lines": 129
+    },
+    {
+      "path": "src/server/fx/live-verify.test.ts",
+      "lines": 42
+    },
+    {
+      "path": "src/server/fx/service.test.ts",
+      "lines": 18
+    },
+    {
+      "path": "src/server/fx/service.ts",
+      "lines": 94
+    },
+    {
+      "path": "src/server/governance/live-verify.test.ts",
+      "lines": 144
+    },
+    {
+      "path": "src/server/governance/service.test.ts",
+      "lines": 34
+    },
+    {
+      "path": "src/server/identity/auth-lifecycle.test.ts",
+      "lines": 122
+    },
+    {
+      "path": "src/server/identity/authorization.test.ts",
+      "lines": 42
+    },
+    {
+      "path": "src/server/identity/authorization.ts",
+      "lines": 61
+    },
+    {
+      "path": "src/server/identity/provision.ts",
+      "lines": 60
+    },
+    {
+      "path": "src/server/identity/tenant-context.ts",
+      "lines": 111
+    },
+    {
+      "path": "src/server/identity/tenant-isolation.test.ts",
+      "lines": 166
+    },
+    {
+      "path": "src/server/integrations/inbound-live.test.ts",
+      "lines": 64
+    },
+    {
+      "path": "src/server/integrations/inbound.test.ts",
+      "lines": 24
+    },
+    {
+      "path": "src/server/integrations/inbound.ts",
+      "lines": 142
+    },
+    {
+      "path": "src/server/integrations/integrations.test.ts",
+      "lines": 93
+    },
+    {
+      "path": "src/server/integrations/service.ts",
+      "lines": 153
+    },
+    {
+      "path": "src/server/interviews/live-verify.test.ts",
+      "lines": 143
+    },
+    {
+      "path": "src/server/interviews/service.ts",
+      "lines": 189
+    },
+    {
+      "path": "src/server/jobs/handlers.ts",
+      "lines": 169
+    },
+    {
+      "path": "src/server/jobs/live-verify.test.ts",
+      "lines": 133
+    },
+    {
+      "path": "src/server/jobs/outbox.test.ts",
+      "lines": 87
+    },
+    {
+      "path": "src/server/jobs/worker.test.ts",
+      "lines": 64
+    },
+    {
+      "path": "src/server/jobs/worker.ts",
+      "lines": 248
+    },
+    {
+      "path": "src/server/learning/service.test.ts",
+      "lines": 23
+    },
+    {
+      "path": "src/server/learning/service.ts",
+      "lines": 130
+    },
+    {
+      "path": "src/server/leave/leave-ledger.test.ts",
+      "lines": 171
+    },
+    {
+      "path": "src/server/leave/live-verify.test.ts",
+      "lines": 165
+    },
+    {
+      "path": "src/server/leave/service.ts",
+      "lines": 362
+    },
+    {
+      "path": "src/server/lifecycle/lifecycle.test.ts",
+      "lines": 72
+    },
+    {
+      "path": "src/server/lifecycle/onboarding-list.test.ts",
+      "lines": 24
+    },
+    {
+      "path": "src/server/lifecycle/service.ts",
+      "lines": 330
+    },
+    {
+      "path": "src/server/lifecycle/templates.ts",
+      "lines": 88
+    },
+    {
+      "path": "src/server/loans/loans.test.ts",
+      "lines": 113
+    },
+    {
+      "path": "src/server/loans/service.ts",
+      "lines": 394
+    },
+    {
+      "path": "src/server/notifications/live-verify.test.ts",
+      "lines": 98
+    },
+    {
+      "path": "src/server/notifications/service.test.ts",
+      "lines": 24
+    },
+    {
+      "path": "src/server/notifications/service.ts",
+      "lines": 189
+    },
+    {
+      "path": "src/server/ops/service.test.ts",
+      "lines": 15
+    },
+    {
+      "path": "src/server/ops/service.ts",
+      "lines": 136
+    },
+    {
+      "path": "src/server/organization/import-apply.ts",
+      "lines": 51
+    },
+    {
+      "path": "src/server/organization/live-verify.test.ts",
+      "lines": 55
+    },
+    {
+      "path": "src/server/organization/people.test.ts",
+      "lines": 103
+    },
+    {
+      "path": "src/server/organization/service.test.ts",
+      "lines": 110
+    },
+    {
+      "path": "src/server/organization/service.ts",
+      "lines": 345
+    },
+    {
+      "path": "src/server/payroll/live-verify.test.ts",
+      "lines": 203
+    },
+    {
+      "path": "src/server/payroll/ot-verify.test.ts",
+      "lines": 116
+    },
+    {
+      "path": "src/server/payroll/payroll.test.ts",
+      "lines": 120
+    },
+    {
+      "path": "src/server/payroll/service.test.ts",
+      "lines": 48
+    },
+    {
+      "path": "src/server/payroll/service.ts",
+      "lines": 770
+    },
+    {
+      "path": "src/server/payroll/wage-simulator.test.ts",
+      "lines": 78
+    },
+    {
+      "path": "src/server/performance/live-verify.test.ts",
+      "lines": 198
+    },
+    {
+      "path": "src/server/performance/performance.test.ts",
+      "lines": 68
+    },
+    {
+      "path": "src/server/performance/reviews.ts",
+      "lines": 98
+    },
+    {
+      "path": "src/server/performance/service.test.ts",
+      "lines": 107
+    },
+    {
+      "path": "src/server/performance/service.ts",
+      "lines": 272
+    },
+    {
+      "path": "src/server/platform-admin/access.ts",
+      "lines": 35
+    },
+    {
+      "path": "src/server/platform-admin/service.test.ts",
+      "lines": 27
+    },
+    {
+      "path": "src/server/platform-admin/service.ts",
+      "lines": 197
+    },
+    {
+      "path": "src/server/platform/access.test.ts",
+      "lines": 72
+    },
+    {
+      "path": "src/server/platform/access.ts",
+      "lines": 162
+    },
+    {
+      "path": "src/server/platform/api-contract.test.ts",
+      "lines": 307
+    },
+    {
+      "path": "src/server/platform/domain-schemas-2.test.ts",
+      "lines": 72
+    },
+    {
+      "path": "src/server/platform/domain-schemas.test.ts",
+      "lines": 99
+    },
+    {
+      "path": "src/server/platform/http.test.ts",
+      "lines": 78
+    },
+    {
+      "path": "src/server/platform/http.ts",
+      "lines": 161
+    },
+    {
+      "path": "src/server/platform/manifest.test.ts",
+      "lines": 47
+    },
+    {
+      "path": "src/server/platform/release-gates.test.ts",
+      "lines": 71
+    },
+    {
+      "path": "src/server/platform/remaining-live.test.ts",
+      "lines": 133
+    },
+    {
+      "path": "src/server/platform/secret-scan.test.ts",
+      "lines": 82,
+      "reviewMarkers": [
+        {
+          "line": 39,
+          "marker": "lower.includes(\"placeholder\")"
+        }
+      ]
+    },
+    {
+      "path": "src/server/platform/seed-determinism.test.ts",
+      "lines": 80
+    },
+    {
+      "path": "src/server/platform/static-guards.test.ts",
+      "lines": 148
+    },
+    {
+      "path": "src/server/privacy/service.test.ts",
+      "lines": 21
+    },
+    {
+      "path": "src/server/privacy/service.ts",
+      "lines": 90
+    },
+    {
+      "path": "src/server/skills/service.test.ts",
+      "lines": 18
+    },
+    {
+      "path": "src/server/skills/service.ts",
+      "lines": 133
+    },
+    {
+      "path": "src/server/talent/hiring-schemas.test.ts",
+      "lines": 47
+    },
+    {
+      "path": "src/server/talent/live-verify.test.ts",
+      "lines": 202
+    },
+    {
+      "path": "src/server/talent/one-score.test.ts",
+      "lines": 150
+    },
+    {
+      "path": "src/server/talent/service.test.ts",
+      "lines": 69
+    },
+    {
+      "path": "src/server/talent/service.ts",
+      "lines": 748
+    },
+    {
+      "path": "src/server/vp/policy.test.ts",
+      "lines": 64
+    },
+    {
+      "path": "src/server/vp/policy.ts",
+      "lines": 125
+    },
+    {
+      "path": "src/server/vp/service.test.ts",
+      "lines": 24
+    },
+    {
+      "path": "src/server/vp/service.ts",
+      "lines": 308
+    },
+    {
+      "path": "src/server/workspace/access.test.ts",
+      "lines": 27
+    },
+    {
+      "path": "src/server/workspace/repository.ts",
+      "lines": 10
+    },
+    {
+      "path": "src/services/assistant-service.mjs",
+      "lines": 12
+    },
+    {
+      "path": "src/services/auth-service.mjs",
+      "lines": 13
+    },
+    {
+      "path": "src/services/dashboard-preferences.ts",
+      "lines": 17
+    },
+    {
+      "path": "src/services/erpAndComplianceService.js",
+      "lines": 327
+    },
+    {
+      "path": "src/services/establishmentService.js",
+      "lines": 271
+    },
+    {
+      "path": "src/services/leave-reference.test.ts",
+      "lines": 37
+    },
+    {
+      "path": "src/services/leave-reference.ts",
+      "lines": 124
+    },
+    {
+      "path": "src/services/leave-workflow.test.ts",
+      "lines": 585
+    },
+    {
+      "path": "src/services/leave-workflow.ts",
+      "lines": 649
+    },
+    {
+      "path": "src/services/leaveEngine.js",
+      "lines": 388
+    },
+    {
+      "path": "src/services/localization.ts",
+      "lines": 7
+    },
+    {
+      "path": "src/services/module-service.mjs",
+      "lines": 7
+    },
+    {
+      "path": "src/services/payrollAdjacenciesService.js",
+      "lines": 455
+    },
+    {
+      "path": "src/services/public-content.ts",
+      "lines": 17
+    },
+    {
+      "path": "src/services/timeOfficeEngine.js",
+      "lines": 364
+    },
+    {
+      "path": "src/services/workCalendarService.js",
+      "lines": 82
+    },
+    {
+      "path": "src/services/workspace-data.mjs",
+      "lines": 70
+    },
+    {
+      "path": "src/utils/csv.test.ts",
+      "lines": 14
+    },
+    {
+      "path": "src/utils/csv.ts",
+      "lines": 9
+    },
+    {
+      "path": "src/utils/permissions.js",
+      "lines": 130
+    }
+  ]
+}

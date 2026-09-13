@@ -39,3 +39,9 @@ describe('derived dates and strict form validation',()=>{
   }
  });
 });
+
+describe('form constraint regressions',()=>{
+ it.each([0,-1,NaN,Infinity])('rejects invalid configured step %s',step=>expect(validateForm([{key:'n',label:'Count',type:'number',step}],{n:2}).n).toBeTruthy());
+ it('validates arbitrary derived date dependencies',()=>expect(validateForm([{key:'quantity',label:'Quantity',type:'number',derive:{kind:'inclusiveDays',from:'begins',to:'ends'}}],{begins:'2026-09-15',ends:'2026-09-14',quantity:1}).ends).toBeTruthy());
+ it('validates required checkbox and text length',()=>{expect(validateForm([{key:'accept',label:'Accept',type:'checkbox',required:true},{key:'name',label:'Name',type:'text',maxLength:3}],{accept:false,name:'long'})).toHaveProperty('accept');expect(validateForm([{key:'name',label:'Name',type:'text',maxLength:3}],{name:'long'})).toHaveProperty('name');});
+});

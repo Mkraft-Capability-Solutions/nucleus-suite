@@ -5073,6 +5073,15 @@ export const workspaceContract = {
     "widgets",
     "datasets"
   ],
+  "leave.workflow": [
+    "messages",
+    "policy",
+    "reportingManagers",
+    "accounts",
+    "defaults",
+    "typeAliases",
+    "statusAliases"
+  ],
   "lib.demo-workbook-adapter": [
     "moduleSources_1",
     "content_2",
@@ -5158,7 +5167,8 @@ export const workspaceContract = {
     "APPROVAL_TIERS_10",
     "content_fields_11",
     "content_fields_12",
-    "content_fields_13"
+    "content_fields_13",
+    "errors"
   ],
   "services.payrollAdjacenciesService": [
     "PAYROLL_RUN_TYPES_1",

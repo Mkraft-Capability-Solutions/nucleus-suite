@@ -18,6 +18,8 @@ export default function WorkspaceTheme({ children }: { children: ReactNode }) {
         },
         typography: { fontFamily: 'var(--f-ui)' },
         components: {
+            // Outlined fields own their focus ring; avoid a second native input halo inside it.
+            MuiOutlinedInput: { styleOverrides: { input: { '&:focus, &:focus-visible': { outline: 'none', boxShadow: 'none' } } } },
             MuiBackdrop: { styleOverrides: { root: { backgroundColor: tokens['--overlay'] } } },
             MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
             MuiDialog: { styleOverrides: { paper: { backgroundImage: 'none', maxHeight: 'calc(100dvh - 32px)', '@media(max-width:600px)': { margin: 12, width: 'calc(100% - 24px)', maxWidth: 'calc(100% - 24px)' } } } },

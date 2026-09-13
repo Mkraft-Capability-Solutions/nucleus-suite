@@ -92,3 +92,9 @@ Source: `docs/Nucleus_Process_Flows_and_Process_Maps_v1.0.xlsx`. Reviewed all 23
 - Live payroll disbursement, statutory filing, document delivery, ERP/WhatsApp/Teams integrations, agent execution and durable audit trails are not enabled in this phase.
 - `WORKBOOK_UI_COVERAGE.json` retains every extracted requirement row, source row number and detailed screen/form/step/rule mapping. A missing exact label is a review candidate, not an automatic proof that the concept is absent elsewhere.
 - Each operational screen includes a Process guide so reviewers can compare its reference actions and fields with the current UI. The guide is reference content, not an implementation of the listed workflow.
+
+## Master QA follow-up — 13 September 2026
+
+SCR-030 (`07_Screens!A22`) now opens the shared `LeaveApplicationDialog`. The user-requested Number of Days field is an addition to the workbook form: inclusive date derivation, 0.5-day manual override, required employee/type/dates/quantity, and optional reason/contact. Both leave entrypoints call `leave-workflow.ts`.
+
+The `leave-reference.ts` adapter preserves source employee IDs and joins `05_Designations`, `06_Worker_Classes`, `09_Holiday_Calendar` and `12_Employees` for eligibility/calendar evaluation. `14_Leave_Types` and `15_Leave_Accrual_Policy` are displayed in `LeavePolicyReference`; the seven `18_Leave_Requests` records remain read-only reference history. `19_CompOff_Ledger` grants retain dated expiry and fractional consumption. These are JSON preview behaviors, not database or payroll reconciliation proof. See `plan/MASTER_QA_IMPLEMENTATION.md` for remaining source-policy and backend gaps.

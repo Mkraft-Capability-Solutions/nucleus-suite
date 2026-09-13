@@ -16,3 +16,5 @@
 @media(prefers-reduced-motion:reduce){.orbitWrap *,.story *{animation:none!important;transition:none!important}}
 
 .stepNumber{font-family:var(--f-num);font-size:14px;font-weight:700;color:var(--signal-ink)}
+/* Rings are decorative; contain their rotated bounds at narrow widths. */
+.intelligenceArt{overflow:clip;min-width:0;max-width:100%}

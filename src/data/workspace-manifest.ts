@@ -63,18 +63,19 @@ import resource58 from "./ui/components.auth.RoleProtected.json";
 import resource59 from "./ui/context.AuthContext.json";
 import resource60 from "./ui/context.HRMSContext.json";
 import resource61 from "./ui/dashboard.widgets.json";
-import resource62 from "./ui/lib.demo-workbook-adapter.json";
-import resource63 from "./ui/lib.mis-reporting.json";
-import resource64 from "./ui/lib.navigation-access.json";
-import resource65 from "./ui/lib.operational-module-registry.json";
-import resource66 from "./ui/navigation.catalog.json";
-import resource67 from "./ui/process.requirements.json";
-import resource68 from "./ui/services.erpAndComplianceService.json";
-import resource69 from "./ui/services.establishmentService.json";
-import resource70 from "./ui/services.leaveEngine.json";
-import resource71 from "./ui/services.payrollAdjacenciesService.json";
-import resource72 from "./ui/services.timeOfficeEngine.json";
-import resource73 from "./ui/services.workCalendarService.json";
+import resource62 from "./ui/leave.workflow.json";
+import resource63 from "./ui/lib.demo-workbook-adapter.json";
+import resource64 from "./ui/lib.mis-reporting.json";
+import resource65 from "./ui/lib.navigation-access.json";
+import resource66 from "./ui/lib.operational-module-registry.json";
+import resource67 from "./ui/navigation.catalog.json";
+import resource68 from "./ui/process.requirements.json";
+import resource69 from "./ui/services.erpAndComplianceService.json";
+import resource70 from "./ui/services.establishmentService.json";
+import resource71 from "./ui/services.leaveEngine.json";
+import resource72 from "./ui/services.payrollAdjacenciesService.json";
+import resource73 from "./ui/services.timeOfficeEngine.json";
+import resource74 from "./ui/services.workCalendarService.json";
 
 export const workspaceResources = {
     workbook,
@@ -140,16 +141,17 @@ export const workspaceResources = {
     "context.AuthContext": resource59,
     "context.HRMSContext": resource60,
     "dashboard.widgets": resource61,
-    "lib.demo-workbook-adapter": resource62,
-    "lib.mis-reporting": resource63,
-    "lib.navigation-access": resource64,
-    "lib.operational-module-registry": resource65,
-    "navigation.catalog": resource66,
-    "process.requirements": resource67,
-    "services.erpAndComplianceService": resource68,
-    "services.establishmentService": resource69,
-    "services.leaveEngine": resource70,
-    "services.payrollAdjacenciesService": resource71,
-    "services.timeOfficeEngine": resource72,
-    "services.workCalendarService": resource73,
+    "leave.workflow": resource62,
+    "lib.demo-workbook-adapter": resource63,
+    "lib.mis-reporting": resource64,
+    "lib.navigation-access": resource65,
+    "lib.operational-module-registry": resource66,
+    "navigation.catalog": resource67,
+    "process.requirements": resource68,
+    "services.erpAndComplianceService": resource69,
+    "services.establishmentService": resource70,
+    "services.leaveEngine": resource71,
+    "services.payrollAdjacenciesService": resource72,
+    "services.timeOfficeEngine": resource73,
+    "services.workCalendarService": resource74,
 };

@@ -27,12 +27,12 @@ export default async function PublicPage({ pageKey }: { pageKey: PublicPageKey }
         <a className={styles.skip} href="#main-content">{translateText("components.Website.PublicPage","text_ac576a66d4")}</a>
         <PublicHeader content={content} currentPath={pageKey === 'home' ? '/' : `/${pageKey}`} />
         <main id="main-content" className={styles.main}>
-            <section data-reveal className={pageKey === 'home' ? styles.hero : styles.innerHero}>
+            <section data-reveal="rise" data-pointer="glow" className={pageKey === 'home' ? styles.hero : styles.innerHero}>
                 <div className={styles.heroCopy}><div className={styles.eyebrow}>{page.eyebrow}</div><h1>{page.title}</h1><p>{page.description}</p>
                     <div className={styles.actions}><Link className={styles.primary} href="/login">{content.cta}<ArrowForward fontSize="small" /></Link>{pageKey === 'home' && <Link className={styles.secondary} href="/features">{translateText("components.Website.PublicPage","text_ef7f82c49e")}</Link>}</div>
                     <p className={styles.preview}>{content.preview}</p>
                 </div>
-                {pageKey === 'home' && <div className={styles.productStage}><LifecycleOrbit copy={content.homeStory} /></div>}
+                {pageKey === 'home' && <div data-pointer="tilt" className={styles.productStage}><LifecycleOrbit copy={content.homeStory} /></div>}
             </section>
             {pageKey === 'home' && <>
                 <div data-reveal className={styles.capabilityRail}>{content.homeExperience.capabilities.map(label => <span key={label}><CheckCircleOutline fontSize="small" />{label}</span>)}</div>
@@ -40,12 +40,12 @@ export default async function PublicPage({ pageKey }: { pageKey: PublicPageKey }
 
             </>}
             {pageKey !== 'home' && <section data-reveal className={styles.section}><h2>{page.sectionTitle}</h2><p className={styles.intro}>{page.sectionDescription}</p>
-                {pageKey === 'contact' ? <ContactForm copy={content.contactForm} /> : <div className={styles.grid}>{page.cards.map((card: { id?: string; icon: string; title: string; description: string; href?: string }) => {
+                {pageKey === 'contact' ? <ContactForm copy={content.contactForm} /> : <div data-reveal={pageKey === "features" ? "scale" : pageKey === "docs" ? "slide" : "rise"} data-stagger className={styles.grid}>{page.cards.map((card: { id?: string; icon: string; title: string; description: string; href?: string }) => {
                     const Icon = icons[card.icon as keyof typeof icons] || LayersOutlined;
-                    return <article data-reveal className={styles.card} key={card.title} id={card.id}><div className={styles.cardIcon}><Icon /></div><h3>{card.title}</h3><p>{card.description}</p>{card.href && <Link href={card.href}>{translateText("components.Website.PublicPage","text_2e1ac6e929")}<ArrowForward fontSize="small" /></Link>}</article>;
+                    return <article data-pointer="glow" className={styles.card} key={card.title} id={card.id}><div className={styles.cardIcon}><Icon /></div><h3>{card.title}</h3><p>{card.description}</p>{card.href && <Link href={card.href}>{translateText("components.Website.PublicPage","text_2e1ac6e929")}<ArrowForward fontSize="small" /></Link>}</article>;
                 })}</div>}
             </section>}
-            <section data-reveal className={styles.closing}><div><h2>{page.closingTitle}</h2><p>{page.closingDescription}</p></div><Link className={styles.primary} href="/login">{content.cta}<ArrowForward fontSize="small" /></Link></section>
+            <section data-reveal="scale" data-pointer="glow" className={styles.closing}><div><h2>{page.closingTitle}</h2><p>{page.closingDescription}</p></div><Link className={styles.primary} href="/login">{content.cta}<ArrowForward fontSize="small" /></Link></section>
         </main>
         <footer className={styles.footer}><span>{content.footer}</span><span>{content.preview}{translateText("components.Website.PublicPage","text_588da41053")}<Link href="/docs">{translateText("components.Website.PublicPage","text_bcecd61864")}</Link></span></footer>
     </PublicMotion>;

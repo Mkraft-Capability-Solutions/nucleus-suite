@@ -11,8 +11,9 @@ for (const file of files) {
         if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
             const tag = node.tagName.getText(source), properties = attrs(node);
             if (tag === 'form') forms.push({file,line:line(node),submit:properties.onSubmit ?? null});
-            if (tag === 'input' && ['"number"', "'number'", '"range"', "'range'"].includes(properties.type)) {
-                numeric.push({file,line:line(node),type:properties.type,missing:['min','max','step'].filter(key => !(key in properties))});
+            if (['input','TextField'].includes(tag) && ['"number"', "'number'", '"range"', "'range'"].includes(properties.type)) {
+                const htmlInput=tag==='TextField' ? properties.slotProps??properties.inputProps??'' : '';
+                numeric.push({file,line:line(node),type:properties.type,missing:['min','max','step'].filter(key => !(key in properties)&&!new RegExp('\\b'+key+'\\s*:').test(htmlInput))});
             }
         }
         if (ts.isJsxElement(node)) {
@@ -45,7 +46,7 @@ const metadataNumeric = [
     ...Object.entries(actions).flatMap(([owner,action]) => action.fields.filter(field => field[2] === 'number').map(([key,,,required,,constraints]) => ({owner,key,required,...constraints})))
 ];
 const metadataGaps = metadataNumeric.filter(field => !Number.isFinite(field.min) || !Number.isFinite(field.max) || !(field.step > 0) || field.max < field.min);
-const report = {scope:'Static intrinsic forms/numeric inputs and both shared metadata engines; click-only domain commands require separate validation contracts.',filesScanned:files.length,forms,numeric,metadataNumeric,requiredCandidates,metadataGaps};
+const report = {scope:'Static intrinsic and MUI numeric controls, forms and both shared metadata engines; click-only domain commands require separate validation contracts.',filesScanned:files.length,forms,numeric,metadataNumeric,requiredCandidates,metadataGaps};
 writeFileSync('plan/form-inventory.json', JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({files:files.length,forms:forms.length,numeric:numeric.length,metadataNumeric:metadataNumeric.length,missingNumeric:numeric.filter(field=>field.missing.length),requiredCandidates,metadataGaps},null,2));
 if (numeric.some(field => field.missing.length) || requiredCandidates.length || metadataGaps.length) process.exitCode = 1;

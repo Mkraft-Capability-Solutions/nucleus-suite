@@ -44,3 +44,12 @@
 }
 @keyframes opening{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 @keyframes productEntrance{from{opacity:0;transform:perspective(1200px) rotateY(-6deg) translateY(24px)}to{opacity:1;transform:perspective(1200px) rotateY(0) translateY(0)}}
+
+/* Decorative movement settles within five seconds; no continuous animation while reading. */
+@media(prefers-reduced-motion:no-preference){
+ .productStage:before{transform:translateY(var(--scroll-shift,0px));animation:ambientArrival 4.5s ease-out both}
+ .innerHero:before{animation:ambientArrival 3.8s ease-out both}
+ .contact input,.contact textarea,.contact select{transition:border-color .2s,box-shadow .2s}
+ .contact :is(input,textarea,select):focus{box-shadow:0 0 0 4px var(--signal-wash)}
+}
+@keyframes ambientArrival{0%{opacity:.35;scale:.94}65%{opacity:1;scale:1.025}100%{opacity:1;scale:1}}

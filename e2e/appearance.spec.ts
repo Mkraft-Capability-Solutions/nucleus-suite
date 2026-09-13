@@ -16,7 +16,7 @@ for (const theme of catalog.themes) {
    expect(tokens).toEqual({text:theme.tokens['--text'],bg:theme.tokens['--bg']});
   }
   await page.screenshot({path:info.outputPath(`${theme.id}-public.png`),animations:'disabled'});
-  if(info.project.name==='mobile')await page.locator('summary').click();
+  if(info.project.name==='mobile')await page.getByRole('banner').locator('summary').click();
   await page.getByRole('link',{name:'Log in',exact:true}).filter({visible:true}).click();
   await expect(page).toHaveURL(/\/login$/);await expect(page.locator('html')).toHaveAttribute('data-appearance',theme.id);
   await page.screenshot({path:info.outputPath(`${theme.id}-login.png`),animations:'disabled'});
