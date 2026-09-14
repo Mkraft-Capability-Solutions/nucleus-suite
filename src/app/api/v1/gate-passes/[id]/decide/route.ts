@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const { id } = await params;
     const parsed = bodySchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "A decision (approve true/false) is required." });
-    const result = await decideGatePass(access, id, parsed.data.approve, requestId);
+    const result = await decideGatePass(access, id, { approve: parsed.data.approve }, requestId);
     return ok({ type: "gate-pass", id: result.id, version: 1, attributes: result, requestId, self: `/api/v1/gate-passes/${result.id}` });
   } catch (error) {
     return fail(error, requestId);

@@ -225,3 +225,18 @@ To bring `nucleus-suite` from UI/operational module connectivity to deep 100% ba
 4. **Phase 4: OKR Cascades & Clearance Board (Medium Priority)**
    - Port `performance/okr.ts` (acyclic cascade validation) and `lifecycle/clearance-board.ts`.
    - Wire multi-tier exit clearance department sign-offs to PostgreSQL.
+
+We must have to bring nucleus-suite from UI/operational module connectivity to deep 100% backend service parity with Nucleus-HRMS, alont with all the routes and integrate with respective UI execute the following prioritized steps and also integrate them with the frontend and database if anything is missing or mismatch check in Nucleus-HRMS and port them or its availabel in our code the make the modification according to our code:
+
+Phase 1: Financial & Statutory Core (High Priority)
+Port payroll/accounting.ts, payroll/disbursement.ts, payroll/gl.ts, and payroll/reconciliation.ts.
+Connect bank payment gateway checksums and GL journal exports directly to database tables.
+Phase 2: Attendance Muster & Overtime Registers (High Priority)
+Port attendance/day-register.ts, attendance/overtime-register.ts, and attendance/exception-register.ts.
+Wire supervisor day overrides and punch recomputations to transactional database mutations.
+Phase 3: Talent Pipeline & Sanction Headroom (Medium Priority)
+Port talent/pipeline.ts, talent/establishment.ts, and talent/requisition-register.ts.
+Wire candidate stage transitions and referral award milestones.
+Phase 4: OKR Cascades & Clearance Board (Medium Priority)
+Port performance/okr.ts (acyclic cascade validation) and lifecycle/clearance-board.ts.
+Wire multi-tier exit clearance department sign-offs to PostgreSQL.

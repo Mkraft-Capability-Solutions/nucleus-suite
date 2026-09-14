@@ -50,11 +50,12 @@ export function collection<T>(args: {
   requestId: string;
   self: string;
   nextCursor: string | null;
+  total?: number;
 }): NextResponse {
   return NextResponse.json(
     {
       data: args.items.map((item) => ({ type: args.type, ...item })),
-      meta: { requestId: args.requestId, nextCursor: args.nextCursor },
+      meta: { requestId: args.requestId, nextCursor: args.nextCursor, ...(args.total !== undefined ? { total: args.total } : {}) },
       links: { self: args.self },
     },
     { headers: { "cache-control": "no-store", "x-request-id": args.requestId } },

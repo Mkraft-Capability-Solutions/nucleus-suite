@@ -1,0 +1,6 @@
+import { z } from "zod";
+import { requireAccess } from "@/server/platform/access";
+import { collection, fail, HttpError, ok, requestIdFrom, requireIdempotencyKey, requireVersion } from "@/server/platform/http";
+import { listDossier, saveDossier } from "./dossier-service";
+export async function dossierList(request:Request,resource:string){const requestId=requestIdFrom(request.headers);try{const access=await requireAccess(request);return collection({type:resource,...await listDossier(access,resource,new URL(request.url).searchParams),requestId,self:new URL(request.url).pathname});}catch(error){return fail(error,requestId);}}
+export async function dossierMutation(request:Request,resource:string,id?:string){const requestId=requestIdFrom(request.headers);try{const access=await requireAccess(request);if(id&&!z.string().uuid().safeParse(id).success)throw new HttpError({status:400,code:"BAD_REQUEST",message:"Invalid record reference."});const result=await saveDossier(access,resource,{id,version:id?requireVersion(request.headers):undefined,key:requireIdempotencyKey(request.headers),input:await request.json().catch(()=>null)});return ok({type:resource,id:result.id,version:result.version,attributes:result,requestId,self:new URL(request.url).pathname});}catch(error){return fail(error,requestId);}}

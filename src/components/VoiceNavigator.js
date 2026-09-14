@@ -94,13 +94,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      setFeedback('Speech recognition is not supported in this browser. You can type any command or click shortcuts below.');
+      setFeedback('Speech recognition is not supported in this browser. You can type any command below.');
       return;
     }
 
     try {
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
+      }
+
+      // Request microphone permissions proactively if needed
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => {});
       }
 
       const recognition = new SpeechRecognition();
@@ -111,49 +116,58 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onstart = () => {
         setIsListening(true);
+        setFeedback('Listening... Speak now, e.g. "Apply for Leave", "Punch In"');
       };
 
       recognition.onresult = (event) => {
         let textResult = '';
-        let isFinal = false;
 
         for (let i = 0; i < event.results.length; i++) {
-          textResult += event.results[i][0].transcript;
-          if (event.results[i].isFinal) {
-            isFinal = true;
-          }
+          textResult += event.results[i][0].transcript + ' ';
         }
 
         const clean = textResult.trim();
         if (clean) {
+          // Immediately display spoken text in the text box in real-time
           setTranscript(clean);
           setInputText(clean);
           setFeedback(`Heard: "${clean}"`);
 
+          // Reset silence timer on every utterance
           if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
           }
 
-          // Exact 1.0 second (1000ms) pause triggers action execution
-          if (isFinal) {
+          // Exactly 1.2 seconds pause triggers analysis and action execution
+          silenceTimerRef.current = setTimeout(() => {
             executeCommand(clean);
-          } else {
-            silenceTimerRef.current = setTimeout(() => {
-              executeCommand(clean);
-            }, 1000);
-          }
+          }, 1200);
         }
       };
 
-      recognition.onspeechend = () => {};
+      recognition.onspeechend = () => {
+        // Keep silenceTimer running for 1.2s pause
+      };
 
       recognition.onend = () => {
-        setIsListening(false);
+        // Auto-restart listening if still open and not executing/speaking
+        if (recognitionRef.current && !isSpeaking) {
+          try {
+            recognition.start();
+          } catch {
+            setIsListening(false);
+          }
+        } else {
+          setIsListening(false);
+        }
       };
 
       recognition.onerror = (event) => {
         if (event.error === 'no-speech') {
-          // Keep waiting for user speech
+          // Normal silence, keep listening
+        } else if (event.error === 'not-allowed') {
+          setIsListening(false);
+          setFeedback('Microphone access blocked. Please click "Allow" on the microphone prompt in your browser address bar.');
         } else {
           setIsListening(false);
         }
@@ -165,7 +179,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     } catch (err) {
       setIsListening(false);
     }
-  }, [executeCommand]);
+  }, [executeCommand, isSpeaking]);
 
   const toggleListening = () => {
     if (isListening) {
@@ -286,9 +300,9 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           {transcript ? (
             <span>🗣️ "{transcript}"</span>
           ) : isListening ? (
-            <span className={styles.listeningText}>🎙️ Listening... Speak now (e.g. "Apply for Leave", "Punch In")</span>
+            <span className={styles.listeningText}>🎙️ Listening... Speak naturally (1.2s pause auto-executes)</span>
           ) : (
-            <span className={styles.listeningText}>Tap microphone or select a command below</span>
+            <span className={styles.listeningText}>🎙️ Microphone active — speak any command</span>
           )}
         </div>
 

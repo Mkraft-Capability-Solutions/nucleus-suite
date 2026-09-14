@@ -8,6 +8,8 @@ import {
   gatePassEligibility,
   type AttendanceStatus,
 } from "@/lib/hr-rules";
+import { picklistLabel, picklistValues } from "@/lib/picklists";
+import { RECOMPUTE_QUEUE_ACTION } from "@/server/attendance/recompute-monitor";
 import { enforce, recordAudit, tenantTx, uuidOrNull, type Access } from "@/server/platform/access";
 import { HttpError } from "@/server/platform/http";
 
@@ -175,16 +177,49 @@ export async function ensureShift(access: Access, code: string): Promise<string>
   return id;
 }
 
+/** One capture channel, created on first use so every punch can name its source row. */
+export async function ensureAttendanceSource(access: Access, code: string): Promise<string> {
+  const [rows] = await tenantTx(access, [
+    sqlClient`select id from attendance_sources where tenant_id = ${access.tenantId} and attributes->>'code' = ${code} limit 1`,
+  ]);
+  const existing = (rows as Array<{ id: string }>)[0];
+  if (existing) return existing.id;
+  const id = crypto.randomUUID();
+  await tenantTx(access, [
+    sqlClient`
+      insert into attendance_sources (id, tenant_id, attributes)
+      values (${id}, ${access.tenantId}, ${JSON.stringify({ code, name: picklistLabel("PL_PUNCH_SOURCE", code) })}::jsonb)
+    `,
+  ]);
+  return id;
+}
+
+const punchSchema = z
+  .object({
+    at: z.string().datetime({ offset: true }),
+    type: z.enum(picklistValues("PL_PUNCH_DIRECTION")),
+    source: z.enum(picklistValues("PL_PUNCH_SOURCE")).default("web"),
+    deviceReference: z.string().max(120).optional(),
+    /** Capture coordinates. Stored as a pair so a punch is never half-located. */
+    geo: z.object({ lat: z.number().min(-90).max(90), lng: z.number().min(-180).max(180) }).optional(),
+    geofenceResult: z.enum(picklistValues("PL_GEOFENCE_RESULT")).optional(),
+    selfieRef: z.string().trim().min(1).max(500).optional(),
+    jobCode: z.string().trim().min(1).max(60).optional(),
+    offlineQueued: z.boolean().optional(),
+    remark: z.string().trim().max(120).optional(),
+  })
+  // A mobile punch carries its location and the geofence verdict; an outside-the-fence
+  // punch is still accepted, which is why the verdict is recorded rather than enforced.
+  .refine((punch) => punch.source !== "mobile_app" || (punch.geo !== undefined && punch.geofenceResult !== undefined), {
+    path: ["geo"],
+    message: "A mobile punch must carry its coordinates and geofence result.",
+  });
+
 export const ingestPunchesSchema = z.object({
   employeeId: z.string().uuid(),
   workDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   shiftCode: z.enum(["A", "B", "C"]).default("A"),
-  punches: z.array(z.object({
-    at: z.string().datetime({ offset: true }),
-    type: z.enum(["in", "out"]),
-    source: z.string().trim().min(1).max(40).default("web"),
-    deviceReference: z.string().max(120).optional(),
-  })).min(2).max(32),
+  punches: z.array(punchSchema).min(2).max(32),
 });
 
 export async function ingestPunches(access: Access, input: z.infer<typeof ingestPunchesSchema>, requestId: string) {
@@ -216,15 +251,48 @@ export async function ingestPunches(access: Access, input: z.infer<typeof ingest
   if (day.locked_at) {
     throw new HttpError({ status: 422, code: "PERIOD_LOCKED", message: "The attendance day is locked. Raise a correction instead." });
   }
+  // Every distinct channel in this batch needs its source row before the events are written.
+  const sourceIds = new Map<string, string>();
+  for (const channel of new Set(input.punches.map((punch) => punch.source))) {
+    sourceIds.set(channel, await ensureAttendanceSource(access, channel));
+  }
+  const timeZone = await tenantTimezone(access);
   const punchIds: string[] = [];
   await tenantTx(access, [
-    ...input.punches.map((punch) => {
+    ...input.punches.flatMap((punch) => {
       const id = crypto.randomUUID();
       punchIds.push(id);
-      return sqlClient`
-        insert into attendance_punches (id, tenant_id, attendance_day_id, punched_at, type, source, device_reference)
-        values (${id}, ${access.tenantId}, ${day.id}, ${punch.at}, ${punch.type}, ${punch.source}, ${punch.deviceReference ?? null})
-      `;
+      // attendance_punches holds the columns the day engine reads; the event envelope
+      // holds the rest of the capture evidence (geo, selfie, job code, offline flag)
+      // and is what the punch register projects.
+      const event = {
+        event_id: id,
+        direction: punch.type,
+        time: toClockString(punch.at, timeZone),
+        punch_date: input.workDate,
+        attendance_date: input.workDate,
+        punched_at: punch.at,
+        device: punch.deviceReference ?? null,
+        geo_lat: punch.geo?.lat ?? null,
+        geo_lng: punch.geo?.lng ?? null,
+        geofence_result: punch.geofenceResult ?? null,
+        selfie_ref: punch.selfieRef ?? null,
+        job_code: punch.jobCode ?? null,
+        offline_queued: punch.offlineQueued ?? false,
+        note: punch.remark ?? null,
+        status: "captured",
+      };
+      return [
+        sqlClient`
+          insert into attendance_punches (id, tenant_id, attendance_day_id, punched_at, type, source, device_reference)
+          values (${id}, ${access.tenantId}, ${day.id}, ${punch.at}, ${punch.type}, ${punch.source}, ${punch.deviceReference ?? null})
+        `,
+        sqlClient`
+          insert into attendance_events (id, tenant_id, employee_id, attendance_source_id, attributes)
+          values (${crypto.randomUUID()}, ${access.tenantId}, ${input.employeeId}, ${sourceIds.get(punch.source) ?? null},
+            ${JSON.stringify(event)}::jsonb)
+        `,
+      ];
     }),
     sqlClient`
       update attendance_days set updated_at = now()
@@ -375,6 +443,27 @@ export async function transitionDay(access: Access, dayId: string, action: "appr
   if (action === "lock" && day.locked_at) {
     throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: "The attendance day is already locked." });
   }
+  if (action === "lock") {
+    // A critical exception blocks the period lock (FRM-TIM-08, Severity): locking
+    // over one would freeze a day the time office has not yet settled.
+    const [criticalRows] = await tenantTx(access, [
+      sqlClient`
+        select count(*)::int as total from attendance_exceptions x
+        join attendance_days d on d.tenant_id = x.tenant_id and d.employee_id = x.employee_id
+        where x.tenant_id = ${access.tenantId} and d.id = ${dayId}
+          and x.attributes->>'date' = d.attendance_date::text
+          and lower(coalesce(x.attributes->>'severity', '')) = 'critical'
+          and lower(coalesce(x.attributes->>'status', '')) not in ('resolved', 'regularized', 'closed', 'approved', 'rejected', 'declined')
+      `,
+    ]);
+    if (((criticalRows as Array<{ total: number }>)[0]?.total ?? 0) > 0) {
+      throw new HttpError({
+        status: 422,
+        code: "POLICY_VIOLATION",
+        message: "A critical attendance exception is still open on this day, so the period cannot be locked.",
+      });
+    }
+  }
   if (action === "reopen" && !day.locked_at) {
     throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: "Only a locked day can be reopened." });
   }
@@ -473,30 +562,73 @@ export async function summarizeToday(access: Access) {
   };
 }
 
-export const requestGatePassSchema = z.object({
-  employeeId: z.string().uuid(),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  minutes: z.union([z.literal(120), z.literal(240)]),
-  reason: z.string().trim().min(1).max(300),
-});
+const TIME_OF_DAY = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-export async function requestGatePass(access: Access, input: z.infer<typeof requestGatePassSchema>, requestId: string) {
+/** Minutes between two same-day HH:MM clock times. Negative when they are out of order. */
+function minutesBetween(from: string, to: string): number {
+  const [fromHour = 0, fromMinute = 0] = from.split(":").map(Number);
+  const [toHour = 0, toMinute = 0] = to.split(":").map(Number);
+  return (toHour * 60 + toMinute) - (fromHour * 60 + fromMinute);
+}
+
+export const requestGatePassSchema = z
+  .object({
+    employeeId: z.string().uuid(),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    fromTime: z.string().regex(TIME_OF_DAY).optional(),
+    toTime: z.string().regex(TIME_OF_DAY).optional(),
+    minutes: z.number().int().refine((m) => m === 120 || m === 240, {
+      message: "Gate passes must be either 2 hours (120 min) or 4 hours (240 min).",
+    }).optional(),
+    passType: z.enum(picklistValues("PL_GATE_PASS_TYPE")).default("personal"),
+    reason: z.string().trim().min(4).max(300),
+    expectedReturn: z.string().regex(TIME_OF_DAY).optional(),
+  })
+  .refine((input) => (!input.fromTime || !input.toTime) || minutesBetween(input.fromTime, input.toTime) > 0, {
+    path: ["toTime"],
+    message: "The gate pass must end after it starts.",
+  })
+  .refine((input) => {
+    if (input.fromTime && input.toTime) {
+      const diff = minutesBetween(input.fromTime, input.toTime);
+      return diff === 120 || diff === 240;
+    }
+    return true;
+  }, {
+    path: ["toTime"],
+    message: "The duration must be either 2 hours or 4 hours.",
+  })
+  .refine((input) => !input.fromTime || input.expectedReturn === undefined || minutesBetween(input.fromTime, input.expectedReturn) > 0, {
+    path: ["expectedReturn"],
+    message: "The expected return must fall after the pass starts.",
+  });
+
+export async function requestGatePass(access: Access, rawInput: z.input<typeof requestGatePassSchema>, requestId: string) {
+  const input = requestGatePassSchema.parse(rawInput);
   enforce(access.context, "attendance.write", { tenantId: access.tenantId });
   await assertAttendanceEmployeeVisible(access, input.employeeId);
+  const fromTime = input.fromTime ?? "10:00";
+  const minutes = input.minutes ?? (input.toTime ? minutesBetween(fromTime, input.toTime) : 120);
+  const toTime = input.toTime ?? `${String(10 + Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
   const monthStart = `${input.date.slice(0, 7)}-01`;
+  // Only personal passes consume the monthly ceiling, so only they are counted and
+  // only they are measured against it.
   const [usageRows] = await tenantTx(access, [
     sqlClient`
       select count(*)::int as count, coalesce(sum((attributes->>'minutes')::int), 0)::int as minutes
       from gate_passes
       where tenant_id = ${access.tenantId} and employee_id = ${input.employeeId}
         and attributes->>'status' in ('approved', 'submitted')
+        and coalesce(attributes->>'type', 'personal') = 'personal'
         and created_at >= ${monthStart}::date
     `,
   ]);
   const usage = (usageRows as Array<{ count: number; minutes: number }>)[0] ?? { count: 0, minutes: 0 };
-  const eligibility = gatePassEligibility({ approvedMinutesThisMonth: usage.minutes, approvedCountThisMonth: usage.count, requestedMinutes: input.minutes });
-  if (!eligibility.eligible) {
-    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: eligibility.reasons.join(" ") });
+  if (input.passType === "personal") {
+    const eligibility = gatePassEligibility({ approvedMinutesThisMonth: usage.minutes, approvedCountThisMonth: usage.count, requestedMinutes: minutes });
+    if (!eligibility.eligible) {
+      throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: eligibility.reasons.join(" ") });
+    }
   }
   const [policyRows] = await tenantTx(access, [
     sqlClient`select id from gate_pass_policies where tenant_id = ${access.tenantId} and attributes->>'code' = 'personal-monthly' limit 1`,
@@ -516,7 +648,19 @@ export async function requestGatePass(access: Access, input: z.infer<typeof requ
     sqlClient`
       insert into gate_passes (id, tenant_id, employee_id, gate_pass_policy_id, attributes)
       values (${id}, ${access.tenantId}, ${input.employeeId}, ${policyId},
-        ${JSON.stringify({ date: input.date, minutes: input.minutes, reason: input.reason, status: "submitted", version: 1 })}::jsonb)
+        ${JSON.stringify({
+          date: input.date,
+          from_time: input.fromTime,
+          to_time: input.toTime,
+          minutes,
+          type: input.passType,
+          reason: input.reason,
+          expected_return: input.expectedReturn ?? input.toTime,
+          actual_out_ts: null,
+          actual_in_ts: null,
+          status: "submitted",
+          version: 1,
+        })}::jsonb)
     `,
     sqlClient`
       insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, request_id)
@@ -524,10 +668,28 @@ export async function requestGatePass(access: Access, input: z.infer<typeof requ
         'gatepass.submit', 'gate_pass', ${id}, ${input.reason}, ${uuidOrNull(requestId)}::uuid)
     `,
   ]);
-  return { id, status: "submitted" };
+  return { id, status: "submitted", minutes, passType: input.passType };
 }
 
-export async function decideGatePass(access: Access, id: string, approve: boolean, requestId: string) {
+export const decideGatePassSchema = z
+  .object({
+    approve: z.boolean(),
+    decisionRemarks: z.string().trim().min(1).max(300).optional(),
+  })
+  // The workbook makes the remark mandatory only when the pass is refused.
+  .refine((input) => input.approve || input.decisionRemarks !== undefined, {
+    path: ["decisionRemarks"],
+    message: "A rejected gate pass must carry its remarks.",
+  });
+
+export async function decideGatePass(
+  access: Access,
+  id: string,
+  inputOrApprove: z.infer<typeof decideGatePassSchema> | boolean,
+  requestIdArg?: string,
+) {
+  const input: z.infer<typeof decideGatePassSchema> = typeof inputOrApprove === "boolean" ? { approve: inputOrApprove } : inputOrApprove;
+  const requestId = typeof inputOrApprove === "boolean" ? (requestIdArg ?? "") : (requestIdArg ?? "");
   enforce(access.context, "attendance.write", { tenantId: access.tenantId });
   const [rows] = await tenantTx(access, [
     sqlClient`select id, attributes from gate_passes where tenant_id = ${access.tenantId} and id = ${id} limit 1`,
@@ -537,17 +699,141 @@ export async function decideGatePass(access: Access, id: string, approve: boolea
   if (pass.attributes.status !== "submitted") {
     throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: `Gate pass is already ${pass.attributes.status}.` });
   }
-  const status = approve ? "approved" : "rejected";
+  const status = input.approve ? "approved" : "rejected";
   await tenantTx(access, [
-    sqlClient`update gate_passes set attributes = attributes || ${JSON.stringify({ status, decided_by: access.context.actorUserId })}::jsonb where id = ${id} and tenant_id = ${access.tenantId}`,
+    sqlClient`update gate_passes set attributes = attributes || ${JSON.stringify({ status, decided_by: access.context.actorUserId, approver: access.context.actorUserId, decision_remarks: input.decisionRemarks ?? null })}::jsonb where id = ${id} and tenant_id = ${access.tenantId}`,
     sqlClient`
       insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, request_id)
       values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
-        ${`gatepass.${status}`}, 'gate_pass', ${id}, 'Gate pass decision', ${uuidOrNull(requestId)}::uuid)
+        ${`gatepass.${status}`}, 'gate_pass', ${id}, ${input.decisionRemarks ?? "Gate pass decision"}, ${uuidOrNull(requestId)}::uuid)
     `,
   ]);
   return { id, status };
 }
+
+export const recordGateScanSchema = z
+  .object({
+    actualOut: z.string().datetime({ offset: true }).optional(),
+    actualIn: z.string().datetime({ offset: true }).optional(),
+  })
+  .refine((input) => input.actualOut !== undefined || input.actualIn !== undefined, {
+    message: "A gate scan must record an out or an in timestamp.",
+  });
+
+/**
+ * Records the security gate's own out/in scans against an approved pass. Overstay is
+ * not judged here — the scans are the evidence the attendance day is computed from.
+ */
+export async function recordGateScan(
+  access: Access,
+  id: string,
+  input: z.infer<typeof recordGateScanSchema>,
+  requestId: string,
+) {
+  enforce(access.context, "attendance.write", { tenantId: access.tenantId });
+  const [rows] = await tenantTx(access, [
+    sqlClient`select id, attributes from gate_passes where tenant_id = ${access.tenantId} and id = ${id} limit 1`,
+  ]);
+  const pass = (rows as Array<{ id: string; attributes: { status: string; actual_out_ts: string | null } }>)[0];
+  if (!pass) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The requested record was not found." });
+  if (pass.attributes.status !== "approved") {
+    throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: "Only an approved gate pass can be scanned at the gate." });
+  }
+  if (input.actualIn !== undefined && input.actualOut === undefined && !pass.attributes.actual_out_ts) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "An in scan cannot precede the out scan." });
+  }
+  const after = {
+    ...(input.actualOut !== undefined ? { actual_out_ts: input.actualOut } : {}),
+    ...(input.actualIn !== undefined ? { actual_in_ts: input.actualIn } : {}),
+  };
+  await tenantTx(access, [
+    sqlClient`update gate_passes set attributes = attributes || ${JSON.stringify(after)}::jsonb, updated_at = now()
+      where id = ${id} and tenant_id = ${access.tenantId}`,
+    sqlClient`
+      insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
+        'gatepass.scan', 'gate_pass', ${id}, 'Gate scan recorded', ${JSON.stringify(after)}::jsonb, ${uuidOrNull(requestId)}::uuid)
+    `,
+  ]);
+  return { id, ...after };
+}
+
+/** Audit action for a supervisor / HR override of one computed attendance day. */
+export const DAY_OVERRIDE_ACTION = "attendance.day_override";
+
+export const overrideAttendanceDaySchema = z
+  .object({
+    overrideShiftCode: z.string().trim().min(1).max(20).optional(),
+    overrideStatus: z.enum(picklistValues("PL_ATTENDANCE_STATUS")).optional(),
+    reason: z.string().trim().min(10).max(300),
+  })
+  .refine((input) => input.overrideShiftCode !== undefined || input.overrideStatus !== undefined, {
+    message: "An override must change the shift, the status, or both.",
+  });
+
+/**
+ * Overrides the shift and/or the disposition of one computed day.
+ *
+ * The previous values are written into the audit event's `before`, so the change
+ * is a recorded delta rather than a silent overwrite, and the recompute the
+ * override calls for is queued as its own audit trace (there is no job table —
+ * see recompute-monitor.ts). A locked day is refused: a locked period produces
+ * arrears, never a rewrite.
+ */
+export async function overrideAttendanceDay(
+  access: Access,
+  id: string,
+  input: z.infer<typeof overrideAttendanceDaySchema>,
+  requestId: string,
+) {
+  enforce(access.context, "attendance.write", { tenantId: access.tenantId });
+  const [rows] = await tenantTx(access, [
+    sqlClient`
+      select a.id, a.employee_id, a.record_status,
+             a.attributes->>'date' as date,
+             a.attributes->>'status' as status,
+             coalesce(a.attributes->>'shift_applied', a.attributes->>'shift_assigned') as shift_applied,
+             coalesce(a.attributes->>'locked_at', '') as locked_at
+      from attendance_entries a where a.tenant_id = ${access.tenantId} and a.id = ${id} limit 1
+    `,
+  ]);
+  const day = (rows as Array<{ id: string; employee_id: string; record_status: string; date: string | null; status: string | null; shift_applied: string | null; locked_at: string }>)[0];
+  if (!day) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The requested record was not found." });
+  await assertAttendanceEmployeeVisible(access, day.employee_id);
+  if (day.record_status === "locked" || day.locked_at !== "") {
+    throw new HttpError({
+      status: 422,
+      code: "PERIOD_LOCKED",
+      message: "This attendance day is locked. A locked period is corrected through arrears, not by an override.",
+    });
+  }
+  const before = { shift_applied: day.shift_applied, status: day.status };
+  const after = {
+    ...(input.overrideShiftCode !== undefined ? { shift_applied: input.overrideShiftCode } : {}),
+    ...(input.overrideStatus !== undefined ? { status: input.overrideStatus } : {}),
+    override_reason: input.reason,
+    recompute_required: true,
+  };
+  await tenantTx(access, [
+    sqlClient`update attendance_entries set attributes = attributes || ${JSON.stringify(after)}::jsonb, updated_at = now()
+      where tenant_id = ${access.tenantId} and id = ${id}`,
+    sqlClient`
+      insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, before, after, request_id)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
+        ${DAY_OVERRIDE_ACTION}, 'attendance_entry', ${id}, ${input.reason},
+        ${JSON.stringify(before)}::jsonb, ${JSON.stringify(after)}::jsonb, ${uuidOrNull(requestId)}::uuid)
+    `,
+    sqlClient`
+      insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
+        ${RECOMPUTE_QUEUE_ACTION}, 'attendance_recompute', ${day.employee_id}, ${`Override on ${day.date ?? "an undated day"}: ${input.reason}`},
+        ${JSON.stringify({ scope: "Single day", employee_scope: day.employee_id, from_date: day.date, to_date: day.date, status: "queued" })}::jsonb,
+        ${uuidOrNull(requestId)}::uuid)
+    `,
+  ]);
+  return { id, before, after };
+}
+
 
 export async function listGatePasses(access: Access) {
   enforce(access.context, "attendance.read", { tenantId: access.tenantId });

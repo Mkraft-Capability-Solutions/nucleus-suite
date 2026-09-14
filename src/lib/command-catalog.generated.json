@@ -1,0 +1,738 @@
+[
+  {
+    "id": "POST /api/v1/commands/save_rule_set",
+    "module": "settings",
+    "section": "commands/save_rule_set",
+    "path": "/api/v1/commands/save_rule_set",
+    "method": "POST",
+    "label": "save rule set",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "domain",
+          "kind": "select",
+          "options": [
+            "attendance",
+            "worker",
+            "leave",
+            "statutory",
+            "announcement",
+            "letter"
+          ]
+        },
+        {
+          "name": "code",
+          "kind": "text",
+          "min": 1,
+          "max": 80
+        },
+        {
+          "name": "effectiveFrom",
+          "kind": "text",
+          "format": "date"
+        },
+        {
+          "name": "config",
+          "kind": "record",
+          "item": {
+            "kind": "union",
+            "variants": [
+              {
+                "kind": "text"
+              },
+              {
+                "kind": "number"
+              },
+              {
+                "kind": "boolean"
+              },
+              {
+                "kind": "null"
+              },
+              {
+                "kind": "array",
+                "item": {
+                  "kind": "unknown"
+                }
+              },
+              {
+                "kind": "record",
+                "item": {
+                  "kind": "unknown"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "permissions": [
+      "policy.manage"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/grant_location",
+    "module": "settings",
+    "section": "commands/grant_location",
+    "path": "/api/v1/commands/grant_location",
+    "method": "POST",
+    "label": "grant location",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "membershipId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "locationId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "canViewCompensation",
+          "kind": "boolean",
+          "default": false,
+          "optional": true
+        },
+        {
+          "name": "validFrom",
+          "kind": "text",
+          "format": "date"
+        }
+      ]
+    },
+    "permissions": [
+      "role.scope.manage"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/evaluate_attendance",
+    "module": "attendance",
+    "section": "commands/evaluate_attendance",
+    "path": "/api/v1/commands/evaluate_attendance",
+    "method": "POST",
+    "label": "evaluate attendance",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "attendanceDayId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "employeeId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "attendanceDate",
+          "kind": "text",
+          "format": "date"
+        },
+        {
+          "name": "ruleSetId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "assignedShift",
+          "kind": "text",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "name": "shiftHours",
+          "kind": "select",
+          "options": [
+            8,
+            9,
+            10,
+            12
+          ]
+        },
+        {
+          "name": "windows",
+          "kind": "array",
+          "item": {
+            "kind": "object",
+            "fields": [
+              {
+                "name": "code",
+                "kind": "text"
+              },
+              {
+                "name": "earliestMinute",
+                "kind": "number",
+                "integer": true,
+                "min": 0,
+                "max": 1439
+              },
+              {
+                "name": "latestMinute",
+                "kind": "number",
+                "integer": true,
+                "min": 0,
+                "max": 1439
+              },
+              {
+                "name": "durationMinutes",
+                "kind": "number",
+                "integer": true,
+                "min": 1
+              }
+            ]
+          },
+          "min": 1
+        },
+        {
+          "name": "punches",
+          "kind": "array",
+          "item": {
+            "kind": "object",
+            "fields": [
+              {
+                "name": "type",
+                "kind": "select",
+                "options": [
+                  "in",
+                  "out"
+                ]
+              },
+              {
+                "name": "at",
+                "kind": "text"
+              }
+            ]
+          },
+          "min": 2
+        },
+        {
+          "name": "firstPunchIso",
+          "kind": "text",
+          "format": "datetime"
+        },
+        {
+          "name": "gatePassMinutes",
+          "kind": "number",
+          "integer": true,
+          "min": 0,
+          "default": 0,
+          "optional": true
+        },
+        {
+          "name": "otPolicy",
+          "kind": "select",
+          "options": [
+            "all-days",
+            "rest-holiday-only",
+            "not-eligible"
+          ]
+        },
+        {
+          "name": "dayType",
+          "kind": "select",
+          "options": [
+            "working",
+            "weekly_off",
+            "holiday",
+            "festival"
+          ]
+        },
+        {
+          "name": "minutesLate",
+          "kind": "number",
+          "integer": true,
+          "min": 0,
+          "default": 0,
+          "optional": true
+        },
+        {
+          "name": "lateOccurrencesThisMonth",
+          "kind": "number",
+          "integer": true,
+          "min": 0,
+          "default": 0,
+          "optional": true
+        },
+        {
+          "name": "assistantManagerOrAbove",
+          "kind": "boolean",
+          "default": false,
+          "optional": true
+        },
+        {
+          "name": "workedPast3AmPreviousDay",
+          "kind": "boolean",
+          "default": false,
+          "optional": true
+        },
+        {
+          "name": "timeZone",
+          "kind": "text",
+          "default": "Asia/Kolkata",
+          "optional": true
+        }
+      ]
+    },
+    "permissions": [
+      "attendance.evaluate"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/run_leave_maintenance",
+    "module": "leave",
+    "section": "commands/run_leave_maintenance",
+    "path": "/api/v1/commands/run_leave_maintenance",
+    "method": "POST",
+    "label": "run leave maintenance",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "mode",
+          "kind": "select",
+          "options": [
+            "accrual",
+            "expiry",
+            "year_end"
+          ]
+        },
+        {
+          "name": "asOf",
+          "kind": "text",
+          "format": "date"
+        }
+      ]
+    },
+    "permissions": [
+      "leave.maintain"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/sync_erp_employee",
+    "module": "integrations",
+    "section": "commands/sync_erp_employee",
+    "path": "/api/v1/commands/sync_erp_employee",
+    "method": "POST",
+    "label": "sync erp employee",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "connectionId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "externalCode",
+          "kind": "text",
+          "min": 1,
+          "max": 80
+        },
+        {
+          "name": "employee",
+          "kind": "object",
+          "fields": [
+            {
+              "name": "firstName",
+              "kind": "text",
+              "min": 1,
+              "max": 80
+            },
+            {
+              "name": "lastName",
+              "kind": "text",
+              "min": 1,
+              "max": 80
+            },
+            {
+              "name": "workEmail",
+              "kind": "text",
+              "format": "email",
+              "optional": true
+            },
+            {
+              "name": "department",
+              "kind": "text",
+              "min": 1,
+              "max": 80
+            },
+            {
+              "name": "location",
+              "kind": "text",
+              "min": 1,
+              "max": 80
+            },
+            {
+              "name": "designation",
+              "kind": "text",
+              "min": 1,
+              "max": 120
+            },
+            {
+              "name": "joiningDate",
+              "kind": "text",
+              "format": "date"
+            },
+            {
+              "name": "basicSalaryMinor",
+              "kind": "number",
+              "integer": true,
+              "min": 0,
+              "optional": true
+            }
+          ]
+        }
+      ]
+    },
+    "permissions": [
+      "integration.sync"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/create_gl_posting",
+    "module": "accounting",
+    "section": "commands/create_gl_posting",
+    "path": "/api/v1/commands/create_gl_posting",
+    "method": "POST",
+    "label": "create gl posting",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "payrollRunId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "connectionId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        }
+      ]
+    },
+    "permissions": [
+      "payroll.accounting.write"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/ack_gl_posting",
+    "module": "accounting",
+    "section": "commands/ack_gl_posting",
+    "path": "/api/v1/commands/ack_gl_posting",
+    "method": "POST",
+    "label": "ack gl posting",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "batchId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "acknowledgementRef",
+          "kind": "text",
+          "min": 1,
+          "max": 160
+        }
+      ]
+    },
+    "permissions": [
+      "payroll.accounting.write"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/generate_statutory_form",
+    "module": "statutory",
+    "section": "commands/generate_statutory_form",
+    "path": "/api/v1/commands/generate_statutory_form",
+    "method": "POST",
+    "label": "generate statutory form",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "formCode",
+          "kind": "text",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "name": "stateCode",
+          "kind": "text",
+          "min": 2,
+          "max": 20
+        },
+        {
+          "name": "employeeId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "locationId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "period",
+          "kind": "text",
+          "min": 1,
+          "max": 20
+        },
+        {
+          "name": "values",
+          "kind": "record",
+          "item": {
+            "kind": "union",
+            "variants": [
+              {
+                "kind": "text"
+              },
+              {
+                "kind": "number"
+              },
+              {
+                "kind": "null"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "permissions": [
+      "compliance.forms.generate"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/record_feature",
+    "module": "onboarding",
+    "section": "commands/record_feature",
+    "path": "/api/v1/commands/record_feature",
+    "method": "POST",
+    "label": "record feature",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "kind",
+          "kind": "select",
+          "options": [
+            "recognition",
+            "referral",
+            "announcement",
+            "letter",
+            "asset",
+            "induction",
+            "position_control"
+          ]
+        },
+        {
+          "name": "employeeId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "referenceId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "externalKey",
+          "kind": "text",
+          "max": 160,
+          "optional": true
+        },
+        {
+          "name": "status",
+          "kind": "text",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "name": "effectiveOn",
+          "kind": "text",
+          "format": "date",
+          "optional": true
+        },
+        {
+          "name": "data",
+          "kind": "record",
+          "item": {
+            "kind": "union",
+            "variants": [
+              {
+                "kind": "text"
+              },
+              {
+                "kind": "number"
+              },
+              {
+                "kind": "boolean"
+              },
+              {
+                "kind": "null"
+              },
+              {
+                "kind": "array",
+                "item": {
+                  "kind": "unknown"
+                }
+              },
+              {
+                "kind": "record",
+                "item": {
+                  "kind": "unknown"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "permissions": [
+      "hr.records.write"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/approve_manpower",
+    "module": "organization",
+    "section": "commands/approve_manpower",
+    "path": "/api/v1/commands/approve_manpower",
+    "method": "POST",
+    "label": "approve manpower",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "planYear",
+          "kind": "number",
+          "integer": true,
+          "min": 2000,
+          "max": 2200
+        },
+        {
+          "name": "departmentId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "designation",
+          "kind": "text",
+          "min": 1,
+          "max": 120
+        },
+        {
+          "name": "locationId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        },
+        {
+          "name": "sanctionedCount",
+          "kind": "number",
+          "integer": true,
+          "min": 0
+        }
+      ]
+    },
+    "permissions": [
+      "workforce.manpower.approve"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  },
+  {
+    "id": "POST /api/v1/commands/controlled_requisition",
+    "module": "talent",
+    "section": "commands/controlled_requisition",
+    "path": "/api/v1/commands/controlled_requisition",
+    "method": "POST",
+    "label": "controlled requisition",
+    "body": {
+      "kind": "object",
+      "fields": [
+        {
+          "name": "manpowerLineId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "title",
+          "kind": "text",
+          "min": 1,
+          "max": 200
+        },
+        {
+          "name": "hiringManagerEmployeeId",
+          "kind": "text",
+          "format": "uuid"
+        },
+        {
+          "name": "positionCode",
+          "kind": "text",
+          "min": 1,
+          "max": 40
+        },
+        {
+          "name": "requisitionType",
+          "kind": "select",
+          "options": [
+            "addition",
+            "replacement"
+          ]
+        },
+        {
+          "name": "replacementEmployeeId",
+          "kind": "text",
+          "format": "uuid",
+          "optional": true
+        }
+      ]
+    },
+    "permissions": [
+      "recruitment.requisition.write"
+    ],
+    "query": [],
+    "version": false,
+    "source": "src/app/api/v1/commands/[action]/route.ts"
+  }
+]

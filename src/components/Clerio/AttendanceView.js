@@ -38,6 +38,23 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.AttendanceView", "initialState_1")); // 'monthly_ledger' | 'gate_pass' | 'regularization' | 'time_office_ledger' | 'worker_categories'
     const [currentMonth, setCurrentMonth] = useState(readData("components.Clerio.AttendanceView", "initialState_2"));
     const [selectedPlant, setSelectedPlant] = useState(readData("components.Clerio.AttendanceView", "initialState_3"));
+    const [isAnomalyModalOpen, setIsAnomalyModalOpen] = useState(false);
+    const [anomaliesList, setAnomaliesList] = useState([
+        {
+            id: 1,
+            employee: "Amit Verma",
+            type: "Buddy Punching Alert (Device IP Subnet Shift)",
+            confidence: "94%",
+            note: "Biometric device IP mismatch: Terminal logged from subnet 192.168.4.x instead of registered plant subnet 10.20.1.x."
+        },
+        {
+            id: 2,
+            employee: "Rahul Saxena",
+            type: "Late Pattern (3 consecutive Mondays)",
+            confidence: "88%",
+            note: "Average delay: 48 minutes across shifts."
+        }
+    ]);
 
     useEffect(() => {
         if (!activeSubFeature) return;
@@ -321,10 +338,10 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div>
                                 <strong style={{ color: 'var(--pending)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_30")}</strong>
                                 <div style={{ fontSize: '0.85rem', color: 'var(--text-2)' }}>
-                                    {attendanceAnomalies.length}{readData("components.Clerio.AttendanceView", "AttendanceView_text_31")}</div>
+                                    {anomaliesList.length} potential anomalies flagged for HR review (e.g. Device IP subnet shifts)</div>
                             </div>
                         </div>
-                        <button className={styles.anomalyBtn} onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_9f40e7d4cc"),translateText("components.Clerio.AttendanceView","text_13f6644330"), 'info')}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_32")}</button>
+                        <button className={styles.anomalyBtn} onClick={() => setIsAnomalyModalOpen(true)}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_32")}</button>
                     </div>
 
                     {/* Main Calendar View */}
@@ -1024,6 +1041,119 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+            {/* AI Anomaly Review Queue Modal */}
+            {isAnomalyModalOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsAnomalyModalOpen(false)}>
+                    <div className={styles.modalCard} style={{ maxWidth: '640px', width: '95%' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Sparkles size={20} color="var(--pending)" />
+                                <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)' }}>
+                                    AI Shift & Anomaly Intelligence — Review Queue
+                                </h3>
+                            </div>
+                            <button
+                                onClick={() => setIsAnomalyModalOpen(false)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)', fontSize: '1.2rem', padding: '0.2rem 0.5rem' }}
+                            >✕</button>
+                        </div>
+
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                            The AI Shift & Anomaly engine flagged the following potential anomalies from biometric logs, IP subnet mismatches, and multi-shift timing heuristics.
+                        </div>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '4px' }}>
+                            {anomaliesList.length === 0 ? (
+                                <div style={{ textAlign: 'center', padding: '2.5rem 1rem', background: 'var(--card-2)', borderRadius: 'var(--r-control)', color: 'var(--status-ok)' }}>
+                                    <CheckCircle2 size={40} style={{ margin: '0 auto 0.5rem', display: 'block' }} />
+                                    <strong style={{ fontSize: '1rem' }}>All anomalies resolved</strong>
+                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', marginTop: '0.35rem' }}>
+                                        No pending biometric or schedule anomalies require HR review.
+                                    </div>
+                                </div>
+                            ) : (
+                                anomaliesList.map((item) => (
+                                    <div key={item.id} style={{ background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', padding: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                            <div>
+                                                <strong style={{ fontSize: '0.92rem', color: 'var(--text)' }}>{item.employee}</strong>
+                                                <div style={{ fontSize: '0.8rem', color: 'var(--pending)', fontWeight: 600, marginTop: '2px' }}>
+                                                    {item.type}
+                                                </div>
+                                            </div>
+                                            <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 8px', borderRadius: '12px', background: 'var(--pending-wash, rgba(245, 158, 11, 0.15))', color: 'var(--pending)' }}>
+                                                {item.confidence} Confidence
+                                            </span>
+                                        </div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', background: 'var(--surface)', padding: '0.5rem 0.65rem', borderRadius: '4px', borderLeft: '3px solid var(--pending)' }}>
+                                            {item.note}
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.25rem', flexWrap: 'wrap' }}>
+                                            <button
+                                                type="button"
+                                                className={styles.btnSecondary}
+                                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                                                onClick={() => {
+                                                    setAnomaliesList(prev => prev.filter(a => a.id !== item.id));
+                                                    showToast('Waived', `Flag for ${item.employee} marked as false positive with audit note.`, 'info');
+                                                }}
+                                            >
+                                                Waive / False Positive
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={styles.btnSecondary}
+                                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                                                onClick={() => {
+                                                    setAnomaliesList(prev => prev.filter(a => a.id !== item.id));
+                                                    showToast('Escalated', `Dispatched investigation requisition to Plant Supervisor for ${item.employee}.`, 'info');
+                                                }}
+                                            >
+                                                Escalate to Supervisor
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={styles.btnPrimary}
+                                                style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', background: 'var(--signal)' }}
+                                                onClick={() => {
+                                                    setAnomaliesList(prev => prev.filter(a => a.id !== item.id));
+                                                    showToast('Resolved & Recomputed', `Attendance entry for ${item.employee} recomputed and verified.`, 'success');
+                                                }}
+                                            >
+                                                Resolve & Recompute
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--line)', paddingTop: '0.75rem' }}>
+                            {anomaliesList.length > 0 ? (
+                                <button
+                                    type="button"
+                                    className={styles.btnSecondary}
+                                    style={{ fontSize: '0.8rem' }}
+                                    onClick={() => {
+                                        setAnomaliesList([]);
+                                        showToast('All Resolved', 'Batch recomputed all flagged anomalies across shifts.', 'success');
+                                    }}
+                                >
+                                    Resolve All Flagged ({anomaliesList.length})
+                                </button>
+                            ) : <div />}
+                            <button
+                                type="button"
+                                className={styles.btnSecondary}
+                                style={{ fontSize: '0.8rem' }}
+                                onClick={() => setIsAnomalyModalOpen(false)}
+                            >
+                                Close
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

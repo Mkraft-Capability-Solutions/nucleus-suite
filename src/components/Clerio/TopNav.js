@@ -348,9 +348,6 @@ const TopNav = ({
                             const name = user?.name ? user.name.trim().split(' ')[0] : 'Superadmin';
                             const greetingText = `${timeGreeting}, ${name}! How can I help you today?`;
                             
-                            // Immediately speak aloud inside the user click gesture stack
-                            speakAloud(greetingText);
-                            
                             window.dispatchEvent(new CustomEvent('nucleus:voice_navigation', { detail: { greeting: greetingText } }));
                         }
                     }}

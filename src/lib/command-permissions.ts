@@ -1,0 +1,13 @@
+export const commandPermissions = {
+  save_rule_set: "policy.manage",
+  grant_location: "role.scope.manage",
+  evaluate_attendance: "attendance.evaluate",
+  run_leave_maintenance: "leave.maintain",
+  sync_erp_employee: "integration.sync",
+  create_gl_posting: "payroll.accounting.write",
+  ack_gl_posting: "payroll.accounting.write",
+  generate_statutory_form: "compliance.forms.generate",
+  record_feature: "hr.records.write",
+  approve_manpower: "workforce.manpower.approve",
+  controlled_requisition: "recruitment.requisition.write",
+} as const;
