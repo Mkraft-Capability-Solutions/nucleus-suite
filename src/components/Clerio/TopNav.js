@@ -241,8 +241,8 @@ const TopNav = ({
                             window.dispatchEvent(new CustomEvent('nucleus:voice_navigation'));
                         }
                     }}
-                    title="Voice Navigation & Actions (Click or Speak)"
-                    aria-label="Voice Navigation & Actions"
+                    title="Nucleus Talk — Voice Assist (Click or Speak)"
+                    aria-label="Nucleus Talk"
                     style={{
                         background: 'rgba(56, 189, 248, 0.1)',
                         borderColor: 'rgba(56, 189, 248, 0.25)',

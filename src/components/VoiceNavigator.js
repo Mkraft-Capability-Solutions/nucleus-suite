@@ -244,24 +244,24 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onstart = () => {
         setIsListening(true);
-        setFeedback('🎙️ Listening... Speak now into your microphone.');
+        setFeedback('🎙️ Nucleus Voice Assist is listening... Speak now into your microphone.');
       };
 
       recognition.onresult = (event) => {
         let textResult = '';
         for (let i = 0; i < event.results.length; i++) {
-          textResult += event.results[i][0].transcript + ' ';
+          textResult += event.results[i][0].transcript;
         }
         const clean = textResult.trim();
         if (clean) {
           setTranscript(clean);
           setInputText(clean);
-          setFeedback(`Heard: "${clean}"`);
+          setFeedback(`Nucleus Voice Assist heard: "${clean}"`);
         }
       };
 
       recognition.onspeechend = () => {
-        // Keep listening or allow final processing
+        // Speech ended; retain text in input box
       };
 
       recognition.onend = () => {
@@ -270,10 +270,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onerror = (event) => {
         if (event.error === 'no-speech') {
-          setFeedback('No speech detected. Click the mic and speak clearly.');
+          setFeedback('Nucleus Voice Assist: No speech detected. Click the mic and speak clearly.');
         } else {
           setIsListening(false);
-          setFeedback('Ready. Speak clearly, type your action, or click any shortcut below.');
+          setFeedback('Nucleus Voice Assist: Ready. Click the microphone, speak, or type below.');
         }
       };
 
@@ -282,7 +282,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsListening(true);
     } catch (err) {
       setIsListening(false);
-      setFeedback('Click the microphone to speak, or type any command.');
+      setFeedback('Click the microphone to activate Nucleus Voice Assist, or type any command.');
     }
   };
 
@@ -292,7 +292,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         try { recognitionRef.current.stop(); } catch {}
       }
       setIsListening(false);
-      setFeedback('Listening stopped. Click the microphone to speak again.');
+      setFeedback('Nucleus Voice Assist paused. Click the microphone to speak again.');
     } else {
       startListening();
     }
@@ -387,7 +387,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
   return (
     <div className={styles.voiceModalOverlay} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.voiceModalContainer} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.closeVoiceBtn} onClick={onClose} title="Close Voice Assistant">
+        <button className={styles.closeVoiceBtn} onClick={onClose} title="Close Nucleus Voice Assist">
           <Close sx={{ fontSize: 18 }} />
         </button>
 
@@ -411,13 +411,13 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
             transition: 'all 0.25s ease',
             margin: '0.25rem auto 0'
           }}
-          title={isListening ? "Listening... Click to Stop" : "Click to Speak"}
+          title={isListening ? "Nucleus Voice Assist listening... Click to Stop" : "Click to Speak"}
         >
           {isListening ? <Mic sx={{ fontSize: 34 }} /> : <Mic sx={{ fontSize: 34 }} />}
         </button>
 
-        <h3 style={{ margin: '0.85rem 0 0.25rem', fontSize: '1.25rem', color: 'var(--text, #0f172a)', fontWeight: 700 }}>
-          Voice Navigation & Actions
+        <h3 style={{ margin: '0.85rem 0 0.25rem', fontSize: '1.35rem', color: 'var(--text, #0f172a)', fontWeight: 700, letterSpacing: '-0.01em' }}>
+          Nucleus Talk
         </h3>
         
         <p style={{ 
@@ -453,14 +453,14 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
             className={styles.commandInput}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder='Type or speak any action (e.g., "apply leave", "punch in", "open payroll")...'
-            aria-label="Voice command text input"
+            placeholder='Nucleus Voice Assist: Speak or type any action...'
+            aria-label="Nucleus Voice Assist command input"
           />
           <button 
             type="submit" 
             className={styles.submitCommandBtn}
             disabled={!inputText.trim()}
-            title="Execute Voice Action"
+            title="Execute Action with Nucleus Talk"
           >
             <Send sx={{ fontSize: 16 }} />
           </button>
