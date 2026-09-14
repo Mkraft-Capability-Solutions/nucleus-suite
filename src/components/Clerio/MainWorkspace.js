@@ -458,15 +458,7 @@ const MainWorkspace = ({
                         {/* 4 Dedicated Filter Cards Grid */}
                         <div className={styles.workforceFilterGrid}>
                             {/* FILTER 1: LOCATION */}
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.35rem',
-                                background: 'var(--card-2)',
-                                border: '1px solid var(--line)',
-                                borderRadius: '8px',
-                                padding: '0.65rem 0.85rem'
-                            }}>
+                            <div className={styles.workforceFilterCard}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                         <MapPin size={14} color="var(--info)" />
@@ -488,18 +480,7 @@ const MainWorkspace = ({
                                         setFilterLocation(e.target.value);
                                         showToast(translateText("components.Clerio.MainWorkspace","text_615dc9a96d"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
-                                    style={{
-                                        width: '100%',
-                                        background: 'var(--card)',
-                                        border: '1px solid var(--line)',
-                                        borderRadius: '6px',
-                                        padding: '0.42rem 0.65rem',
-                                        color: 'var(--text)',
-                                        fontSize: '0.78rem',
-                                        fontWeight: 600,
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }}
+                                    className={styles.workforceFilterSelect}
                                 >
                                     <option value="All Locations">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_62")}</option>
                                     <option value="Bengaluru Campus (HQ)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_63")}</option>
@@ -513,15 +494,7 @@ const MainWorkspace = ({
                             </div>
 
                             {/* FILTER 2: DEPARTMENT */}
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.35rem',
-                                background: 'var(--card-2)',
-                                border: '1px solid var(--line)',
-                                borderRadius: '8px',
-                                padding: '0.65rem 0.85rem'
-                            }}>
+                            <div className={styles.workforceFilterCard}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                         <Layers size={14} color="var(--signal)" />
@@ -543,18 +516,7 @@ const MainWorkspace = ({
                                         setFilterDepartment(e.target.value);
                                         showToast(translateText("components.Clerio.MainWorkspace","text_cd7b2f937d"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
-                                    style={{
-                                        width: '100%',
-                                        background: 'var(--card)',
-                                        border: '1px solid var(--line-glow)',
-                                        borderRadius: '6px',
-                                        padding: '0.42rem 0.65rem',
-                                        color: 'var(--text)',
-                                        fontSize: '0.78rem',
-                                        fontWeight: 600,
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }}
+                                    className={styles.workforceFilterSelect}
                                 >
                                     <option value="All Departments">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_72")}</option>
                                     <option value="Engineering & Architecture">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_73")}</option>
@@ -567,16 +529,8 @@ const MainWorkspace = ({
                                 </select>
                             </div>
 
-                            {/* FILTER 3: TENURE & TIMEFRAME (WITH 1M, 3M, AND CALENDAR SELECTOR) */}
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.35rem',
-                                background: 'var(--card-2)',
-                                border: '1px solid var(--line)',
-                                borderRadius: '8px',
-                                padding: '0.65rem 0.85rem'
-                            }}>
+                            {/* FILTER 3: TENURE & TIMEFRAME */}
+                            <div className={styles.workforceFilterCard}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                         <CalendarDays size={14} color="var(--pending)" />
@@ -586,7 +540,7 @@ const MainWorkspace = ({
                                         {isCustomCalendarOpen ? readData("components.Clerio.MainWorkspace", "display_12") : filterTenure}
                                     </span>
                                 </div>
-                                <div style={{ display: 'flex', gap: '0.3rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <div className={styles.workforceFilterButtonGroup}>
                                     {readData("components.Clerio.MainWorkspace", "renderDashboard_81").map((t) => {
                                         const isSelected = filterTenure === t && !isCustomCalendarOpen;
                                         return (
@@ -597,19 +551,7 @@ const MainWorkspace = ({
                                                     setIsCustomCalendarOpen(false);
                                                     showToast(translateText("components.Clerio.MainWorkspace","text_165361fec3"),translateText("components.Clerio.MainWorkspace","text_84c8971810", {value1: String(t)}), 'info');
                                                 }}
-                                                style={{
-                                                    flex: 1,
-                                                    padding: '0.38rem 0.35rem',
-                                                    borderRadius: '5px',
-                                                    fontSize: '0.72rem',
-                                                    fontWeight: isSelected ? 700 : 500,
-                                                    cursor: 'pointer',
-                                                    background: isSelected ? 'var(--pending-wash)' : 'var(--card)',
-                                                    border: isSelected ? '1px solid var(--pending)' : '1px solid var(--line)',
-                                                    color: isSelected ? 'var(--pending)' : 'var(--text-2)',
-                                                    transition: 'all 0.12s ease',
-                                                    textAlign: 'center'
-                                                }}
+                                                className={`${styles.workforceFilterSegmentBtn} ${isSelected ? styles.active : ''}`}
                                             >
                                                 {t.replace(' Months', 'M').replace(' Month', 'M').replace(' Year', 'Y')}
                                             </button>
@@ -618,19 +560,7 @@ const MainWorkspace = ({
                                     {/* Calendar Date Selector Toggle */}
                                     <button
                                         onClick={() => setIsCustomCalendarOpen(!isCustomCalendarOpen)}
-                                        style={{
-                                            padding: '0.38rem 0.55rem',
-                                            borderRadius: '5px',
-                                            fontSize: '0.72rem',
-                                            fontWeight: isCustomCalendarOpen ? 700 : 600,
-                                            cursor: 'pointer',
-                                            background: isCustomCalendarOpen ? 'var(--signal-wash)' : 'var(--card-2)',
-                                            border: isCustomCalendarOpen ? '1px solid var(--signal)' : '1px solid var(--line)',
-                                            color: isCustomCalendarOpen ? 'var(--signal)' : 'var(--text)',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            gap: '0.25rem'
-                                        }}
+                                        className={`${styles.workforceFilterCalendarBtn} ${isCustomCalendarOpen ? styles.active : ''}`}
                                         title={readData("components.Clerio.MainWorkspace", "renderDashboard_title_82")}
                                     >
                                         <Calendar size={13} />
@@ -640,15 +570,7 @@ const MainWorkspace = ({
                             </div>
 
                             {/* FILTER 4: BRANCH / LEGAL ENTITY */}
-                            <div style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '0.35rem',
-                                background: 'var(--card-2)',
-                                border: '1px solid var(--line)',
-                                borderRadius: '8px',
-                                padding: '0.65rem 0.85rem'
-                            }}>
+                            <div className={styles.workforceFilterCard}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                                         <Building2 size={14} color="var(--signal-ink)" />
@@ -668,27 +590,16 @@ const MainWorkspace = ({
                                     value={filterBranch}
                                     onChange={(e) => {
                                         setFilterBranch(e.target.value);
-                                        showToast(translateText("components.Clerio.MainWorkspace","text_3d811a5cc6"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
+                                        showToast(translateText("components.Clerio.MainWorkspace","text_dc2204c35e"),translateText("components.Clerio.MainWorkspace","text_64d0a984c6", {value1: String(e.target.value)}), 'info');
                                     }}
-                                    style={{
-                                        width: '100%',
-                                        background: 'var(--card)',
-                                        border: '1px solid var(--line)',
-                                        borderRadius: '6px',
-                                        padding: '0.42rem 0.65rem',
-                                        color: 'var(--text)',
-                                        fontSize: '0.78rem',
-                                        fontWeight: 600,
-                                        outline: 'none',
-                                        cursor: 'pointer'
-                                    }}
+                                    className={styles.workforceFilterSelect}
                                 >
                                     <option value="All Branches">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_86")}</option>
-                                    <option value="Asteria India Pvt Ltd (HQ)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_87")}</option>
-                                    <option value="Asteria Tech Labs UK Ltd">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_88")}</option>
-                                    <option value="MultipliersKraft Cloud US Inc">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_89")}</option>
-                                    <option value="Asteria APAC Pte Ltd">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_90")}</option>
-                                    <option value="Asteria Global SEZ Unit">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_91")}</option>
+                                    <option value="Asteria Aerospace India Ltd. (HQ)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_87")}</option>
+                                    <option value="Asteria Space Dynamics Inc. (US)">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_88")}</option>
+                                    <option value="Asteria Propulsion UK Ltd.">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_89")}</option>
+                                    <option value="Asteria Singapore Pte. Ltd.">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_90")}</option>
+                                    <option value="Asteria Middle East FZ-LLC">{readData("components.Clerio.MainWorkspace", "renderDashboard_text_91")}</option>
                                 </select>
                             </div>
                         </div>

@@ -20,11 +20,11 @@ export default function PublicHeader({ content, currentPath }: { content?: Publi
     <nav className={styles.nav} aria-label={translateText('public', 'navigation')}>
       {navigation.nav.map((item) => (
         <Link key={item.href} href={item.href} aria-current={item.href === activePath ? 'page' : undefined}>
-          {item.label}
+          {translateText(item.label)}
         </Link>
       ))}
       <Link className={styles.login} href="/login" aria-current={activePath === '/login' ? 'page' : undefined}>
-        {navigation.login}
+        {translateText(navigation.login)}
       </Link>
     </nav>
   );
@@ -33,8 +33,8 @@ export default function PublicHeader({ content, currentPath }: { content?: Publi
       <Link className={styles.brand} href="/" aria-label={translateText('public', 'home')}>
         <Image src="/images/logo.png" alt="" width={64} height={64} priority />
         <span>
-          {navigation.brand}
-          <small>{translateText('public', 'tagline')}</small>
+          {translateText(navigation.brand)}
+          <small>{translateText(navigation.tagline || 'People at the core.')}</small>
         </span>
       </Link>
       {nav}

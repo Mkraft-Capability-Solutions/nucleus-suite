@@ -1,9 +1,11 @@
 'use client';
 import { useState, type FormEvent } from 'react';
+import { useTranslation } from '@/context/I18nContext';
 import styles from './Website.module.css';
 
 type Copy = { name: string; email: string; topic: string; message: string; topics: string[]; submit: string; success: string; notice: string };
 export default function ContactForm({ copy }: { copy: Copy }) {
+    const { t } = useTranslation();
     const [ready, setReady] = useState(false);
     function download(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -16,13 +18,13 @@ export default function ContactForm({ copy }: { copy: Copy }) {
     }
     return <div className={styles.contact}>
         <form onSubmit={download} onChange={() => setReady(false)}>
-            <label>{copy.name}<input name="name" autoComplete="name" required maxLength={100} pattern=".*\S.*" /></label>
-            <label>{copy.email}<input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
-            <label>{copy.topic}<select name="topic">{copy.topics.map(topic => <option key={topic}>{topic}</option>)}</select></label>
-            <label>{copy.message}<textarea name="message" rows={5} required maxLength={3000} /></label>
-            <p>{copy.notice}</p>
-            <button className={styles.primary} type="submit">{copy.submit}</button>
-            {ready && <p role="status">{copy.success}</p>}
+            <label>{t(copy.name)}<input name="name" autoComplete="name" required maxLength={100} pattern=".*\S.*" /></label>
+            <label>{t(copy.email)}<input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
+            <label>{t(copy.topic)}<select name="topic">{copy.topics.map(topic => <option key={topic}>{t(topic)}</option>)}</select></label>
+            <label>{t(copy.message)}<textarea name="message" rows={5} required maxLength={3000} /></label>
+            <p>{t(copy.notice)}</p>
+            <button className={styles.primary} type="submit">{t(copy.submit)}</button>
+            {ready && <p role="status">{t(copy.success)}</p>}
         </form>
     </div>;
 }

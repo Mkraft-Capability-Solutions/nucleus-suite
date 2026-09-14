@@ -1,6 +1,7 @@
 import publicContent from '@/config/public-site.json';
 import englishInterface from '@/locales/en/interface.json';
 import { locales, defaultLocale, type SupportedLocale } from '@/locales';
+import { publicTranslations } from '@/locales/translations';
 
 export type Messages = Record<string, Record<string, string>>;
 export type TranslationParams = Record<string, string | number>;
@@ -17,10 +18,19 @@ function publicMessages(value: unknown, path = '', output: Record<string, string
 
 export function buildLocaleMessages(localeKey: SupportedLocale): Messages {
   const slice = locales[localeKey] || locales[defaultLocale];
+  const publicLangDict = publicTranslations[localeKey] || {};
+  const basePublicMessages = publicMessages(publicContent);
+
   return {
     ...englishInterface,
     ...slice,
-    publicContent: publicMessages(publicContent),
+    meta: {
+      locale: localeKey,
+    },
+    publicContent: {
+      ...basePublicMessages,
+      ...publicLangDict,
+    },
   };
 }
 
@@ -41,7 +51,7 @@ function getEnglishReverseMap(): Map<string, { namespace: string; key: string }>
   if (englishReverseMap) return englishReverseMap;
   const map = new Map<string, { namespace: string; key: string }>();
   for (const [namespace, dict] of Object.entries(defaultMessages)) {
-    if (dict && typeof dict === 'object') {
+    if (dict && typeof dict === 'object' && namespace !== 'meta') {
       for (const [key, value] of Object.entries(dict)) {
         if (typeof value === 'string') {
           map.set(value.toLowerCase().trim(), { namespace, key });
@@ -59,6 +69,7 @@ export function translate(
   keyOrParams?: string | TranslationParams,
   params?: TranslationParams,
 ): string {
+  if (!namespaceOrKey) return '';
   let namespace = namespaceOrKey;
   let key: string | undefined;
   let actualParams: TranslationParams = {};
@@ -95,13 +106,31 @@ export function translate(
     );
   }
 
-  // Case 3: Single string query (e.g. "Save", "Dashboard", "Apply Leave", "attendance")
+  // Case 3: Direct or phrase lookup
   const query = namespace.trim();
+  const activeLocale = (messages.meta?.locale || defaultLocale) as SupportedLocale;
+
+  // 3a. Check public translations dictionary for current locale
+  if (publicTranslations[activeLocale]?.[query]) {
+    const template = publicTranslations[activeLocale][query];
+    return template.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
+      Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
+    );
+  }
+
+  // 3b. Check in publicContent or any namespace
+  if (messages.publicContent?.[query]) {
+    const template = messages.publicContent[query];
+    return template.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
+      Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
+    );
+  }
+
   const queryLower = query.toLowerCase();
 
-  // 3a. Direct key match in any namespace (e.g. key is 'save' or 'dashboard')
+  // 3c. Direct key match in any namespace (e.g. key is 'save' or 'dashboard')
   for (const [ns, dict] of Object.entries(messages)) {
-    if (dict && typeof dict === 'object' && Object.hasOwn(dict, queryLower)) {
+    if (dict && typeof dict === 'object' && ns !== 'meta' && Object.hasOwn(dict, queryLower)) {
       const template = dict[queryLower];
       return template.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
         Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
@@ -109,7 +138,7 @@ export function translate(
     }
   }
 
-  // 3b. Reverse lookup from English text (e.g. query is "Leave Balance", find ns="leave", key="balance")
+  // 3d. Reverse lookup from English text
   const reverseMap = getEnglishReverseMap();
   const found = reverseMap.get(queryLower);
   if (found) {
@@ -121,7 +150,7 @@ export function translate(
     }
   }
 
-  // 3c. If not found in any translation dictionary, return the clean string
+  // 3e. If not found, return the clean string formatted with params
   return query.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
     Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
   );
@@ -135,3 +164,4 @@ export const t = (
 ) => translate(defaultMessages, namespaceOrKey, keyOrParams, params);
 
 export default t;
+
