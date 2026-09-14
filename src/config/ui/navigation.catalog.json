@@ -1084,6 +1084,8 @@
     }
   ],
   "operationalIcons": {
+    "legal_entity": "BusinessOutlined",
+    "location_master": "PlaceOutlined",
     "access_scope": "AdminPanelSettingsOutlined",
     "person_record": "BadgeOutlined",
     "assignment_admin": "AssignmentIndOutlined",

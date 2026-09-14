@@ -7302,6 +7302,8 @@
       "title": "People & lifecycle",
       "primary": "people_core",
       "ids": [
+        "legal_entity",
+        "location_master",
         "access_scope",
         "person_record",
         "assignment_admin",
@@ -7349,6 +7351,7 @@
       "title": "Payroll & finance operations",
       "primary": "payroll",
       "ids": [
+        "approval_inbox",
         "payroll_runs",
         "pre_payroll_audit",
         "salary_simulator",
@@ -7382,6 +7385,7 @@
       "title": "Compliance engineering",
       "primary": "compliance",
       "ids": [
+        "contractor_reconciliation",
         "rule_pack_manager",
         "golden_case_library",
         "obligation_calendar",
