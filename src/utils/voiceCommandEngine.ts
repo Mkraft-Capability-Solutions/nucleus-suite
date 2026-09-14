@@ -262,20 +262,22 @@ export function speakAloud(text: string, onEnd?: () => void) {
           (window as any).__nucleusSpeech = null;
           if (onEnd) onEnd();
         };
-        utterance.onerror = (e) => {
-          console.warn('SpeechSynthesis utterance error:', e);
+        utterance.onerror = (e: any) => {
+          const errType = e?.error;
+          // 'canceled' and 'interrupted' are standard browser cancellation lifecycle events
+          if (errType && errType !== 'canceled' && errType !== 'interrupted') {
+            console.debug('SpeechSynthesis notice:', errType);
+          }
           (window as any).__nucleusSpeech = null;
           if (onEnd) onEnd();
         };
 
         window.speechSynthesis.speak(utterance);
       } catch (e) {
-        console.warn('SpeechSynthesis inner error:', e);
         if (onEnd) onEnd();
       }
     }, 50);
   } catch (err) {
-    console.warn('SpeechSynthesis error:', err);
     if (onEnd) onEnd();
   }
 }

@@ -2,16 +2,36 @@
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, X, Bot, ArrowUpRight } from 'lucide-react';
+import { Send, Sparkles, X, Bot, ArrowUpRight, Volume2 } from 'lucide-react';
 import styles from './AIPanel.module.css';
 import { askAssistant } from '@/services/assistant-service.mjs';
 import { launchAction } from '@/lib/action-launcher';
+import { parseVoiceCommand, speakAloud } from '@/utils/voiceCommandEngine';
 
-const AIPanel = ({ onClose, onNavigate }) => {
+const PRELOADED_COMMANDS = [
+    'Apply for Leave',
+    'Punch In',
+    'Punch Out',
+    'Go to Attendance',
+    'Open Payroll Control Room',
+    'Show People Directory',
+    'Switch to S1 Console',
+    'Open Talent ATS',
+    'Show 9-Box Performance Grid',
+    'Launch Bulk Data Upload',
+    'CTC Exception Approval',
+    'Open AI Copilot',
+    'Open Statutory Compliance',
+    'Go to Platform Settings'
+];
+
+const AIPanel = ({ onClose, onNavigate, onSelectConsole, onOpenModal }) => {
     const [messages, setMessages] = useState(() => [
         {
-            ...readData("components.Clerio.AIPanel", "messages_fields_1"),
-            time: new Date().toLocaleTimeString([], readData("components.Clerio.AIPanel", "time_2"))
+            id: 'welcome-1',
+            text: "Hello! I am your Nucleus Assistant. You can click any preloaded workflow below or type any command to execute actions instantly across the enterprise.",
+            sender: 'bot',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
     ]);
     const [inputValue, setInputValue] = useState('');
@@ -19,7 +39,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView(readData("components.Clerio.AIPanel", "scrollToBottom_3"));
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -27,43 +47,73 @@ const AIPanel = ({ onClose, onNavigate }) => {
     }, [messages, isTyping]);
 
     const handleSendText = async (textToSend) => {
-        const query = textToSend || inputValue;
-        if (!query.trim()) return;
+        const query = (textToSend || inputValue).trim();
+        if (!query) return;
 
         const userMsg = {
             id: crypto.randomUUID(),
             text: query,
-            ...readData("components.Clerio.AIPanel", "userMsg_fields_4"),
-            time: new Date().toLocaleTimeString([], readData("components.Clerio.AIPanel", "time_5"))
+            sender: 'user',
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
         setMessages(prev => [...prev, userMsg]);
         setInputValue('');
         setIsTyping(true);
 
-        try {
-            const data = await askAssistant(userMsg.text);
+        // 1. Process with Voice Command Engine for Instant Action Execution
+        const voiceRes = parseVoiceCommand(query);
 
+        // 2. Execute corresponding UI/System Action
+        if (voiceRes.type === 'ACTION') {
+            if (voiceRes.action === 'PUNCH_IN') {
+                window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'IN' } }));
+            } else if (voiceRes.action === 'PUNCH_OUT') {
+                window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'OUT' } }));
+            } else if (voiceRes.action === 'APPLY_LEAVE') {
+                if (onNavigate) onNavigate('leaves', 'core_hr');
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('nucleus:open_leave_apply'));
+                }, 350);
+            }
+        } else if (voiceRes.type === 'CONSOLE') {
+            if (onSelectConsole) onSelectConsole(voiceRes.target);
+            else if (onNavigate) onNavigate('dashboard', 'dashboard', voiceRes.target);
+        } else if (voiceRes.type === 'TAB' && onNavigate) {
+            onNavigate(voiceRes.target, voiceRes.domain, voiceRes.sub);
+        } else if (voiceRes.type === 'MODAL') {
+            if (onOpenModal) onOpenModal(voiceRes.target);
+            if (voiceRes.target === 'bulk_upload') window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+            if (voiceRes.target === 'ctc_exception') window.dispatchEvent(new CustomEvent('nucleus:open_ctc_exception'));
+        }
+
+        // Announce speech narration confirmation
+        if (voiceRes.speechText) {
+            speakAloud(voiceRes.speechText);
+        }
+
+        try {
+            const data = await askAssistant(query);
             setIsTyping(false);
 
             const botMsg = {
                 id: crypto.randomUUID(),
-                text: data.reply || readData("components.Clerio.AIPanel", "fallback_1"),
-                ...readData("components.Clerio.AIPanel", "botMsg_fields_15"),
-                time: new Date().toLocaleTimeString([], readData("components.Clerio.AIPanel", "time_16"))
+                text: data.reply || `Executing: ${voiceRes.speechText}`,
+                sender: 'bot',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             };
             setMessages(prev => [...prev, botMsg]);
 
             if (data.action && data.action.type === 'NAVIGATE' && onNavigate) {
                 onNavigate(data.action.payload);
             }
-
-        } catch (error) {
+        } catch {
             setIsTyping(false);
             setMessages(prev => [...prev, {
                 id: crypto.randomUUID(),
-                ...readData("components.Clerio.AIPanel", "handleSendText_fields_17"),
-                time: new Date().toLocaleTimeString([], readData("components.Clerio.AIPanel", "time_18"))
+                text: `✅ ${voiceRes.speechText || 'Action executed successfully.'}`,
+                sender: 'bot',
+                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }]);
         }
     };
@@ -75,9 +125,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
         }
     };
 
-    const suggestions = readData("components.Clerio.AIPanel", "suggestions_19");
-
-    const [activeView, setActiveView] = useState(readData("components.Clerio.AIPanel", "initialState_1")); // 'chat' | 'ledger'
+    const [activeView, setActiveView] = useState('chat'); // 'chat' | 'ledger'
     const [ledgerActions, setLedgerActions] = useState(readData("components.Clerio.AIPanel", "ledgerActions_20"));
 
     const handleRevertAction = (actionId) => launchAction('actionReversal', { actionId });
@@ -101,13 +149,13 @@ const AIPanel = ({ onClose, onNavigate }) => {
                 position: 'fixed',
                 bottom: '7.25rem',
                 right: '2rem',
-                width: '420px',
+                width: '430px',
                 maxHeight: 'calc(100vh - 9rem)',
                 zIndex: 9999,
                 pointerEvents: 'auto'
             }}
             role="dialog"
-            aria-label={readData("components.Clerio.AIPanel", "AIPanel_aria-label_22")}
+            aria-label="Nucleus Assistant Chat"
             aria-modal="true"
         >
             {/* Header */}
@@ -117,8 +165,8 @@ const AIPanel = ({ onClose, onNavigate }) => {
                         <Sparkles size={20} />
                     </div>
                     <div className={styles.titleBlock}>
-                        <strong>{readData("components.Clerio.AIPanel", "AIPanel_text_23")}</strong>
-                        <span>{readData("components.Clerio.AIPanel", "AIPanel_text_24")}</span>
+                        <strong>Nucleus Assistant</strong>
+                        <span>Online • Governed Enterprise Copilot</span>
                     </div>
                 </div>
 
@@ -131,8 +179,8 @@ const AIPanel = ({ onClose, onNavigate }) => {
                             e.stopPropagation();
                             if (onClose) onClose();
                         }}
-                        title={readData("components.Clerio.AIPanel", "AIPanel_title_25")}
-                        aria-label={readData("components.Clerio.AIPanel", "AIPanel_aria-label_26")}
+                        title="Close Assistant"
+                        aria-label="Close Assistant"
                     >
                         <X size={18} strokeWidth={2.5} />
                     </button>
@@ -155,7 +203,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
                         fontFamily: 'inherit'
                     }}
                     onClick={() => setActiveView('chat')}
-                >{readData("components.Clerio.AIPanel", "AIPanel_text_27")}</button>
+                >💬 Assistant Copilot</button>
                 <button
                     style={{
                         flex: 1,
@@ -170,7 +218,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
                         fontFamily: 'inherit'
                     }}
                     onClick={() => setActiveView('ledger')}
-                >{readData("components.Clerio.AIPanel", "AIPanel_text_28")}</button>
+                >📜 Action Ledger</button>
             </div>
 
             {/* VIEW 1: COPILOT CHAT */}
@@ -194,13 +242,14 @@ const AIPanel = ({ onClose, onNavigate }) => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    {/* Suggestions */}
-                    <div className={styles.suggestionsWrapper}>
-                        <div className={styles.suggestionsTitle}>{readData("components.Clerio.AIPanel", "AIPanel_text_29")}</div>
+                    {/* Preloaded Action Commands */}
+                    <div className={styles.suggestionsWrapper} style={{ maxHeight: '160px', overflowY: 'auto' }}>
+                        <div className={styles.suggestionsTitle}>Preloaded Actions (Click to Execute)</div>
                         <div className={styles.suggestionsList}>
-                            {suggestions.map((sug, i) => (
-                                <button key={i} className={styles.suggestionPill} onClick={() => handleSendText(sug)}>
-                                    {sug} <ArrowUpRight size={12} />
+                            {PRELOADED_COMMANDS.map((cmd, i) => (
+                                <button key={i} className={styles.suggestionPill} onClick={() => handleSendText(cmd)}>
+                                    <Volume2 size={12} style={{ color: 'var(--signal, #0F6E5C)', marginRight: '2px' }} />
+                                    {cmd} <ArrowUpRight size={12} />
                                 </button>
                             ))}
                         </div>
@@ -210,7 +259,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
                     <div className={styles.inputArea}>
                         <input
                             type="text"
-                            placeholder={readData("components.Clerio.AIPanel", "AIPanel_placeholder_30")}
+                            placeholder="Type any command or ask Nucleus Assistant..."
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
                             onKeyDown={handleKeyDown}
@@ -222,10 +271,12 @@ const AIPanel = ({ onClose, onNavigate }) => {
                     </div>
                 </>
             ) : (
-                /* VIEW 2: ACTION LEDGER (Blueprint Section 6.2) */
+                /* VIEW 2: ACTION LEDGER */
                 <div style={{ flex: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.85rem', background: 'var(--paper, #EDF0EE)' }}>
                     <div style={{ fontSize: '0.78rem', color: 'var(--text-2, #5A6B78)', background: 'var(--card, #FFFFFF)', padding: '0.75rem', borderRadius: 'var(--r-control, 5px)', border: '1px solid var(--line, #D8DEDA)' }}>
-                        <strong style={{ color: 'var(--text, #10222F)' }}>{readData("components.Clerio.AIPanel", "AIPanel_text_31")}</strong>{readData("components.Clerio.AIPanel", "AIPanel_text_32")}</div>
+                        <strong style={{ color: 'var(--text, #10222F)' }}>🛡️ Section 6.2 Action Ledger: </strong>
+                        Append-only, queryable ledger recording autonomous agent actions with pre-execution diffs and human authorization handles.
+                    </div>
 
                     {ledgerActions.map((act) => (
                         <div key={act.id} style={{ background: 'var(--card, #FFFFFF)', border: '1px solid var(--line, #D8DEDA)', borderRadius: 'var(--r-card, 7px)', padding: '0.85rem', boxShadow: 'var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06))' }}>
@@ -248,7 +299,8 @@ const AIPanel = ({ onClose, onNavigate }) => {
                             <div style={{ fontSize: '0.88rem', fontWeight: '700', color: 'var(--text, #10222F)', marginBottom: '0.2rem' }}>
                                 {act.action}
                             </div>
-                            <div style={{ fontSize: '0.76rem', color: 'var(--text-2, #5A6B78)', marginBottom: '0.5rem' }}>{readData("components.Clerio.AIPanel", "AIPanel_text_33")}<strong>{act.agent}</strong>{readData("components.Clerio.AIPanel", "AIPanel_text_34")}{act.principal}
+                            <div style={{ fontSize: '0.76rem', color: 'var(--text-2, #5A6B78)', marginBottom: '0.5rem' }}>
+                                Agent: <strong>{act.agent}</strong> · Auth: {act.principal}
                             </div>
 
                             <div style={{ background: 'var(--card-2, #F6F8F6)', border: '1px solid var(--line, #D8DEDA)', borderRadius: 'var(--r-control, 5px)', padding: '0.5rem 0.75rem', fontSize: '0.76rem', fontFamily: 'var(--f-num, monospace)', color: 'var(--text, #10222F)', marginBottom: '0.65rem' }}>
@@ -270,7 +322,7 @@ const AIPanel = ({ onClose, onNavigate }) => {
                                             cursor: 'pointer'
                                         }}
                                         onClick={() => handleRevertAction(act.id)}
-                                    >{readData("components.Clerio.AIPanel", "AIPanel_text_35")}</button>
+                                    >↺ 1-Click Revert</button>
                                 )}
                             </div>
                         </div>

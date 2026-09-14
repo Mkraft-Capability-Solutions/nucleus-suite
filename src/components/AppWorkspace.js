@@ -385,10 +385,17 @@ const AppContent = () => {
           {isAIPanelOpen && (
             <AIPanel
               onClose={() => setActiveFloatingDrawer(null)}
-              onNavigate={(tab) => {
+              onNavigate={(tab, domain, sub) => {
                 setActiveTab(tab);
+                if (domain) setActiveDomain(domain);
+                if (sub) setActiveSubFeature(sub);
                 setShowCatalog(false);
-                setActiveFloatingDrawer(null);
+              }}
+              onSelectConsole={handleSelectConsole}
+              onOpenModal={(modalType) => {
+                if (modalType === 'ctc_exception') setIsCtcModalOpen(true);
+                if (modalType === 'bulk_upload') setIsBulkUploadOpen(true);
+                if (modalType === 'modules') setIsModulesOpen(true);
               }}
             />
           )}
