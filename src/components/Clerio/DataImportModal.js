@@ -91,6 +91,18 @@ const DataImportModal = ({ isOpen, onClose }) => {
             return;
         }
 
+        try {
+            fetch('/api/v1/bulk-import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    importType: selectedPreset,
+                    records: mappedRows,
+                    fileName: currentFile?.fileName || 'dataset.csv'
+                })
+            }).catch(e => console.warn('Bulk import server sync notice:', e));
+        } catch {}
+
         ingestMappedData(selectedPreset, mappedRows, currentFile.fileName);
         setStep(4);
     };

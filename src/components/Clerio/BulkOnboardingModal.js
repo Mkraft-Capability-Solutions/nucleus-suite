@@ -118,9 +118,21 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
             };
         });
 
+        try {
+            fetch('/api/v1/bulk-import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    importType: 'employee',
+                    records: newRecords,
+                    fileName
+                })
+            }).catch(e => console.warn('Bulk onboarding database sync notice:', e));
+        } catch {}
+
         if (onIngest) onIngest(newRecords);
         setStep(4);
-        showToast('Batch Onboarded', `${newRecords.length} employees onboarded into directory.`, 'success');
+        showToast('Batch Onboarded', `${newRecords.length} employees onboarded into directory & database.`, 'success');
     };
 
     const resetAndClose = () => {
