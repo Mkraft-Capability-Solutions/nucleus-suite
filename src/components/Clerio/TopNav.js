@@ -26,6 +26,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
 import AppearanceToggle from '@/components/AppearanceToggle';
+import LanguageSelector from '@/components/LanguageSelector';
 
 const ROLE_TO_DEFAULT_CONSOLE = readData("components.Clerio.TopNav", "ROLE_TO_DEFAULT_CONSOLE_1");
 
@@ -231,6 +232,7 @@ const TopNav = ({
                     </button>
                 )}
 
+                <LanguageSelector />
                 <AppearanceToggle />
                 {/* Quick Action (+) */}
                 {quickActions.length > 0 && <div ref={quickActionsRef} style={{ position: 'relative' }}>

@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "Salary Journal",
+  "tallyExport": "Tally XML Export",
+  "bankNeftExport": "Bank NEFT File Export",
+  "auditReport": "Audit Report",
+  "payslip": "Payslip",
+  "downloadPayslip": "Download Payslip",
+  "grossSalary": "Gross Earnings",
+  "netPay": "Net Payable",
+  "totalDeductions": "Total Deductions",
+  "providentFund": "Provident Fund (PF)",
+  "professionalTax": "Professional Tax (PT)",
+  "tdsTax": "Income Tax (TDS)",
+  "esi": "ESI Contribution"
+}

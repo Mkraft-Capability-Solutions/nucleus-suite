@@ -1,0 +1,23 @@
+{
+  "title": "Nucleus HRMS",
+  "tagline": "People at the core",
+  "save": "Save",
+  "saving": "Saving…",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "delete": "Delete",
+  "edit": "Edit",
+  "retry": "Retry",
+  "done": "Done",
+  "loading": "Loading...",
+  "empty": "No items found",
+  "search": "Search...",
+  "filter": "Filter",
+  "export": "Export",
+  "import": "Import",
+  "back": "Back",
+  "next": "Next",
+  "submit": "Submit",
+  "status": "Status",
+  "actions": "Actions"
+}

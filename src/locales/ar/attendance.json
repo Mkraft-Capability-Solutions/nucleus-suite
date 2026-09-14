@@ -1,0 +1,15 @@
+{
+  "punchIn": "تسجيل حضور",
+  "punchOut": "تسجيل انصراف",
+  "checkedIn": "حاضر",
+  "checkedOut": "منصرف",
+  "timesheetSubmitted": "تم إرسال بطاقة الحضور",
+  "timeLogged": "تم تسجيل الوقت",
+  "anomalyReview": "مراجعة الاستثناءات",
+  "rulesetVerified": "تم التحقق من القواعد",
+  "recomputationResult": "نتيجة إعادة الاحتساب",
+  "overtime": "ساعات العمل الإضافية",
+  "regularHours": "الساعات الاعتيادية",
+  "totalSpan": "إجمالي الوقت",
+  "deductions": "الخصومات"
+}

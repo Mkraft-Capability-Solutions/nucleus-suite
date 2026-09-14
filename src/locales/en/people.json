@@ -1,0 +1,16 @@
+{
+  "profile": "Employee Profile",
+  "employeeId": "Employee ID",
+  "fullName": "Full Name",
+  "email": "Email Address",
+  "phone": "Phone Number",
+  "department": "Department",
+  "designation": "Designation",
+  "joiningDate": "Date of Joining",
+  "employmentType": "Employment Type",
+  "manager": "Reporting Manager",
+  "location": "Base Location",
+  "status": "Employment Status",
+  "dossier": "Employee Dossier",
+  "exportDirectory": "Export Directory"
+}

@@ -1,0 +1,18 @@
+{
+  "home": "Home",
+  "dashboard": "Dashboard",
+  "people": "People Core",
+  "attendance": "Attendance & Time",
+  "leave": "Leave Management",
+  "payroll": "Payroll & Benefits",
+  "recruitment": "Recruitment & ATS",
+  "onboarding": "Onboarding & Offboarding",
+  "performance": "Performance (PMS)",
+  "learning": "Learning (LMS)",
+  "compliance": "Statutory & Compliance",
+  "helpdesk": "Helpdesk & Service Desk",
+  "contractors": "Contractor Workforce",
+  "analytics": "MIS & Analytics Hub",
+  "settings": "System Settings",
+  "accessControl": "Access & Permissions"
+}

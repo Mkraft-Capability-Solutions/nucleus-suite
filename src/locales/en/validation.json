@@ -1,0 +1,16 @@
+{
+  "required": "{label} is required.",
+  "length": "{label} does not meet the permitted text length.",
+  "configuration": "{label} has invalid numeric constraints. Contact the administrator.",
+  "range": "{label} must be between {min} and {max}.",
+  "step": "{label} must use increments of {step}.",
+  "time": "{label} must be a valid time.",
+  "date": "{label} must be a valid date.",
+  "email": "{label} must be a valid email address.",
+  "option": "{label} must be selected from the available options.",
+  "dateOrder": "End date must not be before start date.",
+  "timeOrder": "End time must be after start time; overnight intervals require explicit dates.",
+  "submission": "The operation could not be completed. Your values have been retained; please try again.",
+  "requiredGeneric": "Please complete this required field.",
+  "saving": "Saving…"
+}

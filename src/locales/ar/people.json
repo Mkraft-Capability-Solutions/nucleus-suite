@@ -1,0 +1,16 @@
+{
+  "profile": "الملف التعريفي للموظف",
+  "employeeId": "الرقم الوظيفي",
+  "fullName": "الاسم الكامل",
+  "email": "البريد الإلكتروني",
+  "phone": "رقم الهاتف",
+  "department": "القسم",
+  "designation": "المسمى الوظيفي",
+  "joiningDate": "تاريخ الالتحاق",
+  "employmentType": "نوع العقد",
+  "manager": "المدير المباشر",
+  "location": "مقر العمل",
+  "status": "الحالة الوظيفية",
+  "dossier": "ملف الموظف الشامل",
+  "exportDirectory": "تصدير الدليل"
+}

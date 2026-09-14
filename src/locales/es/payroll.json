@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "Diario de salarios",
+  "tallyExport": "Exportación XML Tally",
+  "bankNeftExport": "Exportación bancaria",
+  "auditReport": "Informe de auditoría",
+  "payslip": "Nómina",
+  "downloadPayslip": "Descargar nómina",
+  "grossSalary": "Salario bruto",
+  "netPay": "Salario neto",
+  "totalDeductions": "Deducciones totales",
+  "providentFund": "Fondo de previsión",
+  "professionalTax": "Impuesto profesional",
+  "tdsTax": "Retención fiscal",
+  "esi": "Contribución seguro"
+}

@@ -1,0 +1,16 @@
+{
+  "required": "{label} es obligatorio.",
+  "length": "{label} no cumple con la longitud permitida.",
+  "configuration": "{label} tiene restricciones numéricas inválidas.",
+  "range": "{label} debe estar entre {min} y {max}.",
+  "step": "{label} debe usar incrementos de {step}.",
+  "time": "{label} debe ser una hora válida.",
+  "date": "{label} debe ser una fecha válida.",
+  "email": "{label} debe ser un correo electrónico válido.",
+  "option": "{label} debe seleccionarse de las opciones disponibles.",
+  "dateOrder": "La fecha final no puede ser anterior a la inicial.",
+  "timeOrder": "La hora final debe ser posterior a la inicial.",
+  "submission": "No se pudo completar la operación.",
+  "requiredGeneric": "Por favor complete este campo obligatorio.",
+  "saving": "Guardando…"
+}

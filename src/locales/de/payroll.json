@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "Gehaltsjournal",
+  "tallyExport": "Tally XML-Export",
+  "bankNeftExport": "Banküberweisungsexport",
+  "auditReport": "Audit-Bericht",
+  "payslip": "Gehaltsabrechnung",
+  "downloadPayslip": "Abrechnung herunterladen",
+  "grossSalary": "Bruttogehalt",
+  "netPay": "Nettogehalt",
+  "totalDeductions": "Gesamtabzüge",
+  "providentFund": "Vorsorgefonds",
+  "professionalTax": "Gewerbesteuer",
+  "tdsTax": "Quellensteuer",
+  "esi": "Sozialversicherung"
+}

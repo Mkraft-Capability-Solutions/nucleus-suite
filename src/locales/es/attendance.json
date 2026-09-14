@@ -1,0 +1,15 @@
+{
+  "punchIn": "Registrar entrada",
+  "punchOut": "Registrar salida",
+  "checkedIn": "Entrada registrada",
+  "checkedOut": "Salida registrada",
+  "timesheetSubmitted": "Parte de horas enviado",
+  "timeLogged": "Tiempo registrado",
+  "anomalyReview": "Revisión de anomalías",
+  "rulesetVerified": "Reglas verificadas",
+  "recomputationResult": "Resultado de recálculo",
+  "overtime": "Horas extras",
+  "regularHours": "Horas regulares",
+  "totalSpan": "Tiempo total",
+  "deductions": "Deducciones"
+}

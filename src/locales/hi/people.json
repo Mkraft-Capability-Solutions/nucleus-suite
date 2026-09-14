@@ -1,0 +1,16 @@
+{
+  "profile": "कर्मचारी प्रोफ़ाइल",
+  "employeeId": "कर्मचारी पहचान संख्या (Emp ID)",
+  "fullName": "पूरा नाम",
+  "email": "ईमेल पता",
+  "phone": "फ़ोन नंबर",
+  "department": "विभाग",
+  "designation": "पद / पदनाम",
+  "joiningDate": "कार्यभार ग्रहण तिथि",
+  "employmentType": "रोजगार का प्रकार",
+  "manager": "रिपोर्टिंग प्रबंधक",
+  "location": "मूल कार्यस्थल",
+  "status": "रोजगार स्थिति",
+  "dossier": "कर्मचारी विवरणिका (Dossier)",
+  "exportDirectory": "कर्मचारी निर्देशिका निर्यात करें"
+}

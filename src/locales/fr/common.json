@@ -1,0 +1,23 @@
+{
+  "title": "Nucleus HRMS",
+  "tagline": "L'humain au cœur",
+  "save": "Enregistrer",
+  "saving": "Enregistrement…",
+  "cancel": "Annuler",
+  "confirm": "Confirmer",
+  "delete": "Supprimer",
+  "edit": "Modifier",
+  "retry": "Réessayer",
+  "done": "Terminé",
+  "loading": "Chargement...",
+  "empty": "Aucun élément trouvé",
+  "search": "Rechercher...",
+  "filter": "Filtrer",
+  "export": "Exporter",
+  "import": "Importer",
+  "back": "Retour",
+  "next": "Suivant",
+  "submit": "Soumettre",
+  "status": "Statut",
+  "actions": "Actions"
+}

@@ -1,0 +1,15 @@
+{
+  "punchIn": "出勤打刻",
+  "punchOut": "退勤打刻",
+  "checkedIn": "出勤中",
+  "checkedOut": "退勤済み",
+  "timesheetSubmitted": "タイムシート提出済み",
+  "timeLogged": "勤務時間記録済み",
+  "anomalyReview": "異常値の確認",
+  "rulesetVerified": "ルール検証済み",
+  "recomputationResult": "再計算結果",
+  "overtime": "残業時間",
+  "regularHours": "所定労働時間",
+  "totalSpan": "総拘束時間",
+  "deductions": "控除"
+}

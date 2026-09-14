@@ -1,0 +1,18 @@
+{
+  "home": "Startseite",
+  "dashboard": "Dashboard",
+  "people": "Mitarbeiterstamm",
+  "attendance": "Zeiterfassung & Anwesenheit",
+  "leave": "Urlaubsverwaltung",
+  "payroll": "Gehalt & Vergütung",
+  "recruitment": "Recruiting & ATS",
+  "onboarding": "Onboarding & Offboarding",
+  "performance": "Leistungsbeurteilung (PMS)",
+  "learning": "Weiterbildung (LMS)",
+  "compliance": "Compliance & Richtlinien",
+  "helpdesk": "Service Desk & Support",
+  "contractors": "Externe Mitarbeiter",
+  "analytics": "MIS & Analytics Hub",
+  "settings": "Systemeinstellungen",
+  "accessControl": "Rechte & Zugriffskontrolle"
+}

@@ -1,0 +1,16 @@
+{
+  "required": "{label} は必須項目です。",
+  "length": "{label} の文字数が無効です。",
+  "configuration": "{label} の数値制約が無効です。",
+  "range": "{label} は {min} から {max} の間で指定してください。",
+  "step": "{label} は {step} 単位で入力してください。",
+  "time": "{label} は有効な時刻を入力してください。",
+  "date": "{label} は有効な日付を入力してください。",
+  "email": "{label} は有効なメールアドレスを入力してください。",
+  "option": "{label} を選択肢から指定してください。",
+  "dateOrder": "終了日は開始日以降の日付を指定してください。",
+  "timeOrder": "終了時刻は開始時刻より後に設定してください。",
+  "submission": "処理を完了できませんでした。",
+  "requiredGeneric": "この項目を入力してください。",
+  "saving": "保存中…"
+}

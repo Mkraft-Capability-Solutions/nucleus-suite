@@ -1,0 +1,23 @@
+{
+  "title": "Nucleus HRMS",
+  "tagline": "Der Mensch im Mittelpunkt",
+  "save": "Speichern",
+  "saving": "Wird gespeichert…",
+  "cancel": "Abbrechen",
+  "confirm": "Bestätigen",
+  "delete": "Löschen",
+  "edit": "Bearbeiten",
+  "retry": "Wiederholen",
+  "done": "Fertig",
+  "loading": "Laden...",
+  "empty": "Keine Elemente gefunden",
+  "search": "Suchen...",
+  "filter": "Filtern",
+  "export": "Exportieren",
+  "import": "Importieren",
+  "back": "Zurück",
+  "next": "Weiter",
+  "submit": "Absenden",
+  "status": "Status",
+  "actions": "Aktionen"
+}

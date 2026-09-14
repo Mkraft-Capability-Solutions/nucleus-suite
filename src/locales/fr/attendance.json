@@ -1,0 +1,15 @@
+{
+  "punchIn": "Pointer l'arrivée",
+  "punchOut": "Pointer le départ",
+  "checkedIn": "Présent",
+  "checkedOut": "Parti",
+  "timesheetSubmitted": "Feuille de temps soumise",
+  "timeLogged": "Temps enregistré",
+  "anomalyReview": "Examen des anomalies",
+  "rulesetVerified": "Règles vérifiées",
+  "recomputationResult": "Résultat du recalcul",
+  "overtime": "Heures supplémentaires",
+  "regularHours": "Heures normales",
+  "totalSpan": "Durée totale",
+  "deductions": "Déductions"
+}

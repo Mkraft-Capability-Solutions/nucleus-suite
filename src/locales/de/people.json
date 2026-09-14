@@ -1,0 +1,16 @@
+{
+  "profile": "Mitarbeiterprofil",
+  "employeeId": "Mitarbeiter-ID",
+  "fullName": "Vollständiger Name",
+  "email": "E-Mail-Adresse",
+  "phone": "Telefonnummer",
+  "department": "Abteilung",
+  "designation": "Position",
+  "joiningDate": "Eintrittsdatum",
+  "employmentType": "Beschäftigungsart",
+  "manager": "Vorgesetzter",
+  "location": "Standort",
+  "status": "Beschäftigungsstatus",
+  "dossier": "Mitarbeiterakte",
+  "exportDirectory": "Verzeichnis exportieren"
+}

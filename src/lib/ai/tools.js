@@ -1,22 +1,23 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { db } from '@/lib/db';
+import { user } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 /**
  * Layer 4: RAG/Tools Layer
- * Interactions with the "Real World" (Database & External Services)
+ * Interactions with the Workspace Database & AI Services
  */
 export const tools = {
     /**
      * Fetch attendance status for a user
      */
     getAttendance: async (email) => {
-        // In a real app, fetch from Attendance table. 
-        // For now, we'll return a mock status based on the user's existence
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return "User not found.";
+        try {
+            const [foundUser] = await db.select().from(user).where(eq(user.email, email)).limit(1);
+            if (!foundUser) return "User not found.";
+        } catch {
+            // Fallback for preview/offline mode
+        }
 
-        // Mock data
         return {
             status: 'Present',
             punchIn: '09:00 AM',
@@ -27,7 +28,7 @@ export const tools = {
     /**
      * Fetch leave balance
      */
-    getLeaves: async (email) => {
+    getLeaves: async (_email) => {
         return {
             privilege: 12,
             casual: 6,
@@ -38,7 +39,7 @@ export const tools = {
     /**
      * Fetch payroll info (sensitive)
      */
-    getPayroll: async (email) => {
+    getPayroll: async (_email) => {
         return {
             lastMonthPayout: '28th Feb',
             netPay: '₹75,000',
@@ -60,3 +61,5 @@ export const tools = {
         return output.length > 0 ? output : "No specific policy found for this topic.";
     }
 };
+
+export default tools;

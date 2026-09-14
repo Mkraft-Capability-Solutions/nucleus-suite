@@ -1,0 +1,18 @@
+{
+  "home": "मुख्य पृष्ठ",
+  "dashboard": "डैशबोर्ड",
+  "people": "कर्मचारी प्रबंधन (People Core)",
+  "attendance": "उपस्थिति एवं समय",
+  "leave": "अवकाश प्रबंधन",
+  "payroll": "वेतन एवं लाभ",
+  "recruitment": "भर्ती एवं चयन (ATS)",
+  "onboarding": "कार्यभार ग्रहण एवं विदाई",
+  "performance": "कार्य निष्पादन (PMS)",
+  "learning": "प्रशिक्षण एवं विकास (LMS)",
+  "compliance": "सांविधिक अनुपालन (Statutory)",
+  "helpdesk": "सहायता डेस्क (Helpdesk)",
+  "contractors": "अनुबंध कर्मचारी",
+  "analytics": "प्रबंधन रिपोर्ट (MIS & Analytics)",
+  "settings": "सिस्टम सेटिंग्स",
+  "accessControl": "अधिकार एवं सुरक्षा (RBAC)"
+}

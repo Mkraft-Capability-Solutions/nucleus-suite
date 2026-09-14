@@ -1,0 +1,15 @@
+{
+  "punchIn": "Einstempeln",
+  "punchOut": "Ausstempeln",
+  "checkedIn": "Anwesend",
+  "checkedOut": "Abgemeldet",
+  "timesheetSubmitted": "Zeiterfassung eingereicht",
+  "timeLogged": "Zeit erfasst",
+  "anomalyReview": "Anomalieprüfung",
+  "rulesetVerified": "Regelwerk verifiziert",
+  "recomputationResult": "Neuberechnungsergebnis",
+  "overtime": "Überstunden",
+  "regularHours": "Reguläre Stunden",
+  "totalSpan": "Gesamtdauer",
+  "deductions": "Abzüge"
+}

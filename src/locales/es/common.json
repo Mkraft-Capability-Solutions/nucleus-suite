@@ -1,0 +1,23 @@
+{
+  "title": "Nucleus HRMS",
+  "tagline": "Las personas en el centro",
+  "save": "Guardar",
+  "saving": "Guardando…",
+  "cancel": "Cancelar",
+  "confirm": "Confirmar",
+  "delete": "Eliminar",
+  "edit": "Editar",
+  "retry": "Reintentar",
+  "done": "Hecho",
+  "loading": "Cargando...",
+  "empty": "No se encontraron elementos",
+  "search": "Buscar...",
+  "filter": "Filtrar",
+  "export": "Exportar",
+  "import": "Importar",
+  "back": "Atrás",
+  "next": "Siguiente",
+  "submit": "Enviar",
+  "status": "Estado",
+  "actions": "Acciones"
+}

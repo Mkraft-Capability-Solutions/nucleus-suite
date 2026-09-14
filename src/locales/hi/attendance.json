@@ -1,0 +1,15 @@
+{
+  "punchIn": "उपस्थिति दर्ज करें (Punch In)",
+  "punchOut": "प्रस्थान दर्ज करें (Punch Out)",
+  "checkedIn": "उपस्थित",
+  "checkedOut": "प्रस्थान",
+  "timesheetSubmitted": "टाइमशीट प्रस्तुत की गई",
+  "timeLogged": "समय दर्ज किया गया",
+  "anomalyReview": "विसंगति की समीक्षा",
+  "rulesetVerified": "नियम सत्यापित",
+  "recomputationResult": "पुनर्गणना परिणाम",
+  "overtime": "अतिरिक्त समय (Overtime)",
+  "regularHours": "नियमित कार्य घंटे",
+  "totalSpan": "कुल समय",
+  "deductions": "कटौती"
+}

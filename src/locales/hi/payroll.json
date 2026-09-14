@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "वेतन खाता बही",
+  "tallyExport": "Tally XML निर्यात",
+  "bankNeftExport": "बैंक NEFT फाइल निर्यात",
+  "auditReport": "ऑडिट रिपोर्ट",
+  "payslip": "वेतन पर्ची (Payslip)",
+  "downloadPayslip": "वेतन पर्ची डाउनलोड करें",
+  "grossSalary": "सकल वेतन (Gross Salary)",
+  "netPay": "शुद्ध देय वेतन (Net Pay)",
+  "totalDeductions": "कुल कटौती",
+  "providentFund": "भविष्य निधि (PF)",
+  "professionalTax": "व्यावसायिक कर (PT)",
+  "tdsTax": "आयकर कटौती (TDS)",
+  "esi": "कर्मचारी राज्य बीमा (ESI)"
+}

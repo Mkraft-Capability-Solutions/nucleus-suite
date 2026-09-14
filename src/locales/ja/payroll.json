@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "給与仕訳帳",
+  "tallyExport": "Tally XML出力",
+  "bankNeftExport": "全銀・振込データ出力",
+  "auditReport": "監査レポート",
+  "payslip": "給与明細",
+  "downloadPayslip": "給与明細をダウンロード",
+  "grossSalary": "総支給額",
+  "netPay": "差引支給額",
+  "totalDeductions": "控除合計",
+  "providentFund": "積立基金 (PF)",
+  "professionalTax": "住民税・専門税",
+  "tdsTax": "源泉徴収税 (TDS)",
+  "esi": "社会保険料"
+}

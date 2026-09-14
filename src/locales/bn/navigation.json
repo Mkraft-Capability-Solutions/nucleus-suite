@@ -1,0 +1,18 @@
+{
+  "home": "মূলপাতা",
+  "dashboard": "ড্যাশবোর্ড",
+  "people": "কর্মচারী ব্যবস্থাপনা (People Core)",
+  "attendance": "উপস্থিতি ও সময়",
+  "leave": "ছুটি ব্যবস্থাপনা",
+  "payroll": "বেতন ও ভাতাদি",
+  "recruitment": "নিয়োগ ও নির্বাচন (ATS)",
+  "onboarding": "যোগদান ও অব্যাহতি",
+  "performance": "কর্মদক্ষতা মূল্যায়ন (PMS)",
+  "learning": "প্রশিক্ষণ ও উন্নয়ন (LMS)",
+  "compliance": "বিধিবদ্ধ সম্মতি (Compliance)",
+  "helpdesk": "সহায়তা কেন্দ্র ও সাপোর্ট",
+  "contractors": "চুক্তিভিত্তিক কর্মী",
+  "analytics": "ব্যবস্থাপনা রিপোর্ট (MIS)",
+  "settings": "সিস্টেম সেটিংস",
+  "accessControl": "নিরাপত্তা ও অনুমতি (RBAC)"
+}

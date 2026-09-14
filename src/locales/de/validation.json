@@ -1,0 +1,16 @@
+{
+  "required": "{label} ist erforderlich.",
+  "length": "{label} entspricht nicht der zulässigen Länge.",
+  "configuration": "{label} enthält ungültige Einschränkungen.",
+  "range": "{label} muss zwischen {min} und {max} liegen.",
+  "step": "{label} muss Schritte von {step} verwenden.",
+  "time": "{label} muss eine gültige Uhrzeit sein.",
+  "date": "{label} muss ein gültiges Datum sein.",
+  "email": "{label} muss eine gültige E-Mail-Adresse sein.",
+  "option": "{label} muss aus den verfügbaren Optionen gewählt werden.",
+  "dateOrder": "Das Enddatum darf nicht vor dem Startdatum liegen.",
+  "timeOrder": "Die Endzeit muss nach der Startzeit liegen.",
+  "submission": "Der Vorgang konnte nicht abgeschlossen werden.",
+  "requiredGeneric": "Bitte füllen Sie dieses Pflichtfeld aus.",
+  "saving": "Wird gespeichert…"
+}

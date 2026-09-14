@@ -1,0 +1,16 @@
+{
+  "required": "{label} est obligatoire.",
+  "length": "{label} ne respecte pas la longueur requise.",
+  "configuration": "{label} a des contraintes numériques invalides.",
+  "range": "{label} doit être compris entre {min} et {max}.",
+  "step": "{label} doit utiliser des incréments de {step}.",
+  "time": "{label} doit être une heure valide.",
+  "date": "{label} doit être une date valide.",
+  "email": "{label} doit être une adresse e-mail valide.",
+  "option": "{label} doit être sélectionné parmi les options.",
+  "dateOrder": "La date de fin ne peut être antérieure à la date de début.",
+  "timeOrder": "L'heure de fin doit être postérieure à l'heure de début.",
+  "submission": "L'opération n'a pas pu être effectuée.",
+  "requiredGeneric": "Veuillez renseigner ce champ obligatoire.",
+  "saving": "Enregistrement…"
+}

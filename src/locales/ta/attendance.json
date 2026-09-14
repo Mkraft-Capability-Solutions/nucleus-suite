@@ -1,0 +1,15 @@
+{
+  "punchIn": "வருகைப் பதிவு (Punch In)",
+  "punchOut": "வெளியேறுதல் பதிவு (Punch Out)",
+  "checkedIn": "வருகை தந்துள்ளார்",
+  "checkedOut": "வெளியேறிவிட்டார்",
+  "timesheetSubmitted": "பணிநேரப் பட்டியல் சமர்ப்பிக்கப்பட்டது",
+  "timeLogged": "பணி நேரம் பதிவு செய்யப்பட்டது",
+  "anomalyReview": "முரண்பாடுகள் மறுஆய்வு",
+  "rulesetVerified": "விதிகள் சரிபார்க்கப்பட்டன",
+  "recomputationResult": "மறு கணக்கீட்டு முடிவு",
+  "overtime": "கூடுதல் பணி நேரம் (Overtime)",
+  "regularHours": "வழக்கமான பணி நேரம்",
+  "totalSpan": "மொத்த நேரம்",
+  "deductions": "பிடித்தங்கள்"
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Nucleus HRMS",
+  "tagline": "人をすべての中心に",
+  "save": "保存",
+  "saving": "保存中…",
+  "cancel": "キャンセル",
+  "confirm": "確認",
+  "delete": "削除",
+  "edit": "編集",
+  "retry": "再試行",
+  "done": "完了",
+  "loading": "読み込み中...",
+  "empty": "項目が見つかりません",
+  "search": "検索...",
+  "filter": "フィルター",
+  "export": "エクスポート",
+  "import": "インポート",
+  "back": "戻る",
+  "next": "次へ",
+  "submit": "送信",
+  "status": "ステータス",
+  "actions": "アクション"
+}

@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "पगार खातेवही",
+  "tallyExport": "Tally XML निर्यात",
+  "bankNeftExport": "बँक NEFT फाइल निर्यात",
+  "auditReport": "ऑडिट अहवाल",
+  "payslip": "पगार पावती (Payslip)",
+  "downloadPayslip": "पगार पावती डाउनलोड करा",
+  "grossSalary": "एकूण पगार (Gross Salary)",
+  "netPay": "निव्वळ देय पगार (Net Pay)",
+  "totalDeductions": "एकूण कपात",
+  "providentFund": "भविष्य निर्वाह निधी (PF)",
+  "professionalTax": "व्यवसाय कर (PT)",
+  "tdsTax": "आयकर कपात (TDS)",
+  "esi": "कामगार विमा अंशदान (ESI)"
+}

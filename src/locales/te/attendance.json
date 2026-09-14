@@ -1,0 +1,15 @@
+{
+  "punchIn": "హాజరు నమోదు (Punch In)",
+  "punchOut": "నిష్క్రమణ నమోదు (Punch Out)",
+  "checkedIn": "హాజరయ్యారు",
+  "checkedOut": "నిష్క్రమించారు",
+  "timesheetSubmitted": "టైమ్‌షీట్ సమర్పించబడింది",
+  "timeLogged": "సమయం నమోదు చేయబడింది",
+  "anomalyReview": "అసాధారణతల సమీక్ష",
+  "rulesetVerified": "నియమాలు ధృవీకరించబడ్డాయి",
+  "recomputationResult": "పునఃలెక్కింపు ఫలితం",
+  "overtime": "అదనపు పని గంటలు (Overtime)",
+  "regularHours": "సాధారణ పని గంటలు",
+  "totalSpan": "మొత్తం సమయం",
+  "deductions": "మినహాయింపులు"
+}

@@ -1,0 +1,16 @@
+{
+  "profile": "பணியாளர் சுயவிவரம்",
+  "employeeId": "பணியாளர் எண் (Emp ID)",
+  "fullName": "முழுப் பெயர்",
+  "email": "மின்னஞ்சல் முகவரி",
+  "phone": "தொலைபேசி எண்",
+  "department": "துறை",
+  "designation": "பதவி",
+  "joiningDate": "பணியில் சேர்ந்த தேதி",
+  "employmentType": "பணி வகை",
+  "manager": "நேரடி மேலாளர்",
+  "location": "பணியிடம்",
+  "status": "பணி நிலை",
+  "dossier": "பணியாளர் ஆவணத் தொகுப்பு",
+  "exportDirectory": "பணியாளர் பட்டியலை ஏற்றுமதி செய்"
+}

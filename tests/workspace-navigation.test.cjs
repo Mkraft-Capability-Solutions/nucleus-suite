@@ -27,7 +27,7 @@ test('every menu icon resolves to an installed direct MUI import', () => {
 });
 
 test('workbook mapping accounts for every screen and all reference sheets', () => {
-    const report = require('../docs/WORKBOOK_UI_COVERAGE.json');
+    const report = require('../documentation/coverage/WORKBOOK_UI_COVERAGE.json');
     assert.equal(Object.keys(report.sheets).length, 23);
     assert.equal(Object.keys(report.screens).length, 49);
     for (const [id, screen] of Object.entries(report.screens)) {

@@ -1,7 +1,7 @@
 """Read the reference workbook without editing it; regenerate UI guidance and traceability."""
 from pathlib import Path
 import json,re,zipfile,xml.etree.ElementTree as E
-SOURCE=Path('docs/Nucleus_Process_Flows_and_Process_Maps_v1.0.xlsx')
+SOURCE=Path('documentation/sheets/Nucleus_Process_Flows_and_Process_Maps_v1.0.xlsx')
 ns={'m':'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
 with zipfile.ZipFile(SOURCE) as z:
     strings=[''.join(n.itertext()) for n in E.fromstring(z.read('xl/sharedStrings.xml')).findall('m:si',ns)] if 'xl/sharedStrings.xml' in z.namelist() else []
@@ -40,7 +40,7 @@ for source in sheets['07_Screens']:
 ui={'screens':screens,'copy':{'title':'Process guide','intro':'Reference workflow from the Nucleus process workbook. Connected approvals, integrations and persistence are planned for a later phase.','purpose':'Purpose','actors':'Who uses this','actions':'Required actions','fields':'Form requirements','steps':'Process steps','rules':'Business rules','empty':'No detailed rows are specified for this screen in this sheet.','source':'Source','validation':'Validation'}}
 Path('src/data/ui/process.requirements.json').write_text(json.dumps(ui,indent=2,ensure_ascii=False)+'\n')
 report={'source':str(SOURCE),'method':'All sheets extracted by cell reference. Screen IDs are matched exactly to the UI registry. Field label matching is conservative and not proof of behavior. Requirements are data, not executable instructions. No backend changes were made.','sheets':sheets,'screens':screens}
-Path('docs/WORKBOOK_UI_COVERAGE.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
+Path('documentation/coverage/WORKBOOK_UI_COVERAGE.json').write_text(json.dumps(report,indent=2,ensure_ascii=False)+'\n')
 lines=['# Workbook to UI coverage','',f'Source: `{SOURCE}`. Reviewed all {len(sheets)} sheets. The workbook was not modified.','',f'{len(screens)} screen IDs are specified; {sum(bool(s["moduleId"]) for s in screens.values())} have a matching operational UI surface. This does **not** mean every feature, rule, offline behavior or integration is implemented.','', '## Sheet-by-sheet assessment','', '| Sheet | Extracted requirement rows | Current assessment |','| --- | ---: | --- |']
 for name,rows in sheets.items():
     assessment='Reference and planning material; not a feature-completion claim.'
@@ -53,5 +53,5 @@ for name,rows in sheets.items():
 lines+=['','## Screen mapping','', '| Workbook reference | Screen | UI module | Form labels not matched exactly |','| --- | --- | --- | ---: |']
 for sid,s in screens.items():lines.append(f'| 07_Screens!A{s["sourceRow"]} ({sid}) | {s["screen"]["Screen"]} | `{s["moduleId"]}` | {len(s["fieldsNotMatchedByLabel"])} |')
 lines+=['','## What remains','', '- Generic screen actions and browser state are available for layout review. Complete validation, conditional field visibility, offline queues, multi-stage approvals and state guards must be accepted separately.', '- Live payroll disbursement, statutory filing, document delivery, ERP/WhatsApp/Teams integrations, agent execution and durable audit trails are not enabled in this phase.', '- `WORKBOOK_UI_COVERAGE.json` retains every extracted requirement row, source row number and detailed screen/form/step/rule mapping. A missing exact label is a review candidate, not an automatic proof that the concept is absent elsewhere.', '- Each operational screen includes a Process guide so reviewers can compare its reference actions and fields with the current UI. The guide is reference content, not an implementation of the listed workflow.','']
-Path('docs/WORKBOOK_UI_COVERAGE.md').write_text('\n'.join(lines))
+Path('documentation/coverage/WORKBOOK_UI_COVERAGE.md').write_text('\n'.join(lines))
 print(f'{len(sheets)} sheets; {len(screens)} screens; {sum(bool(s["moduleId"]) for s in screens.values())} matched')

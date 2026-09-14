@@ -1,0 +1,18 @@
+{
+  "home": "Inicio",
+  "dashboard": "Panel de control",
+  "people": "Personas",
+  "attendance": "Asistencia y horarios",
+  "leave": "Gestión de permisos",
+  "payroll": "Nómina y beneficios",
+  "recruitment": "Contratación y selección",
+  "onboarding": "Integración",
+  "performance": "Rendimiento",
+  "learning": "Capacitación",
+  "compliance": "Cumplimiento normativo",
+  "helpdesk": "Mesa de ayuda",
+  "contractors": "Contratistas",
+  "analytics": "Analítica e informes",
+  "settings": "Configuración",
+  "accessControl": "Control de acceso"
+}

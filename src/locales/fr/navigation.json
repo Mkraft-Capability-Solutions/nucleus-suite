@@ -1,0 +1,18 @@
+{
+  "home": "Accueil",
+  "dashboard": "Tableau de bord",
+  "people": "Personnel & Organisation",
+  "attendance": "Présence & Temps",
+  "leave": "Gestion des congés",
+  "payroll": "Paie & Avantages",
+  "recruitment": "Recrutement & ATS",
+  "onboarding": "Intégration & Départ",
+  "performance": "Performance (PMS)",
+  "learning": "Formation (LMS)",
+  "compliance": "Conformité & Réglementation",
+  "helpdesk": "Assistance & Support",
+  "contractors": "Prestataires externes",
+  "analytics": "Analytique & Rapports",
+  "settings": "Paramètres du système",
+  "accessControl": "Accès & Permissions"
+}

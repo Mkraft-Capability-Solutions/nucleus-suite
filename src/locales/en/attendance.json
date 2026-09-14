@@ -1,0 +1,15 @@
+{
+  "punchIn": "Punch In",
+  "punchOut": "Punch Out",
+  "checkedIn": "Checked In",
+  "checkedOut": "Checked Out",
+  "timesheetSubmitted": "Timesheet Submitted",
+  "timeLogged": "Time Logged",
+  "anomalyReview": "Anomaly Review",
+  "rulesetVerified": "Ruleset Verified",
+  "recomputationResult": "Recomputation Result",
+  "overtime": "Overtime",
+  "regularHours": "Regular Hours",
+  "totalSpan": "Total Span",
+  "deductions": "Deductions"
+}

@@ -370,7 +370,7 @@
     "description": "AI-Powered Human Resource Management System"
   },
   "leave": {
-    "applyTitle": "SCR-030 | Apply for leave",
+    "applyTitle": "Apply for Leave",
     "employee": "Employee",
     "employeeRequired": "Select an eligible employee.",
     "type": "Leave Type",

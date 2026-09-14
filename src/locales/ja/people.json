@@ -1,0 +1,16 @@
+{
+  "profile": "従業員プロフィール",
+  "employeeId": "社員番号",
+  "fullName": "氏名",
+  "email": "メールアドレス",
+  "phone": "電話番号",
+  "department": "部署",
+  "designation": "役職",
+  "joiningDate": "入社日",
+  "employmentType": "雇用形態",
+  "manager": "直属の上長",
+  "location": "勤務地",
+  "status": "在籍ステータス",
+  "dossier": "社員台帳",
+  "exportDirectory": "名簿をエクスポート"
+}

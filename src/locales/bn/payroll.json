@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "বেতন খতিয়ান",
+  "tallyExport": "Tally XML রপ্তানি",
+  "bankNeftExport": "ব্যাংক ট্রান্সফার ফাইল রপ্তানি",
+  "auditReport": "অডিট রিপোর্ট",
+  "payslip": "বেতন রসিদ (Payslip)",
+  "downloadPayslip": "বেতন রসিদ ডাউনলোড করুন",
+  "grossSalary": "মোট বেতন (Gross Salary)",
+  "netPay": "প্রদেয় নিট বেতন (Net Pay)",
+  "totalDeductions": "মোট কর্তন",
+  "providentFund": "ভবিষ্যত তহবিল (PF)",
+  "professionalTax": "পেশাগত কর (PT)",
+  "tdsTax": "উৎস কর কর্তন (TDS)",
+  "esi": "ইএসআই বীমা অনুদান"
+}

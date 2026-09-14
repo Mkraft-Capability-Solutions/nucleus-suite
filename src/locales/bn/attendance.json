@@ -1,0 +1,15 @@
+{
+  "punchIn": "উপস্থিতি নথিভুক্ত (Punch In)",
+  "punchOut": "প্রস্থান নথিভুক্ত (Punch Out)",
+  "checkedIn": "উপস্থিত",
+  "checkedOut": "প্রস্থান করেছেন",
+  "timesheetSubmitted": "টাইমশিট জমা দেওয়া হয়েছে",
+  "timeLogged": "কাজের সময় নথিভুক্ত হয়েছে",
+  "anomalyReview": "ব্যতিক্রম পর্যালোচনা",
+  "rulesetVerified": "নিয়মাবলী যাচাইকৃত",
+  "recomputationResult": "পুনর্গণনা ফলাফল",
+  "overtime": "অতিরিক্ত সময় (Overtime)",
+  "regularHours": "নিয়মিত কাজের সময়",
+  "totalSpan": "মোট সময়",
+  "deductions": "কর্তন"
+}

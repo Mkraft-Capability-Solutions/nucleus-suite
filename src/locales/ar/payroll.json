@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "دفتر الرواتب",
+  "tallyExport": "تصدير Tally XML",
+  "bankNeftExport": "تصدير التحويلات البنكية",
+  "auditReport": "تقرير التدقيق",
+  "payslip": "قسيمة الراتب",
+  "downloadPayslip": "تحميل قسيمة الراتب",
+  "grossSalary": "إجمالي الراتب",
+  "netPay": "صافي الراتب",
+  "totalDeductions": "إجمالي الاستقطاعات",
+  "providentFund": "صندوق الادخار",
+  "professionalTax": "الضريبة المهنية",
+  "tdsTax": "ضريبة الاستقطاع",
+  "esi": "التأمين الصحي"
+}

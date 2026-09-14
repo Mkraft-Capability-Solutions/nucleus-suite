@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "சம்பளப் பேரேடு",
+  "tallyExport": "Tally XML ஏற்றுமதி",
+  "bankNeftExport": "வங்கி NEFT கோப்பு ஏற்றுமதி",
+  "auditReport": "தணிக்கை அறிக்கை",
+  "payslip": "சம்பளச் சீட்டு (Payslip)",
+  "downloadPayslip": "சம்பளச் சீட்டைப் பதிவிறக்கு",
+  "grossSalary": "மொத்த சம்பளம் (Gross Pay)",
+  "netPay": "நிகர சம்பளம் (Net Pay)",
+  "totalDeductions": "மொத்தப் பிடித்தங்கள்",
+  "providentFund": "வருங்கால வைப்பு நிதி (PF)",
+  "professionalTax": "தொழில் வரி (PT)",
+  "tdsTax": "வருமான வரி பிடித்தம் (TDS)",
+  "esi": "ESI காப்பீட்டுப் பங்களிப்பு"
+}

@@ -1,0 +1,16 @@
+{
+  "profile": "Profil de l'employé",
+  "employeeId": "Identifiant employé",
+  "fullName": "Nom complet",
+  "email": "Adresse e-mail",
+  "phone": "Numéro de téléphone",
+  "department": "Département",
+  "designation": "Fonction",
+  "joiningDate": "Date d'embauche",
+  "employmentType": "Type de contrat",
+  "manager": "Manager direct",
+  "location": "Lieu de travail",
+  "status": "Statut professionnel",
+  "dossier": "Dossier employé",
+  "exportDirectory": "Exporter l'annuaire"
+}

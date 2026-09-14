@@ -1,0 +1,16 @@
+{
+  "profile": "Perfil del empleado",
+  "employeeId": "ID de empleado",
+  "fullName": "Nombre completo",
+  "email": "Correo electrónico",
+  "phone": "Teléfono",
+  "department": "Departamento",
+  "designation": "Cargo",
+  "joiningDate": "Fecha de ingreso",
+  "employmentType": "Tipo de empleo",
+  "manager": "Gerente directo",
+  "location": "Ubicación base",
+  "status": "Estado laboral",
+  "dossier": "Expediente del empleado",
+  "exportDirectory": "Exportar directorio"
+}

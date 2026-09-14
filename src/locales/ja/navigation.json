@@ -1,0 +1,18 @@
+{
+  "home": "ホーム",
+  "dashboard": "ダッシュボード",
+  "people": "社員情報 (People Core)",
+  "attendance": "勤怠・時間管理",
+  "leave": "休暇管理",
+  "payroll": "給与・福利厚生",
+  "recruitment": "採用・ATS",
+  "onboarding": "入社・退職手続き",
+  "performance": "人事評価 (PMS)",
+  "learning": "研修・育成 (LMS)",
+  "compliance": "法令・コンプライアンス",
+  "helpdesk": "社内ヘルプデスク",
+  "contractors": "業務委託・契約社員",
+  "analytics": "経営分析・MIS",
+  "settings": "システム設定",
+  "accessControl": "権限・アクセス制御"
+}

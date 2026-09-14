@@ -1,0 +1,15 @@
+{
+  "salaryJournal": "జీతాల జర్నల్",
+  "tallyExport": "Tally XML ఎగుమతి",
+  "bankNeftExport": "బ్యాంక్ NEFT ఫైల్ ఎగుమతి",
+  "auditReport": "ఆడిట్ నివేదిక",
+  "payslip": "జీతం స్లిప్పు (Payslip)",
+  "downloadPayslip": "జీతం స్లిప్పును డౌన్‌లోడ్ చేసుకోండి",
+  "grossSalary": "స్థూల జీతం (Gross Pay)",
+  "netPay": "నికర చెల్లింపు (Net Pay)",
+  "totalDeductions": "మొత్తం మినహాయింపులు",
+  "providentFund": "భవిష్య నిధి (PF)",
+  "professionalTax": "వృత్తి పన్ను (PT)",
+  "tdsTax": "ఆదాయపు పన్ను మినహాయింపు (TDS)",
+  "esi": "ESI బీమా వాటా"
+}
