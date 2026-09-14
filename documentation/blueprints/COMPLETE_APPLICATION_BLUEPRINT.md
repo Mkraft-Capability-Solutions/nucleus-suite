@@ -776,3 +776,82 @@ The backend should publish and subscribe to the following core asynchronous mess
   - Provident Fund ceiling of ₹15,000 applied for mandatory statutory contributions unless opted out.
   - Gratuity calculation computed based on 15/26 days per completed year of tenure under Payment of Gratuity Act 1972.
 - **Zero-Trust Access Control:** Every API endpoint must validate JWT claims and evaluate both role baseline and user-specific permission overrides from the `UserPermissionOverride` entity.
+
+---
+
+## 6. Voice Navigation & AI System (Nucleus Talk)
+
+> **Added:** September 2026 | **Status:** Core voice system implemented; AI backend deferred
+
+### 6.1 Nucleus Talk — Voice Navigation
+
+The embedded voice assistant allows hands-free navigation of the entire HRMS workspace using natural language.
+
+**Architecture:**
+```
+TopNav Mic Click (synchronous handler)
+        │
+        ├──► speakAloud(personalizedGreeting)   ← audio unlocked by user gesture
+        │
+        └──► CustomEvent('nucleus:voice_navigation')
+                     │
+                     ▼
+            VoiceNavigator Modal
+                     │
+        ┌────────────┼─────────────────┐
+        │            │                 │
+AnimatedLogo   SpeechRecognition   Command Chips
+(CSS/SVG)      (Web Speech API)    (14 preloaded)
+                     │
+                     └──► onresult → liveTranscript bubble
+                                   → 1000ms silence timer
+                                   → parseVoiceCommand()
+                                   → speakAloud(response)
+                                   → dispatch action
+```
+
+**14 Preloaded Action Commands:**
+1. Apply for Leave
+2. Punch In
+3. Punch Out
+4. Go to Attendance
+5. Open Payroll Control Room
+6. Show People Directory
+7. Switch to S1 Console
+8. Open Talent ATS
+9. Show 9-Box Performance Grid
+10. Launch Bulk Data Upload
+11. CTC Exception Approval
+12. Open AI Copilot
+13. Open Statutory Compliance
+14. Go to Platform Settings
+
+**Implementation Files:**
+- `src/utils/voiceCommandEngine.ts` — command parser (30+ patterns) + speech synthesis
+- `src/components/VoiceNavigator.js` — modal, recognition, transcript, action dispatch
+- `src/components/AnimatedNucleusLogo.js` — pure CSS/SVG animated logo (no PNG)
+- `src/components/Clerio/AIPanel.js` — Nucleus Assistant with preloaded action chips
+- `src/components/Clerio/TopNav.js` — mic button with synchronous audio unlock
+
+**Browser Audio Constraint (Critical):**
+`speakAloud()` must be called within the synchronous click event handler. Chrome and Safari block `speechSynthesis.speak()` if called from an async context or `useEffect`. This is a browser autoplay policy — it cannot be worked around.
+
+### 6.2 Nucleus AI Copilot (Grounded Assistant)
+
+The AI Copilot (`AIPanel.js`) provides conversational HR assistance:
+- Answers HR policy queries (grounded by RAG when LangGraph backend is activated)
+- Suggests attendance corrections
+- Drafts HR letters
+- Answers compliance questions
+
+**Backend Status:** LangGraph multi-agent backend is deferred. Current UI uses simulated responses. The backend contracts are fully defined in `src/server/ai/` and `src/app/api/v1/ai/`.
+
+**Agent Types (Future):**
+- Policy Agent — retrieves from vector knowledge vault
+- Payroll Agent — validates and explains computations
+- Roster Agent — suggests shift optimizations
+- Anomaly Agent — detects and auto-heals biometric exceptions
+
+---
+
+*Document Version: 2.1.0 — Updated September 2026 to reflect voice navigation system and current implementation state.*
