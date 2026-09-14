@@ -8,10 +8,6 @@ import {
     User, Bell, Shield, Lock, Globe, Building2,
     Key, CheckCircle2, Save, RotateCcw, Laptop,
     ShieldCheck, Sparkles, Smartphone, Eye,
-import {
-    User, Bell, Shield, Lock, Globe, Building2,
-    Key, CheckCircle2, Save, RotateCcw, Laptop,
-    ShieldCheck, Sparkles, Smartphone, Eye,
     Users, CreditCard, Briefcase, List, Search
 } from 'lucide-react';
 import styles from './SettingsView.module.css';
