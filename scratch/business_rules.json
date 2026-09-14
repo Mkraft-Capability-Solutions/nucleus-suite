@@ -1,0 +1,2195 @@
+[
+  {
+    "Rule ID": "§ PLATFORM, SCOPE AND APPROVAL"
+  },
+  {
+    "Rule ID": "RL-001",
+    "Rule": "An agent principal cannot exist without a named accountable human owner.",
+    "Parameters": "owner_principal_id",
+    "Client value / default": "Mandatory",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-02.1, INT-01.1",
+    "Test case": "TC-P01"
+  },
+  {
+    "Rule ID": "RL-002",
+    "Rule": "A principal sees data only for the legal entities granted to it.",
+    "Parameters": "entity_grant",
+    "Client value / default": "Per user",
+    "Configured in": "Admin UI",
+    "Consumed by": "PLT-02.2",
+    "Test case": "TC-P02"
+  },
+  {
+    "Rule ID": "RL-003",
+    "Rule": "A principal sees time data only for the locations granted to it.",
+    "Parameters": "location_grant, can_edit_time",
+    "Client value / default": "Per user",
+    "Configured in": "Admin UI",
+    "Consumed by": "PLT-02.3",
+    "Test case": "TC-P03"
+  },
+  {
+    "Rule ID": "RL-004",
+    "Rule": "Effective scope is the intersection of tenant, entity, location, reporting line and payroll group.",
+    "Parameters": "—",
+    "Client value / default": "Intersection, never union",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-02.4",
+    "Test case": "TC-P04"
+  },
+  {
+    "Rule ID": "RL-005",
+    "Rule": "Compensation fields return null to a principal outside the record's payroll group, even where time fields are visible.",
+    "Parameters": "salary field set",
+    "Client value / default": "Null, not absent",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-02.5, SCR-022",
+    "Test case": "TC-P05 (runs every build)"
+  },
+  {
+    "Rule ID": "RL-010",
+    "Rule": "Every approvable request routes through one chain definition resolved by request type, worker class, location and amount band.",
+    "Parameters": "chain_id",
+    "Client value / default": "Per request type",
+    "Configured in": "approval_chain",
+    "Consumed by": "PLT-05, LVE-04, TIM-06, CMB-03, TAL-01",
+    "Test case": "TC-P10"
+  },
+  {
+    "Rule ID": "RL-011",
+    "Rule": "Each step resolves its approver by role, position or named person, and starts an SLA clock.",
+    "Parameters": "resolution_mode, sla_hours",
+    "Client value / default": "Per step",
+    "Configured in": "approval_chain",
+    "Consumed by": "PLT-05.2",
+    "Test case": "TC-P11"
+  },
+  {
+    "Rule ID": "RL-012",
+    "Rule": "An approval queued against a principal who has left reroutes to the successor or the role holder; it never vanishes.",
+    "Parameters": "reroute_policy",
+    "Client value / default": "Successor, then role",
+    "Configured in": "approval_chain",
+    "Consumed by": "PLT-05.2",
+    "Test case": "TC-P12"
+  },
+  {
+    "Rule ID": "RL-013",
+    "Rule": "A decision records actor, timestamp, channel and, on rejection or return, a reason.",
+    "Parameters": "—",
+    "Client value / default": "Reason mandatory on reject",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-05.3",
+    "Test case": "TC-P13"
+  },
+  {
+    "Rule ID": "RL-014",
+    "Rule": "Steps are sequential and mandatory unless the definition marks a step optional.",
+    "Parameters": "mandatory",
+    "Client value / default": "Sequential: Supervisor → HOD → HR Head",
+    "Configured in": "approval_chain",
+    "Consumed by": "LVE-04.1",
+    "Test case": "TC-L14"
+  },
+  {
+    "Rule ID": "RL-015",
+    "Rule": "HR may edit or close a request at any stage; the edit is logged with actor and reason.",
+    "Parameters": "—",
+    "Client value / default": "Enabled",
+    "Configured in": "Role permission",
+    "Consumed by": "PLT-05.6, LVE-04.4",
+    "Test case": "TC-L15"
+  },
+  {
+    "Rule ID": "RL-020",
+    "Rule": "A temporal fact is never updated in place; a new version is written and the prior version end-dated.",
+    "Parameters": "valid_from/to, recorded_from/to",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-08, PPL-02.3",
+    "Test case": "TC-P20"
+  },
+  {
+    "Rule ID": "RL-021",
+    "Rule": "An as-at read takes valid_at and recorded_at; payroll and recompute must pass the snapshot timestamp, not now.",
+    "Parameters": "valid_at, recorded_at",
+    "Client value / default": "Snapshot for derived work",
+    "Configured in": "Code invariant",
+    "Consumed by": "PLT-08.3, TIM-09.2",
+    "Test case": "TC-P21"
+  },
+  {
+    "Rule ID": "§ PEOPLE CORE"
+  },
+  {
+    "Rule ID": "RL-030",
+    "Rule": "Search for an existing person before creating one.",
+    "Parameters": "match keys: name, DOB, mobile, PAN, Aadhaar",
+    "Client value / default": "Mandatory step",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-01.1",
+    "Test case": "TC-H30"
+  },
+  {
+    "Rule ID": "RL-031",
+    "Rule": "A duplicate candidate above the confidence threshold is presented to HR for a decision, never auto-merged or auto-rejected.",
+    "Parameters": "match_threshold",
+    "Client value / default": "0.85",
+    "Configured in": "Config",
+    "Consumed by": "PPL-01.2",
+    "Test case": "TC-H31"
+  },
+  {
+    "Rule ID": "RL-032",
+    "Rule": "A person record is created once and survives rehire, conversion and entity transfer.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-01.3",
+    "Test case": "TC-H32"
+  },
+  {
+    "Rule ID": "RL-033",
+    "Rule": "An Aadhaar or PAN mismatch does not block joining; it raises a payroll-blocking flag.",
+    "Parameters": "—",
+    "Client value / default": "Blocking at payroll, not at hire",
+    "Configured in": "Config",
+    "Consumed by": "PPL-01.3, PAY-03.1",
+    "Test case": "TC-H33"
+  },
+  {
+    "Rule ID": "RL-034",
+    "Rule": "An assignment can only be created against a vacant, non-frozen, non-abolished position.",
+    "Parameters": "position.status",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-01.4",
+    "Test case": "TC-H34"
+  },
+  {
+    "Rule ID": "RL-035",
+    "Rule": "An assignment belongs to an employment, which belongs to a legal entity.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Schema",
+    "Consumed by": "PPL-01.5",
+    "Test case": "TC-H35"
+  },
+  {
+    "Rule ID": "RL-036",
+    "Rule": "Payroll group and location are independent attributes of an assignment; neither defaults from the other.",
+    "Parameters": "—",
+    "Client value / default": "Independent",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-01.6",
+    "Test case": "TC-H36 (demo point 8)"
+  },
+  {
+    "Rule ID": "RL-037",
+    "Rule": "Worker class supplies policy defaults; the assignment may override any of them with a reason and an effective date.",
+    "Parameters": "override fields",
+    "Client value / default": "Override allowed",
+    "Configured in": "assignment",
+    "Consumed by": "PPL-01.7, PPL-03.2",
+    "Test case": "TC-H37"
+  },
+  {
+    "Rule ID": "RL-038",
+    "Rule": "Creating an assignment triggers the joining chain.",
+    "Parameters": "chain_id",
+    "Client value / default": "Automatic",
+    "Configured in": "workflow_definition",
+    "Consumed by": "PPL-01.8",
+    "Test case": "TC-H38"
+  },
+  {
+    "Rule ID": "RL-040",
+    "Rule": "Any assignment change carries an effective date and a reason.",
+    "Parameters": "—",
+    "Client value / default": "Mandatory",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-02.1",
+    "Test case": "TC-H40"
+  },
+  {
+    "Rule ID": "RL-041",
+    "Rule": "A retro change effective inside a closed payroll period produces arrears in the next open run; the closed run is never rewritten.",
+    "Parameters": "—",
+    "Client value / default": "Arrears only",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-02.5, PAY-11",
+    "Test case": "TC-Y41"
+  },
+  {
+    "Rule ID": "RL-042",
+    "Rule": "A change to class, rest days, shift group, grace exemption or location queues an attendance recompute for the affected range.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-02.4, TIM-09",
+    "Test case": "TC-T42"
+  },
+  {
+    "Rule ID": "RL-050",
+    "Rule": "Worker class attributes are read as at the reference date, not as at today.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-03.1",
+    "Test case": "TC-H50"
+  },
+  {
+    "Rule ID": "RL-051",
+    "Rule": "An assignment-level override without a reason fails validation at write time.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-03.2",
+    "Test case": "TC-H51"
+  },
+  {
+    "Rule ID": "RL-052",
+    "Rule": "Grace exemption is an attribute of the designation band, never a hardcoded grade string.",
+    "Parameters": "grace_exempt",
+    "Client value / default": "Assistant Manager and above = Y",
+    "Configured in": "designation",
+    "Consumed by": "PPL-03.3, TIM-05.6",
+    "Test case": "TC-T52"
+  },
+  {
+    "Rule ID": "RL-053",
+    "Rule": "Policy resolution for a date outside the assignment span returns 'not employed', not defaults.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-03.4",
+    "Test case": "TC-H53"
+  },
+  {
+    "Rule ID": "RL-055",
+    "Rule": "Sanctioned strength is recorded by org unit, designation and location with an effective date and an approver.",
+    "Parameters": "—",
+    "Client value / default": "Per client",
+    "Configured in": "sanctioned_position",
+    "Consumed by": "PPL-04.1",
+    "Test case": "TC-R55"
+  },
+  {
+    "Rule ID": "RL-056",
+    "Rule": "Filled and open counts are derived from assignments and requisitions; neither is stored.",
+    "Parameters": "—",
+    "Client value / default": "Derived",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-04.2",
+    "Test case": "TC-R56"
+  },
+  {
+    "Rule ID": "RL-057",
+    "Rule": "Headroom = sanctioned − filled − open requisitions.",
+    "Parameters": "—",
+    "Client value / default": "Derived",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-04.3, TAL-01.3",
+    "Test case": "TC-R57"
+  },
+  {
+    "Rule ID": "RL-058",
+    "Rule": "On separation the position is marked vacant with last incumbent and vacated date.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "PPL-04.4",
+    "Test case": "TC-R58"
+  },
+  {
+    "Rule ID": "RL-060",
+    "Rule": "Every uploaded document carries a class and, where applicable, an expiry date.",
+    "Parameters": "document_class set",
+    "Client value / default": "Per client",
+    "Configured in": "Config",
+    "Consumed by": "PPL-06.1",
+    "Test case": "TC-H60"
+  },
+  {
+    "Rule ID": "RL-061",
+    "Rule": "Extraction never overwrites a verified value; low confidence routes to a verification queue.",
+    "Parameters": "confidence_threshold",
+    "Client value / default": "0.80",
+    "Configured in": "Config",
+    "Consumed by": "PPL-06.2",
+    "Test case": "TC-H61"
+  },
+  {
+    "Rule ID": "RL-062",
+    "Rule": "Document expiry generates reminders at configured intervals.",
+    "Parameters": "remind_days[]",
+    "Client value / default": "60, 30, 7",
+    "Configured in": "Config",
+    "Consumed by": "PPL-06.3",
+    "Test case": "TC-H62"
+  },
+  {
+    "Rule ID": "§ TIME — INGESTION AND DERIVATION"
+  },
+  {
+    "Rule ID": "RL-070",
+    "Rule": "A punch is captured from any enrolled source and stored immutably.",
+    "Parameters": "source set",
+    "Client value / default": "Biometric, mobile, WhatsApp, kiosk, web, gate",
+    "Configured in": "Config",
+    "Consumed by": "TIM-01.1",
+    "Test case": "TC-T70"
+  },
+  {
+    "Rule ID": "RL-071",
+    "Rule": "Offline punches are queued locally with a signed timestamp and replayed on reconnect.",
+    "Parameters": "queue_ttl",
+    "Client value / default": "7 days",
+    "Configured in": "Config",
+    "Consumed by": "TIM-01.1, TIM-01.2",
+    "Test case": "TC-T71"
+  },
+  {
+    "Rule ID": "RL-072",
+    "Rule": "Device clock drift is corrected using the device's last sync offset; the raw value is retained alongside the correction.",
+    "Parameters": "max_drift_ms",
+    "Client value / default": "±120000",
+    "Configured in": "Config",
+    "Consumed by": "TIM-01.2",
+    "Test case": "TC-T72"
+  },
+  {
+    "Rule ID": "RL-073",
+    "Rule": "Duplicate punches inside the dedupe window are marked, not discarded.",
+    "Parameters": "dedupe_window_s",
+    "Client value / default": "60",
+    "Configured in": "Config",
+    "Consumed by": "TIM-01.3",
+    "Test case": "TC-T73"
+  },
+  {
+    "Rule ID": "RL-074",
+    "Rule": "Every landed punch queues the affected attendance day for derivation.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-01.4",
+    "Test case": "TC-T74"
+  },
+  {
+    "Rule ID": "RL-075",
+    "Rule": "A punch arriving for a locked payroll period raises an exception instead of changing the locked day.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-01.4, TIM-09.4",
+    "Test case": "TC-T75"
+  },
+  {
+    "Rule ID": "RL-080",
+    "Rule": "An attendance day is keyed on the date the SHIFT started, not the calendar date of the punch.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.1",
+    "Test case": "TC-T80 (demo point 1)"
+  },
+  {
+    "Rule ID": "RL-081",
+    "Rule": "Events inside the day window are ordered by timestamp before pairing.",
+    "Parameters": "day_window_hours",
+    "Client value / default": "30",
+    "Configured in": "Config",
+    "Consumed by": "TIM-02.2",
+    "Test case": "TC-T81"
+  },
+  {
+    "Rule ID": "RL-082",
+    "Rule": "IN pairs to the next OUT; an unpaired event raises an exception and is never discarded.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.3",
+    "Test case": "TC-T82"
+  },
+  {
+    "Rule ID": "RL-083",
+    "Rule": "Every gap between consecutive segments is written as a break row with a type and a paid flag.",
+    "Parameters": "break types",
+    "Client value / default": "meal, gate_pass, other",
+    "Configured in": "Config",
+    "Consumed by": "TIM-02.4",
+    "Test case": "TC-T83 (demo point 1)"
+  },
+  {
+    "Rule ID": "RL-084",
+    "Rule": "gross_minutes = last_out − first_in.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.5",
+    "Test case": "TC-T84"
+  },
+  {
+    "Rule ID": "RL-085",
+    "Rule": "Whether recorded breaks are deducted from net is tenant configuration.",
+    "Parameters": "deduct_breaks",
+    "Client value / default": "NO for this client (gate-to-gate)",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-02.6",
+    "Test case": "TC-T85"
+  },
+  {
+    "Rule ID": "RL-086",
+    "Rule": "Approved personal gate-pass minutes are credited back into work hours before disposition thresholds are applied.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.7, TIM-06.4",
+    "Test case": "TC-T86 (demo point 11)"
+  },
+  {
+    "Rule ID": "RL-087",
+    "Rule": "Overtime = max(0, basis_minutes − shift_minutes), where basis is gross or net per tenant configuration.",
+    "Parameters": "ot_basis",
+    "Client value / default": "GROSS for this client",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-02.8",
+    "Test case": "TC-T87"
+  },
+  {
+    "Rule ID": "RL-088",
+    "Rule": "Every attendance day stores computed_at and the ruleset version that produced it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.9",
+    "Test case": "TC-T88"
+  },
+  {
+    "Rule ID": "RL-089",
+    "Rule": "Recomputation writes an audit delta; recomputing an unchanged day produces an identical row and no delta.",
+    "Parameters": "—",
+    "Client value / default": "Idempotent",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-02.10",
+    "Test case": "TC-T89"
+  },
+  {
+    "Rule ID": "§ TIME — SHIFT, DAY TYPE AND DISPOSITION"
+  },
+  {
+    "Rule ID": "RL-090",
+    "Rule": "The assigned shift comes from the published roster, falling back to the assignment default.",
+    "Parameters": "—",
+    "Client value / default": "Roster first",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-03.1",
+    "Test case": "TC-T90"
+  },
+  {
+    "Rule ID": "RL-091",
+    "Rule": "Inference windows must not overlap within a shift group; overlapping configuration fails validation at save.",
+    "Parameters": "earliest_in, latest_in",
+    "Client value / default": "Per shift",
+    "Configured in": "shift_window",
+    "Consumed by": "TIM-03.2",
+    "Test case": "TC-T91"
+  },
+  {
+    "Rule ID": "RL-092",
+    "Rule": "Where the in-punch falls in another shift's window inside the group, that shift is adopted, with assigned and inferred both recorded.",
+    "Parameters": "—",
+    "Client value / default": "Adopt + record",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-03.3",
+    "Test case": "TC-T92 (demo point 13)"
+  },
+  {
+    "Rule ID": "RL-093",
+    "Rule": "An HR override of an inferred shift is logged with actor and reason.",
+    "Parameters": "—",
+    "Client value / default": "Logged",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-03.4",
+    "Test case": "TC-T93"
+  },
+  {
+    "Rule ID": "RL-094",
+    "Rule": "Threshold lookup uses the APPLIED shift's duration, not the assigned shift's.",
+    "Parameters": "—",
+    "Client value / default": "Applied",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-03.5, TIM-05.2",
+    "Test case": "TC-T94"
+  },
+  {
+    "Rule ID": "RL-100",
+    "Rule": "Day type is resolved from the location's work and holiday calendar.",
+    "Parameters": "—",
+    "Client value / default": "Per location",
+    "Configured in": "work_calendar",
+    "Consumed by": "TIM-04.1",
+    "Test case": "TC-T100"
+  },
+  {
+    "Rule ID": "RL-101",
+    "Rule": "The worker class's rest-day policy overlays the calendar.",
+    "Parameters": "has_rest_days, rest_day_pattern",
+    "Client value / default": "Sunday weekly off, or none",
+    "Configured in": "worker_class",
+    "Consumed by": "TIM-04.2",
+    "Test case": "TC-T101 (demo point 2)"
+  },
+  {
+    "Rule ID": "RL-102",
+    "Rule": "Policy attaches to worker class, never to the contractor engagement.",
+    "Parameters": "—",
+    "Client value / default": "Class is the unit of policy",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-04.3",
+    "Test case": "TC-T102 (demo point 3)"
+  },
+  {
+    "Rule ID": "RL-103",
+    "Rule": "Day type is written before thresholds are applied.",
+    "Parameters": "—",
+    "Client value / default": "Order enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-04.4",
+    "Test case": "TC-T103"
+  },
+  {
+    "Rule ID": "RL-110",
+    "Rule": "On a non-working day type, thresholds are skipped and status reflects the day type.",
+    "Parameters": "—",
+    "Client value / default": "Skip",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-05.1",
+    "Test case": "TC-T110"
+  },
+  {
+    "Rule ID": "RL-111",
+    "Rule": "Disposition thresholds are looked up by shift duration from a configuration table.",
+    "Parameters": "threshold rows",
+    "Client value / default": "12h/10h/9h/8h rows",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.2",
+    "Test case": "TC-T111"
+  },
+  {
+    "Rule ID": "RL-112",
+    "Rule": "Below the absent threshold the day is Absent.",
+    "Parameters": "absent_below_min",
+    "Client value / default": "390 / 360 / 300 / 270",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.3",
+    "Test case": "TC-T112 (demo point 12)"
+  },
+  {
+    "Rule ID": "RL-113",
+    "Rule": "Below the half-day threshold the day is Half Day.",
+    "Parameters": "half_day_below_min",
+    "Client value / default": "690 / 570 / 510 / 450",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.4",
+    "Test case": "TC-T113 (demo point 12)"
+  },
+  {
+    "Rule ID": "RL-114",
+    "Rule": "Grace applies to both the in and the out punch.",
+    "Parameters": "grace_in_min, grace_out_min",
+    "Client value / default": "15 and 15",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.5",
+    "Test case": "TC-T114"
+  },
+  {
+    "Rule ID": "RL-115",
+    "Rule": "Grace-exempt bands incur no late instance and no deduction.",
+    "Parameters": "grace_exempt",
+    "Client value / default": "Assistant Manager and above",
+    "Configured in": "designation",
+    "Consumed by": "TIM-05.6",
+    "Test case": "TC-T115"
+  },
+  {
+    "Rule ID": "RL-116",
+    "Rule": "Late instances are counted per calendar month and the count is visible to the employee.",
+    "Parameters": "late_allowance_per_month",
+    "Client value / default": "3 forgiven",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.7",
+    "Test case": "TC-T116"
+  },
+  {
+    "Rule ID": "RL-117",
+    "Rule": "From the fourth late instance in a month, each late arrival beyond grace marks the day Half Day.",
+    "Parameters": "—",
+    "Client value / default": "4th onward",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.8",
+    "Test case": "TC-T117 (demo point 12)"
+  },
+  {
+    "Rule ID": "RL-118",
+    "Rule": "An employee who finished after the long-night hour may arrive within the relief window the next day and still be credited a full day.",
+    "Parameters": "long_night_after, relief_until",
+    "Client value / default": "03:00 and 09:30",
+    "Configured in": "attendance_rule_set",
+    "Consumed by": "TIM-05.9",
+    "Test case": "TC-T118 (demo point 12)"
+  },
+  {
+    "Rule ID": "RL-119",
+    "Rule": "The status stores the IDs of the rules that produced it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-05.10",
+    "Test case": "TC-T119"
+  },
+  {
+    "Rule ID": "§ TIME — GATE PASS, OVERTIME, EXCEPTIONS"
+  },
+  {
+    "Rule ID": "RL-120",
+    "Rule": "A gate pass carries a type: personal or official.",
+    "Parameters": "pass_type",
+    "Client value / default": "Personal / Official",
+    "Configured in": "Config",
+    "Consumed by": "TIM-06.1",
+    "Test case": "TC-T120"
+  },
+  {
+    "Rule ID": "RL-121",
+    "Rule": "Personal gate passes are capped per calendar month by total minutes and by instance count.",
+    "Parameters": "monthly_minutes, max_instances",
+    "Client value / default": "240 minutes, 2 instances",
+    "Configured in": "Config",
+    "Consumed by": "TIM-06.2",
+    "Test case": "TC-T121 (demo point 11)"
+  },
+  {
+    "Rule ID": "RL-122",
+    "Rule": "Approved personal gate-pass minutes are added to work hours; unapproved absence stays deducted.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-06.4",
+    "Test case": "TC-T122"
+  },
+  {
+    "Rule ID": "RL-123",
+    "Rule": "Official gate passes are tracked but do not consume the personal ceiling.",
+    "Parameters": "—",
+    "Client value / default": "Excluded",
+    "Configured in": "Config",
+    "Consumed by": "TIM-06.5",
+    "Test case": "TC-T123"
+  },
+  {
+    "Rule ID": "RL-130",
+    "Rule": "Overtime payability is decided by the resolved ot_eligibility, not by hours alone.",
+    "Parameters": "ot_eligibility",
+    "Client value / default": "always / rest_day_and_holiday_only / none",
+    "Configured in": "worker_class + assignment",
+    "Consumed by": "TIM-07.1",
+    "Test case": "TC-T130"
+  },
+  {
+    "Rule ID": "RL-131",
+    "Rule": "Eligibility none means zero payable overtime; raw minutes are still retained for reporting.",
+    "Parameters": "—",
+    "Client value / default": "Retain raw",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-07.2",
+    "Test case": "TC-T131"
+  },
+  {
+    "Rule ID": "RL-132",
+    "Rule": "For rest_day_and_holiday_only, weekday overtime is zero and rest-day or holiday working pays the whole span.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-07.3",
+    "Test case": "TC-T132 (demo point 4)"
+  },
+  {
+    "Rule ID": "RL-133",
+    "Rule": "The overtime multiplier comes from the state rule pack; exceeding statutory weekly limits warns the approver.",
+    "Parameters": "multiplier, weekly_limit",
+    "Client value / default": "2.0 for this client",
+    "Configured in": "rule_pack",
+    "Consumed by": "TIM-07.4",
+    "Test case": "TC-T133"
+  },
+  {
+    "Rule ID": "RL-134",
+    "Rule": "Overtime is tagged to the run that will pay it, which may be an off-cycle run.",
+    "Parameters": "pay_in_run_id",
+    "Client value / default": "Off-cycle for this client",
+    "Configured in": "payroll_run",
+    "Consumed by": "TIM-07.6",
+    "Test case": "TC-Y134 (demo point 10)"
+  },
+  {
+    "Rule ID": "RL-140",
+    "Rule": "Exceptions are raised for unpaired punches, missing days, device failure, inferred shifts and threshold crossings.",
+    "Parameters": "exception types",
+    "Client value / default": "Per list",
+    "Configured in": "Config",
+    "Consumed by": "TIM-08.1",
+    "Test case": "TC-T140"
+  },
+  {
+    "Rule ID": "RL-141",
+    "Rule": "An agent may propose a regularisation but only auto-resolve under the tenant's configured threshold.",
+    "Parameters": "auto_threshold_minutes",
+    "Client value / default": "120 (illustrative)",
+    "Configured in": "Tenant policy",
+    "Consumed by": "TIM-08.2, INT-01",
+    "Test case": "TC-A141"
+  },
+  {
+    "Rule ID": "RL-142",
+    "Rule": "An approved regularisation queues recompute and closes the exception.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-08.4",
+    "Test case": "TC-T142"
+  },
+  {
+    "Rule ID": "RL-150",
+    "Rule": "The recompute queue carries person, date range and reason.",
+    "Parameters": "reasons",
+    "Client value / default": "6 reasons listed in TIM-09.1",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-09.1",
+    "Test case": "TC-T150"
+  },
+  {
+    "Rule ID": "RL-151",
+    "Rule": "Recompute reads every input as at the recompute snapshot, never as at today.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-09.2",
+    "Test case": "TC-T151"
+  },
+  {
+    "Rule ID": "RL-152",
+    "Rule": "Recompute runs in an isolated worker and must not degrade interactive latency.",
+    "Parameters": "throughput target",
+    "Client value / default": "5,000 people × 1 month < 10 min",
+    "Configured in": "NFR",
+    "Consumed by": "TIM-09.3",
+    "Test case": "TC-N152"
+  },
+  {
+    "Rule ID": "RL-153",
+    "Rule": "Recompute never alters a locked or closed payroll period; it raises an arrears item instead.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-09.4",
+    "Test case": "TC-Y153"
+  },
+  {
+    "Rule ID": "RL-154",
+    "Rule": "Deltas feed the pre-payroll audit check for days not recomputed since the last rule change.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-09.5, PAY-03.1",
+    "Test case": "TC-Y154"
+  },
+  {
+    "Rule ID": "RL-160",
+    "Rule": "Team history is scoped by the manager's reporting line, evaluated at query time.",
+    "Parameters": "—",
+    "Client value / default": "Query-time",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-10.1",
+    "Test case": "TC-T160"
+  },
+  {
+    "Rule ID": "RL-161",
+    "Rule": "Team history returns attendance, leave, overtime, gate pass, late status and applied shift per day.",
+    "Parameters": "—",
+    "Client value / default": "Fixed column set",
+    "Configured in": "Product",
+    "Consumed by": "TIM-10.2",
+    "Test case": "TC-T161 (demo point 1)"
+  },
+  {
+    "Rule ID": "RL-162",
+    "Rule": "Exports of personal data are logged.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "TIM-10.3",
+    "Test case": "TC-C162"
+  },
+  {
+    "Rule ID": "§ LEAVE"
+  },
+  {
+    "Rule ID": "RL-170",
+    "Rule": "Accrual is bound to the leave band through an accrual policy.",
+    "Parameters": "policy set",
+    "Client value / default": "LP-01 to LP-12",
+    "Configured in": "leave_accrual_policy",
+    "Consumed by": "LVE-01.1",
+    "Test case": "TC-L170"
+  },
+  {
+    "Rule ID": "RL-171",
+    "Rule": "Standard-band employees accrue no earned leave for six months, then receive a single credit on completion.",
+    "Parameters": "wait_months, credit_on_completion",
+    "Client value / default": "6 months, 9 days",
+    "Configured in": "leave_accrual_policy",
+    "Consumed by": "LVE-01.2",
+    "Test case": "TC-L171 (demo point 7)"
+  },
+  {
+    "Rule ID": "RL-172",
+    "Rule": "Accrual and expiry jobs are idempotent per person, type, period and transaction type.",
+    "Parameters": "idempotency_key",
+    "Client value / default": "Unique index",
+    "Configured in": "Schema",
+    "Consumed by": "LVE-01.3, LVE-06.3",
+    "Test case": "TC-L172"
+  },
+  {
+    "Rule ID": "RL-173",
+    "Rule": "AGM and above receive 18 EL, 6 CL and 6 SL on 1 January; all others 1.5 EL per month plus 6 CL and 6 SL.",
+    "Parameters": "band values",
+    "Client value / default": "As stated",
+    "Configured in": "leave_accrual_policy",
+    "Consumed by": "LVE-01.4",
+    "Test case": "TC-L173"
+  },
+  {
+    "Rule ID": "RL-180",
+    "Rule": "Casual and sick leave for a new joiner are prorated by joining month from a table.",
+    "Parameters": "proration rows",
+    "Client value / default": "Jan 6 · Feb-Mar 5 · Apr-May 4 · Jun-Jul 3 · Aug-Sep 2 · Oct-4 Dec 1",
+    "Configured in": "leave_proration_rule",
+    "Consumed by": "LVE-02.1",
+    "Test case": "TC-L180 (demo point 7)"
+  },
+  {
+    "Rule ID": "RL-181",
+    "Rule": "Prorated credits post to the ledger citing the proration rule as source.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-02.2",
+    "Test case": "TC-L181"
+  },
+  {
+    "Rule ID": "RL-182",
+    "Rule": "Leave eligibility follows the worker class; ineligible classes accrue nothing.",
+    "Parameters": "leave_eligible",
+    "Client value / default": "Contract, third-party, consultant, gig = N",
+    "Configured in": "worker_class",
+    "Consumed by": "LVE-02.3",
+    "Test case": "TC-L182"
+  },
+  {
+    "Rule ID": "RL-190",
+    "Rule": "A leave request captures type, dates, half-day flags and reason.",
+    "Parameters": "—",
+    "Client value / default": "Per type",
+    "Configured in": "Config",
+    "Consumed by": "LVE-03.1",
+    "Test case": "TC-L190"
+  },
+  {
+    "Rule ID": "RL-191",
+    "Rule": "Balance is projected from the ledger as at the leave start date, honouring per-credit expiry.",
+    "Parameters": "—",
+    "Client value / default": "Projection",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-03.2, LVE-08.1",
+    "Test case": "TC-L191"
+  },
+  {
+    "Rule ID": "RL-192",
+    "Rule": "Casual leave cannot be taken with, or merged into, earned or sick leave.",
+    "Parameters": "excluded_with",
+    "Client value / default": "CL excludes EL and SL",
+    "Configured in": "leave_combination_rule",
+    "Consumed by": "LVE-03.3",
+    "Test case": "TC-L192 (demo point 7)"
+  },
+  {
+    "Rule ID": "RL-193",
+    "Rule": "Monthly caps: two casual leave days and ten earned leave days per calendar month.",
+    "Parameters": "max_per_month",
+    "Client value / default": "CL 2, EL 10",
+    "Configured in": "leave_type",
+    "Consumed by": "LVE-03.4",
+    "Test case": "TC-L193 (demo point 7)"
+  },
+  {
+    "Rule ID": "RL-194",
+    "Rule": "Validation runs before the approval chain starts and the message names the rule that blocked it.",
+    "Parameters": "—",
+    "Client value / default": "Before chain",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-03.3, LVE-03.4",
+    "Test case": "TC-L194"
+  },
+  {
+    "Rule ID": "RL-195",
+    "Rule": "Approval debits the ledger against the specific credits consumed, so a reversal knows where to return days.",
+    "Parameters": "—",
+    "Client value / default": "Credit-referenced",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-04.3",
+    "Test case": "TC-L195"
+  },
+  {
+    "Rule ID": "RL-200",
+    "Rule": "Early return records the actual return date inside the approved span.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-05.1",
+    "Test case": "TC-L200 (demo point 5)"
+  },
+  {
+    "Rule ID": "RL-201",
+    "Rule": "The reversal row and the attendance recompute happen in ONE transaction.",
+    "Parameters": "—",
+    "Client value / default": "Atomic",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-05.2",
+    "Test case": "TC-L201"
+  },
+  {
+    "Rule ID": "RL-202",
+    "Rule": "Days after the actual return become Present or their punch-derived status.",
+    "Parameters": "—",
+    "Client value / default": "Recomputed",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-05.3",
+    "Test case": "TC-L202"
+  },
+  {
+    "Rule ID": "RL-203",
+    "Rule": "An early return affecting a locked period produces arrears, not a change to the closed run.",
+    "Parameters": "—",
+    "Client value / default": "Arrears",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-05.4",
+    "Test case": "TC-Y203"
+  },
+  {
+    "Rule ID": "RL-210",
+    "Rule": "Each comp-off credit carries its own expiry clock from its own credit date.",
+    "Parameters": "expiry_days",
+    "Client value / default": "60",
+    "Configured in": "leave_type",
+    "Consumed by": "LVE-06.1",
+    "Test case": "TC-L210 (demo point 6)"
+  },
+  {
+    "Rule ID": "RL-211",
+    "Rule": "Comp-off consumption draws from the earliest-expiring open credit first.",
+    "Parameters": "—",
+    "Client value / default": "FEFO",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-06.2",
+    "Test case": "TC-L211"
+  },
+  {
+    "Rule ID": "RL-212",
+    "Rule": "Unconsumed comp-off lapses by a Lapse row on its own expiry date.",
+    "Parameters": "—",
+    "Client value / default": "Nightly, idempotent",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-06.3",
+    "Test case": "TC-L212"
+  },
+  {
+    "Rule ID": "RL-213",
+    "Rule": "A comp-off clock may cross the leave-year boundary; the year end does not truncate it.",
+    "Parameters": "—",
+    "Client value / default": "Crosses",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-06.4",
+    "Test case": "TC-L213"
+  },
+  {
+    "Rule ID": "RL-220",
+    "Rule": "At year end earned leave encashes above the carry-forward cap; casual and sick leave lapse.",
+    "Parameters": "carry_forward_cap",
+    "Client value / default": "45 days EL",
+    "Configured in": "leave_type",
+    "Consumed by": "LVE-07.1",
+    "Test case": "TC-L220"
+  },
+  {
+    "Rule ID": "RL-221",
+    "Rule": "Encashment is raised as a payroll input computed on the statutory wage base.",
+    "Parameters": "—",
+    "Client value / default": "Wage base",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-07.2",
+    "Test case": "TC-Y221"
+  },
+  {
+    "Rule ID": "RL-222",
+    "Rule": "Birthday leave is a separate credit with its own eligibility window.",
+    "Parameters": "window",
+    "Client value / default": "Per client policy",
+    "Configured in": "leave_type",
+    "Consumed by": "LVE-07.3",
+    "Test case": "TC-L222"
+  },
+  {
+    "Rule ID": "RL-230",
+    "Rule": "Balance = credits − debits − lapses − encashments + reversals, as at a date.",
+    "Parameters": "—",
+    "Client value / default": "Projection",
+    "Configured in": "Code invariant",
+    "Consumed by": "LVE-08.1",
+    "Test case": "TC-L230"
+  },
+  {
+    "Rule ID": "RL-231",
+    "Rule": "The balance screen exposes the transactions that produced it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "LVE-08.2",
+    "Test case": "TC-L231"
+  },
+  {
+    "Rule ID": "§ PAYROLL"
+  },
+  {
+    "Rule ID": "RL-240",
+    "Rule": "A payroll run carries a run type and a period may carry several runs.",
+    "Parameters": "run_type",
+    "Client value / default": "regular, off_cycle_ot, arrears, fnf, bonus",
+    "Configured in": "payroll_run",
+    "Consumed by": "PAY-01.1",
+    "Test case": "TC-Y240 (demo point 10)"
+  },
+  {
+    "Rule ID": "RL-241",
+    "Rule": "The run population is resolved from assignments active in the period, including joiners, leavers and transfers.",
+    "Parameters": "—",
+    "Client value / default": "Derived",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-01.2",
+    "Test case": "TC-Y241"
+  },
+  {
+    "Rule ID": "RL-242",
+    "Rule": "Inputs are pulled from attendance, leave, gate pass, overtime, claims, arrears and payroll_input rows.",
+    "Parameters": "—",
+    "Client value / default": "All sources",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-01.3",
+    "Test case": "TC-Y242"
+  },
+  {
+    "Rule ID": "RL-250",
+    "Rule": "Locking inputs freezes the run against further input changes.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-02.1",
+    "Test case": "TC-Y250"
+  },
+  {
+    "Rule ID": "RL-251",
+    "Rule": "The snapshot hashes inputs, rule pack versions and configuration so the run can be recomputed and matched to the paisa.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-02.2",
+    "Test case": "TC-Y251"
+  },
+  {
+    "Rule ID": "RL-260",
+    "Rule": "Pre-payroll audit runs rule-based checks first and statistical checks second.",
+    "Parameters": "check list",
+    "Client value / default": "11 named checks",
+    "Configured in": "Config",
+    "Consumed by": "PAY-03.1",
+    "Test case": "TC-Y260"
+  },
+  {
+    "Rule ID": "RL-261",
+    "Rule": "An agent may classify and draft resolutions but never change a payroll figure.",
+    "Parameters": "autonomy",
+    "Client value / default": "Propose only. Always.",
+    "Configured in": "Tenant policy",
+    "Consumed by": "PAY-03.2",
+    "Test case": "TC-A261"
+  },
+  {
+    "Rule ID": "RL-262",
+    "Rule": "A CRITICAL flag blocks approval and cannot be waived below its configured role threshold.",
+    "Parameters": "waive_role",
+    "Client value / default": "Payroll manager or above",
+    "Configured in": "Config",
+    "Consumed by": "PAY-03.3",
+    "Test case": "TC-Y262"
+  },
+  {
+    "Rule ID": "RL-270",
+    "Rule": "Pay components form a DAG evaluated in topological order, once per employee.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-04.1",
+    "Test case": "TC-Y270"
+  },
+  {
+    "Rule ID": "RL-271",
+    "Rule": "Money is held as integers in the smallest currency unit; no floating point anywhere in the engine.",
+    "Parameters": "—",
+    "Client value / default": "Paise",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-04.2",
+    "Test case": "TC-Y271"
+  },
+  {
+    "Rule ID": "RL-272",
+    "Rule": "Proration across any month boundary sums to the full-month value.",
+    "Parameters": "—",
+    "Client value / default": "Property",
+    "Configured in": "Property test",
+    "Consumed by": "PAY-04.3",
+    "Test case": "TC-Y272"
+  },
+  {
+    "Rule ID": "RL-273",
+    "Rule": "Every payslip line stores the node, inputs, output and rule pack version that produced it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-04.4",
+    "Test case": "TC-Y273"
+  },
+  {
+    "Rule ID": "RL-280",
+    "Rule": "Statutory wage base = basic + dearness allowance + retaining allowance.",
+    "Parameters": "—",
+    "Client value / default": "Code on Wages",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-05.1",
+    "Test case": "TC-Y280"
+  },
+  {
+    "Rule ID": "RL-281",
+    "Rule": "Where excluded components exceed 50% of total remuneration, the excess is added back to the wage base.",
+    "Parameters": "floor_pct",
+    "Client value / default": "50%",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-05.2",
+    "Test case": "TC-Y281"
+  },
+  {
+    "Rule ID": "RL-282",
+    "Rule": "The wage base is one node, computed once, and consumed by PF, ESI, gratuity, bonus, overtime and encashment.",
+    "Parameters": "—",
+    "Client value / default": "Single node",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-05.3",
+    "Test case": "TC-Y282"
+  },
+  {
+    "Rule ID": "RL-283",
+    "Rule": "A structure change can be simulated for statutory cost and take-home impact before adoption.",
+    "Parameters": "—",
+    "Client value / default": "Per employee and aggregate",
+    "Configured in": "Product",
+    "Consumed by": "PAY-05.4",
+    "Test case": "TC-Y283"
+  },
+  {
+    "Rule ID": "RL-290",
+    "Rule": "Daily-wage earnings are a separate DAG node selected by wage_type, not a proration parameter on the monthly node.",
+    "Parameters": "wage_type",
+    "Client value / default": "daily",
+    "Configured in": "worker_class",
+    "Consumed by": "PAY-06.1",
+    "Test case": "TC-Y290 (demo point 2)"
+  },
+  {
+    "Rule ID": "RL-291",
+    "Rule": "Daily-wage earnings = days present × daily rate, with half days at the configured fraction.",
+    "Parameters": "half_day_fraction",
+    "Client value / default": "0.5",
+    "Configured in": "Config",
+    "Consumed by": "PAY-06.2",
+    "Test case": "TC-Y291"
+  },
+  {
+    "Rule ID": "RL-292",
+    "Rule": "The day count is shown on the payslip so a daily-wage worker can reconcile against attendance.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "PAY-06.3",
+    "Test case": "TC-Y292"
+  },
+  {
+    "Rule ID": "RL-300",
+    "Rule": "PF and EPS are computed on the statutory wage base against the ceiling in the effective rule pack.",
+    "Parameters": "ceiling",
+    "Client value / default": "Per pack version",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-07.1",
+    "Test case": "TC-Y300"
+  },
+  {
+    "Rule ID": "RL-301",
+    "Rule": "An employee crossing the ESI wage threshold mid-period continues contributing to the end of the contribution period.",
+    "Parameters": "—",
+    "Client value / default": "Statutory",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-07.2",
+    "Test case": "TC-Y301"
+  },
+  {
+    "Rule ID": "RL-302",
+    "Rule": "Professional tax follows the location's state slab set; it does not apply in every state.",
+    "Parameters": "pt_slab_set",
+    "Client value / default": "KA, MH, TS, TN sets",
+    "Configured in": "Config",
+    "Consumed by": "PAY-07.3",
+    "Test case": "TC-Y302 (demo point 17)"
+  },
+  {
+    "Rule ID": "RL-303",
+    "Rule": "TDS respects the regime choice and projects to year end; a mid-year switch is an expected case.",
+    "Parameters": "—",
+    "Client value / default": "Both regimes",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-07.4",
+    "Test case": "TC-Y303"
+  },
+  {
+    "Rule ID": "RL-304",
+    "Rule": "Gratuity and bonus provisions accrue on the statutory wage base for the journal.",
+    "Parameters": "—",
+    "Client value / default": "Monthly",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-07.5",
+    "Test case": "TC-Y304"
+  },
+  {
+    "Rule ID": "RL-310",
+    "Rule": "Payroll recovers loan instalments; it does not originate loans or judge eligibility.",
+    "Parameters": "—",
+    "Client value / default": "Separation of duty",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-08.1",
+    "Test case": "TC-Y310"
+  },
+  {
+    "Rule ID": "RL-311",
+    "Rule": "A recovery that would drive net below the floor is reduced or skipped, flagged, and carried forward.",
+    "Parameters": "net_floor",
+    "Client value / default": "Statutory minimum wage",
+    "Configured in": "Config",
+    "Consumed by": "PAY-08.2",
+    "Test case": "TC-Y311"
+  },
+  {
+    "Rule ID": "RL-312",
+    "Rule": "Recovery stops when outstanding reaches zero.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-08.3",
+    "Test case": "TC-Y312"
+  },
+  {
+    "Rule ID": "RL-313",
+    "Rule": "The closing outstanding is reported back to the loans module and to the GL.",
+    "Parameters": "—",
+    "Client value / default": "Per run",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-08.4",
+    "Test case": "TC-Y313"
+  },
+  {
+    "Rule ID": "RL-320",
+    "Rule": "Review shows variance against the prior period and a headcount reconciliation.",
+    "Parameters": "variance_threshold",
+    "Client value / default": "Configurable %",
+    "Configured in": "Config",
+    "Consumed by": "PAY-09.1",
+    "Test case": "TC-Y320"
+  },
+  {
+    "Rule ID": "RL-321",
+    "Rule": "A run cannot reach APPROVED with an open CRITICAL flag or an unmapped pay component.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-09.2, FIN-03.2",
+    "Test case": "TC-Y321 (demo point 15)"
+  },
+  {
+    "Rule ID": "RL-322",
+    "Rule": "Bank file totals are verified out of band under dual control, and bank-detail changes inside a payroll window raise an alert.",
+    "Parameters": "—",
+    "Client value / default": "Dual control",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-09.3",
+    "Test case": "TC-Y322"
+  },
+  {
+    "Rule ID": "RL-323",
+    "Rule": "After DISBURSEMENT_PREPARED, corrections happen only as arrears.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "State machine",
+    "Consumed by": "PAY-09.4, PAY-14",
+    "Test case": "TC-Y323"
+  },
+  {
+    "Rule ID": "RL-324",
+    "Rule": "Each run emits its own journal.",
+    "Parameters": "—",
+    "Client value / default": "Per run",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-09.5, FIN-03",
+    "Test case": "TC-F324"
+  },
+  {
+    "Rule ID": "RL-330",
+    "Rule": "An off-cycle overtime run is a second run against the same period, not a delayed line in the first.",
+    "Parameters": "—",
+    "Client value / default": "Separate run",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-10.1",
+    "Test case": "TC-Y330 (demo point 10)"
+  },
+  {
+    "Rule ID": "RL-331",
+    "Rule": "An off-cycle run pulls only the overtime records tagged to it.",
+    "Parameters": "—",
+    "Client value / default": "Tagged only",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-10.2",
+    "Test case": "TC-Y331"
+  },
+  {
+    "Rule ID": "RL-332",
+    "Rule": "Overtime pay uses the statutory wage base and the state multiplier.",
+    "Parameters": "—",
+    "Client value / default": "Per pack",
+    "Configured in": "rule_pack",
+    "Consumed by": "PAY-10.3",
+    "Test case": "TC-Y332"
+  },
+  {
+    "Rule ID": "RL-333",
+    "Rule": "An off-cycle run produces its own payslip view, bank file and journal, with run type as a journal dimension.",
+    "Parameters": "—",
+    "Client value / default": "Own artefacts",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-10.4",
+    "Test case": "TC-F333"
+  },
+  {
+    "Rule ID": "RL-340",
+    "Rule": "A full-and-final run cannot proceed while any blocking clearance item is open or unwaived.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-12.1",
+    "Test case": "TC-X340 (demo point 16)"
+  },
+  {
+    "Rule ID": "RL-341",
+    "Rule": "F&F computes salary to the last working day, encashment, gratuity, notice recovery and loan foreclosure; negative net is a valid outcome.",
+    "Parameters": "—",
+    "Client value / default": "Handled",
+    "Configured in": "Code invariant",
+    "Consumed by": "PAY-12.2",
+    "Test case": "TC-X341"
+  },
+  {
+    "Rule ID": "RL-342",
+    "Rule": "F&F settles on the last working day when clearance has run in parallel with notice.",
+    "Parameters": "—",
+    "Client value / default": "Target",
+    "Configured in": "Product",
+    "Consumed by": "PAY-12.3",
+    "Test case": "TC-X342"
+  },
+  {
+    "Rule ID": "RL-350",
+    "Rule": "Payslip retrieval takes a period AND a run selector.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "PAY-13.1",
+    "Test case": "TC-Y350"
+  },
+  {
+    "Rule ID": "RL-351",
+    "Rule": "Every payslip line drills to the rule and the inputs behind it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "PAY-13.2",
+    "Test case": "TC-Y351"
+  },
+  {
+    "Rule ID": "§ COMPLIANCE"
+  },
+  {
+    "Rule ID": "RL-360",
+    "Rule": "A rule pack is versioned, effective-dated, jurisdiction-scoped and carries a changelog citing its source notification.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "rule_pack",
+    "Consumed by": "CMP-01p.1",
+    "Test case": "TC-C360"
+  },
+  {
+    "Rule ID": "RL-361",
+    "Rule": "Every rule in a pack has golden cases verified by hand against the statute.",
+    "Parameters": "min_cases",
+    "Client value / default": "340 in the illustrative pack",
+    "Configured in": "Test library",
+    "Consumed by": "CMP-01p.2",
+    "Test case": "TC-C361"
+  },
+  {
+    "Rule ID": "RL-362",
+    "Rule": "A single golden-case mismatch fails the build.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "CI",
+    "Consumed by": "CMP-01p.3",
+    "Test case": "TC-C362"
+  },
+  {
+    "Rule ID": "RL-363",
+    "Rule": "A pack cannot deploy without a green suite and a named reviewer.",
+    "Parameters": "reviewer_role",
+    "Client value / default": "Payroll SME",
+    "Configured in": "Process control",
+    "Consumed by": "CMP-01p.4",
+    "Test case": "TC-C363"
+  },
+  {
+    "Rule ID": "RL-364",
+    "Rule": "State packs layer on the central pack in a defined order.",
+    "Parameters": "layer_order",
+    "Client value / default": "Central then state",
+    "Configured in": "rule_pack",
+    "Consumed by": "CMP-01p.5",
+    "Test case": "TC-C364"
+  },
+  {
+    "Rule ID": "RL-370",
+    "Rule": "The obligation calendar is generated per entity and state from the applicability matrix.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Config",
+    "Consumed by": "CMP-02p.1",
+    "Test case": "TC-C370"
+  },
+  {
+    "Rule ID": "RL-371",
+    "Rule": "Filing packs are assembled from posted records only, never from typed figures.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMP-02p.2",
+    "Test case": "TC-C371"
+  },
+  {
+    "Rule ID": "RL-372",
+    "Rule": "A human files; the system prepares, records the acknowledgement and closes the obligation.",
+    "Parameters": "—",
+    "Client value / default": "Human files",
+    "Configured in": "Tenant policy",
+    "Consumed by": "CMP-02p.3",
+    "Test case": "TC-C372"
+  },
+  {
+    "Rule ID": "RL-380",
+    "Rule": "The applicable statutory form set follows the plant's registration, not the company's.",
+    "Parameters": "—",
+    "Client value / default": "Per location",
+    "Configured in": "statutory_form",
+    "Consumed by": "CMP-03p.1",
+    "Test case": "TC-C380 (demo point 17)"
+  },
+  {
+    "Rule ID": "RL-381",
+    "Rule": "Form generation binds a declarative query to a template so a state amendment is a configuration change.",
+    "Parameters": "—",
+    "Client value / default": "Declarative",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMP-03p.2",
+    "Test case": "TC-C381"
+  },
+  {
+    "Rule ID": "RL-382",
+    "Rule": "Statutory joining forms including Form F are generated inside the joining chain.",
+    "Parameters": "—",
+    "Client value / default": "In-chain",
+    "Configured in": "workflow_definition",
+    "Consumed by": "CMP-03p.3, LCY-02.4",
+    "Test case": "TC-C382 (demo point 26)"
+  },
+  {
+    "Rule ID": "RL-383",
+    "Rule": "A filed form retains its acknowledgement reference against the period.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMP-03p.4",
+    "Test case": "TC-C383"
+  },
+  {
+    "Rule ID": "§ LIFECYCLE"
+  },
+  {
+    "Rule ID": "RL-390",
+    "Rule": "A workflow instance pins its definition version; in-flight instances finish on the version they started under.",
+    "Parameters": "—",
+    "Client value / default": "Pinned",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-02.1",
+    "Test case": "TC-X390"
+  },
+  {
+    "Rule ID": "RL-391",
+    "Rule": "The joining chain creates or adopts the person and assignment.",
+    "Parameters": "—",
+    "Client value / default": "Either path",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-02.2",
+    "Test case": "TC-X391"
+  },
+  {
+    "Rule ID": "RL-392",
+    "Rule": "Statutory registrations are steps in the joining chain with owners and SLAs.",
+    "Parameters": "—",
+    "Client value / default": "In-chain",
+    "Configured in": "workflow_definition",
+    "Consumed by": "LCY-02.3",
+    "Test case": "TC-X392"
+  },
+  {
+    "Rule ID": "RL-393",
+    "Rule": "A bank-detail capture or change inside a payroll window raises an alert.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-02.5",
+    "Test case": "TC-Y393"
+  },
+  {
+    "Rule ID": "RL-394",
+    "Rule": "Policy acknowledgements retain the policy version acknowledged.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-02.6",
+    "Test case": "TC-X394"
+  },
+  {
+    "Rule ID": "RL-395",
+    "Rule": "Induction learning paths are assigned by the joining chain using the standard assignment mechanism.",
+    "Parameters": "—",
+    "Client value / default": "Same mechanism",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-02.7",
+    "Test case": "TC-X395 (demo point 23)"
+  },
+  {
+    "Rule ID": "RL-396",
+    "Rule": "Every asset allocation becomes a clearance item at exit.",
+    "Parameters": "blocking",
+    "Client value / default": "Y for high-value assets",
+    "Configured in": "clearance_checklist_template",
+    "Consumed by": "LCY-02.8, LCY-08",
+    "Test case": "TC-X396"
+  },
+  {
+    "Rule ID": "RL-397",
+    "Rule": "Lifecycle events generate announcements subject to the audience rule and an editorial override.",
+    "Parameters": "—",
+    "Client value / default": "Editorial override",
+    "Configured in": "Config",
+    "Consumed by": "LCY-02.9, EXP-02",
+    "Test case": "TC-X397"
+  },
+  {
+    "Rule ID": "RL-400",
+    "Rule": "The clearance checklist is instantiated from a template resolved by worker class and location.",
+    "Parameters": "—",
+    "Client value / default": "Per template",
+    "Configured in": "clearance_checklist_template",
+    "Consumed by": "LCY-06.1",
+    "Test case": "TC-X400"
+  },
+  {
+    "Rule ID": "RL-401",
+    "Rule": "Clearance items run in parallel with the notice period, each with its own SLA.",
+    "Parameters": "—",
+    "Client value / default": "Parallel",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-06.2",
+    "Test case": "TC-X401"
+  },
+  {
+    "Rule ID": "RL-402",
+    "Rule": "F&F is held while any blocking item is open.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "LCY-06.3",
+    "Test case": "TC-X402"
+  },
+  {
+    "Rule ID": "RL-403",
+    "Rule": "A blocking item may be waived by an authorised role with a reason, and any value becomes a recovery line.",
+    "Parameters": "waive_role",
+    "Client value / default": "HR head or above",
+    "Configured in": "Config",
+    "Consumed by": "LCY-06.4",
+    "Test case": "TC-X403"
+  },
+  {
+    "Rule ID": "§ SELF-SERVICE AND ASSISTANT"
+  },
+  {
+    "Rule ID": "RL-410",
+    "Rule": "Pending approvals across every module appear in one queue.",
+    "Parameters": "—",
+    "Client value / default": "Unified",
+    "Configured in": "Product",
+    "Consumed by": "SSV-02.1",
+    "Test case": "TC-S410"
+  },
+  {
+    "Rule ID": "RL-411",
+    "Rule": "Every notification is actionable in place, on any channel.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "SSV-02.2",
+    "Test case": "TC-S411"
+  },
+  {
+    "Rule ID": "RL-412",
+    "Rule": "An item shows the rule context that affects the decision.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "SSV-02.3",
+    "Test case": "TC-S412"
+  },
+  {
+    "Rule ID": "RL-420",
+    "Rule": "Assistant answers are scoped to the asking employee's own permissions.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "SSV-05.2",
+    "Test case": "TC-A420"
+  },
+  {
+    "Rule ID": "RL-421",
+    "Rule": "No assistant answer is produced without a retrieved source.",
+    "Parameters": "—",
+    "Client value / default": "Grounding mandatory",
+    "Configured in": "Code invariant",
+    "Consumed by": "SSV-05.2",
+    "Test case": "TC-A421"
+  },
+  {
+    "Rule ID": "RL-422",
+    "Rule": "Assistant writes require explicit confirmation; reads may be automatic.",
+    "Parameters": "—",
+    "Client value / default": "Confirm on write",
+    "Configured in": "Tenant policy",
+    "Consumed by": "SSV-05.3",
+    "Test case": "TC-A422"
+  },
+  {
+    "Rule ID": "RL-423",
+    "Rule": "When the assistant does not know, it creates a ticket and says so.",
+    "Parameters": "—",
+    "Client value / default": "Never guess",
+    "Configured in": "Code invariant",
+    "Consumed by": "SSV-05.4",
+    "Test case": "TC-A423"
+  },
+  {
+    "Rule ID": "§ LOANS"
+  },
+  {
+    "Rule ID": "RL-430",
+    "Rule": "Loan eligibility is one service method consumed by the application screen, the guarantor lock, the payroll node and the agent tool.",
+    "Parameters": "—",
+    "Client value / default": "Single method",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-01.1, CMB-02.2",
+    "Test case": "TC-M430 (demo point 9)"
+  },
+  {
+    "Rule ID": "RL-431",
+    "Rule": "A person with an outstanding loan is ineligible for another loan and for a salary advance until full repayment.",
+    "Parameters": "—",
+    "Client value / default": "One at a time",
+    "Configured in": "Config",
+    "Consumed by": "CMB-01.2",
+    "Test case": "TC-M431"
+  },
+  {
+    "Rule ID": "RL-432",
+    "Rule": "A person standing guarantor on an unreleased loan is ineligible for their own loan and to stand guarantor again.",
+    "Parameters": "—",
+    "Client value / default": "Guarantor lock",
+    "Configured in": "Config",
+    "Consumed by": "CMB-01.3",
+    "Test case": "TC-M432"
+  },
+  {
+    "Rule ID": "RL-433",
+    "Rule": "The ceiling is four times monthly basic, rising to six times for service above five years.",
+    "Parameters": "multiple_base, multiple_long, service_years",
+    "Client value / default": "4x, 6x, 5 years",
+    "Configured in": "Config",
+    "Consumed by": "CMB-01.4",
+    "Test case": "TC-M433"
+  },
+  {
+    "Rule ID": "RL-434",
+    "Rule": "Eligibility returns a decision, a ceiling and the reasons, and the reasons are shown to the applicant.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "CMB-01.5",
+    "Test case": "TC-M434"
+  },
+  {
+    "Rule ID": "RL-440",
+    "Rule": "A loan application names its proposed guarantors.",
+    "Parameters": "—",
+    "Client value / default": "Required",
+    "Configured in": "Product",
+    "Consumed by": "CMB-02.1",
+    "Test case": "TC-M440"
+  },
+  {
+    "Rule ID": "RL-441",
+    "Rule": "Two guarantors are mandatory; a third is optional above a configured amount threshold.",
+    "Parameters": "mandatory_count, third_threshold",
+    "Client value / default": "2, configurable",
+    "Configured in": "Config",
+    "Consumed by": "CMB-02.3",
+    "Test case": "TC-M441"
+  },
+  {
+    "Rule ID": "RL-442",
+    "Rule": "Accepting a guarantee locks the guarantor until release.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-02.4",
+    "Test case": "TC-M442"
+  },
+  {
+    "Rule ID": "RL-443",
+    "Rule": "A director may sanction on special terms, bypassing eligibility, recorded with approver, reason and the rules waived.",
+    "Parameters": "override_role",
+    "Client value / default": "Director",
+    "Configured in": "Config",
+    "Consumed by": "CMB-03.2",
+    "Test case": "TC-M443"
+  },
+  {
+    "Rule ID": "RL-444",
+    "Rule": "Sanction creates the loan, the schedule and the payroll deduction node.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-03.3",
+    "Test case": "TC-M444"
+  },
+  {
+    "Rule ID": "RL-450",
+    "Rule": "Each recovery posts a repayment row and reduces outstanding.",
+    "Parameters": "—",
+    "Client value / default": "Per run",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-04.1",
+    "Test case": "TC-M450"
+  },
+  {
+    "Rule ID": "RL-451",
+    "Rule": "Outstanding reaching zero closes the loan.",
+    "Parameters": "—",
+    "Client value / default": "Automatic",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-04.2",
+    "Test case": "TC-M451"
+  },
+  {
+    "Rule ID": "RL-452",
+    "Rule": "Closure writes explicit guarantor release rows; release is an event, not an inference.",
+    "Parameters": "—",
+    "Client value / default": "Explicit",
+    "Configured in": "Code invariant",
+    "Consumed by": "CMB-04.3",
+    "Test case": "TC-M452"
+  },
+  {
+    "Rule ID": "§ TALENT, CONTINGENT, EXPERIENCE"
+  },
+  {
+    "Rule ID": "RL-460",
+    "Rule": "A requisition declares itself a replacement or an addition.",
+    "Parameters": "requisition_type",
+    "Client value / default": "Two values",
+    "Configured in": "Product",
+    "Consumed by": "TAL-01.1",
+    "Test case": "TC-R460"
+  },
+  {
+    "Rule ID": "RL-461",
+    "Rule": "A replacement names a vacated position code and consumes no fresh sanctioned strength.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "TAL-01.2",
+    "Test case": "TC-R461 (demo point 24)"
+  },
+  {
+    "Rule ID": "RL-462",
+    "Rule": "An addition exceeding sanctioned strength for the org unit, designation and location is blocked at approval.",
+    "Parameters": "—",
+    "Client value / default": "Blocked",
+    "Configured in": "Code invariant",
+    "Consumed by": "TAL-01.3",
+    "Test case": "TC-R462 (demo point 25)"
+  },
+  {
+    "Rule ID": "RL-463",
+    "Rule": "An authorised role may override a sanction block with a recorded reason.",
+    "Parameters": "override_role",
+    "Client value / default": "Configured",
+    "Configured in": "Config",
+    "Consumed by": "TAL-01.4",
+    "Test case": "TC-R463"
+  },
+  {
+    "Rule ID": "RL-470",
+    "Rule": "A referral is a named source channel carrying an award.",
+    "Parameters": "award_amount",
+    "Client value / default": "Per programme",
+    "Configured in": "Config",
+    "Consumed by": "TAL-03.1",
+    "Test case": "TC-R470"
+  },
+  {
+    "Rule ID": "RL-471",
+    "Rule": "Referral awards mature in parts: on joining and on confirmation.",
+    "Parameters": "split",
+    "Client value / default": "Part on joining, balance on confirmation",
+    "Configured in": "Config",
+    "Consumed by": "TAL-03.2",
+    "Test case": "TC-R471 (demo point 19)"
+  },
+  {
+    "Rule ID": "RL-472",
+    "Rule": "Referral and recognition payouts run through payroll in a named run.",
+    "Parameters": "—",
+    "Client value / default": "Through payroll",
+    "Configured in": "Code invariant",
+    "Consumed by": "TAL-03.3, EXP-01.3",
+    "Test case": "TC-R472"
+  },
+  {
+    "Rule ID": "RL-480",
+    "Rule": "Contractor invoices are submitted against a deployed population by class and rate.",
+    "Parameters": "—",
+    "Client value / default": "Per engagement",
+    "Configured in": "Product",
+    "Consumed by": "CTG-02.1",
+    "Test case": "TC-G480"
+  },
+  {
+    "Rule ID": "RL-481",
+    "Rule": "Invoices reconcile against attendance the system already holds, with variance visible before payment.",
+    "Parameters": "—",
+    "Client value / default": "Pre-payment",
+    "Configured in": "Product",
+    "Consumed by": "CTG-02.2",
+    "Test case": "TC-G481"
+  },
+  {
+    "Rule ID": "RL-482",
+    "Rule": "Variance evidence is attached to the invoice decision.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "CTG-02.3",
+    "Test case": "TC-G482"
+  },
+  {
+    "Rule ID": "RL-490",
+    "Rule": "A recognition award carries a citation, a period and an optional monetary component.",
+    "Parameters": "—",
+    "Client value / default": "Per programme",
+    "Configured in": "Config",
+    "Consumed by": "EXP-01.1",
+    "Test case": "TC-E490"
+  },
+  {
+    "Rule ID": "RL-491",
+    "Rule": "A monetary award raises a payroll input in a named run, never a side payment.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "EXP-01.3",
+    "Test case": "TC-E491 (demo point 18)"
+  },
+  {
+    "Rule ID": "RL-492",
+    "Rule": "Awards publish an announcement referencing the award.",
+    "Parameters": "—",
+    "Client value / default": "Automatic with override",
+    "Configured in": "Config",
+    "Consumed by": "EXP-01.4",
+    "Test case": "TC-E492"
+  },
+  {
+    "Rule ID": "RL-500",
+    "Rule": "Letters are produced from versioned templates with merge fields.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "letter_template",
+    "Consumed by": "EXP-03.1",
+    "Test case": "TC-E500"
+  },
+  {
+    "Rule ID": "RL-501",
+    "Rule": "The system drafts and a human reviews; nothing is issued directly from a model.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "EXP-03.2",
+    "Test case": "TC-E501"
+  },
+  {
+    "Rule ID": "RL-502",
+    "Rule": "An issued letter retains the template version that produced it.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "EXP-03.4",
+    "Test case": "TC-E502 (demo point 21)"
+  },
+  {
+    "Rule ID": "§ FINANCE AND INTEGRATION"
+  },
+  {
+    "Rule ID": "RL-510",
+    "Rule": "Master-data direction is a per-tenant choice of Nucleus-owned, ERP-owned or co-owned.",
+    "Parameters": "master_mode",
+    "Client value / default": "Co-owned is the common answer",
+    "Configured in": "integration_config",
+    "Consumed by": "FIN-01.1",
+    "Test case": "TC-F510 (demo point 14)"
+  },
+  {
+    "Rule ID": "RL-511",
+    "Rule": "In co-owned mode no field has two owners and every mandatory field has one.",
+    "Parameters": "—",
+    "Client value / default": "Validated",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-01.2",
+    "Test case": "TC-F511"
+  },
+  {
+    "Rule ID": "RL-512",
+    "Rule": "Inbound sync runs through the integration service; domain modules never call the ERP directly.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Architecture",
+    "Consumed by": "FIN-01.3",
+    "Test case": "TC-F512"
+  },
+  {
+    "Rule ID": "RL-513",
+    "Rule": "Upserts are idempotent on the external employee code and rejected on a repeated payload hash.",
+    "Parameters": "—",
+    "Client value / default": "Idempotent",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-01.4",
+    "Test case": "TC-F513"
+  },
+  {
+    "Rule ID": "RL-514",
+    "Rule": "A conflict on a Nucleus-owned field is held for review; conflict policy is explicit configuration, never implicit last-write-wins.",
+    "Parameters": "conflict_policy",
+    "Client value / default": "Explicit",
+    "Configured in": "integration_config",
+    "Consumed by": "FIN-01.5",
+    "Test case": "TC-F514"
+  },
+  {
+    "Rule ID": "RL-515",
+    "Rule": "ERP-owned fields are read-only in the Nucleus UI.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-01.6",
+    "Test case": "TC-F515"
+  },
+  {
+    "Rule ID": "RL-516",
+    "Rule": "An unmatched external employee code is parked for resolution and never auto-creates a person.",
+    "Parameters": "—",
+    "Client value / default": "Parked",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-01.7",
+    "Test case": "TC-F516"
+  },
+  {
+    "Rule ID": "RL-520",
+    "Rule": "Cost is split at employee level from the assignment as it stood in the pay period, before aggregation.",
+    "Parameters": "dimensions",
+    "Client value / default": "Cost centre, department, location, project, custom",
+    "Configured in": "gl_mapping",
+    "Consumed by": "FIN-03.1",
+    "Test case": "TC-F520"
+  },
+  {
+    "Rule ID": "RL-521",
+    "Rule": "Every pay component in a run must have a GL mapping before the run can be approved.",
+    "Parameters": "—",
+    "Client value / default": "Blocking",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-03.2",
+    "Test case": "TC-F521 (demo point 15)"
+  },
+  {
+    "Rule ID": "RL-522",
+    "Rule": "One balanced journal per run per legal entity, with run type as a dimension.",
+    "Parameters": "—",
+    "Client value / default": "Per run",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-03.3",
+    "Test case": "TC-F522"
+  },
+  {
+    "Rule ID": "RL-523",
+    "Rule": "Delivery is by API, structured file, staging table or manual download, and the result is recorded either way.",
+    "Parameters": "mechanisms",
+    "Client value / default": "Tally XML, CSV, native, API",
+    "Configured in": "integration_config",
+    "Consumed by": "FIN-03.4",
+    "Test case": "TC-F523"
+  },
+  {
+    "Rule ID": "RL-524",
+    "Rule": "The finance system's document number is written back onto the payroll run.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "FIN-03.5",
+    "Test case": "TC-F524"
+  },
+  {
+    "Rule ID": "RL-530",
+    "Rule": "Seven reconciliation assertions must pass and be shown passing: gross, net vs bank, statutory vs challan, dimension residue, overtime, loan movement, drill-through.",
+    "Parameters": "—",
+    "Client value / default": "All seven",
+    "Configured in": "Product",
+    "Consumed by": "FIN-04.1",
+    "Test case": "TC-F530"
+  },
+  {
+    "Rule ID": "RL-531",
+    "Rule": "Every GL line drills back to contributing employees and payslip lines.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Product",
+    "Consumed by": "FIN-04.2",
+    "Test case": "TC-F531"
+  },
+  {
+    "Rule ID": "§ AGENTS"
+  },
+  {
+    "Rule ID": "RL-540",
+    "Rule": "An agent is a first-class principal with its own ID, scoped role and accountable human owner.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "INT-01.1",
+    "Test case": "TC-A540"
+  },
+  {
+    "Rule ID": "RL-541",
+    "Rule": "Tools are the only interface; agents never touch the database, call internal functions or hold credentials.",
+    "Parameters": "—",
+    "Client value / default": "Enforced",
+    "Configured in": "Architecture",
+    "Consumed by": "INT-01.2",
+    "Test case": "TC-A541"
+  },
+  {
+    "Rule ID": "RL-542",
+    "Rule": "Every agent action passes the policy gate: permission, tenant policy, value and blast-radius caps.",
+    "Parameters": "caps",
+    "Client value / default": "Per tenant",
+    "Configured in": "Tenant policy",
+    "Consumed by": "INT-01.3",
+    "Test case": "TC-A542"
+  },
+  {
+    "Rule ID": "RL-543",
+    "Rule": "Any tool classified write or above produces a dry-run diff before execution.",
+    "Parameters": "side_effect",
+    "Client value / default": "read / propose / write / irreversible",
+    "Configured in": "tool_registry",
+    "Consumed by": "INT-01.4",
+    "Test case": "TC-A543"
+  },
+  {
+    "Rule ID": "RL-544",
+    "Rule": "Nothing irreversible executes without a named human: disbursement, termination, offer release, statutory filing, loan sanction.",
+    "Parameters": "—",
+    "Client value / default": "Absolute",
+    "Configured in": "Code invariant",
+    "Consumed by": "INT-01.5",
+    "Test case": "TC-A544"
+  },
+  {
+    "Rule ID": "RL-545",
+    "Rule": "Every action lands in the append-only ledger with plan, simulation, approval, outcome and a reversal handle.",
+    "Parameters": "—",
+    "Client value / default": "Always",
+    "Configured in": "Code invariant",
+    "Consumed by": "INT-01.6",
+    "Test case": "TC-A545"
+  }
+]

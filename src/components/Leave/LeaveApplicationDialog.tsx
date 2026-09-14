@@ -25,6 +25,7 @@ import { useTranslation } from "@/context/I18nContext";
 import { readData } from "@/services/workspace-data.mjs";
 import { inclusiveDays } from "@/lib/form-validation";
 import { LEAVE_TYPES, calculateLeaveSpan } from "@/services/leaveEngine";
+import { getPicklistOptions } from "@/lib/picklist-catalog";
 
 export default function LeaveApplicationDialog({
   open,
@@ -80,17 +81,21 @@ function LeaveApplicationForm({
   const [days, setDays] = useState<string | number>(
     inclusiveDays(defaults.fromDate, defaults.toDate) ?? "",
   );
+  const [durationMode, setDurationMode] = useState("Full Day");
   const [reason, setReason] = useState("");
   const [contact, setContact] = useState("");
   const [error, setError] = useState("");
   const submitting = useRef(false);
   const updateDates = (key: string, value: string) => {
+    const nextFrom = key === "from" ? value : from;
+    const nextTo = key === "to" ? value : to;
     if (key === "from") setFrom(value);
     else setTo(value);
-    setDays(
-      inclusiveDays(key === "from" ? value : from, key === "to" ? value : to) ??
-        "",
-    );
+    if (nextFrom === nextTo && (durationMode === "First Half" || durationMode === "Second Half")) {
+      setDays(0.5);
+    } else {
+      setDays(inclusiveDays(nextFrom, nextTo) ?? "");
+    }
     setError("");
   };
   const policy = useMemo(() => leaveCalendarPolicy(employee), [employee]);
@@ -216,6 +221,36 @@ function LeaveApplicationForm({
               }}
             />
           </Stack>
+          {from === to && (
+            <TextField
+              select
+              fullWidth
+              label={text("duration") || "Duration"}
+              value={durationMode}
+              onChange={(event) => {
+                const mode = event.target.value;
+                setDurationMode(mode);
+                if (mode === "First Half" || mode === "Second Half") {
+                  setDays(0.5);
+                } else {
+                  setDays(1);
+                }
+              }}
+            >
+              {(getPicklistOptions("PL_LEAVE_DURATION").length > 0
+                ? getPicklistOptions("PL_LEAVE_DURATION")
+                : [
+                    { value: "Full Day", label: "Full Day" },
+                    { value: "First Half", label: "First Half" },
+                    { value: "Second Half", label: "Second Half" },
+                  ]
+              ).map((opt) => (
+                <MenuItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
           <TextField
             type="number"
             required

@@ -1,0 +1,835 @@
+[
+  {
+    "Picklist code": "PL_ACCOMMODATION",
+    "Name": "Accommodation type",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "Own · Rented · Company provided · Parental · Hostel"
+  },
+  {
+    "Picklist code": "PL_ACCOUNT_TYPE",
+    "Name": "Bank account type",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Savings · Current · Salary · NRE · NRO"
+  },
+  {
+    "Picklist code": "PL_ACCRUAL_DAY",
+    "Name": "Accrual timing",
+    "Seeded by": "Config",
+    "Values": 2,
+    "Complete value set": "Period start · Period end"
+  },
+  {
+    "Picklist code": "PL_ACCRUAL_METHOD",
+    "Name": "Accrual method",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Annual credit · Monthly accrual · Per days worked · No accrual (entitlement based)"
+  },
+  {
+    "Picklist code": "PL_ACTIVE_STATUS",
+    "Name": "Record status",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Active · Inactive"
+  },
+  {
+    "Picklist code": "PL_ANNOUNCEMENT_CHANNEL",
+    "Name": "Announcement channel",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "Employee portal · Mobile push · Email · WhatsApp · Notice board display"
+  },
+  {
+    "Picklist code": "PL_ANNOUNCEMENT_TYPE",
+    "Name": "Announcement type",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "General · Policy · Emergency · Celebration · Statutory notice"
+  },
+  {
+    "Picklist code": "PL_APPROVAL_STATUS",
+    "Name": "Approval status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Draft · Pending approval · Approved · Rejected · Withdrawn"
+  },
+  {
+    "Picklist code": "PL_ASSET_CONDITION",
+    "Name": "Asset condition at issue",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "New · Good · Fair"
+  },
+  {
+    "Picklist code": "PL_ASSET_RETURN_CONDITION",
+    "Name": "Asset condition at return",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Good · Damaged · Lost · Not returned"
+  },
+  {
+    "Picklist code": "PL_ASSET_TYPE",
+    "Name": "Asset type",
+    "Seeded by": "Config",
+    "Values": 12,
+    "Complete value set": "Laptop · Desktop · Mobile phone · SIM card · Access card · Vehicle · Tool kit · Safety equipment · Uniform · Footwear · Locker key · Other"
+  },
+  {
+    "Picklist code": "PL_ASSIGNMENT_CHANGE",
+    "Name": "Assignment change type",
+    "Seeded by": "Config",
+    "Values": 10,
+    "Complete value set": "New hire · Promotion · Transfer — location · Transfer — org unit · Redesignation · Worker class change · Manager change · Payroll group change · Data correction · Rehire"
+  },
+  {
+    "Picklist code": "PL_ATTENDANCE_MODE",
+    "Name": "Attendance capture mode",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Biometric device · Mobile app · Kiosk · WhatsApp · Web · Exempt"
+  },
+  {
+    "Picklist code": "PL_ATTENDANCE_STATUS",
+    "Name": "Attendance day status",
+    "Seeded by": "System",
+    "Values": 9,
+    "Complete value set": "Present · Half day · Absent · Weekly off · Holiday · On leave · On duty · Work from home · Not scheduled"
+  },
+  {
+    "Picklist code": "PL_AUTH_METHOD",
+    "Name": "Authentication method",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "SSO (SAML) · SSO (OIDC) · Password · OTP · Biometric (device)"
+  },
+  {
+    "Picklist code": "PL_AWARD_CATEGORY",
+    "Name": "Recognition category",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "Star performer · Safety champion · Quality champion · Innovation · Long service · Team award · Customer delight · Spot award"
+  },
+  {
+    "Picklist code": "PL_BANK_FORMAT",
+    "Name": "Bank file format",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "HDFC ENet · ICICI CIB · SBI CINB · Axis Corporate · Kotak FYN · Yes Bank · NPCI NACH · Generic CSV"
+  },
+  {
+    "Picklist code": "PL_BLOOD_GROUP",
+    "Name": "Blood group",
+    "Seeded by": "System",
+    "Values": 9,
+    "Complete value set": "A+ · A- · B+ · B- · AB+ · AB- · O+ · O- · Not known"
+  },
+  {
+    "Picklist code": "PL_CALC_METHOD",
+    "Name": "Calculation method",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Fixed amount · Percentage of component · Formula · Slab table · Attendance driven · Rate x quantity"
+  },
+  {
+    "Picklist code": "PL_CANDIDATE_STAGE",
+    "Name": "Candidate stage",
+    "Seeded by": "Config",
+    "Values": 11,
+    "Complete value set": "Applied · Screened · Interview scheduled · Interview complete · Selected · Offered · Offer accepted · Joined · Rejected · Withdrawn · On hold"
+  },
+  {
+    "Picklist code": "PL_CAP_STATUS",
+    "Name": "Statutory cap status",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Within limit · Approaching limit · Breach"
+  },
+  {
+    "Picklist code": "PL_CLAIM_TYPE",
+    "Name": "Reimbursement claim type",
+    "Seeded by": "Config",
+    "Values": 9,
+    "Complete value set": "Fuel / conveyance · Telephone / internet · Medical · Books and periodicals · Travel · Relocation · Professional development · Meal · Other"
+  },
+  {
+    "Picklist code": "PL_CLEARANCE_ITEM_STATUS",
+    "Name": "Clearance item status",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Open · Cleared · Waived"
+  },
+  {
+    "Picklist code": "PL_CLEARANCE_STATUS",
+    "Name": "Clearance status",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Not started · In progress · Blocked · Cleared"
+  },
+  {
+    "Picklist code": "PL_COMPONENT_TYPE",
+    "Name": "Pay component type",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "Earning · Deduction · Employer contribution · Reimbursement · Information only"
+  },
+  {
+    "Picklist code": "PL_CONFIRMATION_ACTION",
+    "Name": "Confirmation action",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Confirm · Extend probation · Terminate"
+  },
+  {
+    "Picklist code": "PL_CONFLICT_POLICY",
+    "Name": "Conflict policy",
+    "Seeded by": "Config",
+    "Values": 3,
+    "Complete value set": "Owner wins · Hold for review · Latest wins"
+  },
+  {
+    "Picklist code": "PL_COUNTRY",
+    "Name": "Country",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "India · (full ISO 3166-1 list seeded at install)"
+  },
+  {
+    "Picklist code": "PL_CURRENCY",
+    "Name": "Currency",
+    "Seeded by": "System",
+    "Values": 7,
+    "Complete value set": "INR · USD · EUR · GBP · AED · SGD · (full ISO 4217 list seeded at install)"
+  },
+  {
+    "Picklist code": "PL_DAY_TYPE",
+    "Name": "Day type",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Working day · Weekly off / rest day · Holiday · National holiday"
+  },
+  {
+    "Picklist code": "PL_DECISION",
+    "Name": "Approval decision",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Approve · Reject · Return for correction · Delegate"
+  },
+  {
+    "Picklist code": "PL_DECLARATION_STATUS",
+    "Name": "Declaration status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Draft · Submitted · Proof pending · Verified · Partially verified"
+  },
+  {
+    "Picklist code": "PL_DECLINE_REASON",
+    "Name": "Offer decline reason",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "Compensation · Counter offer accepted · Role mismatch · Location · Joining date · Family reasons · Other offer · Not disclosed"
+  },
+  {
+    "Picklist code": "PL_DISABILITY_TYPE",
+    "Name": "Disability type",
+    "Seeded by": "System",
+    "Values": 7,
+    "Complete value set": "Locomotor · Visual · Hearing · Speech · Intellectual · Multiple · Other"
+  },
+  {
+    "Picklist code": "PL_DOCUMENT_CLASS",
+    "Name": "Document class",
+    "Seeded by": "Config",
+    "Values": 17,
+    "Complete value set": "Aadhaar · PAN · Passport · Driving licence · Voter ID · Bank proof · Educational certificate · Experience letter · Relieving letter · Payslip (previous employer) · Medical fitness certificate · Disability certificate · Photograph · Signature · Police verification · Contract / agreement · Other"
+  },
+  {
+    "Picklist code": "PL_EDUCATION_LEVEL",
+    "Name": "Qualification level",
+    "Seeded by": "Config",
+    "Values": 9,
+    "Complete value set": "Below 10th · 10th / SSLC · 12th / PUC · ITI · Diploma · Graduate · Post graduate · Doctorate · Professional certification"
+  },
+  {
+    "Picklist code": "PL_EMPLOYMENT_TYPE",
+    "Name": "Employment type",
+    "Seeded by": "Config",
+    "Values": 10,
+    "Complete value set": "Permanent · Probation · Fixed term contract · Trainee · Apprentice (NAPS/NATS) · Intern · Retainer · Consultant · Contract (through vendor) · Part time"
+  },
+  {
+    "Picklist code": "PL_ENCASHMENT_BASIS",
+    "Name": "Encashment rate basis",
+    "Seeded by": "Config",
+    "Values": 3,
+    "Complete value set": "Basic · Basic + DA · Gross"
+  },
+  {
+    "Picklist code": "PL_ENTITY_TYPE",
+    "Name": "Legal entity type",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "Private Limited · Public Limited · LLP · Partnership · Proprietorship · Society · Trust · Branch Office"
+  },
+  {
+    "Picklist code": "PL_ERP_SYSTEM",
+    "Name": "ERP system",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "SAP · Oracle · Microsoft Dynamics · Tally · Odoo · Custom / file based"
+  },
+  {
+    "Picklist code": "PL_ESTB_TYPE",
+    "Name": "Establishment type",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "Factory · Shops & Establishment · Mine · Plantation · Motor Transport · Construction · Beedi & Cigar · Contract Establishment"
+  },
+  {
+    "Picklist code": "PL_EXCEPTION_ACTION",
+    "Name": "Exception resolution action",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Accept proposal · Amend · Reject · Escalate"
+  },
+  {
+    "Picklist code": "PL_EXCEPTION_TYPE",
+    "Name": "Attendance exception type",
+    "Seeded by": "System",
+    "Values": 8,
+    "Complete value set": "Unpaired punch · Missing attendance day · Device failure · Shift inferred · Geofence breach · Duplicate punch · Punch outside roster · Late beyond allowance"
+  },
+  {
+    "Picklist code": "PL_EXEMPTION_SECTION",
+    "Name": "Tax exemption section",
+    "Seeded by": "System",
+    "Values": 8,
+    "Complete value set": "10(5) LTA · 10(13A) HRA · 10(14) special allowance · 16(ia) standard deduction · 16(ii) entertainment · 16(iii) professional tax · 17(2) perquisite · Not exempt"
+  },
+  {
+    "Picklist code": "PL_EXIT_REASON",
+    "Name": "Exit reason category",
+    "Seeded by": "Config",
+    "Values": 12,
+    "Complete value set": "Better opportunity · Compensation · Career growth · Relocation · Higher studies · Personal / family · Health · Work environment · Manager relationship · Performance · Disciplinary · Not disclosed"
+  },
+  {
+    "Picklist code": "PL_EXIT_TYPE",
+    "Name": "Exit type",
+    "Seeded by": "System",
+    "Values": 7,
+    "Complete value set": "Resignation · Termination · Retirement · Contract end · Abandonment · Death in service · Redundancy"
+  },
+  {
+    "Picklist code": "PL_FIELD_OWNER",
+    "Name": "Field owner",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Nucleus · ERP"
+  },
+  {
+    "Picklist code": "PL_FITNESS_STATUS",
+    "Name": "Medical fitness status",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Fit · Fit with restriction · Unfit · Pending"
+  },
+  {
+    "Picklist code": "PL_FLAG_DISPOSITION",
+    "Name": "Audit flag disposition",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Resolve · Waive · Escalate"
+  },
+  {
+    "Picklist code": "PL_FREQUENCY",
+    "Name": "Frequency",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Monthly · Quarterly · Half-yearly · Annual · Event-based"
+  },
+  {
+    "Picklist code": "PL_GATE_PASS_TYPE",
+    "Name": "Gate pass type",
+    "Seeded by": "Config",
+    "Values": 2,
+    "Complete value set": "Personal · Official"
+  },
+  {
+    "Picklist code": "PL_GENDER",
+    "Name": "Gender",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Male · Female · Other · Prefer not to say"
+  },
+  {
+    "Picklist code": "PL_GEOFENCE_RESULT",
+    "Name": "Geofence result",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Inside · Outside · Unavailable"
+  },
+  {
+    "Picklist code": "PL_HALF_DAY_SESSION",
+    "Name": "Half day session",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "First half · Second half"
+  },
+  {
+    "Picklist code": "PL_INTERVIEW_MODE",
+    "Name": "Interview mode",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "In person · Video · Telephone"
+  },
+  {
+    "Picklist code": "PL_INTERVIEW_ROUND",
+    "Name": "Interview round",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Screening · Technical 1 · Technical 2 · Functional · HR · Final / leadership"
+  },
+  {
+    "Picklist code": "PL_INTERVIEW_VERDICT",
+    "Name": "Interview verdict",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Strong hire · Hire · Hold · No hire"
+  },
+  {
+    "Picklist code": "PL_LANGUAGE",
+    "Name": "Language",
+    "Seeded by": "Config",
+    "Values": 14,
+    "Complete value set": "English · Hindi · Kannada · Tamil · Telugu · Malayalam · Marathi · Gujarati · Bengali · Odia · Punjabi · Assamese · Urdu · Other"
+  },
+  {
+    "Picklist code": "PL_LEAVE_TYPE",
+    "Name": "Leave type",
+    "Seeded by": "Config",
+    "Values": 11,
+    "Complete value set": "Earned leave · Casual leave · Sick leave · Maternity leave · Paternity leave · Compensatory off · Leave without pay · Bereavement leave · Marriage leave · Birthday leave · Special leave"
+  },
+  {
+    "Picklist code": "PL_LEAVE_UNIT",
+    "Name": "Leave unit",
+    "Seeded by": "Config",
+    "Values": 2,
+    "Complete value set": "Days · Hours"
+  },
+  {
+    "Picklist code": "PL_LETTER_TYPE",
+    "Name": "Letter type",
+    "Seeded by": "Config",
+    "Values": 14,
+    "Complete value set": "Offer · Appointment · Confirmation · Salary revision · Promotion · Transfer · Warning · Show cause · Experience · Relieving · No objection certificate · Address proof · Bank introduction · Visa support"
+  },
+  {
+    "Picklist code": "PL_LOAN_PURPOSE",
+    "Name": "Loan purpose",
+    "Seeded by": "Config",
+    "Values": 8,
+    "Complete value set": "Medical · Education · Housing · Marriage · Vehicle · Festival · Personal · Emergency"
+  },
+  {
+    "Picklist code": "PL_LOCATION_TYPE",
+    "Name": "Location type",
+    "Seeded by": "Config",
+    "Values": 11,
+    "Complete value set": "Head office · Corporate office · Plant · Factory · Warehouse · Depot · Branch · Site · Project site · Retail outlet · Remote"
+  },
+  {
+    "Picklist code": "PL_MARITAL_STATUS",
+    "Name": "Marital status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Single · Married · Widowed · Divorced · Separated"
+  },
+  {
+    "Picklist code": "PL_MASTER_MODE",
+    "Name": "Master data mode",
+    "Seeded by": "Config",
+    "Values": 3,
+    "Complete value set": "Nucleus owns · ERP owns · Co-owned"
+  },
+  {
+    "Picklist code": "PL_MATURITY_STATUS",
+    "Name": "Referral award maturity",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Pending · Part matured · Fully matured · Forfeited"
+  },
+  {
+    "Picklist code": "PL_MONTH",
+    "Name": "Month",
+    "Seeded by": "System",
+    "Values": 12,
+    "Complete value set": "January · February · March · April · May · June · July · August · September · October · November · December"
+  },
+  {
+    "Picklist code": "PL_NATIONALITY",
+    "Name": "Nationality",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Indian · (derived from the ISO 3166-1 country list)"
+  },
+  {
+    "Picklist code": "PL_NOMINEE_SCHEME",
+    "Name": "Nominee scheme",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Provident fund · Gratuity · Group insurance · Superannuation · ESI dependant"
+  },
+  {
+    "Picklist code": "PL_OBLIGATION_STATUS",
+    "Name": "Obligation status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Open · In progress · Filed · Filed late · Not applicable"
+  },
+  {
+    "Picklist code": "PL_OFFER_RESPONSE",
+    "Name": "Offer response",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Pending · Accepted · Declined · Negotiating · Lapsed"
+  },
+  {
+    "Picklist code": "PL_OT_BASIS",
+    "Name": "Overtime basis",
+    "Seeded by": "Config",
+    "Values": 2,
+    "Complete value set": "Gross minutes · Net minutes"
+  },
+  {
+    "Picklist code": "PL_OT_ELIGIBILITY",
+    "Name": "Overtime eligibility",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Always · Rest day and holiday only · Beyond weekly hours only · None"
+  },
+  {
+    "Picklist code": "PL_PAYMENT_MODE",
+    "Name": "Payment mode",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Bank transfer (NEFT) · Bank transfer (IMPS) · Bank transfer (RTGS) · Cheque · Cash · Demand draft"
+  },
+  {
+    "Picklist code": "PL_PERSON_STATUS",
+    "Name": "Person record status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Draft · Active · Suspended · On notice · Exited"
+  },
+  {
+    "Picklist code": "PL_POSITION_STATUS",
+    "Name": "Position status",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Vacant · Filled · Frozen · Abolished"
+  },
+  {
+    "Picklist code": "PL_PRINCIPAL_TYPE",
+    "Name": "Principal type",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "User · Service account · Agent"
+  },
+  {
+    "Picklist code": "PL_PRIORITY",
+    "Name": "Priority",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Low · Normal · High · Urgent"
+  },
+  {
+    "Picklist code": "PL_PROOF_STATUS",
+    "Name": "Proof verification status",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Pending · Accepted · Rejected · Partially accepted"
+  },
+  {
+    "Picklist code": "PL_PRORATION_BASIS",
+    "Name": "Proration basis",
+    "Seeded by": "Config",
+    "Values": 3,
+    "Complete value set": "Calendar days · Payable days · Working days"
+  },
+  {
+    "Picklist code": "PL_PUBLISH_STATUS",
+    "Name": "Roster publish status",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Draft · Published"
+  },
+  {
+    "Picklist code": "PL_PUNCH_DIRECTION",
+    "Name": "Punch direction",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "IN · OUT"
+  },
+  {
+    "Picklist code": "PL_PUNCH_SOURCE",
+    "Name": "Punch source",
+    "Seeded by": "System",
+    "Values": 6,
+    "Complete value set": "Biometric device · Mobile app · Kiosk · WhatsApp · Web · Manual (regularised)"
+  },
+  {
+    "Picklist code": "PL_RATING_SCALE",
+    "Name": "Rating scale",
+    "Seeded by": "Config",
+    "Values": 5,
+    "Complete value set": "Outstanding · Exceeds expectations · Meets expectations · Needs improvement · Unsatisfactory"
+  },
+  {
+    "Picklist code": "PL_REFERRAL_RELATION",
+    "Name": "Referrer relationship",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Former colleague · Friend · Relative · Academic contact · Professional network · Other"
+  },
+  {
+    "Picklist code": "PL_REGISTRATION_STATUS",
+    "Name": "Statutory registration status",
+    "Seeded by": "System",
+    "Values": 4,
+    "Complete value set": "Not required · Pending · Registered · Failed"
+  },
+  {
+    "Picklist code": "PL_REGULARISATION_TYPE",
+    "Name": "Regularisation type",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Missing punch · Wrong shift applied · On duty · Work from home · Late waiver · Device failure"
+  },
+  {
+    "Picklist code": "PL_REHIRE_ELIGIBILITY",
+    "Name": "Rehire eligibility",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Yes · No · With approval"
+  },
+  {
+    "Picklist code": "PL_REJECTION_REASON",
+    "Name": "Candidate rejection reason",
+    "Seeded by": "Config",
+    "Values": 9,
+    "Complete value set": "Skill mismatch · Experience mismatch · Compensation mismatch · Location constraint · Notice period · Failed assessment · Background check · Position closed · Other"
+  },
+  {
+    "Picklist code": "PL_RELATION",
+    "Name": "Relationship",
+    "Seeded by": "System",
+    "Values": 14,
+    "Complete value set": "Spouse · Father · Mother · Son · Daughter · Brother · Sister · Father-in-law · Mother-in-law · Grandfather · Grandmother · Guardian · Friend · Other"
+  },
+  {
+    "Picklist code": "PL_RELEASE_CHANNEL",
+    "Name": "Delivery channel",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Email · Employee portal · WhatsApp · Printed copy"
+  },
+  {
+    "Picklist code": "PL_RELIGION",
+    "Name": "Religion",
+    "Seeded by": "Config",
+    "Values": 10,
+    "Complete value set": "Hindu · Muslim · Christian · Sikh · Buddhist · Jain · Parsi · Jewish · Other · Not disclosed"
+  },
+  {
+    "Picklist code": "PL_REQUISITION_TYPE",
+    "Name": "Requisition type",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Replacement · Addition"
+  },
+  {
+    "Picklist code": "PL_REST_DAY_PATTERN",
+    "Name": "Rest day pattern",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Fixed weekly day · Two fixed days · Rotating · None"
+  },
+  {
+    "Picklist code": "PL_REVISION_TYPE",
+    "Name": "Salary revision type",
+    "Seeded by": "Config",
+    "Values": 7,
+    "Complete value set": "Annual increment · Promotion · Market correction · Wage settlement · Data correction · Retention · Confirmation"
+  },
+  {
+    "Picklist code": "PL_ROLE",
+    "Name": "Role",
+    "Seeded by": "Config",
+    "Values": 22,
+    "Complete value set": "Tenant admin · HR head · HR ops · HR business partner · Payroll manager · Payroll executive · Finance · Compliance owner · Compliance engineer · Implementation consultant · Plant HR · Supervisor · Manager · Employee · Security / gate · Admin / facilities · IT admin · Auditor (read only) · Director · Recruiter · Interviewer · Vendor coordinator"
+  },
+  {
+    "Picklist code": "PL_ROUNDING",
+    "Name": "Rounding rule",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Nearest rupee · Round up · Round down · No rounding"
+  },
+  {
+    "Picklist code": "PL_RUN_STATE",
+    "Name": "Payroll run state",
+    "Seeded by": "System",
+    "Values": 9,
+    "Complete value set": "Draft · Inputs locked · Calculated · Audited · Approved · Disbursement prepared · Disbursed · Posted to GL · Closed"
+  },
+  {
+    "Picklist code": "PL_RUN_TYPE",
+    "Name": "Payroll run type",
+    "Seeded by": "System",
+    "Values": 6,
+    "Complete value set": "Regular · Off-cycle overtime · Arrears · Full and final · Bonus · Reimbursement"
+  },
+  {
+    "Picklist code": "PL_SALUTATION",
+    "Name": "Salutation",
+    "Seeded by": "Config",
+    "Values": 7,
+    "Complete value set": "Mr. · Ms. · Mrs. · Dr. · Prof. · Shri · Smt."
+  },
+  {
+    "Picklist code": "PL_SANDWICH_RULE",
+    "Name": "Sandwich rule",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Exclude holidays and rest days · Include holidays · Include rest days · Include both"
+  },
+  {
+    "Picklist code": "PL_SETTLEMENT_STATUS",
+    "Name": "Settlement status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Draft · Computed · Approved · Paid · Recovery pending"
+  },
+  {
+    "Picklist code": "PL_SEVERITY",
+    "Name": "Severity",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Critical · Warning · Info"
+  },
+  {
+    "Picklist code": "PL_SOCIAL_CATEGORY",
+    "Name": "Social category",
+    "Seeded by": "System",
+    "Values": 6,
+    "Complete value set": "General · OBC · SC · ST · EWS · Not disclosed"
+  },
+  {
+    "Picklist code": "PL_SOURCE_CHANNEL",
+    "Name": "Candidate source",
+    "Seeded by": "Config",
+    "Values": 9,
+    "Complete value set": "Employee referral · Job portal · Recruitment agency · Walk-in · Campus · Internal transfer · Social media · Direct application · Rehire"
+  },
+  {
+    "Picklist code": "PL_STATE",
+    "Name": "Indian state / union territory",
+    "Seeded by": "System",
+    "Values": 36,
+    "Complete value set": "Andhra Pradesh · Arunachal Pradesh · Assam · Bihar · Chhattisgarh · Goa · Gujarat · Haryana · Himachal Pradesh · Jharkhand · Karnataka · Kerala · Madhya Pradesh · Maharashtra · Manipur · Meghalaya · Mizoram · Nagaland · Odisha · Punjab · Rajasthan · Sikkim · Tamil Nadu · Telangana · Tripura · Uttar Pradesh · Uttarakhand · West Bengal · Andaman & Nicobar Islands · Chandigarh · Dadra & Nagar Haveli and Daman & Diu · Delhi · Jammu & Kashmir · Ladakh · Lakshadweep · Puducherry"
+  },
+  {
+    "Picklist code": "PL_SYNC_FREQUENCY",
+    "Name": "Sync frequency",
+    "Seeded by": "Config",
+    "Values": 4,
+    "Complete value set": "Real time · Hourly · Daily · On demand"
+  },
+  {
+    "Picklist code": "PL_TASK_STATUS",
+    "Name": "Task status",
+    "Seeded by": "System",
+    "Values": 5,
+    "Complete value set": "Open · In progress · Done · Waived · Overdue"
+  },
+  {
+    "Picklist code": "PL_TAX_REGIME",
+    "Name": "Tax regime",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Old regime · New regime"
+  },
+  {
+    "Picklist code": "PL_TEST_RESULT",
+    "Name": "Compliance test result",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Pass · Fail"
+  },
+  {
+    "Picklist code": "PL_TICKET_CATEGORY",
+    "Name": "Helpdesk category",
+    "Seeded by": "Config",
+    "Values": 12,
+    "Complete value set": "Payroll · Attendance · Leave · Documents · Statutory / PF / ESI · IT · Facilities · Transport · Canteen · Policy query · Grievance · Other"
+  },
+  {
+    "Picklist code": "PL_TICKET_STATUS",
+    "Name": "Ticket status",
+    "Seeded by": "System",
+    "Values": 6,
+    "Complete value set": "Open · In progress · Awaiting employee · Resolved · Closed · Reopened"
+  },
+  {
+    "Picklist code": "PL_TIMEZONE",
+    "Name": "Time zone",
+    "Seeded by": "System",
+    "Values": 2,
+    "Complete value set": "Asia/Kolkata · (full IANA tz database seeded at install)"
+  },
+  {
+    "Picklist code": "PL_UNMATCHED_ACTION",
+    "Name": "Unmatched record action",
+    "Seeded by": "Config",
+    "Values": 3,
+    "Complete value set": "Hold · Create · Reject"
+  },
+  {
+    "Picklist code": "PL_VARIANCE_ACTION",
+    "Name": "Invoice variance action",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Accept · Query · Reduce"
+  },
+  {
+    "Picklist code": "PL_VERIFICATION_STATUS",
+    "Name": "Verification status",
+    "Seeded by": "System",
+    "Values": 3,
+    "Complete value set": "Pending · Verified · Rejected"
+  },
+  {
+    "Picklist code": "PL_WAGE_TYPE",
+    "Name": "Wage type",
+    "Seeded by": "Config",
+    "Values": 6,
+    "Complete value set": "Monthly · Daily · Hourly · Piece rate · Stipend · Retainer"
+  },
+  {
+    "Picklist code": "PL_WEEKDAY",
+    "Name": "Day of week",
+    "Seeded by": "System",
+    "Values": 7,
+    "Complete value set": "Monday · Tuesday · Wednesday · Thursday · Friday · Saturday · Sunday"
+  },
+  {
+    "Picklist code": "PL_WORKER_CLASS",
+    "Name": "Worker class",
+    "Seeded by": "Config",
+    "Values": 9,
+    "Complete value set": "Staff — monthly · Staff — probation · Workman — permanent · Workman — badli / substitute · Workman — temporary · Contract labour · Apprentice · Trainee · Retainer / consultant"
+  }
+]

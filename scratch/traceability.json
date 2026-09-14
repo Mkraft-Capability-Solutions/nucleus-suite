@@ -1,0 +1,307 @@
+[
+  {
+    "Pt": 1,
+    "Requirement": "Multi-punch day, 19h20m across midnight, separate dinner-break report, OT 7h20m, team history for a date range",
+    "Client status": "WIP",
+    "Processes": "TIM-01, TIM-02, TIM-07, TIM-10",
+    "Screens": "SCR-021, SCR-022, SCR-024, SCR-027",
+    "Rules": "RL-080 to RL-089, RL-160, RL-161",
+    "Dataset sheets": "20_Punch_Events, 21_Expected_Attendance",
+    "Test cases": "TC-T80, TC-T83, TC-T84, TC-T87, TC-T161",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 2,
+    "Requirement": "Contractual employees have no rest days and are paid daily wages",
+    "Client status": "WIP",
+    "Processes": "PPL-03, TIM-04, PAY-06",
+    "Screens": "SCR-011, SCR-021, SCR-053",
+    "Rules": "RL-101, RL-290, RL-291",
+    "Dataset sheets": "06_Worker_Classes, 12_Employees, 21_Expected_Attendance",
+    "Test cases": "TC-T101, TC-Y290",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 3,
+    "Requirement": "Third-party group: employees have rest days, helpers do not, under one vendor",
+    "Client status": "WIP",
+    "Processes": "PPL-03, TIM-04, CTG-01",
+    "Screens": "SCR-011, SCR-095",
+    "Rules": "RL-101, RL-102",
+    "Dataset sheets": "06_Worker_Classes, 12_Employees",
+    "Test cases": "TC-T102",
+    "Phase": "P1 (policy) / P3 (module 13)"
+  },
+  {
+    "Pt": 4,
+    "Requirement": "Overtime only on rest days or holidays for some employees",
+    "Client status": "WIP",
+    "Processes": "PPL-03, TIM-07",
+    "Screens": "SCR-024",
+    "Rules": "RL-130, RL-132",
+    "Dataset sheets": "06_Worker_Classes, 21_Expected_Attendance, 23_Overtime_Register",
+    "Test cases": "TC-T130, TC-T132",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 5,
+    "Requirement": "Early return from leave: mark present, re-credit balance, three-level approval, HR can update",
+    "Client status": "Done",
+    "Processes": "LVE-04, LVE-05, PLT-05",
+    "Screens": "SCR-030, SCR-031, SCR-040",
+    "Rules": "RL-014, RL-015, RL-195, RL-200 to RL-203",
+    "Dataset sheets": "18_Leave_Requests, 17_Leave_Ledger",
+    "Test cases": "TC-L200, TC-L201, TC-L15",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 6,
+    "Requirement": "Comp-off lapses 60 days from the credit date",
+    "Client status": "WIP",
+    "Processes": "LVE-06, LVE-08",
+    "Screens": "SCR-031",
+    "Rules": "RL-210 to RL-213",
+    "Dataset sheets": "19_CompOff_Ledger",
+    "Test cases": "TC-L210, TC-L212, TC-L213",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 7,
+    "Requirement": "Auto leave credit: bands, monthly accrual, joiner proration, caps, combination rules, encashment, birthday leave, trainees",
+    "Client status": "WIP",
+    "Processes": "LVE-01, LVE-02, LVE-03, LVE-07",
+    "Screens": "SCR-030, SCR-031, SCR-032",
+    "Rules": "RL-170 to RL-173, RL-180 to RL-182, RL-192, RL-193, RL-220, RL-222",
+    "Dataset sheets": "14, 15, 16, 17",
+    "Test cases": "TC-L171, TC-L173, TC-L180, TC-L192, TC-L193",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 8,
+    "Requirement": "HO-generated salary, plant attendance, plant users cannot see rate",
+    "Client status": "Done",
+    "Processes": "PLT-02, PPL-01",
+    "Screens": "SCR-005, SCR-011, SCR-022",
+    "Rules": "RL-003, RL-004, RL-005, RL-036",
+    "Dataset sheets": "12_Employees, 13_Salary_Structure",
+    "Test cases": "TC-P03, TC-P05 (every build), TC-H36",
+    "Phase": "P0"
+  },
+  {
+    "Pt": 9,
+    "Requirement": "Loan policy: one at a time, two guarantors, 4x and 6x basic, guarantor lock, director override",
+    "Client status": "Done",
+    "Processes": "CMB-01 to CMB-04, PAY-08",
+    "Screens": "SCR-080",
+    "Rules": "RL-430 to RL-434, RL-441 to RL-444, RL-450 to RL-452",
+    "Dataset sheets": "24_Loans, 25_Loan_Guarantors",
+    "Test cases": "TC-M430 to TC-M452",
+    "Phase": "P1 (eligibility + deduction) / P2 (full module)"
+  },
+  {
+    "Pt": 10,
+    "Requirement": "Overtime generated and paid after salary, not with it",
+    "Client status": "Done",
+    "Processes": "TIM-07, PAY-01, PAY-10, FIN-03",
+    "Screens": "SCR-024, SCR-050, SCR-053",
+    "Rules": "RL-134, RL-240, RL-330 to RL-333",
+    "Dataset sheets": "23_Overtime_Register, 26_Payroll_Runs",
+    "Test cases": "TC-Y134, TC-Y330, TC-F333",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 11,
+    "Requirement": "Gate pass: 4 hours a month, maximum two instances, added to work hours",
+    "Client status": "Done",
+    "Processes": "TIM-06, TIM-02",
+    "Screens": "SCR-023, SCR-021",
+    "Rules": "RL-086, RL-120 to RL-123",
+    "Dataset sheets": "22_Gate_Pass, 21_Expected_Attendance",
+    "Test cases": "TC-T86, TC-T121",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 12,
+    "Requirement": "Half-day and absent thresholds by shift, grace, three lates, designation exemption, long-night relief",
+    "Client status": "Done",
+    "Processes": "TIM-05",
+    "Screens": "SCR-021, SCR-022",
+    "Rules": "RL-111 to RL-119, RL-052",
+    "Dataset sheets": "08_Attendance_Rules, 21_Expected_Attendance",
+    "Test cases": "TC-T112, TC-T113, TC-T115, TC-T117, TC-T118",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 13,
+    "Requirement": "Auto shift capture from the in-punch",
+    "Client status": "Done",
+    "Processes": "TIM-03",
+    "Screens": "SCR-022",
+    "Rules": "RL-090 to RL-094",
+    "Dataset sheets": "07_Shifts, 21_Expected_Attendance",
+    "Test cases": "TC-T91, TC-T92, TC-T94",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 14,
+    "Requirement": "Link the ERP employee master by API",
+    "Client status": "Done",
+    "Processes": "FIN-01, PPL-08",
+    "Screens": "SCR-100, SCR-101",
+    "Rules": "RL-510 to RL-516",
+    "Dataset sheets": "36_ERP_Inbound_Master",
+    "Test cases": "TC-F510 to TC-F516",
+    "Phase": "P1 (direction decided in P0)"
+  },
+  {
+    "Pt": 15,
+    "Requirement": "Account posting to ERP",
+    "Client status": "Done",
+    "Processes": "FIN-02, FIN-03, FIN-04",
+    "Screens": "SCR-102, SCR-103",
+    "Rules": "RL-321, RL-520 to RL-524, RL-530, RL-531",
+    "Dataset sheets": "35_GL_Mapping, 26_Payroll_Runs",
+    "Test cases": "TC-F520, TC-F521, TC-F530",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 16,
+    "Requirement": "Full and final on the last working day with a no-dues process",
+    "Client status": "WIP",
+    "Processes": "LCY-05, LCY-06, LCY-07, PAY-12",
+    "Screens": "SCR-061, SCR-056",
+    "Rules": "RL-400 to RL-403, RL-340 to RL-342",
+    "Dataset sheets": "27_Exit_Clearance",
+    "Test cases": "TC-X400, TC-X402, TC-X340",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 17,
+    "Requirement": "Statutory compliance, Factory Act forms and returns",
+    "Client status": "Done",
+    "Processes": "CMP-01p, CMP-02p, CMP-03p, PAY-07",
+    "Screens": "SCR-070, SCR-072, SCR-073",
+    "Rules": "RL-302, RL-360 to RL-364, RL-370 to RL-372, RL-380 to RL-383",
+    "Dataset sheets": "28_Statutory_Calendar, 29_Statutory_Forms",
+    "Test cases": "TC-Y302, TC-C380, TC-C382",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 18,
+    "Requirement": "Star employees",
+    "Client status": "Done",
+    "Processes": "EXP-01",
+    "Screens": "SCR-065, SCR-066",
+    "Rules": "RL-490 to RL-492",
+    "Dataset sheets": "30_Recognition_Referral",
+    "Test cases": "TC-E490, TC-E491",
+    "Phase": "P2"
+  },
+  {
+    "Pt": 19,
+    "Requirement": "Referral process and awards",
+    "Client status": "Done",
+    "Processes": "TAL-03, EXP-01",
+    "Screens": "SCR-091",
+    "Rules": "RL-470 to RL-472",
+    "Dataset sheets": "30_Recognition_Referral",
+    "Test cases": "TC-R470, TC-R471, TC-R472",
+    "Phase": "P2"
+  },
+  {
+    "Pt": 20,
+    "Requirement": "Announcements: birthday, star employee, new joiner, referral, management messages",
+    "Client status": "Done",
+    "Processes": "EXP-02, SSV-03",
+    "Screens": "SCR-066",
+    "Rules": "RL-397, RL-492",
+    "Dataset sheets": "31_Announcements",
+    "Test cases": "TC-X397, TC-E492",
+    "Phase": "P2"
+  },
+  {
+    "Pt": 21,
+    "Requirement": "Appointment and other HR letters",
+    "Client status": "Done",
+    "Processes": "EXP-03, LCY-03, CMB-06",
+    "Screens": "SCR-067",
+    "Rules": "RL-500 to RL-502",
+    "Dataset sheets": "32_Letter_Templates",
+    "Test cases": "TC-E500, TC-E502",
+    "Phase": "P2"
+  },
+  {
+    "Pt": 22,
+    "Requirement": "Organisation chart, department-wise hierarchy",
+    "Client status": "Done",
+    "Processes": "PPL-05",
+    "Screens": "SCR-012, SCR-013",
+    "Rules": "RL-020, RL-055 to RL-057",
+    "Dataset sheets": "04_Org_Units, 12_Employees",
+    "Test cases": "TC-H35, TC-R56",
+    "Phase": "P1"
+  },
+  {
+    "Pt": 23,
+    "Requirement": "Induction training at joining, and asset",
+    "Client status": "Done",
+    "Processes": "LCY-02, LCY-08, TAL-05",
+    "Screens": "SCR-060, SCR-063, SCR-064",
+    "Rules": "RL-395, RL-396",
+    "Dataset sheets": "33_Assets, 34_Induction_Learning",
+    "Test cases": "TC-X395, TC-X396",
+    "Phase": "P1 (assets) / P3 (learning depth)"
+  },
+  {
+    "Pt": 24,
+    "Requirement": "Recruitment: position code for replacement",
+    "Client status": "Done",
+    "Processes": "PPL-04, TAL-01",
+    "Screens": "SCR-012, SCR-090",
+    "Rules": "RL-058, RL-460, RL-461",
+    "Dataset sheets": "11_Positions, 37_Requisitions",
+    "Test cases": "TC-R461",
+    "Phase": "P3"
+  },
+  {
+    "Pt": 25,
+    "Requirement": "Approved manpower, department wise",
+    "Client status": "Done",
+    "Processes": "PPL-04, TAL-01",
+    "Screens": "SCR-013, SCR-090",
+    "Rules": "RL-055 to RL-057, RL-462, RL-463",
+    "Dataset sheets": "10_Sanctioned_Manpower",
+    "Test cases": "TC-R462",
+    "Phase": "P3"
+  },
+  {
+    "Pt": 26,
+    "Requirement": "Joining form under the Factory Act, Form F",
+    "Client status": "WIP",
+    "Processes": "LCY-02, CMP-03p",
+    "Screens": "SCR-060, SCR-073",
+    "Rules": "RL-382, RL-380",
+    "Dataset sheets": "29_Statutory_Forms, 34_Induction_Learning",
+    "Test cases": "TC-C382",
+    "Phase": "P1 — owner still to be assigned (blueprint Annexure A)"
+  },
+  {
+    "Pt": "COVERAGE"
+  },
+  {
+    "Pt": "Demo points covered",
+    "Requirement": 26
+  },
+  {
+    "Pt": "Answered in Phase 0 or 1",
+    "Requirement": 21
+  },
+  {
+    "Pt": "Client status: WIP",
+    "Requirement": 8
+  },
+  {
+    "Pt": "Client status: Done",
+    "Requirement": 18
+  }
+]

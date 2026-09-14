@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import styles from './EmployeeCreationWizard.module.css';
 import { useHRMS } from '@/context/HRMSContext';
+import { getPicklistOptions } from '@/lib/picklist-catalog';
 
 export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
     const { showToast } = useHRMS();
@@ -15,7 +16,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
     // Form state covering all 12 sections of FRM-PPL-01
     const [formData, setFormData] = useState({
         // Section 1: Identity
-        employeeCode: `EMP-${Math.floor(10000 + Math.random() * 90000)}`,
+        employeeCode: 'EMP-10001',
         salutation: 'Mr',
         firstName: '',
         middleName: '',
@@ -247,7 +248,9 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Salutation</span>
                                     <select className={styles.select} value={formData.salutation} onChange={e => handleChange('salutation', e.target.value)}>
-                                        <option>Mr</option><option>Ms</option><option>Mrs</option><option>Dr</option>
+                                        {(getPicklistOptions('PL_SALUTATION').length > 0 ? getPicklistOptions('PL_SALUTATION') : [{value: 'Mr', label: 'Mr'}, {value: 'Ms', label: 'Ms'}, {value: 'Mrs', label: 'Mrs'}, {value: 'Dr', label: 'Dr'}]).map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
                                     </select>
                                 </label>
                                 <label className={styles.field}>
@@ -269,7 +272,9 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Gender <span className={styles.required}>*</span></span>
                                     <select className={styles.select} value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
-                                        <option>Male</option><option>Female</option><option>Other</option>
+                                        {(getPicklistOptions('PL_GENDER').length > 0 ? getPicklistOptions('PL_GENDER') : [{value: 'Male', label: 'Male'}, {value: 'Female', label: 'Female'}, {value: 'Other', label: 'Other'}]).map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
                                     </select>
                                 </label>
                                 <label className={styles.field}>
@@ -279,13 +284,17 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Blood Group <span className={styles.required}>*</span></span>
                                     <select className={styles.select} value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
-                                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                                        {(getPicklistOptions('PL_BLOOD_GROUP').length > 0 ? getPicklistOptions('PL_BLOOD_GROUP') : [{value: 'A+', label: 'A+'}, {value: 'A-', label: 'A-'}, {value: 'B+', label: 'B+'}, {value: 'B-', label: 'B-'}, {value: 'O+', label: 'O+'}, {value: 'O-', label: 'O-'}, {value: 'AB+', label: 'AB+'}, {value: 'AB-', label: 'AB-'}]).map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
                                     </select>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Marital Status</span>
                                     <select className={styles.select} value={formData.maritalStatus} onChange={e => handleChange('maritalStatus', e.target.value)}>
-                                        <option>Single</option><option>Married</option><option>Divorced</option><option>Widowed</option>
+                                        {(getPicklistOptions('PL_MARITAL_STATUS').length > 0 ? getPicklistOptions('PL_MARITAL_STATUS') : [{value: 'Single', label: 'Single'}, {value: 'Married', label: 'Married'}, {value: 'Divorced', label: 'Divorced'}, {value: 'Widowed', label: 'Widowed'}]).map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
                                     </select>
                                 </label>
                                 {formData.maritalStatus === 'Married' && (
@@ -301,7 +310,9 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Social Category</span>
                                     <select className={styles.select} value={formData.socialCategory} onChange={e => handleChange('socialCategory', e.target.value)}>
-                                        <option>General</option><option>OBC</option><option>SC</option><option>ST</option>
+                                        {(getPicklistOptions('PL_SOCIAL_CAT').length > 0 ? getPicklistOptions('PL_SOCIAL_CAT') : [{value: 'General', label: 'General'}, {value: 'OBC', label: 'OBC'}, {value: 'SC', label: 'SC'}, {value: 'ST', label: 'ST'}]).map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
                                     </select>
                                 </label>
                             </div>
@@ -309,11 +320,11 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                             <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Family Identity</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Father's Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>Father&apos;s Name <span className={styles.required}>*</span></span>
                                     <input className={styles.input} value={formData.fatherName} onChange={e => handleChange('fatherName', e.target.value)} required />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Mother's Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>Mother&apos;s Name <span className={styles.required}>*</span></span>
                                     <input className={styles.input} value={formData.motherName} onChange={e => handleChange('motherName', e.target.value)} required />
                                 </label>
                                 <label className={styles.field}>
@@ -526,7 +537,9 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                         <tr key={idx}>
                                             <td>
                                                 <select className={styles.select} value={edu.level} onChange={e => updateRow('education', idx, 'level', e.target.value)}>
-                                                    <option>High School</option><option>Diploma</option><option>Bachelor's</option><option>Master's</option><option>Doctorate</option>
+                                                    {(getPicklistOptions('PL_EDU_LEVEL').length > 0 ? getPicklistOptions('PL_EDU_LEVEL') : [{value: 'High School', label: 'High School'}, {value: 'Diploma', label: 'Diploma'}, {value: "Bachelor's", label: "Bachelor's"}, {value: "Master's", label: "Master's"}, {value: 'Doctorate', label: 'Doctorate'}]).map(opt => (
+                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                    ))}
                                                 </select>
                                             </td>
                                             <td><input className={styles.input} value={edu.degree} onChange={e => updateRow('education', idx, 'degree', e.target.value)} placeholder="B.Tech" /></td>

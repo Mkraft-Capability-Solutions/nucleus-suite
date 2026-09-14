@@ -1,0 +1,110 @@
+[
+  {
+    "Component": "CMP-01",
+    "Component name": "Workflow & approval engine",
+    "What it owns": "Chain definition, step resolution, SLA, escalation, delegation, versioning, HR override",
+    "Consumed by": "Leave, gate pass, overtime, regularisation, loan sanction, guarantor acceptance, requisition, letters, recognition, clearance, assignment change, payroll approval, agent approval",
+    "Built in": "P0",
+    "Owner": "Platform",
+    "Anti-pattern to avoid": "Do NOT write a per-module approval table. Thirteen consumers, one engine."
+  },
+  {
+    "Component": "CMP-02",
+    "Component name": "Ledger pattern",
+    "What it owns": "Append-only transaction rows with credit, debit, reversal, lapse and an idempotency key; balance as a projection",
+    "Consumed by": "Leave balance, comp-off, loan outstanding, gate-pass minutes used, EWA accrual, late-instance counting",
+    "Built in": "P1",
+    "Owner": "Time & Leave",
+    "Anti-pattern to avoid": "Do NOT add a running-balance column anywhere. v1.0 did and v1.1 removed it."
+  },
+  {
+    "Component": "CMP-03",
+    "Component name": "Calculation DAG & rule evaluator",
+    "What it owns": "Topological node evaluation, versioned rule packs, intermediate value capture, explainability trace",
+    "Consumed by": "Payroll gross-to-net, wage-base simulation, F&F, arrears, off-cycle OT, gratuity and bonus provisioning, encashment",
+    "Built in": "P1",
+    "Owner": "Payroll",
+    "Anti-pattern to avoid": "Do NOT hand-code a formula in a module. Every computation is a node."
+  },
+  {
+    "Component": "CMP-03r",
+    "Component name": "Template renderer",
+    "What it owns": "Merge fields, version pinning, draft-then-human-review, issue register, file retention",
+    "Consumed by": "Letters, statutory forms, announcements, payslip PDF, offer letters, certificates, filing packs",
+    "Built in": "P2",
+    "Owner": "Experience",
+    "Anti-pattern to avoid": "Do NOT build a second renderer for statutory forms. Same engine, different templates."
+  },
+  {
+    "Component": "CMP-04",
+    "Component name": "Derivation & recompute worker",
+    "What it owns": "Idempotent projection over immutable events with as-at policy reads, delta output, isolated execution",
+    "Consumed by": "Attendance day, disposition, overtime, gate-pass credit, leave-linked days, contractor attendance, analytics projections",
+    "Built in": "P1",
+    "Owner": "Time",
+    "Anti-pattern to avoid": "Do NOT recompute inline in the request path, and do NOT edit derived rows by hand."
+  },
+  {
+    "Component": "CMP-05",
+    "Component name": "Lock & blocking-item semantics",
+    "What it owns": "A gate that holds an operation while named prerequisites are open, with explicit waiver and reason",
+    "Consumed by": "Payroll input lock, clearance blocking F&F, GL mapping blocking approval, CRITICAL audit flag blocking approval, guarantor lock blocking eligibility",
+    "Built in": "P1",
+    "Owner": "Payroll",
+    "Anti-pattern to avoid": "Five features, one mechanism. Implement the lock once and configure the prerequisites."
+  },
+  {
+    "Component": "CMP-06",
+    "Component name": "Audit & action ledger",
+    "What it owns": "Append-only record of actor, agent, before, after, reason, IP; sensitive-read logging; reversal handles",
+    "Consumed by": "Every write in the product, every sensitive read, every agent action, every override and waiver",
+    "Built in": "P0",
+    "Owner": "Platform",
+    "Anti-pattern to avoid": "Do NOT scatter module-specific history tables."
+  },
+  {
+    "Component": "CMP-07",
+    "Component name": "Outbox & event bus",
+    "What it owns": "Transactional outbox, relay worker, idempotent consumers, CloudEvents envelope",
+    "Consumed by": "Recompute triggers, notifications, analytics projections, webhooks, integration dispatch, learning assignment, announcements",
+    "Built in": "P0",
+    "Owner": "Platform",
+    "Anti-pattern to avoid": "Do NOT call another module synchronously for a side effect."
+  },
+  {
+    "Component": "CMP-08",
+    "Component name": "Scope resolver",
+    "What it owns": "Tenant ∩ entity ∩ location ∩ reporting line ∩ payroll group, evaluated at query time, with field-level nulling",
+    "Consumed by": "Every list, every report, every export, every API read, every tool call, team history, payslip visibility",
+    "Built in": "P0",
+    "Owner": "Platform",
+    "Anti-pattern to avoid": "Do NOT filter in the UI. The plant-user test (RL-005) runs on every build."
+  },
+  {
+    "Component": "CMP-09",
+    "Component name": "Rule pack interface",
+    "What it owns": "Versioned, effective-dated, jurisdiction-scoped declarative packs with their own test suites and changelog",
+    "Consumed by": "PF, ESI, PT, LWF, TDS, gratuity, bonus, overtime multipliers, leave statutory minima, form applicability",
+    "Built in": "P1",
+    "Owner": "Compliance",
+    "Anti-pattern to avoid": "Do NOT branch on state inside application code. Ever."
+  },
+  {
+    "Component": "CMP-10",
+    "Component name": "Effective-dated configuration & temporal read",
+    "What it owns": "Config objects with validity, the as-at reader, and the override-with-reason pattern",
+    "Consumed by": "Worker class, designation, shift, rule sets, leave policy, calendars, GL mapping, ownership map, sanctioned strength, approval chains",
+    "Built in": "P0",
+    "Owner": "Platform",
+    "Anti-pattern to avoid": "Do NOT read today's configuration when computing a past date."
+  },
+  {
+    "Component": "CMP-11",
+    "Component name": "Model gateway & policy gate",
+    "What it owns": "Provider-neutral LLM calls, prompt versioning, cost attribution, caching, plus the agent policy gate and tool registry",
+    "Consumed by": "Policy assistant, document extraction, duplicate detection, review drafting, candidate matching, anomaly detection, every agent",
+    "Built in": "P2",
+    "Owner": "Intelligence",
+    "Anti-pattern to avoid": "Do NOT call a vendor SDK from domain code, and do NOT give an agent a non-tool path to data."
+  }
+]

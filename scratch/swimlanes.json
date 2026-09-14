@@ -1,0 +1,545 @@
+[
+  {
+    "Map": "§ SM-1 · ATTENDANCE DAY — punch to disposition to payroll input (demo points 1, 12, 13)"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "1",
+    "Employee / worker": "Punches IN at the gate 07:55",
+    "External": "Biometric terminal captures and buffers"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "2",
+    "System (Nucleus)": "Ingests, de-duplicates, stores the raw event immutably",
+    "External": "Device agent pushes the buffer",
+    "Note": "Clock drift corrected; raw value retained"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "3",
+    "Employee / worker": "Punches OUT 20:30, IN 21:15, OUT 03:20 next morning"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "4",
+    "System (Nucleus)": "Assigns all four events to ONE attendance day dated the shift start",
+    "Note": "The single most common error in this domain"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "5",
+    "System (Nucleus)": "Pairs into two segments; writes the 45-minute dinner gap as its own break row",
+    "Note": "Break report exists because breaks are rows"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "6",
+    "System (Nucleus)": "Gross 19:20; break 0:45 recorded not deducted; OT 7:20 against the 12h shift",
+    "Note": "Gate-to-gate for this client — configuration"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "7",
+    "System (Nucleus)": "Resolves day type, then grace, lates, thresholds, long-night relief",
+    "Note": "Day type FIRST, always"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "8",
+    "System (Nucleus)": "Stamps computed_at and ruleset version, emits the computed event"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "9",
+    "Manager": "Sees the day in team history and approves the overtime"
+  },
+  {
+    "Map": "SM-1",
+    "Flow": "Attendance day",
+    "Step": "10",
+    "System (Nucleus)": "Tags the OT record to the off-cycle run and hands the day to payroll inputs"
+  },
+  {
+    "Map": "§ SM-2 · EXCEPTION AND REGULARISATION (demo point 1, agent pattern)"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "1",
+    "Employee / worker": "Leaves without punching out"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "2",
+    "System (Nucleus)": "Pairing fails; raises an unpaired-punch exception",
+    "Note": "Never silently discarded"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "3",
+    "Agent": "Attendance Steward triages, proposes a regularisation from roster and device evidence with a dry-run diff"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "4",
+    "Manager": "Approves, amends or rejects the proposal",
+    "Note": "Auto-resolve only under the tenant threshold"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "5",
+    "HR / admin": "Can edit at any stage, logged with reason"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "6",
+    "System (Nucleus)": "Recomputes the day, closes the exception, writes the delta"
+  },
+  {
+    "Map": "SM-2",
+    "Flow": "Regularisation",
+    "Step": "7",
+    "Employee / worker": "Sees the corrected day and the reason"
+  },
+  {
+    "Map": "§ SM-3 · LEAVE — apply, validate, approve, early return (demo points 5, 7)"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "1",
+    "Employee / worker": "Applies for 10 days EL"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "2",
+    "System (Nucleus)": "Projects balance from the ledger; runs combination and cap rules BEFORE the chain",
+    "Note": "CL+EL blocked here, with the rule named"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "3",
+    "Manager": "Supervisor approves"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "4",
+    "Manager": "HOD approves",
+    "Note": "Sequential, each with an SLA"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "5",
+    "HR / admin": "HR Head approves"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "6",
+    "System (Nucleus)": "Debits the ledger against named credits; updates the calendar; raises the payroll input"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "7",
+    "Employee / worker": "Returns after 6 days"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "8",
+    "HR / admin": "Records the early return and closes the request",
+    "Note": "HR edit right, logged with actor and reason"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "9",
+    "System (Nucleus)": "ONE transaction: reversal row referencing the original debit + attendance recompute",
+    "Note": "Split them and the payslip disagrees with the ledger"
+  },
+  {
+    "Map": "SM-3",
+    "Flow": "Leave",
+    "Step": "10",
+    "Employee / worker": "Sees the re-credited balance and Present days"
+  },
+  {
+    "Map": "§ SM-4 · GATE PASS (demo point 11)"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "1",
+    "Employee / worker": "Requests 2 hours personal, over WhatsApp",
+    "External": "WhatsApp Business API"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "2",
+    "System (Nucleus)": "Checks the monthly ceiling in the SERVICE: 240 minutes, 2 instances",
+    "Note": "Same rule whichever channel it arrives on"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "3",
+    "Manager": "Approves"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "4",
+    "System (Nucleus)": "Deducts the gap as a break, credits the approved minutes back before thresholds",
+    "Note": "Net hours unchanged by an approved pass"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "5",
+    "Employee / worker": "Third request in the month"
+  },
+  {
+    "Map": "SM-4",
+    "Flow": "Gate pass",
+    "Step": "6",
+    "System (Nucleus)": "Rejected at validation, reason names the ceiling already used"
+  },
+  {
+    "Map": "§ SM-5 · PAYROLL CYCLE INCLUDING THE OFF-CYCLE OT RUN (demo points 10, 15)"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "1",
+    "HR / admin": "Creates run PR-…-01, run_type regular"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "2",
+    "HR / admin": "Locks inputs at cut-off",
+    "Note": "Late punches now raise exceptions, not changes"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "3",
+    "System (Nucleus)": "Writes the hashed snapshot: inputs, rule pack versions, config"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "4",
+    "System (Nucleus)": "Runs the pre-audit rule checks, then statistical checks"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "5",
+    "Agent": "Payroll Preparer classifies each flag and drafts resolutions",
+    "Note": "Propose only. Always."
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "6",
+    "HR / admin": "Resolves or waives each flag; CRITICAL flags block"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "7",
+    "System (Nucleus)": "Runs the gross-to-net DAG; wage base with the 50% add-back; daily-wage node where the class says so"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "8",
+    "System (Nucleus)": "Recovers loan instalments, respecting the net-pay floor"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "9",
+    "HR / admin": "Approves the run",
+    "Note": "Blocked if any component lacks a GL mapping"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "10",
+    "System (Nucleus)": "Generates the bank file with a checksum",
+    "External": "Bank",
+    "Note": "Total verified out of band, dual control"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "11",
+    "System (Nucleus)": "Emits the dimensioned journal",
+    "External": "ERP / GL",
+    "Note": "Split at employee level before aggregation"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "12",
+    "HR / admin": "Creates run PR-…-02, run_type off_cycle_ot, pay date 07 Oct",
+    "Note": "Its own approval, bank file and journal"
+  },
+  {
+    "Map": "SM-5",
+    "Flow": "Payroll",
+    "Step": "13",
+    "Employee / worker": "Opens the payslip and picks the run",
+    "Note": "Run selector everywhere"
+  },
+  {
+    "Map": "§ SM-6 · LOAN — eligibility, guarantors, sanction, recovery, release (demo point 9)"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "1",
+    "Employee / worker": "Applies for a loan"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "2",
+    "System (Nucleus)": "GET /loans/eligibility: active loan? guarantor lock? ceiling 4x or 6x basic?",
+    "Note": "One service method, four consumers"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "3",
+    "System (Nucleus)": "Rejects with reasons, or proceeds",
+    "Note": "E1041 rejected: he guarantees an active loan"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "4",
+    "Employee / worker": "Nominates two guarantors"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "5",
+    "Manager": "Guarantors accept explicitly"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "6",
+    "System (Nucleus)": "Locks the guarantors — now ineligible themselves"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "7",
+    "HR / admin": "Sanction chain approves; director may override with rules waived recorded"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "8",
+    "System (Nucleus)": "Registers the deduction node; payroll recovers monthly above the net floor"
+  },
+  {
+    "Map": "SM-6",
+    "Flow": "Loan",
+    "Step": "9",
+    "System (Nucleus)": "Outstanding hits zero → closes the loan → WRITES the guarantor release rows",
+    "Note": "Without the release row they are blocked forever"
+  },
+  {
+    "Map": "§ SM-7 · EXIT — clearance in parallel with notice, F&F on the last working day (demo point 16)"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "1",
+    "Employee / worker": "Resigns"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "2",
+    "Manager": "Accepts; notice computed"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "3",
+    "System (Nucleus)": "Instantiates the clearance checklist for this worker class and location",
+    "Note": "Plant and head office templates differ"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "4",
+    "HR / admin": "Nine items across departments run IN PARALLEL with notice, four blocking"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "5",
+    "System (Nucleus)": "Asset register drives the blocking items; unreturned asset becomes a recovery line"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "6",
+    "Agent": "Exit Coordinator chases owners on SLA and assembles the F&F pack",
+    "Note": "Prepare; a human releases"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "7",
+    "System (Nucleus)": "All blocking items closed → F&F run unblocks (same lock as the payroll input lock)"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "8",
+    "HR / admin": "Approves and settles on the last working day"
+  },
+  {
+    "Map": "SM-7",
+    "Flow": "Exit",
+    "Step": "9",
+    "Employee / worker": "Receives settlement, relieving letter and the alumni record"
+  },
+  {
+    "Map": "§ SM-8 · ERP EMPLOYEE MASTER INBOUND (demo point 14)"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "1",
+    "External": "ERP pushes batch ERP-SYNC-…"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "2",
+    "System (Nucleus)": "integration-svc receives; domain modules never call the ERP directly"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "3",
+    "System (Nucleus)": "Hash check: already applied → duplicate rejected",
+    "Note": "Idempotent on the external employee code"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "4",
+    "System (Nucleus)": "Ownership map decides each field: ERP-owned applies, Nucleus-owned holds",
+    "Note": "Never implicit last-write-wins"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "5",
+    "HR / admin": "Reviews the held conflict and decides"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "6",
+    "System (Nucleus)": "Unmatched external code parked for resolution, never auto-created"
+  },
+  {
+    "Map": "SM-8",
+    "Flow": "ERP sync",
+    "Step": "7",
+    "System (Nucleus)": "ERP-owned fields render read-only in the UI"
+  },
+  {
+    "Map": "§ SM-9 · JOINING CHAIN (demo points 23, 26)"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "1",
+    "Employee / worker": "Accepts the offer"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "2",
+    "System (Nucleus)": "Pre-boarding portal opens; document collection and BGV start in parallel",
+    "External": "BGV vendor"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "3",
+    "HR / admin": "Creates person, employment and assignment on the date of joining"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "4",
+    "System (Nucleus)": "Statutory registrations: UAN, ESI IP, PT enrolment",
+    "External": "EPFO / ESIC"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "5",
+    "System (Nucleus)": "Generates Form F and the state's factory joining forms INSIDE the chain",
+    "Note": "Not chased in an audit week"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "6",
+    "Employee / worker": "Acknowledges policies on the phone"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "7",
+    "System (Nucleus)": "Assigns the induction path and the 30/60/90 plan"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "8",
+    "HR / admin": "Allocates assets; each allocation becomes a future blocking clearance item"
+  },
+  {
+    "Map": "SM-9",
+    "Flow": "Joining",
+    "Step": "9",
+    "System (Nucleus)": "Publishes the new-joiner announcement to the audience rule",
+    "External": "App / WhatsApp"
+  }
+]

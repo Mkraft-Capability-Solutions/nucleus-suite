@@ -5115,6 +5115,9 @@ export const workspaceContract = {
     "domains",
     "operationalIcons"
   ],
+  "picklists.catalog": [
+    "picklists"
+  ],
   "process.requirements": [
     "screens",
     "copy"

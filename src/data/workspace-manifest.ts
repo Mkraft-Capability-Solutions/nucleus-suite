@@ -69,13 +69,14 @@ import resource64 from "./ui/lib.mis-reporting.json";
 import resource65 from "./ui/lib.navigation-access.json";
 import resource66 from "./ui/lib.operational-module-registry.json";
 import resource67 from "./ui/navigation.catalog.json";
-import resource68 from "./ui/process.requirements.json";
-import resource69 from "./ui/services.erpAndComplianceService.json";
-import resource70 from "./ui/services.establishmentService.json";
-import resource71 from "./ui/services.leaveEngine.json";
-import resource72 from "./ui/services.payrollAdjacenciesService.json";
-import resource73 from "./ui/services.timeOfficeEngine.json";
-import resource74 from "./ui/services.workCalendarService.json";
+import resource68 from "./ui/picklists.catalog.json";
+import resource69 from "./ui/process.requirements.json";
+import resource70 from "./ui/services.erpAndComplianceService.json";
+import resource71 from "./ui/services.establishmentService.json";
+import resource72 from "./ui/services.leaveEngine.json";
+import resource73 from "./ui/services.payrollAdjacenciesService.json";
+import resource74 from "./ui/services.timeOfficeEngine.json";
+import resource75 from "./ui/services.workCalendarService.json";
 
 export const workspaceResources = {
     workbook,
@@ -147,11 +148,12 @@ export const workspaceResources = {
     "lib.navigation-access": resource65,
     "lib.operational-module-registry": resource66,
     "navigation.catalog": resource67,
-    "process.requirements": resource68,
-    "services.erpAndComplianceService": resource69,
-    "services.establishmentService": resource70,
-    "services.leaveEngine": resource71,
-    "services.payrollAdjacenciesService": resource72,
-    "services.timeOfficeEngine": resource73,
-    "services.workCalendarService": resource74,
+    "picklists.catalog": resource68,
+    "process.requirements": resource69,
+    "services.erpAndComplianceService": resource70,
+    "services.establishmentService": resource71,
+    "services.leaveEngine": resource72,
+    "services.payrollAdjacenciesService": resource73,
+    "services.timeOfficeEngine": resource74,
+    "services.workCalendarService": resource75,
 };
