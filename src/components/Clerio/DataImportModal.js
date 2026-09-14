@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     X, UploadCloud, ArrowRight, ArrowLeft, CheckCircle2,
     AlertTriangle, RefreshCw, FileSpreadsheet, Check, Sparkles,
