@@ -58,6 +58,10 @@ const LeaveView = () => {
     const lapsedCompOffs = compOffCredits.filter(c => c.status === 'LAPSED_60_DAYS');
 
     React.useEffect(() => {
+        if (typeof window !== 'undefined' && sessionStorage.getItem('nucleus:auto_open_leave_apply') === 'true') {
+            sessionStorage.removeItem('nucleus:auto_open_leave_apply');
+            setIsApplyModalOpen(true);
+        }
         const handleOpenApply = () => setIsApplyModalOpen(true);
         window.addEventListener('nucleus:open_leave_apply', handleOpenApply);
         return () => window.removeEventListener('nucleus:open_leave_apply', handleOpenApply);

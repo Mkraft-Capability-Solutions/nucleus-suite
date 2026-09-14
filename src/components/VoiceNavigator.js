@@ -7,7 +7,7 @@ import Close from '@mui/icons-material/Close';
 import AutoAwesome from '@mui/icons-material/AutoAwesome';
 import Send from '@mui/icons-material/Send';
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined';
-import BrandLogo from '@/components/BrandLogo';
+import AnimatedNucleusLogo from '@/components/AnimatedNucleusLogo';
 import { useAuth } from '@/context/AuthContext';
 import styles from './VoiceNavigator.module.css';
 
@@ -48,38 +48,45 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     }
     setIsListening(false);
 
-    // Announce action aloud with Siri voice narration
+    // 1. Announce action aloud with voice narration
     speakAloud(result.speechText, () => {
       setIsSpeaking(false);
     });
 
-    setTimeout(() => {
-      if (result.type === 'ACTION') {
-        if (result.action === 'PUNCH_IN') {
-          window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'IN' } }));
-        } else if (result.action === 'PUNCH_OUT') {
-          window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'OUT' } }));
-        } else if (result.action === 'APPLY_LEAVE') {
-          if (onNavigate) onNavigate('leaves', 'core_hr');
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('nucleus:open_leave_apply'));
-          }, 350);
-        }
-        onClose();
-      } else if (result.type === 'CONSOLE' && onSelectConsole) {
-        onSelectConsole(result.target);
-        onClose();
-      } else if (result.type === 'TAB' && onNavigate) {
-        onNavigate(result.target, result.domain, result.sub);
-        onClose();
-      } else if (result.type === 'MODAL' && onOpenModal) {
-        onOpenModal(result.target);
-        onClose();
-      } else {
-        if (onNavigate) onNavigate('people_core', 'core_hr');
-        onClose();
+    // 2. Execute Action IMMEDIATELY
+    if (result.type === 'ACTION') {
+      if (result.action === 'PUNCH_IN') {
+        window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'IN' } }));
+      } else if (result.action === 'PUNCH_OUT') {
+        window.dispatchEvent(new CustomEvent('nucleus:trigger_punch', { detail: { type: 'OUT' } }));
+      } else if (result.action === 'APPLY_LEAVE') {
+        try { sessionStorage.setItem('nucleus:auto_open_leave_apply', 'true'); } catch {}
+        if (onNavigate) onNavigate('leaves', 'core_hr');
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('nucleus:open_leave_apply'));
+        }, 150);
+        setTimeout(() => {
+          window.dispatchEvent(new CustomEvent('nucleus:open_leave_apply'));
+        }, 500);
       }
-    }, 850);
+    } else if (result.type === 'CONSOLE') {
+      if (onSelectConsole) onSelectConsole(result.target);
+      else if (onNavigate) onNavigate('dashboard', 'dashboard', result.target);
+    } else if (result.type === 'TAB') {
+      if (onNavigate) onNavigate(result.target, result.domain, result.sub);
+    } else if (result.type === 'MODAL') {
+      if (onOpenModal) onOpenModal(result.target);
+      if (result.target === 'bulk_upload') window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+      if (result.target === 'ctc_exception') window.dispatchEvent(new CustomEvent('nucleus:open_ctc_exception'));
+      if (result.target === 'modules') window.dispatchEvent(new CustomEvent('nucleus:open_modules'));
+    } else {
+      if (onNavigate) onNavigate('people_core', 'core_hr');
+    }
+
+    // 3. Smooth visual confirmation transition before closing modal
+    setTimeout(() => {
+      onClose();
+    }, 700);
   }, [onClose, onNavigate, onSelectConsole, onOpenModal]);
 
   const startListening = useCallback(() => {
@@ -145,7 +152,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onerror = (event) => {
         if (event.error === 'no-speech') {
-          // Keep waiting for user
+          // Keep waiting for user speech
         } else {
           setIsListening(false);
         }
@@ -193,13 +200,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     setFeedback(greeting);
     setIsSpeaking(true);
 
-    // Speak greeting aloud immediately, then begin listening
+    // Speak greeting aloud
     speakAloud(greeting, () => {
       setIsSpeaking(false);
-      startListening();
     });
 
+    // Guaranteed microphone startup
+    const startMicTimer = setTimeout(() => {
+      startListening();
+    }, 350);
+
     return () => {
+      clearTimeout(startMicTimer);
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
@@ -242,10 +254,9 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           <div className={styles.siriAuraRing1} />
           <div className={styles.siriAuraRing2} />
           <div className={styles.siriAuraRing3} />
-          <div className={styles.siriCenterWaveDot} />
 
           <div className={styles.siriCoreLogo}>
-            <BrandLogo size={52} />
+            <AnimatedNucleusLogo size={80} isListening={isListening} isSpeaking={isSpeaking} />
           </div>
         </div>
 
