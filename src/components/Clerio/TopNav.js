@@ -28,6 +28,7 @@ import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
 import AppearanceToggle from '@/components/AppearanceToggle';
 import LanguageSelector from '@/components/LanguageSelector';
+import { speakAloud } from '@/utils/voiceCommandEngine';
 
 const ROLE_TO_DEFAULT_CONSOLE = readData("components.Clerio.TopNav", "ROLE_TO_DEFAULT_CONSOLE_1");
 
@@ -238,7 +239,17 @@ const TopNav = ({
                     className={styles.iconBtn}
                     onClick={() => {
                         if (typeof window !== 'undefined') {
-                            window.dispatchEvent(new CustomEvent('nucleus:voice_navigation'));
+                            const hour = new Date().getHours();
+                            let timeGreeting = 'Good evening';
+                            if (hour < 12) timeGreeting = 'Good morning';
+                            else if (hour < 17) timeGreeting = 'Good afternoon';
+                            const name = user?.name ? user.name.trim().split(' ')[0] : 'Superadmin';
+                            const greetingText = `${timeGreeting}, ${name}! How can I help you today?`;
+                            
+                            // Immediately speak aloud inside the user click gesture stack
+                            speakAloud(greetingText);
+                            
+                            window.dispatchEvent(new CustomEvent('nucleus:voice_navigation', { detail: { greeting: greetingText } }));
                         }
                     }}
                     title="Nucleus Talk — Voice Assist (Click or Speak)"

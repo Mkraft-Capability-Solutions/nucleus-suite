@@ -83,10 +83,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       if (onNavigate) onNavigate('people_core', 'core_hr');
     }
 
-    // 3. Smooth visual confirmation transition before closing modal
+    // 3. Smooth visual confirmation before closing modal
     setTimeout(() => {
       onClose();
-    }, 700);
+    }, 650);
   }, [onClose, onNavigate, onSelectConsole, onOpenModal]);
 
   const startListening = useCallback(() => {
@@ -134,12 +134,13 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
             clearTimeout(silenceTimerRef.current);
           }
 
+          // Exact 1.0 second (1000ms) pause triggers action execution
           if (isFinal) {
             executeCommand(clean);
           } else {
             silenceTimerRef.current = setTimeout(() => {
               executeCommand(clean);
-            }, 1200);
+            }, 1000);
           }
         }
       };
@@ -205,7 +206,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsSpeaking(false);
     });
 
-    // Guaranteed microphone startup
+    // Start microphone listening
     const startMicTimer = setTimeout(() => {
       startListening();
     }, 350);
@@ -245,23 +246,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           <Close sx={{ fontSize: 16 }} />
         </button>
 
-        {/* Siri-Inspired Dynamic Animated Nucleus Logo Orb with Fluid Wave Movement */}
-        <div
-          className={`${styles.siriOrbContainer} ${isSpeaking ? styles.siriSpeaking : ''} ${isListening ? styles.siriListening : ''}`}
-          onClick={toggleListening}
-          title={isListening ? "Nucleus Voice Assist listening... Click to pause" : "Click to activate microphone"}
-        >
-          <div className={styles.siriAuraRing1} />
-          <div className={styles.siriAuraRing2} />
-          <div className={styles.siriAuraRing3} />
-
-          <div className={styles.siriCoreLogo}>
-            <AnimatedNucleusLogo size={80} isListening={isListening} isSpeaking={isSpeaking} />
-          </div>
+        {/* Exact Pure CSS/SVG Animated Circular Nucleus Logo */}
+        <div className={styles.logoWrapper}>
+          <AnimatedNucleusLogo 
+            size={96} 
+            isListening={isListening} 
+            isSpeaking={isSpeaking} 
+            onClick={toggleListening} 
+          />
         </div>
 
         <h3 style={{ 
-          margin: '0.25rem 0 0.4rem', 
+          margin: '0.1rem 0 0.35rem', 
           fontSize: '1.35rem', 
           color: 'var(--text, #0f172a)', 
           fontWeight: 800, 
@@ -275,28 +271,26 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         </h3>
         
         <p style={{ 
-          margin: '0 0 0.85rem', 
-          fontSize: '0.92rem', 
+          margin: '0 0 0.65rem', 
+          fontSize: '0.9rem', 
           color: 'var(--text-2, #64748b)', 
           maxWidth: '440px', 
-          lineHeight: 1.45,
+          lineHeight: 1.4,
           fontWeight: 500
         }}>
-          {feedback || 'How can I help you today?'}
+          {feedback || 'Click logo or speak any command below.'}
         </p>
 
-        {/* Siri Dynamic Sound Waveform */}
-        {(isListening || isSpeaking) && (
-          <div className={styles.siriWaveform}>
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-            <div className={styles.siriWaveBar} />
-          </div>
-        )}
+        {/* Real-Time User Speech Live Command Bubble */}
+        <div className={styles.liveCommandBubble}>
+          {transcript ? (
+            <span>🗣️ "{transcript}"</span>
+          ) : isListening ? (
+            <span className={styles.listeningText}>🎙️ Listening... Speak now (e.g. "Apply for Leave", "Punch In")</span>
+          ) : (
+            <span className={styles.listeningText}>Tap microphone or select a command below</span>
+          )}
+        </div>
 
         {/* Action / Natural Language Input Bar */}
         <form 
@@ -346,4 +340,3 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     </div>
   );
 }
-
