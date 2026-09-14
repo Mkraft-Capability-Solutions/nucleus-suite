@@ -24,6 +24,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
     const { showToast } = useHRMS();
     const [step, setStep] = useState(1); // 1: Upload, 2: Column Mapping, 3: Validation, 4: Complete
     const [fileName, setFileName] = useState('employee_bulk_onboarding_sample.csv');
+    const [batchRows, setBatchRows] = useState(SAMPLE_BATCH_ROWS);
     const [mappings, setMappings] = useState({
         employeeCode: 'employeeCode',
         firstName: 'firstName',
@@ -49,23 +50,73 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
 
     const handleFileUpload = (e) => {
         const file = e.target.files?.[0];
-        if (file) {
-            setFileName(file.name);
-            showToast('File Attached', `Selected file ${file.name} for bulk import.`, 'info');
-        }
+        if (!file) return;
+
+        setFileName(file.name);
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const text = evt.target?.result;
+            if (typeof text !== 'string') return;
+
+            const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+            if (lines.length < 2) {
+                showToast('Invalid File', 'CSV must have a header and at least 1 data row.', 'warning');
+                return;
+            }
+
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const rows = lines.slice(1).map(line => {
+                const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                const obj = {};
+                headers.forEach((h, idx) => {
+                    obj[h] = vals[idx] || '';
+                });
+                return obj;
+            });
+
+            if (rows.length > 0) {
+                setBatchRows(rows);
+                const newMap = {};
+                headers.forEach(h => {
+                    const low = h.toLowerCase().replace(/[^a-z0-9]/g, '');
+                    if (low.includes('code') || low.includes('empid') || low.includes('id')) newMap.employeeCode = h;
+                    else if (low.includes('first')) newMap.firstName = h;
+                    else if (low.includes('last')) newMap.lastName = h;
+                    else if (low.includes('name')) newMap.firstName = h;
+                    else if (low.includes('email') || low.includes('mail')) newMap.officialEmail = h;
+                    else if (low.includes('dept') || low.includes('department')) newMap.department = h;
+                    else if (low.includes('role') || low.includes('designation') || low.includes('title')) newMap.designation = h;
+                    else if (low.includes('loc') || low.includes('plant') || low.includes('city')) newMap.location = h;
+                    else if (low.includes('join') || low.includes('date')) newMap.joiningDate = h;
+                    else newMap[h] = h;
+                });
+                setMappings(prev => ({ ...prev, ...newMap }));
+                showToast('File Attached', `Parsed ${rows.length} rows from ${file.name}.`, 'info');
+            }
+        };
+        reader.readAsText(file);
     };
 
     const handleCommitBatch = () => {
-        const newRecords = SAMPLE_BATCH_ROWS.map(r => ({
-            id: r.employeeCode,
-            name: `${r.firstName} ${r.lastName}`,
-            role: r.designation,
-            dept: r.department,
-            manager: 'Ananya Roy',
-            location: r.location,
-            status: 'Active',
-            band: r.workerClass
-        }));
+        const newRecords = batchRows.map((r, i) => {
+            const code = r[mappings.employeeCode] || r.employeeCode || r.StaffCode || r.EmpId || `EMP-BATCH-${i + 1}`;
+            const firstName = r[mappings.firstName] || r.firstName || r.FirstName || (r.FullName ? r.FullName.split(' ')[0] : 'Employee');
+            const lastName = r[mappings.lastName] || r.lastName || r.LastName || (r.FullName ? r.FullName.split(' ').slice(1).join(' ') : `#${i + 1}`);
+            const role = r[mappings.designation] || r.designation || r.Role || 'Specialist';
+            const dept = r[mappings.department] || r.department || r.Department || 'Operations';
+            const location = r[mappings.location] || r.location || r.Location || 'Bangalore Plant';
+            const band = r.workerClass || r.WorkerClass || 'Permanent Full-Time';
+            return {
+                id: code,
+                name: `${firstName} ${lastName}`.trim(),
+                role,
+                dept,
+                manager: 'Ananya Roy',
+                location,
+                status: 'Active',
+                band
+            };
+        });
 
         if (onIngest) onIngest(newRecords);
         setStep(4);
@@ -188,7 +239,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                 <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.85rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <CheckCircle2 size={24} color="#10b981" />
                                     <div>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981' }}>{SAMPLE_BATCH_ROWS.length} Rows Valid</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981' }}>{batchRows.length} Rows Valid</div>
                                         <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Passed email, Aadhaar/PAN format & mandatory field checks</div>
                                     </div>
                                 </div>
@@ -206,16 +257,25 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {SAMPLE_BATCH_ROWS.map((row, i) => (
-                                        <tr key={i}>
-                                            <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>VALID</span></td>
-                                            <td><strong>{row.employeeCode}</strong></td>
-                                            <td>{row.firstName} {row.lastName}</td>
-                                            <td>{row.officialEmail}</td>
-                                            <td>{row.department} - {row.designation}</td>
-                                            <td>{row.location}</td>
-                                        </tr>
-                                    ))}
+                                    {batchRows.map((row, i) => {
+                                        const code = row[mappings.employeeCode] || row.employeeCode || row.StaffCode || row.EmpId || `EMP-${100 + i}`;
+                                        const fn = row[mappings.firstName] || row.firstName || row.FirstName || (row.FullName ? row.FullName.split(' ')[0] : 'Employee');
+                                        const ln = row[mappings.lastName] || row.lastName || row.LastName || (row.FullName ? row.FullName.split(' ').slice(1).join(' ') : `#${i + 1}`);
+                                        const email = row[mappings.officialEmail] || row.officialEmail || row.WorkEmail || `${fn.toLowerCase()}@nucleus.com`;
+                                        const dept = row[mappings.department] || row.department || row.Department || 'Engineering';
+                                        const desig = row[mappings.designation] || row.designation || row.Role || 'Specialist';
+                                        const loc = row[mappings.location] || row.location || row.Location || 'Bangalore Plant';
+                                        return (
+                                            <tr key={i}>
+                                                <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>VALID</span></td>
+                                                <td><strong>{code}</strong></td>
+                                                <td>{fn} {ln}</td>
+                                                <td>{email}</td>
+                                                <td>{dept} - {desig}</td>
+                                                <td>{loc}</td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
@@ -229,7 +289,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                             </div>
                             <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>Bulk Employee Batch Successfully Ingested</h3>
                             <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                                {SAMPLE_BATCH_ROWS.length} employee master records have been batch added into the employee directory.
+                                {batchRows.length} employee master records have been batch added into the employee directory.
                             </p>
                         </div>
                     )}

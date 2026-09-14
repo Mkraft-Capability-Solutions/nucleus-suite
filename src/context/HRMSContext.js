@@ -711,6 +711,36 @@ export const HRMSProvider = ({ children }) => {
             });
             return merged;
         });
+        setEmployees(prev => {
+            const copy = [...prev];
+            newRecords.forEach(rec => {
+                const empId = rec.empId || rec.id;
+                if (!empId) return;
+                const existingIdx = copy.findIndex(e => e.id === empId || e.empId === empId);
+                if (existingIdx >= 0) {
+                    copy[existingIdx] = {
+                        ...copy[existingIdx],
+                        name: rec.name || copy[existingIdx].name,
+                        dept: rec.dept || copy[existingIdx].dept,
+                        role: rec.role || copy[existingIdx].role,
+                        location: rec.location || copy[existingIdx].location,
+                        status: 'Active'
+                    };
+                } else if (rec.name) {
+                    copy.unshift({
+                        id: empId,
+                        name: rec.name,
+                        dept: rec.dept || 'Operations',
+                        role: rec.role || 'Specialist',
+                        manager: 'Ananya Roy',
+                        location: rec.location || 'Bangalore Plant',
+                        status: 'Active',
+                        band: 'Permanent Full-Time'
+                    });
+                }
+            });
+            return copy;
+        });
         showToast(
             'Bulk Ingestion Completed',
             `Successfully processed & synchronized ${newRecords.length} records from ${fileName}.`,
