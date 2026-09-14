@@ -1,8 +1,0 @@
-{
-  "status": "passed",
-  "checkedCalls": 299,
-  "publishedLocales": [
-    "en"
-  ],
-  "scope": "Literal translation references resolve. This is not proof of complete database-backed localization or removal of all application literals."
-}
