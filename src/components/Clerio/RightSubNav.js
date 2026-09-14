@@ -99,7 +99,23 @@ const RightSubNav = ({
                                         <div className={styles.itemIcon}>
                                             <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Clerio.RightSubNav", "display_1") : readData("components.Clerio.RightSubNav", "display_2")} />
                                         </div>
-                                        <span className={styles.itemLabel}>{item.label}</span>
+                                        <span className={styles.itemLabel} title={item.label}>{item.label}</span>
+                                        {item.tag && (
+                                            <span
+                                                style={{
+                                                    fontSize: '0.62rem',
+                                                    padding: '0.1rem 0.35rem',
+                                                    borderRadius: '4px',
+                                                    fontWeight: 600,
+                                                    background: isSelected ? 'var(--signal-ink)' : 'var(--card-2)',
+                                                    color: isSelected ? 'var(--on-signal, #fff)' : 'var(--text-3)',
+                                                    flexShrink: 0,
+                                                    marginLeft: 'auto',
+                                                }}
+                                            >
+                                                {item.tag}
+                                            </span>
+                                        )}
                                     </button>
                                 );
                             })}

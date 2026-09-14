@@ -111,42 +111,58 @@
 .tabsRow {
     display: flex;
     gap: 0.35rem;
-    padding: 0.35rem;
-    background: var(--card);
-    border-radius: var(--r-pill);
+    padding: 0.25rem 0.35rem;
+    background: var(--card-2);
+    border-radius: var(--r-control);
     border: 1px solid var(--line);
     box-shadow: var(--shadow-subtle);
-    width: fit-content;
+    width: 100%;
     max-width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+}
+
+.tabsRow::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabsRow::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
 }
 
 .tabBtn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1.15rem;
-    border: none;
-    border-radius: var(--r-pill);
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid transparent;
+    border-radius: var(--r-data);
     background: transparent;
     font-size: var(--t-small);
     font-weight: 500;
     color: var(--text-2);
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+    transition: all 0.15s ease;
 }
 
 .tabBtn:hover {
     color: var(--text);
-    background: var(--card-2);
+    background: var(--card);
 }
 
 .activeTab {
     background: var(--signal-wash);
     color: var(--signal-ink);
+    border-color: var(--line-soft);
     font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-raise);
 }
 
 /* Tab 1: Simulator */

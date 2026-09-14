@@ -39,37 +39,57 @@
 .tabNav {
     display: flex;
     gap: 0.35rem;
-    background: var(--card-2, #F6F8F6);
-    padding: 0.25rem;
-    border-radius: var(--r-control, 5px);
-    border: 1px solid var(--line, #D8DEDA);
-    width: fit-content;
+    background: var(--card-2);
+    padding: 0.25rem 0.35rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+}
+
+.tabNav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabNav::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
 }
 
 .tabBtn {
-    padding: 0.4rem 1rem;
-    border-radius: var(--r-data, 3px);
-    border: none;
+    padding: 0.4rem 0.85rem;
+    border-radius: var(--r-data);
+    border: 1px solid transparent;
     background: transparent;
-    color: var(--text-2, #5A6B78);
-    font-weight: 600;
-    font-size: 0.82rem;
+    color: var(--text-2);
+    font-weight: 500;
+    font-size: var(--t-small);
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 0.4rem;
     transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tabBtn:hover {
-    color: var(--text, #10222F);
+    color: var(--text);
+    background: var(--card);
 }
 
 .tabBtn.activeTab {
-    background: var(--card, #FFFFFF);
-    color: var(--signal-ink, #0A5546);
-    box-shadow: 0 1px 3px rgba(16, 34, 47, 0.08);
-    border: 1px solid var(--line, #D8DEDA);
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    box-shadow: var(--shadow-raise);
+    border-color: var(--line-soft);
+    font-weight: 600;
 }
 
 .card {

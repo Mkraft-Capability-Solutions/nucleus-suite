@@ -179,19 +179,19 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeSection === 'directory' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('directory')}
                 >
-                    <Users size={16} /> Employee Directory
+                    <Users size={16} /> Directory
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'entities' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('entities')}
                 >
-                    <Building2 size={16} /> Legal Entities (SCR-001)
+                    <Building2 size={16} /> Legal Entities
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'locations' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('locations')}
                 >
-                    <MapPin size={16} /> Locations (SCR-002)
+                    <MapPin size={16} /> Locations
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'orgchart' ? styles.activeTab : ''}`}
@@ -203,7 +203,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeSection === 'positions' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('positions')}
                 >
-                    <Layers size={16} /> Positions (SCR-012)
+                    <Layers size={16} /> Positions
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'star_employees' ? styles.activeTab : ''}`}
@@ -215,13 +215,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeSection === 'manpower' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('manpower')}
                 >
-                    <Users size={16} /> Approved Manpower
+                    <Users size={16} /> Manpower
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'documents' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('documents')}
                 >
-                    <FileText size={16} /> Document Vault (SCR-014)
+                    <FileText size={16} /> Documents
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'audit' ? styles.activeTab : ''}`}

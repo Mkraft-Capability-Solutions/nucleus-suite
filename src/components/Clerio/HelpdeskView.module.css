@@ -113,35 +113,55 @@
 
 .tabsRow {
     display: flex;
-    gap: 0.5rem;
-    border-bottom: 1px solid var(--line, #D8DEDA);
+    gap: 0.35rem;
+    border-bottom: 1px solid var(--line);
     padding-bottom: 0.25rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+}
+
+.tabsRow::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabsRow::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
 }
 
 .tabBtn {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    padding: 0.6rem 1rem;
+    padding: 0.5rem 0.85rem;
     border: none;
     background: transparent;
-    font-size: 0.86rem;
-    font-weight: 600;
-    color: var(--text-2, #5A6B78);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-2);
     cursor: pointer;
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
     transition: all 0.15s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tabBtn:hover {
-    color: var(--text, #10222F);
+    color: var(--text);
+    background: var(--card-2);
 }
 
 .activeTab {
-    color: var(--signal, #0F6E5C);
-    border-bottom-color: var(--signal, #0F6E5C);
-    font-weight: 700;
+    color: var(--signal-ink);
+    border-bottom-color: var(--signal);
+    background: var(--signal-wash);
+    font-weight: 600;
 }
 
 /* Tab 1: Tickets */

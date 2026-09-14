@@ -135,34 +135,52 @@
 .tabNav {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.35rem;
     border-bottom: 1px solid var(--line);
     padding-bottom: 0.25rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+}
+
+.tabNav::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tabNav::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
 }
 
 .tabBtn {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.7rem 1.25rem;
+    gap: 0.45rem;
+    padding: 0.5rem 0.95rem;
     background: transparent;
     border: none;
     border-bottom: 2px solid transparent;
     color: var(--text-2);
-    font-size: 0.88rem;
+    font-size: var(--t-small);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
-    border-radius: 6px 6px 0 0;
+    border-radius: var(--r-control) var(--r-control) 0 0;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .tabBtn:hover {
     color: var(--text);
-    background: var(--line);
+    background: var(--card-2);
 }
 
 .tabBtnActive {
-    color: var(--signal);
+    color: var(--signal-ink);
     border-bottom-color: var(--signal);
     background: var(--signal-wash);
 }

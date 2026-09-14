@@ -222,26 +222,42 @@
 /* --- Sprint 3: Subnavigation Tab Bar --- */
 .subTabsRow {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.35rem;
     border-bottom: 1px solid var(--line);
-    padding-bottom: 0.5rem;
+    padding: 0.25rem 0.25rem 0.5rem;
     overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: var(--line) transparent;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+}
+
+.subTabsRow::-webkit-scrollbar {
+    height: 4px;
+}
+
+.subTabsRow::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 4px;
 }
 
 .subTabBtn {
     background: transparent;
-    border: none;
-    padding: 0.6rem 1.1rem;
-    font-size: 0.88rem;
-    font-weight: 600;
+    border: 1px solid transparent;
+    padding: 0.45rem 0.85rem;
+    font-size: var(--t-small);
+    font-weight: 500;
     color: var(--text-2);
     cursor: pointer;
-    border-radius: var(--r-control, 6px);
+    border-radius: var(--r-control);
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     transition: all 0.15s ease;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .subTabBtn:hover {
@@ -252,7 +268,9 @@
 .subTabActive {
     color: var(--signal-ink);
     background: var(--signal-wash);
-    border: 1px solid rgba(16, 185, 129, 0.25);
+    border: 1px solid var(--line-soft);
+    font-weight: 600;
+    box-shadow: var(--shadow-raise);
 }
 
 /* --- Badge Components --- */

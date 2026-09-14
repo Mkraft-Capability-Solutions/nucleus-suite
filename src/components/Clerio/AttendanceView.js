@@ -288,7 +288,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeTab === 'regularization' ? styles.tabBtnActive : ''}`}
                     onClick={() => setActiveTab('regularization')}
                 >
-                    <UserCheck size={15} /> Regularization Requests
+                    <UserCheck size={15} /> Regularizations
                     <span className={`${styles.badge} ${styles.badgePurple}`}>
                         {(attendanceRegularizations || []).filter(r => r.status === 'submitted' || r.status === 'supervisor_approved').length} Active
                     </span>
