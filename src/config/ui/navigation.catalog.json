@@ -4,7 +4,7 @@
       "id": "dashboard",
       "label": "Dashboard Consoles",
       "icon": "LayoutGrid",
-      "badge": "S1–S10",
+      "badge": "S1\u2013S10",
       "groups": [
         {
           "heading": "Executive & Operational Consoles",
@@ -350,6 +350,22 @@
               "icon": "HistoryOutlined",
               "desc": "Manage team history with a scoped work queue, record history and controlled actions.",
               "tag": "Policy"
+            },
+            {
+              "id": "shift_master",
+              "label": "Shift Master",
+              "targetTab": "shift_master",
+              "tag": "Master",
+              "desc": "Shift definition, timings, grace period, breaks, and overtime rules",
+              "icon": "Clock"
+            },
+            {
+              "id": "roster_schedule",
+              "label": "Roster / Shift Schedule",
+              "targetTab": "roster_schedule",
+              "tag": "Schedule",
+              "desc": "Shift scheduling, site allocations, rest days, and roster publishing",
+              "icon": "Calendar"
             }
           ]
         },
@@ -379,6 +395,38 @@
               "icon": "RuleOutlined",
               "desc": "Manage leave policy configuration with a scoped work queue, record history and controlled actions.",
               "tag": "Ledger"
+            },
+            {
+              "id": "compensatory_off",
+              "label": "Compensatory Off Claim",
+              "targetTab": "compensatory_off",
+              "tag": "Self Service",
+              "desc": "Comp-off grant claims, weekend / holiday work justification",
+              "icon": "EventAvailableOutlined"
+            },
+            {
+              "id": "leave_encashment",
+              "label": "Leave Encashment Request",
+              "targetTab": "leave_encashment",
+              "tag": "Payout",
+              "desc": "Earned leave encashment and payroll payout workflow",
+              "icon": "PaidOutlined"
+            },
+            {
+              "id": "probation_confirmation",
+              "label": "Confirmation Review",
+              "targetTab": "probation_confirmation",
+              "tag": "Governance",
+              "desc": "Probation assessment, confirmation review, and extension decisions",
+              "icon": "CheckCircle2"
+            },
+            {
+              "id": "resignation_exit",
+              "label": "Resignation And Exit",
+              "targetTab": "resignation_exit",
+              "tag": "Governance",
+              "desc": "Resignation submission, notice period calculation, and exit approvals",
+              "icon": "ExitToAppOutlined"
             }
           ]
         }
@@ -492,6 +540,30 @@
               "icon": "CampaignOutlined",
               "desc": "Manage announcements with a scoped work queue, record history and controlled actions.",
               "tag": "Hierarchy"
+            },
+            {
+              "id": "candidate_application",
+              "label": "Candidate Record And Application",
+              "targetTab": "candidate_application",
+              "tag": "ATS",
+              "desc": "Candidate profile intake, resume parsing, and requisition mapping",
+              "icon": "PersonAddAltOutlined"
+            },
+            {
+              "id": "interview_feedback",
+              "label": "Interview Feedback",
+              "targetTab": "interview_feedback",
+              "tag": "Evaluation",
+              "desc": "Panel assessment, competency scoring, and hiring recommendations",
+              "icon": "FactCheckOutlined"
+            },
+            {
+              "id": "offer_management",
+              "label": "Offer Management",
+              "targetTab": "offer_management",
+              "tag": "Offers",
+              "desc": "Compensation proposals, approval matrices, and offer letter release",
+              "icon": "DescriptionOutlined"
             }
           ]
         }
@@ -645,6 +717,30 @@
               "icon": "RequestQuoteOutlined",
               "desc": "Manage loans and advances with a scoped work queue, record history and controlled actions.",
               "tag": "Master"
+            },
+            {
+              "id": "pay_component_master",
+              "label": "Pay Component Master",
+              "targetTab": "pay_component_master",
+              "tag": "Master",
+              "desc": "Earnings, deductions, statutory flags, and wage calculation formulas",
+              "icon": "CalculateOutlined"
+            },
+            {
+              "id": "reimbursement_claim",
+              "label": "Reimbursement Claim",
+              "targetTab": "reimbursement_claim",
+              "tag": "Claims",
+              "desc": "Flexible benefits, expense proofs, bill verification, and payouts",
+              "icon": "ReceiptLongOutlined"
+            },
+            {
+              "id": "salary_advance",
+              "label": "Salary Advance Request",
+              "targetTab": "salary_advance",
+              "tag": "Advance",
+              "desc": "Emergency salary advances, limit checks, and EMI deductions",
+              "icon": "PaidOutlined"
             }
           ]
         }
@@ -726,6 +822,14 @@
               "icon": "ApprovalOutlined",
               "desc": "Manage unified approval inbox with a scoped work queue, record history and controlled actions.",
               "tag": "Assessment"
+            },
+            {
+              "id": "contractor_invoice",
+              "label": "Contractor Invoice Reconciliation",
+              "targetTab": "contractor_invoice",
+              "tag": "Vendor",
+              "desc": "Contract worker billing verification, attendance cross-check, and pass-through payments",
+              "icon": "ReceiptOutlined"
             }
           ]
         },
@@ -837,6 +941,14 @@
               "icon": "AssessmentOutlined",
               "desc": "Manage operational reports with a scoped work queue, record history and controlled actions.",
               "tag": "Policy"
+            },
+            {
+              "id": "helpdesk_ticket",
+              "label": "Helpdesk Ticket",
+              "targetTab": "helpdesk_ticket",
+              "tag": "Service",
+              "desc": "Service tickets, category triage, SLA tracking, and resolution audit",
+              "icon": "SupportAgentOutlined"
             }
           ]
         }

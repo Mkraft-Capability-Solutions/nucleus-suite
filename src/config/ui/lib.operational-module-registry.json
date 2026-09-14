@@ -67,7 +67,8 @@
         "PAN",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PLT-01"
     },
     {
       "id": "location_master",
@@ -130,7 +131,8 @@
         "State",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PLT-02"
     },
     {
       "id": "access_scope",
@@ -187,7 +189,8 @@
         "Status",
         "Effective from"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PLT-03"
     },
     {
       "id": "person_record",
@@ -269,7 +272,8 @@
         "Assignment",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-01"
     },
     {
       "id": "assignment_admin",
@@ -350,7 +354,8 @@
         "Location",
         "Effective from"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-02"
     },
     {
       "id": "position_register",
@@ -417,7 +422,8 @@
         "Vacancy",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-03"
     },
     {
       "id": "sanctioned_strength",
@@ -483,7 +489,8 @@
         "Filled",
         "Open"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-04"
     },
     {
       "id": "document_vault",
@@ -547,7 +554,8 @@
         "Expiry",
         "Verification"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-05"
     },
     {
       "id": "attendance_detail",
@@ -598,7 +606,8 @@
         "Net hours",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-04"
     },
     {
       "id": "overtime_register",
@@ -659,7 +668,8 @@
         "Overtime",
         "Run"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-07"
     },
     {
       "id": "attendance_exceptions",
@@ -711,7 +721,8 @@
         "Age",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-08"
     },
     {
       "id": "recompute_monitor",
@@ -875,7 +886,8 @@
         "Effective from",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-LVE-01"
     },
     {
       "id": "tax_declarations",
@@ -942,7 +954,8 @@
         "Projected TDS",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-05"
     },
     {
       "id": "bank_disbursement",
@@ -1000,7 +1013,8 @@
         "Total",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-07"
     },
     {
       "id": "policy_acknowledgements",
@@ -1280,7 +1294,8 @@
         "Dimension",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-FIN-01"
     },
     {
       "id": "reconciliation",
@@ -1434,7 +1449,8 @@
         "Owner",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-LCY-01"
     },
     {
       "id": "clearance_board",
@@ -1495,7 +1511,8 @@
         "Blocking",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-LCY-04"
     },
     {
       "id": "asset_register",
@@ -1553,7 +1570,8 @@
         "Condition",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PPL-06"
     },
     {
       "id": "recognition_register",
@@ -1608,7 +1626,8 @@
         "Award",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-EXP-02"
     },
     {
       "id": "letters_register",
@@ -1660,7 +1679,8 @@
         "Version",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-EXP-01"
     },
     {
       "id": "statutory_register",
@@ -1783,7 +1803,8 @@
         "Outstanding",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-CMB-01"
     },
     {
       "id": "requisitions",
@@ -1842,7 +1863,8 @@
         "Headroom",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TAL-01"
     },
     {
       "id": "referrals",
@@ -1895,7 +1917,8 @@
         "Stage",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TAL-05"
     },
     {
       "id": "contractor_reconciliation",
@@ -1956,7 +1979,8 @@
         "Variance",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-CTG-01"
     },
     {
       "id": "integration_config",
@@ -2014,7 +2038,8 @@
         "Last sync",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-FIN-02"
     },
     {
       "id": "agent_ledger",
@@ -2193,7 +2218,8 @@
         "Source",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-03"
     },
     {
       "id": "my_attendance",
@@ -2238,7 +2264,8 @@
         "Overtime",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-05"
     },
     {
       "id": "gate_passes",
@@ -2303,7 +2330,8 @@
         "Minutes",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-TIM-06"
     },
     {
       "id": "leave_requests",
@@ -2385,7 +2413,8 @@
         "Dates",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-LVE-02"
     },
     {
       "id": "leave_ledger",
@@ -2493,7 +2522,8 @@
         "Population",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-03"
     },
     {
       "id": "pre_payroll_audit",
@@ -2545,7 +2575,8 @@
         "Owner",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-04"
     },
     {
       "id": "salary_simulator",
@@ -2612,7 +2643,8 @@
         "Take home",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-02"
     },
     {
       "id": "payslips",
@@ -2719,7 +2751,8 @@
         "Net settlement",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-PAY-08"
     },
     {
       "id": "assistant_helpdesk",
@@ -2922,7 +2955,8 @@
         "Channel",
         "Status"
       ],
-      "apiMethod": "GET"
+      "apiMethod": "GET",
+      "formId": "FRM-EXP-03"
     },
     {
       "id": "obligation_calendar",
@@ -2985,6 +3019,4279 @@
         "Obligation",
         "Due date",
         "Owner",
+        "Status"
+      ],
+      "apiMethod": "GET",
+      "formId": "FRM-CMP-01"
+    },
+    {
+      "id": "shift_master",
+      "screenId": "SCR-028",
+      "formId": "FRM-TIM-01",
+      "title": "Shift master",
+      "primary": "attendance",
+      "endpoint": "/api/v1/ops/modules/shift_master/records",
+      "fields": [
+        {
+          "key": "shiftCode",
+          "label": "Shift code",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(10)",
+          "section": "Shift",
+          "default": null,
+          "validation": "Unique per tenant",
+          "picklist": null,
+          "workday": "Shift ID",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "shiftName",
+          "label": "Shift name",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(60)",
+          "section": "Shift",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Shift Name",
+          "note": "Shown on rosters and attendance screens",
+          "options": []
+        },
+        {
+          "key": "shiftGroup",
+          "label": "Shift group",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Shift",
+          "default": null,
+          "validation": "Active group",
+          "picklist": null,
+          "workday": "Shift Category",
+          "note": "Inference only operates inside the group",
+          "options": []
+        },
+        {
+          "key": "startTime",
+          "label": "Start time",
+          "required": true,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Start Time",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "endTime",
+          "label": "End time",
+          "required": true,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "End Time",
+          "note": "End before start means the shift crosses midnight",
+          "options": []
+        },
+        {
+          "key": "crossesMidnight",
+          "label": "Crosses midnight",
+          "required": false,
+          "type": "checkbox",
+          "control": "Toggle (derived)",
+          "dataType": "Bool",
+          "section": "Shift",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Overnight",
+          "note": "Attendance day keys on the SHIFT start date",
+          "options": []
+        },
+        {
+          "key": "shiftHours",
+          "label": "Shift hours",
+          "required": false,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Dec(4,2)",
+          "section": "Shift",
+          "default": "End minus start minus unpaid breaks",
+          "validation": null,
+          "picklist": null,
+          "workday": "Scheduled Hours",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "earliestIn",
+          "label": "Earliest in",
+          "required": true,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": "Start minus 2h",
+          "validation": "Windows must not overlap inside a group",
+          "picklist": null,
+          "workday": "Early In Threshold",
+          "note": "Overlap blocks save",
+          "options": []
+        },
+        {
+          "key": "latestIn",
+          "label": "Latest in",
+          "required": true,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": "Start plus 4h",
+          "validation": null,
+          "picklist": null,
+          "workday": "Late In Threshold",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "graceMinutes",
+          "label": "Grace period (minutes)",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Shift",
+          "default": "10",
+          "validation": "0-60",
+          "picklist": null,
+          "workday": "Grace Period",
+          "note": "Grace exemption lives on the band, never per person",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "halfDayBelowMinutes",
+          "label": "Half day below (minutes)",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Shift",
+          "default": "240",
+          "validation": null,
+          "picklist": null,
+          "workday": "Half Day Threshold",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "absentBelowMinutes",
+          "label": "Absent below (minutes)",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Shift",
+          "default": "120",
+          "validation": "Must be less than half-day threshold",
+          "picklist": null,
+          "workday": "Absence Threshold",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "break1StartBreak1End",
+          "label": "Break 1 start / end",
+          "required": false,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": null,
+          "validation": "Inside the shift window",
+          "picklist": null,
+          "workday": "Meal Break",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "break1Paid",
+          "label": "Break 1 paid",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Shift",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Paid Break",
+          "note": "This client records breaks but does not deduct them",
+          "options": []
+        },
+        {
+          "key": "break2StartBreak2End",
+          "label": "Break 2 start / end",
+          "required": false,
+          "type": "time",
+          "control": "Time",
+          "dataType": "Time",
+          "section": "Shift",
+          "default": null,
+          "validation": "Inside the shift window",
+          "picklist": null,
+          "workday": "Rest Break",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "break2Paid",
+          "label": "Break 2 paid",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Shift",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Paid Break",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "otBasis",
+          "label": "Overtime basis",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(10)",
+          "section": "Shift",
+          "default": "Net",
+          "validation": "Gross / Net",
+          "picklist": "PL_OT_BASIS",
+          "workday": "Overtime Calculation",
+          "note": "Basis must be stated on screen, never assumed",
+          "options": [
+            {
+              "value": "gross_minutes",
+              "label": "Gross minutes"
+            },
+            {
+              "value": "net_minutes",
+              "label": "Net minutes"
+            }
+          ]
+        },
+        {
+          "key": "otAfterMinutes",
+          "label": "Overtime starts after (minutes)",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Shift",
+          "default": "Shift hours",
+          "validation": null,
+          "picklist": null,
+          "workday": "Overtime Threshold",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "nightAllowanceEligible",
+          "label": "Night shift allowance eligible",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Shift",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Shift Differential",
+          "note": "Raises a payroll input per qualifying day",
+          "options": []
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(12)",
+          "section": "Shift",
+          "default": "Active",
+          "validation": null,
+          "picklist": "PL_ACTIVE_STATUS",
+          "workday": "Status",
+          "note": null,
+          "options": [
+            {
+              "value": "active",
+              "label": "Active"
+            },
+            {
+              "value": "inactive",
+              "label": "Inactive"
+            }
+          ]
+        }
+      ],
+      "description": "Shift definition, timings, grace period, breaks, and overtime rules",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create shift master",
+        "Edit shift master"
+      ],
+      "columns": [
+        "Shift code",
+        "Shift name",
+        "Shift group",
+        "Start time",
+        "End time",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "roster_schedule",
+      "screenId": "SCR-029",
+      "formId": "FRM-TIM-02",
+      "title": "Roster / shift schedule",
+      "primary": "attendance",
+      "endpoint": "/api/v1/ops/modules/roster_schedule/records",
+      "fields": [
+        {
+          "key": "locationId",
+          "label": "Location",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Scope",
+          "default": "User's location",
+          "validation": "Within location grant",
+          "picklist": null,
+          "workday": "Location",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "orgUnit",
+          "label": "Org unit / section",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Scope",
+          "default": null,
+          "validation": "Active",
+          "picklist": null,
+          "workday": "Supervisory Organisation",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "periodFromPeriodTo",
+          "label": "Period from / to",
+          "required": true,
+          "type": "date",
+          "control": "Date range",
+          "dataType": "Date",
+          "section": "Scope",
+          "default": "Next month",
+          "validation": "Max 62 days per publish",
+          "picklist": null,
+          "workday": "Schedule Period",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "personId",
+          "label": "Employee",
+          "required": true,
+          "type": "select",
+          "control": "Lookup (grid row)",
+          "dataType": "Ref",
+          "section": "Roster",
+          "default": null,
+          "validation": "Active assignment at the location",
+          "picklist": null,
+          "workday": "Worker",
+          "note": "Grid: one row per person, one column per date",
+          "options": []
+        },
+        {
+          "key": "rosterDate",
+          "label": "Date",
+          "required": true,
+          "type": "date",
+          "control": "Date (grid column)",
+          "dataType": "Date",
+          "section": "Roster",
+          "default": null,
+          "validation": "Inside the period",
+          "picklist": null,
+          "workday": "Date",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "shiftCode",
+          "label": "Shift",
+          "required": true,
+          "type": "select",
+          "control": "Select (grid cell)",
+          "dataType": "Ref",
+          "section": "Roster",
+          "default": "Default shift",
+          "validation": "Must belong to the person's shift group",
+          "picklist": null,
+          "workday": "Work Shift",
+          "note": "Blank cell means rest day",
+          "options": []
+        },
+        {
+          "key": "dayTypeOverride",
+          "label": "Day type override",
+          "required": false,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Roster",
+          "default": null,
+          "validation": "Working / Rest / Holiday",
+          "picklist": "PL_DAY_TYPE",
+          "workday": "Day Type",
+          "note": "Overrides the location calendar for this person",
+          "options": [
+            {
+              "value": "working_day",
+              "label": "Working day"
+            },
+            {
+              "value": "weekly_off___rest_day",
+              "label": "Weekly off / rest day"
+            },
+            {
+              "value": "holiday",
+              "label": "Holiday"
+            },
+            {
+              "value": "national_holiday",
+              "label": "National holiday"
+            }
+          ]
+        },
+        {
+          "key": "restDaysInWeek",
+          "label": "Weekly rest day check",
+          "required": false,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Int",
+          "section": "Roster",
+          "default": "Computed",
+          "validation": "Must satisfy the statutory minimum",
+          "picklist": null,
+          "workday": "Rest Day Compliance",
+          "note": "Publish blocked if a person has no rest day in a week",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "consecutiveDays",
+          "label": "Consecutive working days",
+          "required": false,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Int",
+          "section": "Roster",
+          "default": "Computed",
+          "validation": "Warn above 6",
+          "picklist": null,
+          "workday": null,
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "publishStatus",
+          "label": "Publish status",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(12)",
+          "section": "Publish",
+          "default": "Draft",
+          "validation": "Draft / Published",
+          "picklist": "PL_PUBLISH_STATUS",
+          "workday": "Schedule Status",
+          "note": "Republishing a past date queues a recompute",
+          "options": [
+            {
+              "value": "draft",
+              "label": "Draft"
+            },
+            {
+              "value": "published",
+              "label": "Published"
+            }
+          ]
+        },
+        {
+          "key": "notifyOnPublish",
+          "label": "Notify employees",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Publish",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Notification",
+          "note": "Push plus WhatsApp where enabled",
+          "options": []
+        },
+        {
+          "key": "publishReason",
+          "label": "Change reason",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(200)",
+          "section": "Publish",
+          "default": null,
+          "validation": "Min 10 chars",
+          "picklist": null,
+          "workday": "Reason",
+          "note": null,
+          "options": []
+        }
+      ],
+      "description": "Shift scheduling, site allocations, rest days, and roster publishing",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create roster / shift schedule",
+        "Edit roster / shift schedule"
+      ],
+      "columns": [
+        "Location",
+        "Org unit / section",
+        "Period from / to",
+        "Employee",
+        "Date",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "compensatory_off",
+      "screenId": "SCR-033",
+      "formId": "FRM-LVE-03",
+      "title": "Compensatory off claim",
+      "primary": "leaves",
+      "endpoint": "/api/v1/ops/modules/compensatory_off/records",
+      "fields": [
+        {
+          "key": "workedDate",
+          "label": "Worked date",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Claim",
+          "default": null,
+          "validation": "Must be a rest day or holiday with attendance",
+          "picklist": null,
+          "workday": "Worked Date",
+          "note": "Claim rejected if no attendance exists that day",
+          "options": []
+        },
+        {
+          "key": "dayType",
+          "label": "Day type",
+          "required": true,
+          "type": "select",
+          "control": "Text (derived)",
+          "dataType": "Char(15)",
+          "section": "Claim",
+          "default": "From calendar",
+          "validation": null,
+          "picklist": "PL_DAY_TYPE",
+          "workday": "Day Type",
+          "note": null,
+          "options": [
+            {
+              "value": "working_day",
+              "label": "Working day"
+            },
+            {
+              "value": "weekly_off___rest_day",
+              "label": "Weekly off / rest day"
+            },
+            {
+              "value": "holiday",
+              "label": "Holiday"
+            },
+            {
+              "value": "national_holiday",
+              "label": "National holiday"
+            }
+          ]
+        },
+        {
+          "key": "hoursWorked",
+          "label": "Hours worked",
+          "required": true,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Dec(4,2)",
+          "section": "Claim",
+          "default": "From attendance day",
+          "validation": null,
+          "picklist": null,
+          "workday": "Hours Worked",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "creditDays",
+          "label": "Credit claimed",
+          "required": true,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Dec(3,1)",
+          "section": "Claim",
+          "default": "Per the half-day and full-day thresholds",
+          "validation": "0.5 or 1.0",
+          "picklist": null,
+          "workday": "Comp Time Earned",
+          "note": "Not a free-text number",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "reason",
+          "label": "Reason for working",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(200)",
+          "section": "Claim",
+          "default": null,
+          "validation": "Min 10 chars",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "otClaimedFlag",
+          "label": "Overtime already claimed",
+          "required": false,
+          "type": "checkbox",
+          "control": "Toggle (derived)",
+          "dataType": "Bool",
+          "section": "Claim",
+          "default": "From OT register",
+          "validation": "Cannot claim both OT and comp-off for the same day",
+          "picklist": null,
+          "workday": "Conflict Check",
+          "note": "Hard block, not a warning",
+          "options": []
+        },
+        {
+          "key": "creditExpiry",
+          "label": "Credit expires on",
+          "required": true,
+          "type": "date",
+          "control": "Date (derived)",
+          "dataType": "Date",
+          "section": "Credit",
+          "default": "Worked date plus validity",
+          "validation": null,
+          "picklist": null,
+          "workday": "Expiration Date",
+          "note": "Expiring credits are shown on the leave apply screen",
+          "options": []
+        },
+        {
+          "key": "approverIdDecisionDecisionRemarks",
+          "label": "Approver / decision / remarks",
+          "required": true,
+          "type": "select",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "Reporting manager",
+          "validation": "Reason mandatory on reject",
+          "picklist": "PL_DECISION",
+          "workday": "Approval",
+          "note": "Approval writes a credit row to the leave ledger",
+          "options": [
+            {
+              "value": "approve",
+              "label": "Approve"
+            },
+            {
+              "value": "reject",
+              "label": "Reject"
+            },
+            {
+              "value": "return_for_correction",
+              "label": "Return for correction"
+            },
+            {
+              "value": "delegate",
+              "label": "Delegate"
+            }
+          ]
+        }
+      ],
+      "description": "Comp-off grant claims, weekend / holiday work justification",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create compensatory off claim",
+        "Edit compensatory off claim"
+      ],
+      "columns": [
+        "Worked date",
+        "Day type",
+        "Hours worked",
+        "Credit claimed",
+        "Reason for working",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "leave_encashment",
+      "screenId": "SCR-034",
+      "formId": "FRM-LVE-04",
+      "title": "Leave encashment request",
+      "primary": "leaves",
+      "endpoint": "/api/v1/ops/modules/leave_encashment/records",
+      "fields": [
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Ref",
+          "section": "Request",
+          "default": null,
+          "validation": "Encashable types only",
+          "picklist": "PL_LEAVE_TYPE",
+          "workday": "Time Off Plan",
+          "note": null,
+          "options": [
+            {
+              "value": "earned_leave",
+              "label": "Earned leave"
+            },
+            {
+              "value": "casual_leave",
+              "label": "Casual leave"
+            },
+            {
+              "value": "sick_leave",
+              "label": "Sick leave"
+            },
+            {
+              "value": "maternity_leave",
+              "label": "Maternity leave"
+            },
+            {
+              "value": "paternity_leave",
+              "label": "Paternity leave"
+            },
+            {
+              "value": "compensatory_off",
+              "label": "Compensatory off"
+            },
+            {
+              "value": "leave_without_pay",
+              "label": "Leave without pay"
+            },
+            {
+              "value": "bereavement_leave",
+              "label": "Bereavement leave"
+            },
+            {
+              "value": "marriage_leave",
+              "label": "Marriage leave"
+            },
+            {
+              "value": "birthday_leave",
+              "label": "Birthday leave"
+            },
+            {
+              "value": "special_leave",
+              "label": "Special leave"
+            }
+          ]
+        },
+        {
+          "key": "currentBalance",
+          "label": "Current balance",
+          "required": false,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Dec(5,1)",
+          "section": "Request",
+          "default": "From ledger",
+          "validation": null,
+          "picklist": null,
+          "workday": "Balance",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "daysToEncash",
+          "label": "Days to encash",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Dec(5,1)",
+          "section": "Request",
+          "default": null,
+          "validation": "Within the annual cap; balance must remain above the retention floor",
+          "picklist": null,
+          "workday": "Payout Days",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "rateBasis",
+          "label": "Encashment rate basis",
+          "required": true,
+          "type": "select",
+          "control": "Text (derived)",
+          "dataType": "Char(30)",
+          "section": "Request",
+          "default": "From policy",
+          "validation": null,
+          "picklist": "PL_ENCASHMENT_BASIS",
+          "workday": "Payout Rate",
+          "note": "Basic, basic plus DA, or gross",
+          "options": [
+            {
+              "value": "basic",
+              "label": "Basic"
+            },
+            {
+              "value": "basic_+_da",
+              "label": "Basic + DA"
+            },
+            {
+              "value": "gross",
+              "label": "Gross"
+            }
+          ]
+        },
+        {
+          "key": "estimatedAmount",
+          "label": "Estimated amount",
+          "required": false,
+          "type": "number",
+          "control": "Money (derived)",
+          "dataType": "Dec(10,2)",
+          "section": "Request",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Estimated Payout",
+          "note": "Indicative; payroll recomputes at run time",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(200)",
+          "section": "Request",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "approverIdDecision",
+          "label": "Approver / decision",
+          "required": true,
+          "type": "select",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "HR",
+          "validation": null,
+          "picklist": "PL_DECISION",
+          "workday": "Approval",
+          "note": null,
+          "options": [
+            {
+              "value": "approve",
+              "label": "Approve"
+            },
+            {
+              "value": "reject",
+              "label": "Reject"
+            },
+            {
+              "value": "return_for_correction",
+              "label": "Return for correction"
+            },
+            {
+              "value": "delegate",
+              "label": "Delegate"
+            }
+          ]
+        },
+        {
+          "key": "taggedRunId",
+          "label": "Tag to payroll run",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Payroll",
+          "default": null,
+          "validation": "Open run",
+          "picklist": null,
+          "workday": "Pay Period",
+          "note": "Debits the ledger only when the run is approved",
+          "options": []
+        }
+      ],
+      "description": "Earned leave encashment and payroll payout workflow",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create leave encashment request",
+        "Edit leave encashment request"
+      ],
+      "columns": [
+        "Leave type",
+        "Current balance",
+        "Days to encash",
+        "Encashment rate basis",
+        "Estimated amount",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "probation_confirmation",
+      "screenId": "SCR-068",
+      "formId": "FRM-LCY-02",
+      "title": "Confirmation review",
+      "primary": "people_core",
+      "endpoint": "/api/v1/ops/modules/probation_confirmation/records",
+      "fields": [
+        {
+          "key": "personIdConfirmationDue",
+          "label": "Employee / probation end",
+          "required": true,
+          "type": "text",
+          "control": "Read-only",
+          "dataType": "Mixed",
+          "section": "Confirmation",
+          "default": "From the assignment",
+          "validation": null,
+          "picklist": null,
+          "workday": "Worker / Probation End",
+          "note": "Reminder raised 30 days ahead",
+          "options": []
+        },
+        {
+          "key": "recommendation",
+          "label": "Manager recommendation",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(25)",
+          "section": "Confirmation",
+          "default": null,
+          "validation": "Confirm / Extend / Terminate",
+          "picklist": "PL_CONFIRMATION_ACTION",
+          "workday": "Recommendation",
+          "note": null,
+          "options": [
+            {
+              "value": "confirm",
+              "label": "Confirm"
+            },
+            {
+              "value": "extend_probation",
+              "label": "Extend probation"
+            },
+            {
+              "value": "terminate",
+              "label": "Terminate"
+            }
+          ]
+        },
+        {
+          "key": "probationRating",
+          "label": "Performance rating",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Confirmation",
+          "default": null,
+          "validation": "From the rating scale",
+          "picklist": "PL_RATING_SCALE",
+          "workday": "Rating",
+          "note": null,
+          "options": [
+            {
+              "value": "outstanding",
+              "label": "Outstanding"
+            },
+            {
+              "value": "exceeds_expectations",
+              "label": "Exceeds expectations"
+            },
+            {
+              "value": "meets_expectations",
+              "label": "Meets expectations"
+            },
+            {
+              "value": "needs_improvement",
+              "label": "Needs improvement"
+            },
+            {
+              "value": "unsatisfactory",
+              "label": "Unsatisfactory"
+            }
+          ]
+        },
+        {
+          "key": "assessment",
+          "label": "Assessment comments",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(1000)",
+          "section": "Confirmation",
+          "default": null,
+          "validation": "Min 50 chars",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "extensionMonths",
+          "label": "Extension period (months)",
+          "required": false,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Confirmation",
+          "default": "3",
+          "validation": "1-6",
+          "picklist": null,
+          "workday": "Extension",
+          "note": "Extension resets the confirmation due date",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "extensionReason",
+          "label": "Extension reason",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(500)",
+          "section": "Confirmation",
+          "default": null,
+          "validation": "Min 30 chars",
+          "picklist": null,
+          "workday": "Reason",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "confirmationEffectiveDate",
+          "label": "Effective date of confirmation",
+          "required": false,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Confirmation",
+          "default": "Probation end plus one day",
+          "validation": "Backdating needs a reason",
+          "picklist": null,
+          "workday": "Effective Date",
+          "note": "Triggers referral award maturity and benefit eligibility",
+          "options": []
+        },
+        {
+          "key": "reviseSalary",
+          "label": "Salary revision on confirmation",
+          "required": false,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Confirmation",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Compensation Change",
+          "note": "Opens the salary structure form",
+          "options": []
+        },
+        {
+          "key": "issueLetter",
+          "label": "Letter to be issued",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Confirmation",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Generate Document",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "approvalStatusApproverId",
+          "label": "Approval status / approver",
+          "required": true,
+          "type": "select",
+          "control": "Panel (derived)",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "From the chain",
+          "validation": null,
+          "picklist": "PL_APPROVAL_STATUS",
+          "workday": "Business Process",
+          "note": null,
+          "options": [
+            {
+              "value": "draft",
+              "label": "Draft"
+            },
+            {
+              "value": "pending_approval",
+              "label": "Pending approval"
+            },
+            {
+              "value": "approved",
+              "label": "Approved"
+            },
+            {
+              "value": "rejected",
+              "label": "Rejected"
+            },
+            {
+              "value": "withdrawn",
+              "label": "Withdrawn"
+            }
+          ]
+        }
+      ],
+      "description": "Probation assessment, confirmation review, and extension decisions",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create confirmation review",
+        "Edit confirmation review"
+      ],
+      "columns": [
+        "Employee / probation end",
+        "Manager recommendation",
+        "Performance rating",
+        "Assessment comments",
+        "Extension period (months)",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "resignation_exit",
+      "screenId": "SCR-069",
+      "formId": "FRM-LCY-03",
+      "title": "Resignation and exit",
+      "primary": "people_core",
+      "endpoint": "/api/v1/ops/modules/resignation_exit/records",
+      "fields": [
+        {
+          "key": "exitType",
+          "label": "Exit type",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(25)",
+          "section": "Exit",
+          "default": "Resignation",
+          "validation": "Resignation / Termination / Retirement / Contract end / Abandonment / Death",
+          "picklist": "PL_EXIT_TYPE",
+          "workday": "Termination Type",
+          "note": "Drives gratuity, notice and clearance behaviour",
+          "options": [
+            {
+              "value": "resignation",
+              "label": "Resignation"
+            },
+            {
+              "value": "termination",
+              "label": "Termination"
+            },
+            {
+              "value": "retirement",
+              "label": "Retirement"
+            },
+            {
+              "value": "contract_end",
+              "label": "Contract end"
+            },
+            {
+              "value": "abandonment",
+              "label": "Abandonment"
+            },
+            {
+              "value": "death_in_service",
+              "label": "Death in service"
+            },
+            {
+              "value": "redundancy",
+              "label": "Redundancy"
+            }
+          ]
+        },
+        {
+          "key": "resignationDate",
+          "label": "Resignation date",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Exit",
+          "default": "Today",
+          "validation": "Not in the future beyond 7 days",
+          "picklist": null,
+          "workday": "Submission Date",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "exitReasonCategory",
+          "label": "Reason category",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(30)",
+          "section": "Exit",
+          "default": null,
+          "validation": "From list",
+          "picklist": "PL_EXIT_REASON",
+          "workday": "Termination Reason",
+          "note": null,
+          "options": [
+            {
+              "value": "better_opportunity",
+              "label": "Better opportunity"
+            },
+            {
+              "value": "compensation",
+              "label": "Compensation"
+            },
+            {
+              "value": "career_growth",
+              "label": "Career growth"
+            },
+            {
+              "value": "relocation",
+              "label": "Relocation"
+            },
+            {
+              "value": "higher_studies",
+              "label": "Higher studies"
+            },
+            {
+              "value": "personal___family",
+              "label": "Personal / family"
+            },
+            {
+              "value": "health",
+              "label": "Health"
+            },
+            {
+              "value": "work_environment",
+              "label": "Work environment"
+            },
+            {
+              "value": "manager_relationship",
+              "label": "Manager relationship"
+            },
+            {
+              "value": "performance",
+              "label": "Performance"
+            },
+            {
+              "value": "disciplinary",
+              "label": "Disciplinary"
+            },
+            {
+              "value": "not_disclosed",
+              "label": "Not disclosed"
+            }
+          ]
+        },
+        {
+          "key": "exitReasonDetail",
+          "label": "Reason detail",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(500)",
+          "section": "Exit",
+          "default": null,
+          "validation": "Min 20 chars",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "noticePeriodDays",
+          "label": "Notice period applicable",
+          "required": true,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Int",
+          "section": "Exit",
+          "default": "From the assignment",
+          "validation": null,
+          "picklist": null,
+          "workday": "Notice Period",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "requestedLwd",
+          "label": "Requested last working day",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Exit",
+          "default": "Resignation date plus notice",
+          "validation": null,
+          "picklist": null,
+          "workday": "Requested Date",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "approvedLwd",
+          "label": "Approved last working day",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Exit",
+          "default": "Requested last working day",
+          "validation": "Earlier date creates a notice shortfall",
+          "picklist": null,
+          "workday": "Termination Date",
+          "note": "Shortfall raises a recovery on full and final",
+          "options": []
+        },
+        {
+          "key": "noticeWaivedDaysWaiverReason",
+          "label": "Notice waiver",
+          "required": false,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Exit",
+          "default": "0",
+          "validation": "Authorised role; min 20 chars",
+          "picklist": null,
+          "workday": "Override",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "isGardenLeave",
+          "label": "Garden leave",
+          "required": false,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Exit",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Administrative Leave",
+          "note": "Attendance exempt, salary continues",
+          "options": []
+        },
+        {
+          "key": "rehireEligible",
+          "label": "Rehire eligible",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Exit",
+          "default": "Yes",
+          "validation": "Yes / No / With approval",
+          "picklist": "PL_REHIRE_ELIGIBILITY",
+          "workday": "Eligible for Rehire",
+          "note": "Not visible to the employee",
+          "options": [
+            {
+              "value": "yes",
+              "label": "Yes"
+            },
+            {
+              "value": "no",
+              "label": "No"
+            },
+            {
+              "value": "with_approval",
+              "label": "With approval"
+            }
+          ]
+        },
+        {
+          "key": "rehireReason",
+          "label": "Rehire ineligibility reason",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(300)",
+          "section": "Exit",
+          "default": null,
+          "validation": "Min 20 chars",
+          "picklist": null,
+          "workday": "Reason",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "exitInterviewDateInterviewerId",
+          "label": "Exit interview conducted on / by",
+          "required": false,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Interview",
+          "default": null,
+          "validation": "Before the last working day",
+          "picklist": null,
+          "workday": "Exit Interview",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "exitInterview",
+          "label": "Exit interview responses",
+          "required": false,
+          "type": "text",
+          "control": "Table",
+          "dataType": "Composite",
+          "section": "Interview",
+          "default": "From the questionnaire",
+          "validation": null,
+          "picklist": null,
+          "workday": "Questionnaire",
+          "note": "Feeds attrition analysis, not the settlement",
+          "options": []
+        },
+        {
+          "key": "managerAcceptedHrAccepted",
+          "label": "Manager and HR acceptance",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Approval",
+          "default": "Off",
+          "validation": "Both required before clearance starts",
+          "picklist": null,
+          "workday": "Approval",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "clearanceInitiated",
+          "label": "Clearance initiated",
+          "required": false,
+          "type": "checkbox",
+          "control": "Toggle (derived)",
+          "dataType": "Bool",
+          "section": "Downstream",
+          "default": "System",
+          "validation": null,
+          "picklist": null,
+          "workday": "Checklist",
+          "note": "Instantiated from the template on acceptance",
+          "options": []
+        },
+        {
+          "key": "accessRevocationDate",
+          "label": "Access revocation date",
+          "required": true,
+          "type": "date",
+          "control": "Date (derived)",
+          "dataType": "Date",
+          "section": "Downstream",
+          "default": "Last working day",
+          "validation": null,
+          "picklist": null,
+          "workday": "Deprovision Date",
+          "note": "Systems access revoked automatically",
+          "options": []
+        }
+      ],
+      "description": "Resignation submission, notice period calculation, and exit approvals",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create resignation and exit",
+        "Edit resignation and exit"
+      ],
+      "columns": [
+        "Exit type",
+        "Resignation date",
+        "Reason category",
+        "Reason detail",
+        "Notice period applicable",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "pay_component_master",
+      "screenId": "SCR-057",
+      "formId": "FRM-PAY-01",
+      "title": "Pay component master",
+      "primary": "payroll",
+      "endpoint": "/api/v1/ops/modules/pay_component_master/records",
+      "fields": [
+        {
+          "key": "componentCode",
+          "label": "Component code",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(15)",
+          "section": "Component",
+          "default": null,
+          "validation": "Unique per tenant",
+          "picklist": null,
+          "workday": "Earning Code",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "name",
+          "label": "Component name",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(60)",
+          "section": "Component",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Earning Name",
+          "note": "Prints on the payslip",
+          "options": []
+        },
+        {
+          "key": "payslipLabel",
+          "label": "Payslip label",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(40)",
+          "section": "Component",
+          "default": "Same as name",
+          "validation": null,
+          "picklist": null,
+          "workday": "Display Name",
+          "note": "Local-language label where enabled",
+          "options": []
+        },
+        {
+          "key": "componentType",
+          "label": "Type",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Component",
+          "default": "Earning",
+          "validation": "Earning / Deduction / Employer contribution / Reimbursement / Information",
+          "picklist": "PL_COMPONENT_TYPE",
+          "workday": "Element Type",
+          "note": "Information components print but do not affect net",
+          "options": [
+            {
+              "value": "earning",
+              "label": "Earning"
+            },
+            {
+              "value": "deduction",
+              "label": "Deduction"
+            },
+            {
+              "value": "employer_contribution",
+              "label": "Employer contribution"
+            },
+            {
+              "value": "reimbursement",
+              "label": "Reimbursement"
+            },
+            {
+              "value": "information_only",
+              "label": "Information only"
+            }
+          ]
+        },
+        {
+          "key": "calcMethod",
+          "label": "Calculation method",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Component",
+          "default": "Fixed",
+          "validation": "Fixed / Percentage / Formula / Slab / Attendance-driven",
+          "picklist": "PL_CALC_METHOD",
+          "workday": "Calculation",
+          "note": null,
+          "options": [
+            {
+              "value": "fixed_amount",
+              "label": "Fixed amount"
+            },
+            {
+              "value": "percentage_of_component",
+              "label": "Percentage of component"
+            },
+            {
+              "value": "formula",
+              "label": "Formula"
+            },
+            {
+              "value": "slab_table",
+              "label": "Slab table"
+            },
+            {
+              "value": "attendance_driven",
+              "label": "Attendance driven"
+            },
+            {
+              "value": "rate_x_quantity",
+              "label": "Rate x quantity"
+            }
+          ]
+        },
+        {
+          "key": "percentOfComponent",
+          "label": "Percentage of",
+          "required": false,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Component",
+          "default": null,
+          "validation": "Another component",
+          "picklist": null,
+          "workday": "Based On",
+          "note": "HRA as a percentage of basic, for example",
+          "options": []
+        },
+        {
+          "key": "percentValue",
+          "label": "Percentage value",
+          "required": false,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Dec(5,2)",
+          "section": "Component",
+          "default": null,
+          "validation": "0-100",
+          "picklist": null,
+          "workday": "Percent",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "formulaExpression",
+          "label": "Formula",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(500)",
+          "section": "Component",
+          "default": null,
+          "validation": "Must reference only defined components",
+          "picklist": null,
+          "workday": "Calculation Rule",
+          "note": "Evaluated as a node in the gross-to-net graph",
+          "options": []
+        },
+        {
+          "key": "slabTableRef",
+          "label": "Slab table",
+          "required": false,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Component",
+          "default": null,
+          "validation": "Active slab table",
+          "picklist": null,
+          "workday": "Rate Table",
+          "note": "PT and TDS use slab tables",
+          "options": []
+        },
+        {
+          "key": "roundingRule",
+          "label": "Rounding",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Component",
+          "default": "Nearest rupee",
+          "validation": "Nearest / Up / Down / None",
+          "picklist": "PL_ROUNDING",
+          "workday": "Rounding Rule",
+          "note": "Money stored as integer in the smallest unit",
+          "options": [
+            {
+              "value": "nearest_rupee",
+              "label": "Nearest rupee"
+            },
+            {
+              "value": "round_up",
+              "label": "Round up"
+            },
+            {
+              "value": "round_down",
+              "label": "Round down"
+            },
+            {
+              "value": "no_rounding",
+              "label": "No rounding"
+            }
+          ]
+        },
+        {
+          "key": "prorateOnAttendance",
+          "label": "Prorated on attendance",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Component",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Proration",
+          "note": "Fixed allowances often do not prorate",
+          "options": []
+        },
+        {
+          "key": "prorationBasis",
+          "label": "Proration basis",
+          "required": false,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(25)",
+          "section": "Component",
+          "default": "Calendar days",
+          "validation": "Calendar days / Payable days / Working days",
+          "picklist": "PL_PRORATION_BASIS",
+          "workday": "Proration Method",
+          "note": "Choice changes February materially",
+          "options": [
+            {
+              "value": "calendar_days",
+              "label": "Calendar days"
+            },
+            {
+              "value": "payable_days",
+              "label": "Payable days"
+            },
+            {
+              "value": "working_days",
+              "label": "Working days"
+            }
+          ]
+        },
+        {
+          "key": "inPfWage",
+          "label": "Part of PF wage",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Statutory",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Benefit Base",
+          "note": "Basic and DA by default",
+          "options": []
+        },
+        {
+          "key": "inEsiWage",
+          "label": "Part of ESI wage",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Statutory",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Benefit Base",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "inGratuityWage",
+          "label": "Part of gratuity wage",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Statutory",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Benefit Base",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "inBonusWage",
+          "label": "Part of bonus wage",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Statutory",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Benefit Base",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "inWageFloorTest",
+          "label": "Counts toward the 50% wage floor",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Statutory",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Compliance Base",
+          "note": "Code on Wages basic-share test",
+          "options": []
+        },
+        {
+          "key": "isTaxable",
+          "label": "Taxable",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Tax",
+          "default": "Yes",
+          "validation": null,
+          "picklist": null,
+          "workday": "Taxable",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "exemptionSection",
+          "label": "Exemption section",
+          "required": false,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Tax",
+          "default": null,
+          "validation": "From list",
+          "picklist": "PL_EXEMPTION_SECTION",
+          "workday": "Tax Category",
+          "note": "10(13A), 10(14), 17(2) and so on",
+          "options": [
+            {
+              "value": "10(5)_lta",
+              "label": "10(5) LTA"
+            },
+            {
+              "value": "10(13a)_hra",
+              "label": "10(13A) HRA"
+            },
+            {
+              "value": "10(14)_special_allowance",
+              "label": "10(14) special allowance"
+            },
+            {
+              "value": "16(ia)_standard_deduction",
+              "label": "16(ia) standard deduction"
+            },
+            {
+              "value": "16(ii)_entertainment",
+              "label": "16(ii) entertainment"
+            },
+            {
+              "value": "16(iii)_professional_tax",
+              "label": "16(iii) professional tax"
+            },
+            {
+              "value": "17(2)_perquisite",
+              "label": "17(2) perquisite"
+            },
+            {
+              "value": "not_exempt",
+              "label": "Not exempt"
+            }
+          ]
+        },
+        {
+          "key": "exemptionLimit",
+          "label": "Exemption limit",
+          "required": false,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(10,2)",
+          "section": "Tax",
+          "default": null,
+          "validation": ">= 0",
+          "picklist": null,
+          "workday": "Exemption Limit",
+          "note": "Annual, monthly or per-instance as configured",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "isPerquisite",
+          "label": "Perquisite",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Tax",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Imputed Income",
+          "note": "Company accommodation and vehicle",
+          "options": []
+        },
+        {
+          "key": "glDebitAccount",
+          "label": "Debit account",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "GL",
+          "default": null,
+          "validation": "Active in the chart of accounts",
+          "picklist": null,
+          "workday": "GL Account",
+          "note": "Unmapped components block run approval",
+          "options": []
+        },
+        {
+          "key": "glCreditAccount",
+          "label": "Credit account",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "GL",
+          "default": null,
+          "validation": "Active in the chart of accounts",
+          "picklist": null,
+          "workday": "GL Account",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "glDimensions",
+          "label": "Cost dimension",
+          "required": true,
+          "type": "select",
+          "control": "Multi-select",
+          "dataType": "Char[]",
+          "section": "GL",
+          "default": "Cost centre",
+          "validation": "At least one",
+          "picklist": null,
+          "workday": "Worktag",
+          "note": "Split at employee level before aggregation",
+          "options": []
+        },
+        {
+          "key": "printWhenZero",
+          "label": "Print on payslip when zero",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Control",
+          "default": "No",
+          "validation": null,
+          "picklist": null,
+          "workday": "Display Rule",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "displaySequence",
+          "label": "Sequence on payslip",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Control",
+          "default": null,
+          "validation": "Unique within the type",
+          "picklist": null,
+          "workday": "Display Order",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Control",
+          "default": "Today",
+          "validation": null,
+          "picklist": null,
+          "workday": "Effective Date",
+          "note": "Changing a live component versions it",
+          "options": []
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(12)",
+          "section": "Control",
+          "default": "Active",
+          "validation": null,
+          "picklist": "PL_ACTIVE_STATUS",
+          "workday": "Status",
+          "note": null,
+          "options": [
+            {
+              "value": "active",
+              "label": "Active"
+            },
+            {
+              "value": "inactive",
+              "label": "Inactive"
+            }
+          ]
+        }
+      ],
+      "description": "Earnings, deductions, statutory flags, and wage calculation formulas",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create pay component master",
+        "Edit pay component master"
+      ],
+      "columns": [
+        "Component code",
+        "Component name",
+        "Payslip label",
+        "Type",
+        "Calculation method",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "reimbursement_claim",
+      "screenId": "SCR-058",
+      "formId": "FRM-PAY-06",
+      "title": "Reimbursement claim",
+      "primary": "payroll",
+      "endpoint": "/api/v1/ops/modules/reimbursement_claim/records",
+      "fields": [
+        {
+          "key": "claimType",
+          "label": "Claim type",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Ref",
+          "section": "Claim",
+          "default": null,
+          "validation": "Active reimbursement components the person is eligible for",
+          "picklist": "PL_CLAIM_TYPE",
+          "workday": "Expense Item",
+          "note": "Fuel, telephone, medical, books, travel, relocation",
+          "options": [
+            {
+              "value": "fuel___conveyance",
+              "label": "Fuel / conveyance"
+            },
+            {
+              "value": "telephone___internet",
+              "label": "Telephone / internet"
+            },
+            {
+              "value": "medical",
+              "label": "Medical"
+            },
+            {
+              "value": "books_and_periodicals",
+              "label": "Books and periodicals"
+            },
+            {
+              "value": "travel",
+              "label": "Travel"
+            },
+            {
+              "value": "relocation",
+              "label": "Relocation"
+            },
+            {
+              "value": "professional_development",
+              "label": "Professional development"
+            },
+            {
+              "value": "meal",
+              "label": "Meal"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "key": "expenseDate",
+          "label": "Expense date",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Claim",
+          "default": null,
+          "validation": "Inside the claim window for the financial year",
+          "picklist": null,
+          "workday": "Expense Date",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "amountClaimed",
+          "label": "Amount claimed",
+          "required": true,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(10,2)",
+          "section": "Claim",
+          "default": null,
+          "validation": "Within the remaining annual entitlement",
+          "picklist": null,
+          "workday": "Amount",
+          "note": "Entitlement balance shown live",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "billNumber",
+          "label": "Bill number",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(40)",
+          "section": "Claim",
+          "default": null,
+          "validation": "Unique within the claim type and year",
+          "picklist": null,
+          "workday": "Receipt Number",
+          "note": "Duplicate bill numbers are blocked",
+          "options": []
+        },
+        {
+          "key": "vendorName",
+          "label": "Vendor / merchant",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(120)",
+          "section": "Claim",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Merchant",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "vendorGstin",
+          "label": "Vendor GSTIN",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(15)",
+          "section": "Claim",
+          "default": null,
+          "validation": "15 char",
+          "picklist": null,
+          "workday": "Tax ID",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "billRef",
+          "label": "Bill upload",
+          "required": true,
+          "type": "file",
+          "control": "File",
+          "dataType": "Ref",
+          "section": "Claim",
+          "default": null,
+          "validation": "PDF/JPG, max 5 MB",
+          "picklist": null,
+          "workday": "Attachment",
+          "note": "OCR pre-fills amount and date where enabled",
+          "options": []
+        },
+        {
+          "key": "description",
+          "label": "Description",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(300)",
+          "section": "Claim",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Memo",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "entitlementClaimedYtdBalance",
+          "label": "Annual entitlement / claimed / balance",
+          "required": false,
+          "type": "number",
+          "control": "Panel (derived)",
+          "dataType": "Dec(10,2)",
+          "section": "Context",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Allowance Balance",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "approverIdDecisionDecisionRemarks",
+          "label": "Approver / decision / remarks",
+          "required": true,
+          "type": "select",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "Reporting manager",
+          "validation": "Reason mandatory on reject",
+          "picklist": "PL_DECISION",
+          "workday": "Approval",
+          "note": null,
+          "options": [
+            {
+              "value": "approve",
+              "label": "Approve"
+            },
+            {
+              "value": "reject",
+              "label": "Reject"
+            },
+            {
+              "value": "return_for_correction",
+              "label": "Return for correction"
+            },
+            {
+              "value": "delegate",
+              "label": "Delegate"
+            }
+          ]
+        },
+        {
+          "key": "taggedRunId",
+          "label": "Tag to payroll run",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Payroll",
+          "default": "Next open run",
+          "validation": "Open run",
+          "picklist": null,
+          "workday": "Pay Period",
+          "note": "Tax-exempt portion determined by the component setup",
+          "options": []
+        },
+        {
+          "key": "amountPassed",
+          "label": "Amount passed",
+          "required": true,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(10,2)",
+          "section": "Payroll",
+          "default": "Same as claimed",
+          "validation": "Cannot exceed claimed",
+          "picklist": null,
+          "workday": "Approved Amount",
+          "note": "Reduction requires a reason",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        }
+      ],
+      "description": "Flexible benefits, expense proofs, bill verification, and payouts",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create reimbursement claim",
+        "Edit reimbursement claim"
+      ],
+      "columns": [
+        "Claim type",
+        "Expense date",
+        "Amount claimed",
+        "Bill number",
+        "Vendor / merchant",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "salary_advance",
+      "screenId": "SCR-081",
+      "formId": "FRM-CMB-02",
+      "title": "Salary advance request",
+      "primary": "payroll",
+      "endpoint": "/api/v1/ops/modules/salary_advance/records",
+      "fields": [
+        {
+          "key": "amount",
+          "label": "Advance amount",
+          "required": true,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(10,2)",
+          "section": "Request",
+          "default": null,
+          "validation": "Within the earned-to-date ceiling",
+          "picklist": null,
+          "workday": "Advance Amount",
+          "note": "Structurally an advance recovered in the same or next run",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(200)",
+          "section": "Request",
+          "default": null,
+          "validation": "Min 10 chars",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "recoveryPeriod",
+          "label": "Recovery month",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(7)",
+          "section": "Request",
+          "default": "Current period",
+          "validation": "Current or next period only",
+          "picklist": null,
+          "workday": "Recovery Period",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "instalments",
+          "label": "Number of instalments",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Request",
+          "default": "1",
+          "validation": "1-3",
+          "picklist": null,
+          "workday": "Instalments",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "earnedToDate",
+          "label": "Earned to date this period",
+          "required": false,
+          "type": "number",
+          "control": "Panel (derived)",
+          "dataType": "Dec(10,2)",
+          "section": "Context",
+          "default": "From attendance and structure",
+          "validation": null,
+          "picklist": null,
+          "workday": "Earned Wages",
+          "note": "The ceiling for earned wage access",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "advancesYtd",
+          "label": "Advances taken this year",
+          "required": false,
+          "type": "number",
+          "control": "Panel (derived)",
+          "dataType": "Int",
+          "section": "Context",
+          "default": "Computed",
+          "validation": "Annual instance cap enforced",
+          "picklist": null,
+          "workday": "Usage",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "approverIdDecisionDecisionRemarks",
+          "label": "Approver / decision / remarks",
+          "required": true,
+          "type": "select",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "Reporting manager then Finance",
+          "validation": "Reason mandatory on reject",
+          "picklist": "PL_DECISION",
+          "workday": "Approval",
+          "note": null,
+          "options": [
+            {
+              "value": "approve",
+              "label": "Approve"
+            },
+            {
+              "value": "reject",
+              "label": "Reject"
+            },
+            {
+              "value": "return_for_correction",
+              "label": "Return for correction"
+            },
+            {
+              "value": "delegate",
+              "label": "Delegate"
+            }
+          ]
+        },
+        {
+          "key": "disbursementRunIdRecoveryRunId",
+          "label": "Disbursement run / recovery run",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Payroll",
+          "default": null,
+          "validation": "Open runs",
+          "picklist": null,
+          "workday": "Pay Period",
+          "note": "Unrecovered advances block full and final",
+          "options": []
+        }
+      ],
+      "description": "Emergency salary advances, limit checks, and EMI deductions",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create salary advance request",
+        "Edit salary advance request"
+      ],
+      "columns": [
+        "Advance amount",
+        "Reason",
+        "Recovery month",
+        "Number of instalments",
+        "Earned to date this period",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "candidate_application",
+      "screenId": "SCR-092",
+      "formId": "FRM-TAL-02",
+      "title": "Candidate record and application",
+      "primary": "recruitment",
+      "endpoint": "/api/v1/ops/modules/candidate_application/records",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Full name",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(180)",
+          "section": "Candidate",
+          "default": null,
+          "validation": "2-180 chars",
+          "picklist": null,
+          "workday": "Candidate Name",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "mobileEmail",
+          "label": "Mobile / email",
+          "required": true,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Char(16)/Char(120)",
+          "section": "Candidate",
+          "default": null,
+          "validation": "E.164 and RFC email; duplicate check on both",
+          "picklist": null,
+          "workday": "Contact",
+          "note": "Duplicate candidate warning, not a block",
+          "options": []
+        },
+        {
+          "key": "dateOfBirth",
+          "label": "Date of birth",
+          "required": false,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Candidate",
+          "default": null,
+          "validation": "Age >= statutory minimum",
+          "picklist": null,
+          "workday": "Date of Birth",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "gender",
+          "label": "Gender",
+          "required": false,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Candidate",
+          "default": null,
+          "validation": "From list",
+          "picklist": "PL_GENDER",
+          "workday": "Gender",
+          "note": "Diversity reporting only",
+          "options": [
+            {
+              "value": "male",
+              "label": "Male"
+            },
+            {
+              "value": "female",
+              "label": "Female"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            },
+            {
+              "value": "prefer_not_to_say",
+              "label": "Prefer not to say"
+            }
+          ]
+        },
+        {
+          "key": "currentLocation",
+          "label": "Current location",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(60)",
+          "section": "Candidate",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Location",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "sourceChannel",
+          "label": "Source channel",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(25)",
+          "section": "Candidate",
+          "default": null,
+          "validation": "Referral / Portal / Agency / Walk-in / Campus / Internal",
+          "picklist": "PL_SOURCE_CHANNEL",
+          "workday": "Source",
+          "note": "Referral source links to the referral record",
+          "options": [
+            {
+              "value": "employee_referral",
+              "label": "Employee referral"
+            },
+            {
+              "value": "job_portal",
+              "label": "Job portal"
+            },
+            {
+              "value": "recruitment_agency",
+              "label": "Recruitment agency"
+            },
+            {
+              "value": "walk-in",
+              "label": "Walk-in"
+            },
+            {
+              "value": "campus",
+              "label": "Campus"
+            },
+            {
+              "value": "internal_transfer",
+              "label": "Internal transfer"
+            },
+            {
+              "value": "social_media",
+              "label": "Social media"
+            },
+            {
+              "value": "direct_application",
+              "label": "Direct application"
+            },
+            {
+              "value": "rehire",
+              "label": "Rehire"
+            }
+          ]
+        },
+        {
+          "key": "referrerPersonId",
+          "label": "Referred by",
+          "required": false,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Candidate",
+          "default": null,
+          "validation": "Active assignment",
+          "picklist": null,
+          "workday": "Referred By",
+          "note": "Drives referral award maturity",
+          "options": []
+        },
+        {
+          "key": "agencyId",
+          "label": "Agency / vendor",
+          "required": false,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Candidate",
+          "default": null,
+          "validation": "Active vendor",
+          "picklist": null,
+          "workday": "Agency",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "resumeRef",
+          "label": "Resume",
+          "required": true,
+          "type": "file",
+          "control": "File",
+          "dataType": "Ref",
+          "section": "Candidate",
+          "default": null,
+          "validation": "PDF/DOC, max 5 MB",
+          "picklist": null,
+          "workday": "Resume",
+          "note": "Parsed into skills and experience where enabled",
+          "options": []
+        },
+        {
+          "key": "totalExperience",
+          "label": "Total experience (years)",
+          "required": true,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Dec(4,1)",
+          "section": "Candidate",
+          "default": "From resume parse",
+          "validation": "0-50",
+          "picklist": null,
+          "workday": "Experience",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "currentEmployerCurrentDesignation",
+          "label": "Current employer / designation",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(150)",
+          "section": "Candidate",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Current Job",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "currentCtcExpectedCtc",
+          "label": "Current / expected CTC",
+          "required": false,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(12,2)",
+          "section": "Candidate",
+          "default": null,
+          "validation": ">= 0",
+          "picklist": null,
+          "workday": "Compensation",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "noticePeriodDays",
+          "label": "Notice period (days)",
+          "required": false,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Int",
+          "section": "Candidate",
+          "default": null,
+          "validation": "0-180",
+          "picklist": null,
+          "workday": "Availability",
+          "note": "Drives the expected joining date",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "requisitionId",
+          "label": "Applied against requisition",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Application",
+          "default": null,
+          "validation": "Open requisition",
+          "picklist": null,
+          "workday": "Job Requisition",
+          "note": "One candidate may apply to several",
+          "options": []
+        },
+        {
+          "key": "stage",
+          "label": "Stage",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(25)",
+          "section": "Application",
+          "default": "Applied",
+          "validation": "Applied / Screened / Interview / Selected / Offered / Joined / Rejected / Withdrawn",
+          "picklist": "PL_CANDIDATE_STAGE",
+          "workday": "Candidate Stage",
+          "note": "No automatic rejection; ranking assists, humans decide",
+          "options": [
+            {
+              "value": "applied",
+              "label": "Applied"
+            },
+            {
+              "value": "screened",
+              "label": "Screened"
+            },
+            {
+              "value": "interview_scheduled",
+              "label": "Interview scheduled"
+            },
+            {
+              "value": "interview_complete",
+              "label": "Interview complete"
+            },
+            {
+              "value": "selected",
+              "label": "Selected"
+            },
+            {
+              "value": "offered",
+              "label": "Offered"
+            },
+            {
+              "value": "offer_accepted",
+              "label": "Offer accepted"
+            },
+            {
+              "value": "joined",
+              "label": "Joined"
+            },
+            {
+              "value": "rejected",
+              "label": "Rejected"
+            },
+            {
+              "value": "withdrawn",
+              "label": "Withdrawn"
+            },
+            {
+              "value": "on_hold",
+              "label": "On hold"
+            }
+          ]
+        },
+        {
+          "key": "rankScore",
+          "label": "Rank score",
+          "required": false,
+          "type": "number",
+          "control": "Number (derived)",
+          "dataType": "Dec(5,2)",
+          "section": "Application",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Match Score",
+          "note": "Advisory only; the basis is shown",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "rejectionReason",
+          "label": "Rejection reason",
+          "required": false,
+          "type": "select",
+          "control": "Select + text",
+          "dataType": "Char(200)",
+          "section": "Application",
+          "default": null,
+          "validation": "From list plus free text",
+          "picklist": "PL_REJECTION_REASON",
+          "workday": "Disposition Reason",
+          "note": null,
+          "options": [
+            {
+              "value": "skill_mismatch",
+              "label": "Skill mismatch"
+            },
+            {
+              "value": "experience_mismatch",
+              "label": "Experience mismatch"
+            },
+            {
+              "value": "compensation_mismatch",
+              "label": "Compensation mismatch"
+            },
+            {
+              "value": "location_constraint",
+              "label": "Location constraint"
+            },
+            {
+              "value": "notice_period",
+              "label": "Notice period"
+            },
+            {
+              "value": "failed_assessment",
+              "label": "Failed assessment"
+            },
+            {
+              "value": "background_check",
+              "label": "Background check"
+            },
+            {
+              "value": "position_closed",
+              "label": "Position closed"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "key": "consentGivenConsentOn",
+          "label": "Data processing consent",
+          "required": true,
+          "type": "time",
+          "control": "Toggle + timestamp",
+          "dataType": "Mixed",
+          "section": "Consent",
+          "default": "Off",
+          "validation": "Explicit, purpose-bound",
+          "picklist": null,
+          "workday": "Consent",
+          "note": "DPDP: itemised notice before collection",
+          "options": []
+        },
+        {
+          "key": "retentionUntil",
+          "label": "Retention until",
+          "required": true,
+          "type": "date",
+          "control": "Date (derived)",
+          "dataType": "Date",
+          "section": "Consent",
+          "default": "Per the retention policy",
+          "validation": null,
+          "picklist": null,
+          "workday": "Retention Date",
+          "note": "Purged automatically at expiry",
+          "options": []
+        }
+      ],
+      "description": "Candidate profile intake, resume parsing, and requisition mapping",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create candidate record and application",
+        "Edit candidate record and application"
+      ],
+      "columns": [
+        "Full name",
+        "Mobile / email",
+        "Date of birth",
+        "Gender",
+        "Current location",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "interview_feedback",
+      "screenId": "SCR-093",
+      "formId": "FRM-TAL-03",
+      "title": "Interview feedback",
+      "primary": "recruitment",
+      "endpoint": "/api/v1/ops/modules/interview_feedback/records",
+      "fields": [
+        {
+          "key": "candidateIdRequisitionId",
+          "label": "Candidate / requisition",
+          "required": true,
+          "type": "text",
+          "control": "Read-only",
+          "dataType": "Ref",
+          "section": "Interview",
+          "default": "From the schedule",
+          "validation": null,
+          "picklist": null,
+          "workday": "Candidate",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "roundNo",
+          "label": "Round",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Interview",
+          "default": null,
+          "validation": "Screening / Technical / Functional / HR / Final",
+          "picklist": "PL_INTERVIEW_ROUND",
+          "workday": "Interview Round",
+          "note": null,
+          "options": [
+            {
+              "value": "screening",
+              "label": "Screening"
+            },
+            {
+              "value": "technical_1",
+              "label": "Technical 1"
+            },
+            {
+              "value": "technical_2",
+              "label": "Technical 2"
+            },
+            {
+              "value": "functional",
+              "label": "Functional"
+            },
+            {
+              "value": "hr",
+              "label": "HR"
+            },
+            {
+              "value": "final___leadership",
+              "label": "Final / leadership"
+            }
+          ]
+        },
+        {
+          "key": "interviewMode",
+          "label": "Mode",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Interview",
+          "default": "In person",
+          "validation": "In person / Video / Telephone",
+          "picklist": "PL_INTERVIEW_MODE",
+          "workday": "Interview Type",
+          "note": null,
+          "options": [
+            {
+              "value": "in_person",
+              "label": "In person"
+            },
+            {
+              "value": "video",
+              "label": "Video"
+            },
+            {
+              "value": "telephone",
+              "label": "Telephone"
+            }
+          ]
+        },
+        {
+          "key": "scheduledTsDurationMinutes",
+          "label": "Scheduled on / duration",
+          "required": true,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Interview",
+          "default": null,
+          "validation": "Future at scheduling",
+          "picklist": null,
+          "workday": "Schedule",
+          "note": "Calendar invite issued on save",
+          "options": []
+        },
+        {
+          "key": "panel",
+          "label": "Panel members",
+          "required": true,
+          "type": "select",
+          "control": "Multi-select",
+          "dataType": "Ref[]",
+          "section": "Interview",
+          "default": null,
+          "validation": "Active principals",
+          "picklist": null,
+          "workday": "Interviewers",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "competencyRating",
+          "label": "Competency ratings",
+          "required": true,
+          "type": "text",
+          "control": "Table",
+          "dataType": "Composite",
+          "section": "Feedback",
+          "default": "From the designation's competency set",
+          "validation": "Every competency must be rated",
+          "picklist": null,
+          "workday": "Competency Rating",
+          "note": "Repeating: competency, rating 1-5, remark",
+          "options": []
+        },
+        {
+          "key": "overallRating",
+          "label": "Overall rating",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Feedback",
+          "default": null,
+          "validation": "Strong hire / Hire / Hold / No hire",
+          "picklist": "PL_INTERVIEW_VERDICT",
+          "workday": "Overall Rating",
+          "note": null,
+          "options": [
+            {
+              "value": "strong_hire",
+              "label": "Strong hire"
+            },
+            {
+              "value": "hire",
+              "label": "Hire"
+            },
+            {
+              "value": "hold",
+              "label": "Hold"
+            },
+            {
+              "value": "no_hire",
+              "label": "No hire"
+            }
+          ]
+        },
+        {
+          "key": "strengthsConcerns",
+          "label": "Strengths / concerns",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(500)",
+          "section": "Feedback",
+          "default": null,
+          "validation": "Min 30 chars each",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "recommendedBand",
+          "label": "Recommended band",
+          "required": false,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Feedback",
+          "default": "From the requisition",
+          "validation": "Active band",
+          "picklist": null,
+          "workday": "Compensation Grade",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "submittedOn",
+          "label": "Submitted on",
+          "required": true,
+          "type": "time",
+          "control": "Timestamp (derived)",
+          "dataType": "Timestamp",
+          "section": "Feedback",
+          "default": "System",
+          "validation": "Feedback locks on submission",
+          "picklist": null,
+          "workday": "Submission Date",
+          "note": "Cannot be edited after submission",
+          "options": []
+        }
+      ],
+      "description": "Panel assessment, competency scoring, and hiring recommendations",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create interview feedback",
+        "Edit interview feedback"
+      ],
+      "columns": [
+        "Candidate / requisition",
+        "Round",
+        "Mode",
+        "Scheduled on / duration",
+        "Panel members",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "offer_management",
+      "screenId": "SCR-094",
+      "formId": "FRM-TAL-04",
+      "title": "Offer management",
+      "primary": "recruitment",
+      "endpoint": "/api/v1/ops/modules/offer_management/records",
+      "fields": [
+        {
+          "key": "candidateIdRequisitionIdPositionCode",
+          "label": "Candidate / requisition / position",
+          "required": true,
+          "type": "text",
+          "control": "Read-only",
+          "dataType": "Ref",
+          "section": "Offer",
+          "default": "From the application",
+          "validation": "Position must still be vacant",
+          "picklist": null,
+          "workday": "Offer",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "designationCodeBandLocationId",
+          "label": "Designation / band / location",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Offer",
+          "default": "From the requisition",
+          "validation": "Active",
+          "picklist": null,
+          "workday": "Job Profile",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "workerClassEmploymentType",
+          "label": "Worker class / employment type",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Offer",
+          "default": "From the requisition",
+          "validation": "Active",
+          "picklist": null,
+          "workday": "Worker Type",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "offeredCtc",
+          "label": "Offered CTC",
+          "required": true,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(12,2)",
+          "section": "Offer",
+          "default": null,
+          "validation": "Within the requisition range unless approved",
+          "picklist": null,
+          "workday": "Offer Amount",
+          "note": "Outside-range offers route to an extra approval",
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "structurePreview",
+          "label": "Salary structure preview",
+          "required": false,
+          "type": "text",
+          "control": "Panel (derived)",
+          "dataType": "Composite",
+          "section": "Offer",
+          "default": "Computed from the CTC",
+          "validation": "Wage floor test must pass",
+          "picklist": null,
+          "workday": "Compensation Preview",
+          "note": "Shown before the offer is released",
+          "options": []
+        },
+        {
+          "key": "joiningBonusClawbackMonths",
+          "label": "Joining bonus / retention",
+          "required": false,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Offer",
+          "default": "0",
+          "validation": "Clawback terms named in the letter",
+          "picklist": null,
+          "workday": "One-Time Payment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "proposedJoiningDate",
+          "label": "Proposed joining date",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Offer",
+          "default": null,
+          "validation": "Not before the position availability date",
+          "picklist": null,
+          "workday": "Hire Date",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "offerValidTill",
+          "label": "Offer validity",
+          "required": true,
+          "type": "date",
+          "control": "Date",
+          "dataType": "Date",
+          "section": "Offer",
+          "default": "Release date plus 7 days",
+          "validation": "Future date",
+          "picklist": null,
+          "workday": "Expiration Date",
+          "note": "Lapsed offers close automatically",
+          "options": []
+        },
+        {
+          "key": "letterTemplateId",
+          "label": "Letter template",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Offer",
+          "default": "By worker class",
+          "validation": "Active template",
+          "picklist": null,
+          "workday": "Document Template",
+          "note": "Template version retained on issue",
+          "options": []
+        },
+        {
+          "key": "approvalStatus",
+          "label": "Approval status",
+          "required": true,
+          "type": "select",
+          "control": "Panel (derived)",
+          "dataType": "Char(15)",
+          "section": "Offer",
+          "default": "Draft",
+          "validation": "From the approval chain",
+          "picklist": "PL_APPROVAL_STATUS",
+          "workday": "Approval",
+          "note": null,
+          "options": [
+            {
+              "value": "draft",
+              "label": "Draft"
+            },
+            {
+              "value": "pending_approval",
+              "label": "Pending approval"
+            },
+            {
+              "value": "approved",
+              "label": "Approved"
+            },
+            {
+              "value": "rejected",
+              "label": "Rejected"
+            },
+            {
+              "value": "withdrawn",
+              "label": "Withdrawn"
+            }
+          ]
+        },
+        {
+          "key": "releasedOnReleaseChannel",
+          "label": "Released on / channel",
+          "required": true,
+          "type": "select",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Offer",
+          "default": null,
+          "validation": "Email or portal",
+          "picklist": "PL_RELEASE_CHANNEL",
+          "workday": "Delivery",
+          "note": null,
+          "options": [
+            {
+              "value": "email",
+              "label": "Email"
+            },
+            {
+              "value": "employee_portal",
+              "label": "Employee portal"
+            },
+            {
+              "value": "whatsapp",
+              "label": "WhatsApp"
+            },
+            {
+              "value": "printed_copy",
+              "label": "Printed copy"
+            }
+          ]
+        },
+        {
+          "key": "offerResponse",
+          "label": "Candidate response",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(15)",
+          "section": "Response",
+          "default": "Pending",
+          "validation": "Accepted / Declined / Lapsed / Negotiating",
+          "picklist": "PL_OFFER_RESPONSE",
+          "workday": "Offer Status",
+          "note": "Acceptance starts the pre-boarding chain",
+          "options": [
+            {
+              "value": "pending",
+              "label": "Pending"
+            },
+            {
+              "value": "accepted",
+              "label": "Accepted"
+            },
+            {
+              "value": "declined",
+              "label": "Declined"
+            },
+            {
+              "value": "negotiating",
+              "label": "Negotiating"
+            },
+            {
+              "value": "lapsed",
+              "label": "Lapsed"
+            }
+          ]
+        },
+        {
+          "key": "declineReason",
+          "label": "Decline reason",
+          "required": false,
+          "type": "select",
+          "control": "Select + text",
+          "dataType": "Char(200)",
+          "section": "Response",
+          "default": null,
+          "validation": "From list plus free text",
+          "picklist": "PL_DECLINE_REASON",
+          "workday": "Reason",
+          "note": "Feeds the offer-drop analysis",
+          "options": [
+            {
+              "value": "compensation",
+              "label": "Compensation"
+            },
+            {
+              "value": "counter_offer_accepted",
+              "label": "Counter offer accepted"
+            },
+            {
+              "value": "role_mismatch",
+              "label": "Role mismatch"
+            },
+            {
+              "value": "location",
+              "label": "Location"
+            },
+            {
+              "value": "joining_date",
+              "label": "Joining date"
+            },
+            {
+              "value": "family_reasons",
+              "label": "Family reasons"
+            },
+            {
+              "value": "other_offer",
+              "label": "Other offer"
+            },
+            {
+              "value": "not_disclosed",
+              "label": "Not disclosed"
+            }
+          ]
+        },
+        {
+          "key": "acceptedOn",
+          "label": "Accepted on",
+          "required": false,
+          "type": "time",
+          "control": "Timestamp",
+          "dataType": "Timestamp",
+          "section": "Response",
+          "default": null,
+          "validation": null,
+          "picklist": null,
+          "workday": "Acceptance Date",
+          "note": null,
+          "options": []
+        }
+      ],
+      "description": "Compensation proposals, approval matrices, and offer letter release",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create offer management",
+        "Edit offer management"
+      ],
+      "columns": [
+        "Candidate / requisition / position",
+        "Designation / band / location",
+        "Worker class / employment type",
+        "Offered CTC",
+        "Salary structure preview",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "helpdesk_ticket",
+      "screenId": "SCR-043",
+      "formId": "FRM-SSV-01",
+      "title": "Helpdesk ticket",
+      "primary": "analytics",
+      "endpoint": "/api/v1/ops/modules/helpdesk_ticket/records",
+      "fields": [
+        {
+          "key": "category",
+          "label": "Category",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(30)",
+          "section": "Ticket",
+          "default": null,
+          "validation": "From the ticket taxonomy",
+          "picklist": "PL_TICKET_CATEGORY",
+          "workday": "Case Type",
+          "note": "Payroll, attendance, leave, document, IT, facilities, grievance",
+          "options": [
+            {
+              "value": "payroll",
+              "label": "Payroll"
+            },
+            {
+              "value": "attendance",
+              "label": "Attendance"
+            },
+            {
+              "value": "leave",
+              "label": "Leave"
+            },
+            {
+              "value": "documents",
+              "label": "Documents"
+            },
+            {
+              "value": "statutory___pf___esi",
+              "label": "Statutory / PF / ESI"
+            },
+            {
+              "value": "it",
+              "label": "IT"
+            },
+            {
+              "value": "facilities",
+              "label": "Facilities"
+            },
+            {
+              "value": "transport",
+              "label": "Transport"
+            },
+            {
+              "value": "canteen",
+              "label": "Canteen"
+            },
+            {
+              "value": "policy_query",
+              "label": "Policy query"
+            },
+            {
+              "value": "grievance",
+              "label": "Grievance"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        },
+        {
+          "key": "subCategory",
+          "label": "Sub-category",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(40)",
+          "section": "Ticket",
+          "default": null,
+          "validation": "Dependent on category",
+          "picklist": null,
+          "workday": "Case Category",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "subject",
+          "label": "Subject",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(150)",
+          "section": "Ticket",
+          "default": null,
+          "validation": "5-150 chars",
+          "picklist": null,
+          "workday": "Subject",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "description",
+          "label": "Description",
+          "required": true,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(2000)",
+          "section": "Ticket",
+          "default": null,
+          "validation": "Min 20 chars",
+          "picklist": null,
+          "workday": "Description",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "attachmentRef",
+          "label": "Attachment",
+          "required": false,
+          "type": "file",
+          "control": "File",
+          "dataType": "Ref",
+          "section": "Ticket",
+          "default": null,
+          "validation": "Max 5 files, 10 MB each",
+          "picklist": null,
+          "workday": "Attachment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "priority",
+          "label": "Priority",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(10)",
+          "section": "Ticket",
+          "default": "Normal",
+          "validation": "Low / Normal / High / Urgent",
+          "picklist": "PL_PRIORITY",
+          "workday": "Priority",
+          "note": "Grievance category forces a confidential route",
+          "options": [
+            {
+              "value": "low",
+              "label": "Low"
+            },
+            {
+              "value": "normal",
+              "label": "Normal"
+            },
+            {
+              "value": "high",
+              "label": "High"
+            },
+            {
+              "value": "urgent",
+              "label": "Urgent"
+            }
+          ]
+        },
+        {
+          "key": "isConfidential",
+          "label": "Confidential",
+          "required": true,
+          "type": "checkbox",
+          "control": "Toggle",
+          "dataType": "Bool",
+          "section": "Ticket",
+          "default": "Off for most; on for grievance",
+          "validation": null,
+          "picklist": null,
+          "workday": "Confidential",
+          "note": "Confidential tickets bypass the reporting line",
+          "options": []
+        },
+        {
+          "key": "queueIdAssigneeId",
+          "label": "Assigned queue / owner",
+          "required": true,
+          "type": "select",
+          "control": "Lookup (derived)",
+          "dataType": "Ref",
+          "section": "Routing",
+          "default": "From the routing rule",
+          "validation": "Active",
+          "picklist": null,
+          "workday": "Assignee",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "slaDueTs",
+          "label": "SLA due",
+          "required": true,
+          "type": "time",
+          "control": "Timestamp (derived)",
+          "dataType": "Timestamp",
+          "section": "Routing",
+          "default": "From the category SLA",
+          "validation": null,
+          "picklist": null,
+          "workday": "Due Date",
+          "note": "Breach escalates automatically",
+          "options": []
+        },
+        {
+          "key": "status",
+          "label": "Status",
+          "required": true,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Resolution",
+          "default": "Open",
+          "validation": "Open / In progress / Awaiting employee / Resolved / Closed / Reopened",
+          "picklist": "PL_TICKET_STATUS",
+          "workday": "Case Status",
+          "note": null,
+          "options": [
+            {
+              "value": "open",
+              "label": "Open"
+            },
+            {
+              "value": "in_progress",
+              "label": "In progress"
+            },
+            {
+              "value": "awaiting_employee",
+              "label": "Awaiting employee"
+            },
+            {
+              "value": "resolved",
+              "label": "Resolved"
+            },
+            {
+              "value": "closed",
+              "label": "Closed"
+            },
+            {
+              "value": "reopened",
+              "label": "Reopened"
+            }
+          ]
+        },
+        {
+          "key": "resolutionNote",
+          "label": "Resolution note",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(1000)",
+          "section": "Resolution",
+          "default": null,
+          "validation": "Min 20 chars",
+          "picklist": null,
+          "workday": "Resolution",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "suggestedAnswer",
+          "label": "Assistant-suggested answer",
+          "required": false,
+          "type": "text",
+          "control": "Panel (derived)",
+          "dataType": "Text",
+          "section": "Resolution",
+          "default": "Agent draft with citations",
+          "validation": null,
+          "picklist": null,
+          "workday": "Suggested Response",
+          "note": "Grounded in policy with citations; never auto-sent",
+          "options": []
+        },
+        {
+          "key": "csatRatingCsatComment",
+          "label": "Employee satisfaction",
+          "required": false,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Resolution",
+          "default": null,
+          "validation": "1-5",
+          "picklist": null,
+          "workday": "Satisfaction",
+          "note": "Requested on closure",
+          "options": []
+        }
+      ],
+      "description": "Service tickets, category triage, SLA tracking, and resolution audit",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create helpdesk ticket",
+        "Edit helpdesk ticket"
+      ],
+      "columns": [
+        "Category",
+        "Sub-category",
+        "Subject",
+        "Description",
+        "Attachment",
+        "Status"
+      ],
+      "apiMethod": "GET"
+    },
+    {
+      "id": "contractor_invoice",
+      "screenId": "SCR-096",
+      "formId": "FRM-CTG-02",
+      "title": "Contractor invoice reconciliation",
+      "primary": "compliance",
+      "endpoint": "/api/v1/ops/modules/contractor_invoice/records",
+      "fields": [
+        {
+          "key": "engagementIdPeriod",
+          "label": "Engagement / period",
+          "required": true,
+          "type": "select",
+          "control": "Lookup",
+          "dataType": "Ref",
+          "section": "Invoice",
+          "default": null,
+          "validation": "Open engagement",
+          "picklist": null,
+          "workday": "Contract / Period",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "invoiceNumberInvoiceDate",
+          "label": "Invoice number / date",
+          "required": true,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Invoice",
+          "default": null,
+          "validation": "Unique per vendor and year",
+          "picklist": null,
+          "workday": "Invoice ID",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "claimedDays",
+          "label": "Claimed days by skill",
+          "required": true,
+          "type": "text",
+          "control": "Table",
+          "dataType": "Composite",
+          "section": "Invoice",
+          "default": null,
+          "validation": ">= 0",
+          "picklist": null,
+          "workday": "Quantity",
+          "note": "Repeating: skill, days, rate, amount",
+          "options": []
+        },
+        {
+          "key": "claimedOtHours",
+          "label": "Claimed overtime hours",
+          "required": false,
+          "type": "number",
+          "control": "Number",
+          "dataType": "Dec(8,2)",
+          "section": "Invoice",
+          "default": "0",
+          "validation": ">= 0",
+          "picklist": null,
+          "workday": "Overtime",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "invoiceAmount",
+          "label": "Invoice amount",
+          "required": true,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(12,2)",
+          "section": "Invoice",
+          "default": "Computed from claimed lines",
+          "validation": "Must equal the line total",
+          "picklist": null,
+          "workday": "Invoice Amount",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "gstAmount",
+          "label": "GST",
+          "required": false,
+          "type": "number",
+          "control": "Money",
+          "dataType": "Dec(12,2)",
+          "section": "Invoice",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Tax Amount",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "attendanceDays",
+          "label": "Attendance days recorded",
+          "required": false,
+          "type": "number",
+          "control": "Panel (derived)",
+          "dataType": "Dec(8,2)",
+          "section": "Reconciliation",
+          "default": "From attendance",
+          "validation": null,
+          "picklist": null,
+          "workday": "System Quantity",
+          "note": null,
+          "options": [],
+          "min": 0,
+          "max": 1000000,
+          "step": 1
+        },
+        {
+          "key": "varianceDaysVarianceAmount",
+          "label": "Variance (days, amount)",
+          "required": false,
+          "type": "text",
+          "control": "Panel (derived)",
+          "dataType": "Mixed",
+          "section": "Reconciliation",
+          "default": "Computed",
+          "validation": null,
+          "picklist": null,
+          "workday": "Variance",
+          "note": "Visible before payment rather than after",
+          "options": []
+        },
+        {
+          "key": "varianceAction",
+          "label": "Variance disposition",
+          "required": false,
+          "type": "select",
+          "control": "Select",
+          "dataType": "Char(20)",
+          "section": "Reconciliation",
+          "default": null,
+          "validation": "Accept / Query / Reduce",
+          "picklist": "PL_VARIANCE_ACTION",
+          "workday": "Disposition",
+          "note": null,
+          "options": [
+            {
+              "value": "accept",
+              "label": "Accept"
+            },
+            {
+              "value": "query",
+              "label": "Query"
+            },
+            {
+              "value": "reduce",
+              "label": "Reduce"
+            }
+          ]
+        },
+        {
+          "key": "queryNote",
+          "label": "Query note",
+          "required": false,
+          "type": "text",
+          "control": "Text",
+          "dataType": "Char(500)",
+          "section": "Reconciliation",
+          "default": null,
+          "validation": "Min 20 chars",
+          "picklist": null,
+          "workday": "Comment",
+          "note": null,
+          "options": []
+        },
+        {
+          "key": "vendorRemittanceRef",
+          "label": "Vendor PF / ESI remittance proof",
+          "required": true,
+          "type": "file",
+          "control": "File",
+          "dataType": "Ref",
+          "section": "Compliance",
+          "default": null,
+          "validation": "PDF, max 10 MB",
+          "picklist": null,
+          "workday": "Attachment",
+          "note": "Payment held without proof of statutory remittance",
+          "options": []
+        },
+        {
+          "key": "approvedAmountApproverId",
+          "label": "Approved amount / approver",
+          "required": true,
+          "type": "text",
+          "control": "Mixed",
+          "dataType": "Mixed",
+          "section": "Approval",
+          "default": "Invoice amount minus variance",
+          "validation": "Cannot exceed the invoice amount",
+          "picklist": null,
+          "workday": "Approval",
+          "note": null,
+          "options": []
+        }
+      ],
+      "description": "Contract worker billing verification, attendance cross-check, and pass-through payments",
+      "stateLabel": "Status",
+      "states": [
+        "Draft",
+        "Pending",
+        "Approved",
+        "Active",
+        "Closed"
+      ],
+      "actions": [
+        "Create contractor invoice reconciliation",
+        "Edit contractor invoice reconciliation"
+      ],
+      "columns": [
+        "Engagement / period",
+        "Invoice number / date",
+        "Claimed days by skill",
+        "Claimed overtime hours",
+        "Invoice amount",
         "Status"
       ],
       "apiMethod": "GET"

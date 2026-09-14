@@ -178,52 +178,84 @@ const TopNav = ({
                                 padding: '0.35rem 0',
                             }}
                         >
-                            {searchResults.map((item) => (
-                                <div
-                                    key={`${item.type}-${item.id}`}
-                                    onClick={() => {
-                                        if (item.type === 'module' && item.targetTab) {
-                                            onTabChange(item.targetTab, undefined, item.subFeature);
-                                        } else if (item.type === 'employee') {
-                                            onTabChange('people_core', 'workforce', item.id);
-                                        }
-                                        setShowSearchDropdown(false);
-                                    }}
-                                    style={{
-                                        padding: '0.5rem 0.85rem',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        justifyContent: 'space-between',
-                                        cursor: 'pointer',
-                                        borderBottom: '1px solid var(--line-soft)',
-                                        transition: 'background 0.15s ease',
-                                    }}
-                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--signal-wash)'}
-                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                                >
-                                    <div style={{ minWidth: 0, flex: 1, marginRight: '0.5rem' }}>
-                                        <div style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            {item.title}
-                                        </div>
-                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                            {item.subtitle}
-                                        </div>
-                                    </div>
-                                    <span
-                                        style={{
-                                            fontSize: '0.62rem',
-                                            padding: '0.15rem 0.45rem',
-                                            borderRadius: '4px',
-                                            fontWeight: 700,
-                                            flexShrink: 0,
-                                            background: item.type === 'module' ? 'var(--signal-wash)' : 'var(--info-wash)',
-                                            color: item.type === 'module' ? 'var(--signal)' : 'var(--info)',
+                            {searchResults.map((item, idx) => {
+                                const badgeStyle =
+                                    item.type === 'form'
+                                        ? { background: 'var(--signal-wash)', color: 'var(--signal)' }
+                                        : item.type === 'screen'
+                                        ? { background: 'var(--info-wash)', color: 'var(--info)' }
+                                        : item.type === 'document'
+                                        ? { background: 'var(--flag-wash)', color: 'var(--flag)' }
+                                        : item.type === 'employee'
+                                        ? { background: 'var(--status-ok-wash)', color: 'var(--status-ok)' }
+                                        : { background: 'var(--pending-wash)', color: 'var(--pending)' };
+
+                                return (
+                                    <div
+                                        key={`${item.type}-${item.id}-${idx}`}
+                                        onClick={() => {
+                                            if (item.targetTab) {
+                                                onTabChange(item.targetTab, item.domain, item.subFeature);
+                                            } else if (item.type === 'employee') {
+                                                onTabChange('people_core', 'workforce', item.id);
+                                            } else if (item.type === 'document') {
+                                                onTabChange('document_vault', 'core_hr', 'document_vault');
+                                            }
+                                            setShowSearchDropdown(false);
                                         }}
+                                        style={{
+                                            padding: '0.55rem 0.85rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'space-between',
+                                            cursor: 'pointer',
+                                            borderBottom: '1px solid var(--line-soft)',
+                                            transition: 'background 0.15s ease',
+                                        }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--signal-wash)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
                                     >
-                                        {item.type === 'module' ? (item.tag || 'MODULE') : 'EMPLOYEE'}
-                                    </span>
-                                </div>
-                            ))}
+                                        <div style={{ minWidth: 0, flex: 1, marginRight: '0.5rem' }}>
+                                            <div
+                                                style={{
+                                                    fontWeight: 600,
+                                                    fontSize: '0.82rem',
+                                                    color: 'var(--text)',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                }}
+                                            >
+                                                {item.title}
+                                            </div>
+                                            <div
+                                                style={{
+                                                    fontSize: '0.7rem',
+                                                    color: 'var(--text-2)',
+                                                    marginTop: '2px',
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                }}
+                                            >
+                                                {item.subtitle}
+                                            </div>
+                                        </div>
+                                        <span
+                                            style={{
+                                                fontSize: '0.62rem',
+                                                padding: '0.15rem 0.45rem',
+                                                borderRadius: '4px',
+                                                fontWeight: 700,
+                                                flexShrink: 0,
+                                                ...badgeStyle,
+                                            }}
+                                        >
+                                            {item.tag || item.type.toUpperCase()}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </div>

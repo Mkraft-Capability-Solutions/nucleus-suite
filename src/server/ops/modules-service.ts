@@ -178,6 +178,90 @@ export const OPERATIONAL_MODULES: Record<string, OperationalModuleConfig> = {
     permission: "employee.read",
     auditAction: "performance.cycle_create",
   },
+  shift_master: {
+    screenId: "SCR-028",
+    table: "attendance_shifts",
+    permission: "attendance.read",
+    auditAction: "attendance.shift_master",
+  },
+  roster_schedule: {
+    screenId: "SCR-029",
+    table: "shift_rosters",
+    permission: "attendance.read",
+    auditAction: "attendance.roster_schedule",
+  },
+  compensatory_off: {
+    screenId: "SCR-033",
+    table: "leave_coff_grants",
+    permission: "employee.read",
+    auditAction: "leave.coff_claim",
+  },
+  leave_encashment: {
+    screenId: "SCR-034",
+    table: "leave_encashments",
+    permission: "employee.read",
+    auditAction: "leave.encashment_request",
+  },
+  helpdesk_ticket: {
+    screenId: "SCR-043",
+    table: "helpdesk_tickets",
+    permission: "employee.read",
+    auditAction: "support.ticket_create",
+  },
+  pay_component_master: {
+    screenId: "SCR-057",
+    table: "pay_components",
+    permission: "payroll.read",
+    auditAction: "payroll.component_master",
+  },
+  reimbursement_claim: {
+    screenId: "SCR-058",
+    table: "reimbursement_claims",
+    permission: "payroll.read",
+    auditAction: "payroll.reimbursement_claim",
+  },
+  probation_confirmation: {
+    screenId: "SCR-068",
+    table: "probation_evaluations",
+    permission: "employee.read",
+    auditAction: "lifecycle.confirmation_review",
+  },
+  resignation_exit: {
+    screenId: "SCR-069",
+    table: "resignation_requests",
+    permission: "employee.read",
+    auditAction: "lifecycle.resignation_submit",
+  },
+  salary_advance: {
+    screenId: "SCR-081",
+    table: "salary_advances",
+    permission: "payroll.read",
+    auditAction: "payroll.salary_advance",
+  },
+  candidate_application: {
+    screenId: "SCR-092",
+    table: "candidates",
+    permission: "employee.read",
+    auditAction: "talent.candidate_create",
+  },
+  interview_feedback: {
+    screenId: "SCR-093",
+    table: "interview_evaluations",
+    permission: "employee.read",
+    auditAction: "talent.interview_feedback",
+  },
+  offer_management: {
+    screenId: "SCR-094",
+    table: "candidate_offers",
+    permission: "employee.read",
+    auditAction: "talent.offer_release",
+  },
+  contractor_invoice: {
+    screenId: "SCR-096",
+    table: "contractor_invoices",
+    permission: "compliance.read",
+    auditAction: "contractor.invoice_reconciliation",
+  },
 };
 
 export const createModuleRecordSchema = z.record(z.string(), z.unknown());

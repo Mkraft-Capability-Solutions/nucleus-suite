@@ -389,7 +389,7 @@ export const createPositionSchema = z.object({
   jobProfileId: z.string().uuid().optional(),
   locationId: z.string().uuid().optional(),
   costCenterId: z.string().uuid().optional(),
-  workerClass: z.enum(picklistValues("PL_WORKER_CLASS")).default("standard"),
+  workerClass: z.enum(picklistValues("PL_WORKER_CLASS")).default("staff_monthly"),
   reportsToPositionId: z.string().uuid().nullable().optional(),
   /** Part-time posts prorate the sanctioned count, which is why the workbook caps FTE at 0.25-1.00. */
   fte: z.number().min(0.25).max(1).default(1),

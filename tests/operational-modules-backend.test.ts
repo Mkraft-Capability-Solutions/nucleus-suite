@@ -35,6 +35,23 @@ describe("Operational Modules Backend Verification (Implementation Plan)", () =>
     { id: "performance_review_cycle", screen: "SCR-094", table: "review_cycles" },
   ];
 
+  const specFormsModules = [
+    { id: "shift_master", screen: "SCR-028", formId: "FRM-TIM-01" },
+    { id: "roster_schedule", screen: "SCR-029", formId: "FRM-TIM-02" },
+    { id: "compensatory_off", screen: "SCR-033", formId: "FRM-LVE-03" },
+    { id: "leave_encashment", screen: "SCR-034", formId: "FRM-LVE-04" },
+    { id: "helpdesk_ticket", screen: "SCR-043", formId: "FRM-SSV-01" },
+    { id: "pay_component_master", screen: "SCR-057", formId: "FRM-PAY-01" },
+    { id: "reimbursement_claim", screen: "SCR-058", formId: "FRM-PAY-06" },
+    { id: "probation_confirmation", screen: "SCR-068", formId: "FRM-LCY-02" },
+    { id: "resignation_exit", screen: "SCR-069", formId: "FRM-LCY-03" },
+    { id: "salary_advance", screen: "SCR-081", formId: "FRM-CMB-02" },
+    { id: "candidate_application", screen: "SCR-092", formId: "FRM-TAL-02" },
+    { id: "interview_feedback", screen: "SCR-093", formId: "FRM-TAL-03" },
+    { id: "offer_management", screen: "SCR-094", formId: "FRM-TAL-04" },
+    { id: "contractor_invoice", screen: "SCR-096", formId: "FRM-CTG-02" },
+  ];
+
   it("registers all 17 primary operational modules with valid screenId, canonical tables, and permissions", () => {
     for (const mod of all17Modules) {
       const config = OPERATIONAL_MODULES[mod.id];
@@ -52,6 +69,16 @@ describe("Operational Modules Backend Verification (Implementation Plan)", () =>
       expect(config, `Missing configuration for ${mod.id}`).toBeDefined();
       expect(config.screenId).toBe(mod.screen);
       expect(config.table).toBe(mod.table);
+      expect(config.permission).toBeTruthy();
+      expect(config.auditAction).toBeTruthy();
+    }
+  });
+
+  it("registers all 14 Excel spec forms in OPERATIONAL_MODULES with screenId, table, permissions, and auditAction", () => {
+    for (const mod of specFormsModules) {
+      const config = OPERATIONAL_MODULES[mod.id];
+      expect(config, `Missing configuration for ${mod.id}`).toBeDefined();
+      expect(config.screenId).toBe(mod.screen);
       expect(config.permission).toBeTruthy();
       expect(config.auditAction).toBeTruthy();
     }
