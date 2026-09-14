@@ -13,6 +13,9 @@ import AIPanel from '@/components/Clerio/AIPanel';
 import ChatPanel from '@/components/Clerio/ChatPanel';
 import LoginView from '@/components/Clerio/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
+import VoiceNavigator from '@/components/VoiceNavigator';
+import CtcExceptionModal from '@/components/Dashboard/Modals/CtcExceptionModal';
+import DataImportModal from '@/components/Clerio/DataImportModal';
 import { HRMSProvider, useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
@@ -60,10 +63,15 @@ const AppContent = () => {
 
   // Dual-Pane Navigation Modal state (Modules Left, Sub-modules Right)
   const [isModulesOpen, setIsModulesOpen] = useState(false);
+  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [isCtcModalOpen, setIsCtcModalOpen] = useState(false);
+  const [ctcModalData, setCtcModalData] = useState(null);
+  const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
 
   useKeyboardShortcut('m', () => setIsModulesOpen(prev => !prev), Boolean(user));
+  useKeyboardShortcut('v', () => setIsVoiceModalOpen(prev => !prev), Boolean(user));
 
-  // Global tab navigation event listener (used by openAccessControl and external triggers)
+  // Global event listeners (used by openAccessControl, voice, CTC exception, bulk upload)
   useEffect(() => {
     const handleCustomNav = (e) => {
       if (e.detail) {
@@ -75,8 +83,24 @@ const AppContent = () => {
         }
       }
     };
+    const handleVoiceNav = () => setIsVoiceModalOpen(true);
+    const handleCtcException = (e) => {
+      setCtcModalData(e.detail || null);
+      setIsCtcModalOpen(true);
+    };
+    const handleBulkUpload = () => setIsBulkUploadOpen(true);
+
     window.addEventListener('nucleus:navigate_tab', handleCustomNav);
-    return () => window.removeEventListener('nucleus:navigate_tab', handleCustomNav);
+    window.addEventListener('nucleus:voice_navigation', handleVoiceNav);
+    window.addEventListener('nucleus:open_ctc_exception', handleCtcException);
+    window.addEventListener('nucleus:open_bulk_upload', handleBulkUpload);
+
+    return () => {
+      window.removeEventListener('nucleus:navigate_tab', handleCustomNav);
+      window.removeEventListener('nucleus:voice_navigation', handleVoiceNav);
+      window.removeEventListener('nucleus:open_ctc_exception', handleCtcException);
+      window.removeEventListener('nucleus:open_bulk_upload', handleBulkUpload);
+    };
   }, []);
 
   const toggleDrawer = (drawerType) => {
@@ -277,6 +301,7 @@ const AppContent = () => {
           >
             <MainWorkspace
               activeTab={activeTab}
+              activeSubFeature={activeSubFeature}
               onTabChange={(tab, domain, sub) => {
                 if (tab === 'dashboard' && sub && /^s(10|[1-9])$/i.test(sub)) {
                   handleSelectConsole(sub.toUpperCase());
@@ -376,6 +401,39 @@ const AppContent = () => {
           )}
         </div>
       )}
+
+      {/* Voice-Powered Natural Language Navigator */}
+      <VoiceNavigator
+        isOpen={isVoiceModalOpen}
+        onClose={() => setIsVoiceModalOpen(false)}
+        onNavigate={(tab, domain, sub) => {
+          setActiveTab(tab);
+          if (domain) setActiveDomain(domain);
+          if (sub) setActiveSubFeature(sub);
+          setShowCatalog(false);
+        }}
+        onSelectConsole={handleSelectConsole}
+        onOpenModal={(modalType) => {
+          if (modalType === 'ctc_exception') setIsCtcModalOpen(true);
+          if (modalType === 'bulk_upload') setIsBulkUploadOpen(true);
+          if (modalType === 'modules') setIsModulesOpen(true);
+          if (modalType === 'copilot' || modalType === 'ai') setActiveFloatingDrawer('ai');
+          if (modalType === 'chat') setActiveFloatingDrawer('chat');
+        }}
+      />
+
+      {/* Talent CTC Exception Approval Modal */}
+      <CtcExceptionModal
+        isOpen={isCtcModalOpen}
+        onClose={() => setIsCtcModalOpen(false)}
+        requestData={ctcModalData}
+      />
+
+      {/* Enterprise Bulk Data Upload Modal */}
+      <DataImportModal
+        isOpen={isBulkUploadOpen}
+        onClose={() => setIsBulkUploadOpen(false)}
+      />
 
       {/* Global Toast Notifications */}
       <div className={toastStyles.toastContainer} aria-live="polite">

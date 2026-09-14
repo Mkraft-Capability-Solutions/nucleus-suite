@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import catalog from '@/data/assistant.json';
+import catalog from '@/config/assistant.json';
 
 export async function POST(request) {
     let body;

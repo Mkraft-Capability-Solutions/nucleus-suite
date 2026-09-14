@@ -1,5 +1,5 @@
 import 'server-only';
-import content from '@/data/public-site.json';
+import content from '@/config/public-site.json';
 import {loadInterfaceMessages} from './localization';
 import {translate} from '@/lib/i18n';
 

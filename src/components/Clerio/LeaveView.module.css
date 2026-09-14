@@ -220,20 +220,49 @@
 }
 
 .btnPrimary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     background: var(--signal);
     color: var(--on-signal);
-    border: none;
-    padding: 0.6rem 1.25rem;
+    border: 1px solid var(--signal);
+    padding: 0.55rem 1.15rem;
     border-radius: var(--r-control);
     font-weight: 600;
     font-size: var(--t-small);
     cursor: pointer;
-    transition: background 0.15s ease;
-    width: 100%;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    width: auto;
 }
 
 .btnPrimary:hover {
     background: var(--signal-ink);
+    border-color: var(--signal-ink);
+}
+
+.btnSecondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--r-control);
+    font-weight: 600;
+    font-size: var(--t-small);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.btnSecondary:hover {
+    background: var(--card-2);
+    border-color: var(--line-glow);
+    color: var(--signal);
 }
 
 .requestCopy { margin: 0 0 1rem; max-width: 56ch; color: var(--text-2); font-size: var(--t-small); line-height: 1.55; }
@@ -251,6 +280,12 @@
 .modalFooter .btnPrimary { width: auto; }
 
 /* LEAVE HISTORY */
+.historyList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
 .historyItem {
     display: flex;
     justify-content: space-between;

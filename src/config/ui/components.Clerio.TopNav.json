@@ -1,6 +1,6 @@
 {
   "ROLE_TO_DEFAULT_CONSOLE_1": {
-    "SUPER_ADMIN": "S10",
+    "SUPER_ADMIN": "S1",
     "HR_MANAGER": "S2",
     "FINANCE_MANAGER": "S5",
     "PROJECT_MANAGER": "S7",
@@ -48,6 +48,15 @@
       "S8"
     ],
     "ADMIN": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5",
+      "S6",
+      "S7",
+      "S8",
+      "S9",
       "S10"
     ],
     "MANAGER": [

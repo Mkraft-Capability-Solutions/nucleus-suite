@@ -1,4 +1,4 @@
-import catalog from '@/data/appearance.json';
+import catalog from '@/config/appearance.json';
 export const appearances = catalog.themes;
 export type AppearanceId = 'light' | 'dark' | 'blue' | 'teal';
 export const appearanceKey = 'nucleus_appearance';

@@ -1,0 +1,174 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay, rgba(15, 23, 42, 0.65));
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: var(--card, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--r-card, 16px);
+  width: 100%;
+  max-width: 600px;
+  box-shadow: var(--shadow-overlay, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--card-2, #f8fafc);
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badgeException {
+  background: var(--flag-wash, rgba(239, 68, 68, 0.12));
+  color: var(--flag, #ef4444);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--r-control, 6px);
+  border: 1px solid var(--flag, rgba(239, 68, 68, 0.25));
+}
+
+.body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-height: calc(85vh - 120px);
+  overflow-y: auto;
+}
+
+.compComparisonCard {
+  background: var(--card-2, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--r-card, 12px);
+  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  text-align: center;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.statLabel {
+  font-size: 0.74rem;
+  color: var(--text-2, #64748b);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text, #0f172a);
+}
+
+.statVariance {
+  color: var(--flag, #ef4444);
+  font-weight: 700;
+}
+
+.approvalSteps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--card-2, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--r-card, 12px);
+  padding: 1rem;
+}
+
+.stepRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.stepStatusDone {
+  color: var(--status-ok, #16a34a);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stepStatusPending {
+  color: var(--pending, #d97706);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--line, #e2e8f0);
+  background: var(--card-2, #f8fafc);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btnApprove {
+  background: var(--status-ok, #16a34a);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--r-control, 8px);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: opacity 0.15s ease;
+}
+
+.btnReject {
+  background: var(--flag, #ef4444);
+  color: #ffffff;
+  border: none;
+  padding: 0.55rem 1.25rem;
+  border-radius: var(--r-control, 8px);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btnApprove:hover, .btnReject:hover {
+  opacity: 0.9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}

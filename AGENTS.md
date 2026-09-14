@@ -28,6 +28,8 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 These instructions apply to **all AI-assisted development work in this repository**.
 
+Strict Git Rule Followed: No code committed or pushed. All changes remain local for testing.
+
 The agent must follow this priority order:
 
 1. System/developer instructions from the execution environment.
@@ -315,9 +317,25 @@ Existing Lucide/legacy components may remain where migration is outside the scop
 
 ---
 
-# 12. Design System Consistency
+# 12. Design System Consistency & Theme Single Source of Truth
 
-Reusable UI patterns must remain consistent.
+Reusable UI patterns must remain strictly consistent and derive 100% from central CSS design tokens.
+
+### Theme Tokens as the Sole Source of Truth (ZERO Hardcoded Styles)
+- **Mandatory CSS Variables**: NEVER hardcode hex colors (`#hex`), raw rgb/rgba, or named colors in CSS modules, inline `style={{}}` attributes, or component files.
+- All colors, backgrounds, borders, radii, and shadows must strictly use the design tokens defined in `globals.css` and `src/config/appearance.json`:
+  - **Primary & Actions**: `var(--signal)`, `var(--signal-ink)`, `var(--signal-wash)`, `var(--on-signal)`
+  - **Surfaces & Cards**: `var(--bg)`, `var(--paper)`, `var(--card)`, `var(--card-2)`, `var(--surface)`, `var(--surface-2)`
+  - **Typography**: `var(--text)`, `var(--text-2)`, `var(--text-3)`, `var(--hero-text)`, `var(--hero-muted)`
+  - **Borders & Dividers**: `var(--line)`, `var(--line-soft)`, `var(--line-glow)`
+  - **Status & Badges**: `var(--status-ok)`, `var(--status-ok-wash)`, `var(--flag)`, `var(--flag-wash)`, `var(--pending)`, `var(--pending-wash)`, `var(--info)`, `var(--info-wash)`
+  - **Radii & Shadows**: `var(--r-data)`, `var(--r-control)`, `var(--r-card)`, `var(--r-pill)`, `var(--shadow-raise)`, `var(--shadow-overlay)`
+- **Theme Adaptability**: Any popover, dropdown, language picker, or modal must dynamically inherit `var(--card)` background and `var(--text)` color so it renders correctly in all themes (Light Pearl Violet, Dark Graphite Night, Slate Blue, Sage Teal).
+
+### Breadcrumb Navigation Integrity
+- Breadcrumb navigation must dynamically represent the genuine user location:
+  `[Active Domain Name] / [Active Sub-module or Tab Name]`
+- Never hardcode generic or static labels like `"Feature Catalog"` when the user is inside a specific operational domain (e.g. `Analytics & AI / People Intelligence & Analytics` or `Payroll & Finance / Global Payroll & EWA`).
 
 Prefer shared components for:
 

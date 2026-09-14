@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-const { themes } = JSON.parse(readFileSync(new URL('../src/data/appearance.json', import.meta.url)));
+const { themes } = JSON.parse(readFileSync(new URL('../src/config/appearance.json', import.meta.url)));
 function luminance(hex) {
   const channels = hex.slice(1).match(/../g).map(value => parseInt(value, 16) / 255);
   return channels.map(value => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)

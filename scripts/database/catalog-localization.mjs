@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 // Classification is intentionally conservative: record names, role grants and IDs
 // must not become public translation content merely because they are strings.
-export function localizationInventory(directory = 'src/data/ui') {
+export function localizationInventory(directory = 'src/config/ui') {
  const inventory = [];
  for (const name of readdirSync(directory).filter(name => name.endsWith('.json')).sort()) {
   const namespace = name.slice(0,-5), sourceFile = `${directory}/${name}`;

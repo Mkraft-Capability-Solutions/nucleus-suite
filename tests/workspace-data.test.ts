@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createWorkspaceDataService, validateWorkspaceData } from '../src/services/workspace-data.mjs';
-import { workspaceResources } from '../src/data/workspace-manifest';
+import { workspaceResources } from '../src/server/workspace/manifest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 

@@ -1,6 +1,6 @@
 import { describe,it,expect } from 'vitest';
 import {inclusiveDays,initialFormValues,updateDerivedFields,validateForm,type FormField} from './form-validation';
-import registry from '../data/ui/lib.operational-module-registry.json';
+import registry from '../config/ui/lib.operational-module-registry.json';
 const fields=registry.modules.find(module=>module.screenId==='SCR-030')!.fields.map(field => ({...field, ...(field.key === 'employee' ? {options:['a']} : field.key === 'leaveType' ? {options:['sick']} : {})})) as FormField[];
 describe('derived dates and strict form validation',()=>{
  it('calculates inclusive calendar days across leap days, DST and year boundaries',()=>{

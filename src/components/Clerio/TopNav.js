@@ -8,6 +8,7 @@ import { readData } from '../../services/workspace-data.mjs';
 import React, { useState, useRef, useEffect } from 'react';
 import Bell from '@mui/icons-material/NotificationsOutlined';
 import Plus from '@mui/icons-material/Add';
+import Mic from '@mui/icons-material/Mic';
 import Search from '@mui/icons-material/Search';
 import Sparkles from '@mui/icons-material/AutoAwesomeOutlined';
 import Settings from '@mui/icons-material/SettingsOutlined';
@@ -231,6 +232,25 @@ const TopNav = ({
                         <span>{readData("components.Clerio.TopNav", "TopNav_text_26")}</span>
                     </button>
                 )}
+
+                {/* Voice Navigation Trigger */}
+                <button
+                    className={styles.iconBtn}
+                    onClick={() => {
+                        if (typeof window !== 'undefined') {
+                            window.dispatchEvent(new CustomEvent('nucleus:voice_navigation'));
+                        }
+                    }}
+                    title="Voice Navigation & Actions (Click or Speak)"
+                    aria-label="Voice Navigation & Actions"
+                    style={{
+                        background: 'rgba(56, 189, 248, 0.1)',
+                        borderColor: 'rgba(56, 189, 248, 0.25)',
+                        color: 'var(--signal, #0284c7)'
+                    }}
+                >
+                    <Mic sx={{ fontSize: 18 }} />
+                </button>
 
                 <LanguageSelector />
                 <AppearanceToggle />

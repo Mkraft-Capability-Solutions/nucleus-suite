@@ -1,24 +1,64 @@
-.page { display: flex; flex-direction: column; gap: 1rem; width: 100%; color: var(--text, #e6edf6); }
-.header, .scopeBar, .listCard, .detailCard { border: 1px solid var(--line, #263b56); background: var(--card, #0d1b2b); border-radius: 12px; }
+.page { display: flex; flex-direction: column; gap: 1rem; width: 100%; color: var(--text); }
+.header, .scopeBar, .listCard, .detailCard { border: 1px solid var(--line); background: var(--card); border-radius: var(--r-card, 12px); }
 .header { display: flex; justify-content: space-between; gap: 1.25rem; align-items: flex-start; padding: 1.35rem; }
-.eyebrow { color: var(--signal, #2dd4a8); font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.header h1 { margin: .3rem 0; font-size: 1.45rem; }.header p, .cardTitle p { margin: 0; color: var(--text-2, #a8b6c7); font-size: .85rem; }
+.eyebrow { color: var(--signal); font-size: .7rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.header h1 { margin: .3rem 0; font-size: var(--t-h1, 1.45rem); color: var(--text); }
+.header p, .cardTitle p { margin: 0; color: var(--text-2); font-size: .85rem; }
 .headerActions, .scopeBar, .cardTitle, .formDialog header, .formDialog footer, .formDialog footer div { display: flex; align-items: center; }
-.headerActions { gap: .6rem; flex-wrap: wrap; justify-content: flex-end; }.primaryButton, .secondaryButton, .scopeBar button, .formDialog header button { display: inline-flex; align-items: center; gap: .4rem; border-radius: 7px; padding: .62rem .8rem; font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; }.primaryButton { border: 1px solid var(--signal, #2dd4a8); background: var(--signal, #2dd4a8); color: var(--on-signal, #06111b); }.secondaryButton, .scopeBar button, .formDialog header button { border: 1px solid var(--line, #263b56); background: transparent; color: var(--text, #e6edf6); }.primaryButton:disabled, .secondaryButton:disabled { cursor: wait; opacity: .55; }
-.notice, .error { display: flex; align-items: center; gap: .5rem; padding: .75rem .9rem; border-radius: 8px; font-size: .84rem; }.notice { border: 1px solid rgba(45,212,168,.4); background: rgba(45,212,168,.08); color: var(--text, #e6edf6); }.error { border: 1px solid rgba(242,100,126,.55); background: rgba(242,100,126,.1); color: var(--text, #e6edf6); }
-.scopeBar { justify-content: space-between; gap: 1rem; padding: .72rem .9rem; color: var(--text-2, #a8b6c7); font-size: .78rem; }.scopeBar span { display: inline-flex; align-items: center; gap: .4rem; }
-.layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .9fr); gap: 1rem; }.listCard, .detailCard { padding: 1rem; min-width: 0; }.cardTitle { justify-content: space-between; gap: .75rem; margin-bottom: .85rem; }.cardTitle h2 { margin: 0 0 .25rem; font-size: 1rem; }.tableWrap { overflow: auto; }.tableWrap table { width: 100%; border-collapse: collapse; font-size: .8rem; }.tableWrap th { color: var(--text-2, #a8b6c7); font-weight: 700; text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }.tableWrap th, .tableWrap td { padding: .72rem .55rem; border-bottom: 1px solid var(--line, #263b56); white-space: nowrap; }.tableWrap tbody tr { cursor: pointer; transition: background .15s ease; }.tableWrap tbody tr:hover, .selectedRow { background: var(--signal-wash, rgba(45,212,168,.08)); }.status { display: inline-block; border: 1px solid var(--line-glow, rgba(45,212,168,.35)); border-radius: 999px; padding: .2rem .48rem; color: var(--signal, #2dd4a8); font-size: .7rem; font-weight: 800; }
-.detailText { min-height: 3.4rem; margin: .35rem 0 1rem; color: var(--text-2, #a8b6c7); font-size: .84rem; line-height: 1.5; }.timeline, .audit { border-top: 1px solid var(--line, #263b56); padding-top: .9rem; margin-top: .9rem; }.timeline h3, .audit h3 { margin: 0 0 .6rem; font-size: .82rem; }.timeline button { display: flex; align-items: center; width: 100%; gap: .55rem; padding: .45rem 0; border: 0; background: transparent; color: var(--text-2, #a8b6c7); text-align: left; cursor: pointer; font: inherit; font-size: .8rem; }.timeline button span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--card-2, #081625); border: 1px solid var(--line, #263b56); font-size: .68rem; }.timeline .currentState { color: var(--signal, #2dd4a8); font-weight: 800; }.timeline .currentState span { border-color: var(--signal, #2dd4a8); }.audit p { margin: .45rem 0; color: var(--text-2, #a8b6c7); font-size: .76rem; line-height: 1.4; }
-.overlay{ position: fixed; inset: 0; z-index: 1400; display: grid; place-items: center; padding: 1rem; background: var(--overlay); backdrop-filter: blur(6px); }.formDialog { width: min(760px, 100%); max-height: calc(100vh - 2rem); overflow: auto; border: 1px solid var(--line, #263b56); border-radius: 12px; background: var(--card, #0d1b2b); color: var(--text, #e6edf6); }.formDialog header { justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--line, #263b56); }.formDialog header span { color: var(--signal, #2dd4a8); font-size: .68rem; font-weight: 800; }.formDialog h2 { margin: .25rem 0 0; font-size: 1.15rem; }.formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; padding: 1.15rem 1.25rem; }.formGrid label { display: grid; gap: .35rem; color: var(--text-2, #a8b6c7); font-size: .78rem; font-weight: 700; }.formGrid b { color: #f2647e; }.formGrid input, .formGrid select { width: 100%; box-sizing: border-box; border: 1px solid var(--line, #263b56); border-radius: 7px; padding: .62rem .68rem; background: var(--card-2, #081625); color: var(--text, #e6edf6); font: inherit; }.formDialog footer { justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line, #263b56); }.formDialog footer p { margin: 0; color: var(--text-2, #a8b6c7); font-size: .75rem; }.formDialog footer div { gap: .55rem; }.spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
-@media (max-width: 860px) { .header, .scopeBar, .formDialog footer { align-items: stretch; flex-direction: column; }.headerActions { justify-content: flex-start; }.layout { grid-template-columns: 1fr; }.formGrid { grid-template-columns: 1fr; } }
+.headerActions { gap: .6rem; flex-wrap: wrap; justify-content: flex-end; }
+.primaryButton, .secondaryButton, .scopeBar button, .formDialog header button { display: inline-flex; align-items: center; gap: .4rem; border-radius: var(--r-control, 8px); padding: .62rem .8rem; font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease; }
+.primaryButton { border: 1px solid var(--signal); background: var(--signal); color: var(--on-signal, #ffffff); }
+.primaryButton:hover { background: var(--signal-ink); border-color: var(--signal-ink); }
+.secondaryButton, .scopeBar button, .formDialog header button { border: 1px solid var(--line); background: var(--card); color: var(--text); }
+.secondaryButton:hover, .scopeBar button:hover { background: var(--card-2); color: var(--signal); border-color: var(--line-glow); }
+.primaryButton:disabled, .secondaryButton:disabled { cursor: wait; opacity: .55; }
+.notice, .error { display: flex; align-items: center; gap: .5rem; padding: .75rem .9rem; border-radius: var(--r-control, 8px); font-size: .84rem; }
+.notice { border: 1px solid var(--line-glow); background: var(--signal-wash); color: var(--text); }
+.error { border: 1px solid var(--flag); background: var(--flag-wash); color: var(--flag); }
+.scopeBar { justify-content: space-between; gap: 1rem; padding: .72rem .9rem; color: var(--text-2); font-size: .78rem; background: var(--card-2); }
+.scopeBar span { display: inline-flex; align-items: center; gap: .4rem; }
+.layout { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .9fr); gap: 1rem; }
+.listCard, .detailCard { padding: 1rem; min-width: 0; }
+.cardTitle { justify-content: space-between; gap: .75rem; margin-bottom: .85rem; }
+.cardTitle h2 { margin: 0 0 .25rem; font-size: 1rem; color: var(--text); }
+.tableWrap { overflow: auto; }
+.tableWrap table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+.tableWrap th { color: var(--text-2); font-weight: 700; text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .04em; }
+.tableWrap th, .tableWrap td { padding: .72rem .55rem; border-bottom: 1px solid var(--line); white-space: nowrap; color: var(--text); }
+.tableWrap tbody tr { cursor: pointer; transition: background .15s ease; }
+.tableWrap tbody tr:hover, .selectedRow { background: var(--signal-wash); }
+.status { display: inline-block; border: 1px solid var(--line-glow); border-radius: var(--r-pill, 999px); padding: .2rem .48rem; color: var(--signal); background: var(--signal-wash); font-size: .7rem; font-weight: 800; }
+.detailText { min-height: 3.4rem; margin: .35rem 0 1rem; color: var(--text-2); font-size: .84rem; line-height: 1.5; }
+.timeline, .audit { border-top: 1px solid var(--line); padding-top: .9rem; margin-top: .9rem; }
+.timeline h3, .audit h3 { margin: 0 0 .6rem; font-size: .82rem; color: var(--text); }
+.timeline button { display: flex; align-items: center; width: 100%; gap: .55rem; padding: .45rem 0; border: 0; background: transparent; color: var(--text-2); text-align: left; cursor: pointer; font: inherit; font-size: .8rem; }
+.timeline button span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--card-2); border: 1px solid var(--line); font-size: .68rem; color: var(--text-2); }
+.timeline .currentState { color: var(--signal); font-weight: 800; }
+.timeline .currentState span { border-color: var(--signal); background: var(--signal); color: var(--on-signal, #ffffff); }
+.audit p { margin: .45rem 0; color: var(--text-2); font-size: .76rem; line-height: 1.4; }
+.overlay { position: fixed; inset: 0; z-index: 1400; display: grid; place-items: center; padding: 1rem; background: var(--overlay); backdrop-filter: blur(6px); }
+.formDialog { width: min(760px, 100%); max-height: calc(100vh - 2rem); overflow: auto; border: 1px solid var(--line); border-radius: var(--r-card, 12px); background: var(--card); color: var(--text); }
+.formDialog header { justify-content: space-between; gap: 1rem; padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--line); }
+.formDialog header span { color: var(--signal); font-size: .68rem; font-weight: 800; }
+.formDialog h2 { margin: .25rem 0 0; font-size: 1.15rem; color: var(--text); }
+.formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .9rem; padding: 1.15rem 1.25rem; }
+.formGrid label { display: grid; gap: .35rem; color: var(--text-2); font-size: .78rem; font-weight: 700; }
+.formGrid b { color: var(--flag, #ef4444); }
+.formGrid input, .formGrid select { width: 100%; box-sizing: border-box; border: 1px solid var(--line); border-radius: var(--r-control, 7px); padding: .62rem .68rem; background: var(--card-2); color: var(--text); font: inherit; }
+.formDialog footer { justify-content: space-between; gap: 1rem; padding: 1rem 1.25rem; border-top: 1px solid var(--line); }
+.formDialog footer p { margin: 0; color: var(--text-2); font-size: .75rem; }
+.formDialog footer div { gap: .55rem; }
+.spin { animation: spin .8s linear infinite; } @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Reflow within the available workspace width, including an open navigation panel. */
-@container (max-width: 760px){
-.header{flex-wrap:wrap;gap:12px;min-width:0}
-.header > *{min-width:0;max-width:100%}
+@media (max-width: 860px) { .header, .scopeBar, .formDialog footer { align-items: stretch; flex-direction: column; } .headerActions { justify-content: flex-start; } .layout { grid-template-columns: 1fr; } .formGrid { grid-template-columns: 1fr; } }
+
+@container (max-width: 760px) {
+  .header { flex-wrap: wrap; gap: 12px; min-width: 0; }
+  .header > * { min-width: 0; max-width: 100%; }
 }
 
-.formGrid textarea{width:100%;min-height:90px;padding:.65rem;border:1px solid var(--line);border-radius:7px;background:var(--card-2);color:var(--text);font:inherit;resize:vertical}.formDialog{max-height:calc(100dvh - 32px)}
+.formGrid textarea { width: 100%; min-height: 90px; padding: .65rem; border: 1px solid var(--line); border-radius: var(--r-control, 7px); background: var(--card-2); color: var(--text); font: inherit; resize: vertical; }
+.formDialog { max-height: calc(100dvh - 32px); }
 
 .stepControl { display: flex; align-items: center; gap: 4px; min-width: 0; }
 .stepControl input { width: 100%; min-width: 0; }

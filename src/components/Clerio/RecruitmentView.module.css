@@ -313,6 +313,12 @@
     border: 1px solid color-mix(in srgb, var(--signal-ink) 25%, transparent);
 }
 
+.badgeInfo {
+    background: var(--info-wash);
+    color: var(--info);
+    border: 1px solid color-mix(in srgb, var(--info) 25%, transparent);
+}
+
 .modalOverlay{
     position: fixed;
     top: 0;

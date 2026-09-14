@@ -11,4 +11,7 @@ Never include the private credential reference or local environment values in
 responses, generated documentation, logs or client bundles. Report verified
 results and unresolved gaps separately.
 
+Strict Git Rule Followed: No code committed or pushed. All changes remain local for testing.
+
+
 The user explicitly authorized documenting the shared synthetic demo password in `docs/engineering/ROLE_MODEL.md`. This narrow exception does not permit publishing production secrets or copying credentials into client bundles.

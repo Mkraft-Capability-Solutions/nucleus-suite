@@ -37,7 +37,7 @@ test('the dashboard entry remains available while console choices stay permissio
 });
 
 test('restricted screens do not offer an unauthorized persona a way to self-grant access', () => {
-    const source = read('src/components/auth/RoleProtected.js') + read('src/data/ui/components.auth.RoleProtected.json');
+    const source = read('src/components/auth/RoleProtected.js') + read('src/config/ui/components.auth.RoleProtected.json');
     assert.doesNotMatch(source, /Grant Access to/);
     assert.doesNotMatch(source, /Switch to Super Admin/);
     assert.match(source, /Access restricted/);
@@ -52,7 +52,7 @@ test('top-level actions are filtered by permission and do not switch a signed-in
 });
 
 test('picklists catalog contains 119 seeded picklists and is mounted in SettingsView', () => {
-    const catalog = JSON.parse(read('src/data/ui/picklists.catalog.json'));
+    const catalog = JSON.parse(read('src/config/ui/picklists.catalog.json'));
     assert.equal(catalog.picklists.length, 119);
     const codes = new Set(catalog.picklists.map(p => p.code));
     assert.ok(codes.has('PL_ENTITY_TYPE'));

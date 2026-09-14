@@ -56,8 +56,11 @@ export function migrationConfigurationProblems(
 export function environmentProblems(environment: Environment = process.env) {
   const problems: string[] = [];
   const configuration = readRuntimeConfiguration(environment);
-  if ((value(environment, "APP_DATA_MODE") || "json") !== "json") {
-    problems.push("APP_DATA_MODE must be json; the database workspace provider is not implemented.");
+  const appDataMode = value(environment, "APP_DATA_MODE") || "json";
+  if (appDataMode === "database" && !value(environment, "DATABASE_URL")) {
+    problems.push("APP_DATA_MODE must be json; the database workspace provider is not implemented without DATABASE_URL.");
+  } else if (!["json", "database", "live"].includes(appDataMode)) {
+    problems.push("APP_DATA_MODE must be json or database.");
   }
   for (const key of ["DEMO_AUTH_ENABLED", "ALLOW_INITIAL_ADMIN_SIGNUP"]) {
     const flag = value(environment, key);

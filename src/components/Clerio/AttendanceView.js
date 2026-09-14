@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import {
     Clock, Calendar as CalIcon, MapPin, ChevronLeft, ChevronRight,
     FileText, CheckCircle, AlertCircle, TrendingUp, Sparkles, Smartphone, ShieldCheck,
-    RefreshCw, KeyRound, UserCheck, CheckCircle2, XCircle, Plus, Info, Building2
+    RefreshCw, KeyRound, UserCheck, CheckCircle2, XCircle, Plus, Info, Building2, UploadCloud
 } from 'lucide-react';
 import styles from './AttendanceView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -104,17 +104,28 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <TrendingUp size={15} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_7")}</button>
                     )}
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+                            }
+                        }}
+                        title="Upload Biometric / Swipe Machine Punches in Bulk"
+                    >
+                        <UploadCloud size={15} /> Bulk Punches Upload
+                    </button>
                     {attendance.status === 'present' ? (
-                        <button className={styles.btnPrimary} style={{ background: '#ef4444' }} onClick={punchOut}>
+                        <button className={styles.btnPrimary} style={{ background: 'var(--flag, #ef4444)', color: '#ffffff' }} onClick={punchOut}>
                             <Clock size={16} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_8")}</button>
                     ) : (
-                        <button className={styles.btnPrimary} style={{ background: '#16a34a' }} onClick={punchIn}>
+                        <button className={styles.btnPrimary} style={{ background: 'var(--status-ok, #10b981)', color: '#ffffff' }} onClick={punchIn}>
                             <Clock size={16} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_9")}</button>
                     )}
                     <button
                         className={styles.btnSecondary}
                         onClick={() => setIsGatePassModalOpen(true)}
-                        style={{ border: '1px solid rgba(37, 99, 235, 0.3)', color: '#2563eb' }}
+                        style={{ border: '1px solid var(--line-glow)', color: 'var(--signal)' }}
                     >
                         <KeyRound size={15} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_10")}</button>
                     <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_bf34462856"),translateText("components.Clerio.AttendanceView","text_0bf6412031"), 'info')}>

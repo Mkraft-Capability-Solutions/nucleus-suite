@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import {
     Calendar, CheckCircle, AlertCircle, Clock, FileText, ChevronRight,
     Sparkles, ShieldCheck, ArrowRight, RotateCcw, AlertTriangle, UserCheck,
-    CheckCircle2, XCircle, Info, Layers, RefreshCw
+    CheckCircle2, XCircle, Info, Layers, RefreshCw, UploadCloud
 } from 'lucide-react';
 import styles from './LeaveView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -57,6 +57,12 @@ const LeaveView = () => {
     const activeCompOffs = compOffCredits.filter(c => c.status === 'ACTIVE');
     const lapsedCompOffs = compOffCredits.filter(c => c.status === 'LAPSED_60_DAYS');
 
+    React.useEffect(() => {
+        const handleOpenApply = () => setIsApplyModalOpen(true);
+        window.addEventListener('nucleus:open_leave_apply', handleOpenApply);
+        return () => window.removeEventListener('nucleus:open_leave_apply', handleOpenApply);
+    }, []);
+
     return (
         <div className={styles.leaveContainer}>
 
@@ -67,6 +73,17 @@ const LeaveView = () => {
                     <p>{readData("components.Clerio.LeaveView", "LeaveView_text_21")}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+                            }
+                        }}
+                        title="Upload Leave Balances / Adjustments in Bulk"
+                    >
+                        <UploadCloud size={15} /> Bulk Balances Upload
+                    </button>
                     <button
                         className={styles.btnSecondary}
                         onClick={() => showToast(translateText("components.Clerio.LeaveView","text_bae613c912"),translateText("components.Clerio.LeaveView","text_55c7940b6f"), 'info')}

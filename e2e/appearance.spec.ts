@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import catalog from '../src/data/appearance.json';
+import catalog from '../src/config/appearance.json';
 
 async function selectTheme(page: import('@playwright/test').Page, name: string) {
  await page.getByRole('button',{name:'Choose theme'}).click();

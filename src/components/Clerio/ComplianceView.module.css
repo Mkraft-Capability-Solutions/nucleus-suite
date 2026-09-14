@@ -1204,3 +1204,20 @@
 @container(max-width:500px){.metricComparison{flex-direction:column;align-items:stretch}.compBlock{flex:auto;width:100%}}
 
 .modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}
+
+.calendarSection, .matrixSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.tagAmber {
+    background: var(--pending-wash);
+    color: var(--pending);
+    border: 1px solid var(--pending);
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--r-pill);
+    font-size: var(--t-micro);
+    font-weight: 600;
+}
+

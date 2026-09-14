@@ -6,7 +6,7 @@ const test = require('node:test');
 const root = process.cwd();
 
 test('the module registry includes each currently missing workbook screen', () => {
-  const source = fs.readFileSync(path.join(root, 'src/data/ui/lib.operational-module-registry.json'), 'utf8');
+  const source = fs.readFileSync(path.join(root, 'src/config/ui/lib.operational-module-registry.json'), 'utf8');
   for (const screen of [
     'SCR-013', 'SCR-022', 'SCR-024', 'SCR-025', 'SCR-026', 'SCR-027', 'SCR-032',
     'SCR-054', 'SCR-055', 'SCR-062', 'SCR-070', 'SCR-071', 'SCR-101', 'SCR-102', 'SCR-103'
@@ -34,9 +34,9 @@ test('navigation exposes operational submodules below their primary modules', ()
   assert.match(sideNav, /submoduleItem/);
   assert.match(rightNav, /navigationDomains/);
   assert.match(navigator, /navigationDomains/);
-  const domains = JSON.parse(fs.readFileSync(path.join(root, 'src/data/ui/navigation.catalog.json'))).domains;
+  const domains = JSON.parse(fs.readFileSync(path.join(root, 'src/config/ui/navigation.catalog.json'))).domains;
   const targets = new Set(domains.flatMap(d => d.groups.flatMap(g => g.items.map(i => i.targetTab))));
-  for (const entry of JSON.parse(fs.readFileSync(path.join(root, 'src/data/ui/lib.operational-module-registry.json'))).modules) assert.ok(targets.has(entry.id), entry.id);
+  for (const entry of JSON.parse(fs.readFileSync(path.join(root, 'src/config/ui/lib.operational-module-registry.json'))).modules) assert.ok(targets.has(entry.id), entry.id);
   assert.match(app, /getOperationalModule\(subFeatureId\)/);
 });
 

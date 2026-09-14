@@ -400,3 +400,14 @@
 .cardHeader, .filterBar, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
 .cardHeader > *, .filterBar > *, .headerRow > *{min-width:0;max-width:100%}
 }
+
+.badge {
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--r-pill, 999px);
+    font-size: var(--t-micro, 0.72rem);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+

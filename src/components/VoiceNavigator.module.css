@@ -1,0 +1,190 @@
+.voiceModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.voiceModalContainer {
+  background: var(--card, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--r-card, 20px);
+  width: 90%;
+  max-width: 520px;
+  padding: 2rem;
+  box-shadow: var(--shadow-overlay, 0 25px 50px -12px rgba(0, 0, 0, 0.25));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.micActionBtn:hover {
+  transform: scale(1.06);
+}
+
+.micPulsing {
+  animation: pulseMic 1.5s infinite;
+}
+
+@keyframes pulseMic {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 16px rgba(124, 58, 237, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0);
+  }
+}
+
+.grantPermissionBtn {
+  background: var(--signal, #7c3aed);
+  color: var(--on-signal, #ffffff);
+  border: none;
+  border-radius: var(--r-control, 8px);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-raise);
+}
+
+.grantPermissionBtn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.voiceWaveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  margin: 0.5rem 0 1rem;
+}
+
+.waveBar {
+  width: 4px;
+  height: 16px;
+  background: linear-gradient(180deg, var(--signal, #7c3aed) 0%, var(--signal-wash, #c4b5fd) 100%);
+  border-radius: 999px;
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+.waveBar:nth-child(2) { animation-delay: 0.15s; height: 28px; }
+.waveBar:nth-child(3) { animation-delay: 0.3s; height: 38px; }
+.waveBar:nth-child(4) { animation-delay: 0.45s; height: 24px; }
+.waveBar:nth-child(5) { animation-delay: 0.6s; height: 16px; }
+
+@keyframes wave {
+  0%, 100% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1.2); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.commandInput {
+  flex: 1;
+  background: var(--card-2, #f8fafc);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: var(--r-control, 10px);
+  padding: 0.65rem 0.9rem;
+  font-size: 0.88rem;
+  color: var(--text, #0f172a);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.commandInput:focus {
+  border-color: var(--signal, #7c3aed);
+  box-shadow: 0 0 0 3px var(--signal-wash, rgba(124, 58, 237, 0.15));
+}
+
+.submitCommandBtn {
+  background: var(--signal, #7c3aed);
+  color: var(--on-signal, #ffffff);
+  border: none;
+  border-radius: var(--r-control, 10px);
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitCommandBtn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.submitCommandBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.commandExamples {
+  font-size: 0.76rem;
+  color: var(--text-2, #64748b);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.exampleChip {
+  background: var(--card-2, #f1f5f9);
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid var(--line-soft, #e2e8f0);
+  display: inline-flex;
+  align-items: center;
+}
+
+.exampleChip:hover {
+  background: var(--signal-wash, #f3e8ff);
+  color: var(--signal, #7c3aed);
+  border-color: var(--signal, #7c3aed);
+  transform: translateY(-1px);
+}
+
+.closeVoiceBtn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: var(--text-2, #94a3b8);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.closeVoiceBtn:hover {
+  background: var(--card-2, #f1f5f9);
+  color: var(--text, #0f172a);
+}

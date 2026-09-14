@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import catalog from '@/data/ui/dashboard.widgets.json';
+import catalog from '@/config/ui/dashboard.widgets.json';
 import { makeLayout, parseLayoutImport, permittedWidgets, sanitizeLayout, sanitizePreferences, type WidgetDefinition } from './dashboard-layout';
 import { dashboardStorageKey } from '@/services/dashboard-preferences';
 const widgets = catalog.widgets as WidgetDefinition[];

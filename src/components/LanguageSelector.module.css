@@ -10,10 +10,10 @@
   gap: 0.35rem;
   padding: 0.35rem 0.55rem;
   height: 32px;
-  border-radius: 8px;
-  background: var(--surface-2, rgba(255, 255, 255, 0.06));
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.12));
-  color: var(--text-primary, #f1f5f9);
+  border-radius: var(--r-control, 8px);
+  background: var(--card-2, #f8fafa);
+  border: 1px solid var(--line, rgba(16, 34, 47, 0.09));
+  color: var(--text, #10222f);
   cursor: pointer;
   font-family: inherit;
   font-size: 0.75rem;
@@ -22,8 +22,8 @@
 }
 
 .triggerButton:hover {
-  background: var(--surface-3, rgba(255, 255, 255, 0.12));
-  border-color: var(--border-hover, rgba(255, 255, 255, 0.25));
+  background: var(--signal-wash, #eff6ff);
+  border-color: var(--line-glow, rgba(37, 99, 235, 0.25));
 }
 
 .triggerButton:active {
@@ -31,7 +31,7 @@
 }
 
 .icon {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-2, #5a6b78);
   font-size: 15px;
 }
 
@@ -39,7 +39,7 @@
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   font-weight: 700;
-  color: var(--brand-primary, #38bdf8);
+  color: var(--signal, #2563eb);
 }
 
 .dropdown {
@@ -49,16 +49,17 @@
   width: 280px;
   max-height: 440px;
   overflow-y: auto;
-  background: var(--surface-1, #0f172a);
-  border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.15));
-  border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  background: var(--card, #ffffff);
+  border: 1px solid var(--line, rgba(16, 34, 47, 0.09));
+  border-radius: var(--r-card, 12px);
+  box-shadow: var(--shadow-overlay, 0 12px 32px rgba(0, 0, 0, 0.12));
   backdrop-filter: blur(16px);
   z-index: 1000;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   animation: fadeInDown 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--text, #10222f);
 }
 
 @keyframes fadeInDown {
@@ -74,7 +75,7 @@
 
 .header {
   padding: 0.4rem 0.5rem 0.3rem;
-  border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--line, rgba(16, 34, 47, 0.09));
   margin-bottom: 0.35rem;
 }
 
@@ -83,7 +84,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-muted, #64748b);
+  color: var(--text-2, #5a6b78);
 }
 
 .section {
@@ -96,14 +97,14 @@
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--text-muted, #64748b);
+  color: var(--text-3, #637582);
   padding: 0.35rem 0.5rem 0.2rem;
   letter-spacing: 0.05em;
 }
 
 .sectionDivider {
   height: 1px;
-  background: var(--border-subtle, rgba(255, 255, 255, 0.08));
+  background: var(--line, rgba(16, 34, 47, 0.09));
   margin: 0.4rem 0;
 }
 
@@ -113,10 +114,10 @@
   gap: 0.6rem;
   width: 100%;
   padding: 0.4rem 0.55rem;
-  border-radius: 8px;
+  border-radius: var(--r-control, 8px);
   border: none;
   background: transparent;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text, #10222f);
   cursor: pointer;
   text-align: left;
   font-family: inherit;
@@ -124,12 +125,12 @@
 }
 
 .menuItem:hover {
-  background: var(--surface-2, rgba(255, 255, 255, 0.08));
+  background: var(--card-2, #f8fafa);
 }
 
 .menuItemActive {
-  background: var(--surface-3, rgba(56, 189, 248, 0.12));
-  color: var(--brand-primary, #38bdf8);
+  background: var(--signal-wash, #eff6ff);
+  color: var(--signal, #2563eb);
 }
 
 .codeTag {
@@ -137,16 +138,16 @@
   font-weight: 800;
   padding: 0.15rem 0.35rem;
   border-radius: 4px;
-  background: var(--surface-2, rgba(255, 255, 255, 0.08));
-  color: var(--text-secondary, #94a3b8);
+  background: var(--card-2, #f8fafa);
+  color: var(--text-2, #5a6b78);
   letter-spacing: 0.04em;
   min-width: 24px;
   text-align: center;
 }
 
 .menuItemActive .codeTag {
-  background: var(--brand-primary, #38bdf8);
-  color: #000;
+  background: var(--signal, #2563eb);
+  color: var(--on-signal, #ffffff);
 }
 
 .labelCol {
@@ -163,11 +164,11 @@
 
 .englishLabel {
   font-size: 0.68rem;
-  color: var(--text-muted, #94a3b8);
+  color: var(--text-2, #5a6b78);
   line-height: 1.1;
 }
 
 .checkIcon {
-  color: var(--brand-primary, #38bdf8);
+  color: var(--signal, #2563eb);
   margin-left: auto;
 }

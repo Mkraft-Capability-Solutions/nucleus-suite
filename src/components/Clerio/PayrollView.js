@@ -8,7 +8,7 @@ import {
     DollarSign, Download, PieChart, FileText, TrendingUp, ShieldCheck,
     Zap, Sparkles, Globe, ArrowRight, CheckCircle2, RefreshCw,
     Lock, AlertTriangle, UserCheck, Clock, FileSpreadsheet, Building2,
-    Calendar, CheckSquare, XCircle, ChevronRight, Layers, ShieldAlert, Award
+    Calendar, CheckSquare, XCircle, ChevronRight, Layers, ShieldAlert, Award, UploadCloud
 } from 'lucide-react';
 import styles from './PayrollView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -211,6 +211,17 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <TrendingUp size={15} />{readData("components.Clerio.PayrollView", "PayrollView_text_12")}</button>
                     )}
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+                            }
+                        }}
+                        title="Upload Employee Salary Structures & Pay Slips in Bulk"
+                    >
+                        <UploadCloud size={15} /> Bulk Structure Upload
+                    </button>
                     <button className={styles.btnSecondary} onClick={() => setIsGLModalOpen(true)}>
                         <FileText size={16} />{readData("components.Clerio.PayrollView", "PayrollView_text_13")}</button>
                 </div>

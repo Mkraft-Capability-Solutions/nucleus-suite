@@ -100,6 +100,87 @@ const DataImportModal = ({ isOpen, onClose }) => {
         onClose();
     };
 
+    const fileInputRef = useRef(null);
+
+    const downloadSampleTemplate = (typeKey) => {
+        const templates = {
+            employee: {
+                filename: 'Employee_Master_Sample.csv',
+                content: 'StaffCode,FullName,Department,Role,DateOfJoining,GrossCTC,WorkEmail,Location,Phone\nMK-101,Aarav Sharma,Engineering,Senior Architect,2026-01-15,2400000,aarav.s@nucleus.com,Bangalore,9876543210\nMK-102,Diya Patel,Product,Senior PM,2026-02-01,2100000,diya.p@nucleus.com,Mumbai,9876543211\nMK-103,Rohan Verma,Operations,Lead Specialist,2026-03-01,1600000,rohan.v@nucleus.com,Delhi,9876543212'
+            },
+            biometric: {
+                filename: 'Attendance_Punches_Sample.csv',
+                content: 'EmpId,StaffName,PunchDate,InTime,OutTime,TerminalID,Location,Status\nMK-101,Aarav Sharma,2026-09-14,09:02,18:15,TERM-01,Main Gate,Present\nMK-102,Diya Patel,2026-09-14,08:55,18:05,TERM-02,Floor 3,Present\nMK-103,Rohan Verma,2026-09-14,09:30,18:30,TERM-01,Main Gate,Present'
+            },
+            leave: {
+                filename: 'Leave_Balances_Sample.csv',
+                content: 'EmpId,StaffName,LeaveType,OpeningBalance,AccruedDays,UsedDays,Year\nMK-101,Aarav Sharma,CL,12,6,2,2026\nMK-101,Aarav Sharma,SL,10,5,1,2026\nMK-102,Diya Patel,EL,18,9,3,2026'
+            },
+            payroll: {
+                filename: 'Salary_Structure_Sample.csv',
+                content: 'EmpId,StaffName,BasicSalary,HRA,SpecialAllowance,PFEmployer,StatutoryBonus,GrossMonthly\nMK-101,Aarav Sharma,100000,50000,40000,12000,8000,200000\nMK-102,Diya Patel,87500,43750,35000,10500,7000,175000'
+            },
+            candidates: {
+                filename: 'Candidates_ATS_Sample.csv',
+                content: 'JobReqCode,CandidateName,Email,Phone,CurrentCTC,ExpectedCTC,ExperienceYears,KeySkills\nREQ-TECH-01,Siddharth Mehta,sid.m@test.com,9876500001,1800000,2200000,6.5,React TypeScript Next.js\nREQ-TECH-02,Ananya Roy,ananya.r@test.com,9876500002,1400000,1750000,4.0,Node.js PostgreSQL Cloud'
+            }
+        };
+
+        const t = templates[typeKey] || templates.employee;
+        const blob = new Blob([t.content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', t.filename);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        showToast('Sample Template Downloaded', `Generated ${t.filename}`, 'info');
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const text = evt.target.result;
+            if (typeof text !== 'string') return;
+
+            // Simple CSV Parser
+            const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+            if (lines.length < 2) {
+                showToast('Invalid File', 'CSV file must have a header and at least 1 data row.', 'warning');
+                return;
+            }
+
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+            const rows = lines.slice(1).map(line => {
+                const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+                const obj = {};
+                headers.forEach((h, idx) => {
+                    obj[h] = vals[idx] || '';
+                });
+                return obj;
+            });
+
+            const customDataset = {
+                id: 'custom_upload',
+                title: file.name,
+                fileName: file.name,
+                desc: `User uploaded dataset (${rows.length} rows, ${headers.length} columns)`,
+                columns: headers,
+                sampleRows: rows
+            };
+
+            setCurrentFile(customDataset);
+            setMappings(inferMappings(customDataset));
+            showToast('File Parsed Successfully', `Loaded ${rows.length} records from ${file.name}`, 'info');
+        };
+        reader.readAsText(file);
+    };
+
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -147,14 +228,76 @@ const DataImportModal = ({ isOpen, onClose }) => {
                     {/* STEP 1: UPLOAD OR SELECT DATASET */}
                     {step === 1 && (
                         <>
+                            {/* Download Sample Template Bar */}
+                            <div style={{
+                                background: 'var(--card-2, #f8fafc)',
+                                border: '1px solid var(--line, #e2e8f0)',
+                                borderRadius: '12px',
+                                padding: '0.85rem 1rem',
+                                marginBottom: '1.25rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                flexWrap: 'wrap',
+                                gap: '0.75rem'
+                            }}>
+                                <div>
+                                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text, #0f172a)' }}>
+                                        📥 Need a starting format? Download Excel/CSV Sample Template
+                                    </div>
+                                    <div style={{ fontSize: '0.74rem', color: 'var(--text-2, #64748b)' }}>
+                                        Pre-formatted with validated column structures for instant ingestion.
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                    <button
+                                        type="button"
+                                        style={{ background: 'var(--signal)', color: 'var(--on-signal, #ffffff)', border: 'none', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        onClick={() => downloadSampleTemplate('employee')}
+                                    >
+                                        👥 Employee Master (.CSV)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        onClick={() => downloadSampleTemplate('biometric')}
+                                    >
+                                        ⏱️ Attendance Punches (.CSV)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        onClick={() => downloadSampleTemplate('leave')}
+                                    >
+                                        🏖️ Leave Balances (.CSV)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        onClick={() => downloadSampleTemplate('payroll')}
+                                    >
+                                        💰 Salary Structure (.CSV)
+                                    </button>
+                                </div>
+                            </div>
+
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                onChange={handleFileUpload}
+                                accept=".csv,.xlsx,.xls,.tsv,.txt"
+                                style={{ display: 'none' }}
+                            />
+
                             <div
                                 className={styles.uploadArea}
-                                onClick={() => showToast(translateText("components.Clerio.DataImportModal","text_f3fac34f42"),translateText("components.Clerio.DataImportModal","text_8160746ae1", {value1: String(currentFile.fileName), value2: String(currentFile.sampleRows.length)}), 'info')}
+                                onClick={() => fileInputRef.current?.click()}
+                                style={{ cursor: 'pointer' }}
                             >
                                 <UploadCloud size={40} color="#2563eb" />
                                 <div>
                                     <h4>{readData("components.Clerio.DataImportModal", "DataImportModal_text_10")}</h4>
-                                    <p>{readData("components.Clerio.DataImportModal", "DataImportModal_text_11")}<strong style={{ color: '#2563eb' }}>{currentFile.fileName}</strong>{readData("components.Clerio.DataImportModal", "DataImportModal_text_12")}{currentFile.sampleRows.length}{readData("components.Clerio.DataImportModal", "DataImportModal_text_13")}{currentFile.columns.length}{readData("components.Clerio.DataImportModal", "DataImportModal_text_14")}</p>
+                                    <p>Click to browse CSV / Excel file or drag & drop. Currently loaded: <strong style={{ color: '#2563eb' }}>{currentFile.fileName}</strong> ({currentFile.sampleRows.length} rows, {currentFile.columns.length} cols)</p>
                                 </div>
                             </div>
 

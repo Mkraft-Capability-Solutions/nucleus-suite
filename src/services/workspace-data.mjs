@@ -1,4 +1,4 @@
-import { workspaceContract } from '../data/workspace-contract.mjs';
+import { workspaceContract } from '../server/workspace/contract.mjs';
 
 /**
  * UI data boundary. The transport is asynchronous; components read the loaded

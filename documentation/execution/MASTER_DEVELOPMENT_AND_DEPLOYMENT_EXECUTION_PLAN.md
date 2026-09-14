@@ -84,6 +84,24 @@ src/server/
 
 ---
 
+# 3. `src/data/` Decommissioning & Database Migration Register
+
+The files currently residing in `src/data/` represent prototype assets and validation fixtures. During the database persistence and authentication phases, all static JSON files will be systematically migrated into PostgreSQL tables and removed from source control:
+
+| File / Directory | Purpose in Prototype | Production PostgreSQL Target Table | Migration & Removal Phase |
+|---|---|---|---|
+| `src/data/locales/en/interface.json` | Prototype UI text hashes | Migrated to `src/locales/en/interface.json` (centralized i18n) | **Immediate (Completed)** |
+| `src/data/appearance.json` | Theme tokens, font configurations, density | `tenant_branding_settings` & `user_appearance_preferences` | **Phase 1 (DB Activation)** |
+| `src/data/assistant.json` | Static prototype agent tools & actions | Replaced by `ai_agent_conversations` & dynamic LangGraph tools | **Phase 4 (AI Implementation)** |
+| `src/data/demo-accounts.json` | Synthetic persona logins | Seeded into Better-Auth `users`, `accounts`, `user_roles` | **Phase 2 (Auth Activation)** |
+| `src/data/public-site.json` | Public marketing & feature content | Static marketing bundle / `cms_content` table | **Phase 1 (DB Activation)** |
+| `src/data/workbook.json` | Excel master process snapshot | Seeded into master tables (`departments`, `leave_types`, `tax_slabs`) | **Phase 1 (DB Activation)** |
+| `src/data/workspace-contract.mjs` | Validation contract for mock fixtures | Replaced by Drizzle ORM schemas & OpenAPI/Zod validator | **Phase 1 (DB Activation)** |
+| `src/data/workspace-manifest.ts` | Prototype fixture bundle manifest | Replaced by direct Drizzle SQL queries (`src/lib/db`) | **Phase 1 (DB Activation)** |
+| `src/data/ui/*.json` (152 files) | Default component mock states & catalogs | `navigation_catalogs`, React initial states, or API responses | **Phase 1 & Phase 3** |
+
+---
+
 # Phase 1: Persistence & Live Database Migration
 
 ### Goals:
@@ -260,6 +278,49 @@ Deploy high-availability production infrastructure with automated CI/CD and full
    - Prometheus metrics & Grafana dashboards tracking API latencies, active sessions, and database query performance.
    - Sentry error monitoring and OpenTelemetry distributed tracing.
    - Multi-region database read-replicas with automated backups and < 15-minute RTO / RPO.
+
+---
+
+# 8. Swagger / OpenAPI 3.1 Specification & Endpoint Test Coverage
+
+To ensure military-grade service integration and enterprise API governance, the platform implements interactive Swagger / OpenAPI 3.1 documentation and automated contract testing across all 35 domain services:
+
+### 8.1 OpenAPI 3.1 Specification Engine
+- **Endpoint Route:** `/api/docs` (Interactive Swagger UI / Redoc) and `/api/openapi.json` (OpenAPI 3.1 Schema).
+- **Schema Validation:** Automated runtime validation using Zod schemas (`@asteasolutions/zod-to-openapi`) mapped directly from Drizzle ORM models.
+- **Interactive Console:** Authenticated API explorer supporting OAuth2 Bearer Tokens and API Keys with live request execution and response schema verification.
+
+### 8.2 Endpoint Test Suite Matrix
+Every endpoint across all 35 services must have dedicated Vitest integration tests covering:
+1. **Happy Path:** Valid payload returning `200 OK` or `201 Created` with expected Drizzle entity structure.
+2. **Schema & Field Validation:** Malformed or missing required parameters returning `400 Bad Request` with structured RFC 7807 problem details.
+3. **Authentication & Identity:** Missing or expired session tokens returning `401 Unauthorized`.
+4. **RBAC / Authorization:** Insufficient persona permissions (e.g. `EMPLOYEE` attempting to trigger payroll) returning `403 Forbidden`.
+5. **Multi-Tenant Isolation:** Accessing records belonging to another `tenant_id` returning `404 Not Found` or `403 Forbidden`.
+6. **Concurrency & Rate Limiting:** High-frequency requests returning `429 Too Many Requests`.
+
+---
+
+# 9. Enterprise OAuth 2.0, OpenID Connect (OIDC) & Security Architecture
+
+The platform architecture enforces zero-trust security across all identity and service boundaries:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                   ENTERPRISE OAUTH 2.0 & SECURITY LAYER                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ 1. IDENTITY PROVIDERS   │ Okta, Azure AD / Entra ID, Google Workspace       │
+│ 2. PROTOCOLS            │ SAML 2.0, OIDC (Authorization Code Flow with PKCE)│
+│ 3. TOKEN ARCHITECTURE   │ Partitioned HTTP-Only Session Cookies + Short JWT │
+│ 4. SERVICE-TO-SERVICE   │ mTLS + Asymmetric Signed HMAC Service Tokens      │
+│ 5. DATA SECURITY        │ AES-256 Envelope Encryption at Rest & TLS 1.3     │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **OAuth 2.0 Authorization Server:** Built on Better-Auth with full PKCE (Proof Key for Code Exchange) support for SPAs and mobile clients.
+- **Granular Scopes:** Scopes defined per domain (e.g., `attendance:read`, `leave:write`, `payroll:admin`, `talent:interview`).
+- **Token Rotation & Revocation:** Cryptographically signed refresh tokens with automatic single-use rotation and instant global revocation on password changes.
+- **Audit Trails:** Immutable append-only audit logging for all authentication, token generation, and role delegation events.
 
 ---
 

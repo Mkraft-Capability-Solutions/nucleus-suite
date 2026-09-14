@@ -10,12 +10,32 @@
  * Refuses to run when the tenant already exists (unless --clean is used first).
  */
 import { randomUUID } from "node:crypto";
+import { Pool } from "pg";
 import { neon } from "@neondatabase/serverless";
 import { hashPassword } from "better-auth/crypto";
 import { config } from "dotenv";
 import { readRuntimeConfiguration } from "../src/lib/runtime-config";
 
-config({ path: [".env.local", ".env"], quiet: true });
+config({ path: [process.env.NUCLEUS_ENV_FILE || ".env.local", ".env"], quiet: true });
+
+function getSqlClient(url: string): any {
+  if (url.includes("neon.tech") || process.env.MIGRATION_DATABASE_DRIVER === "neon") {
+    return neon(url);
+  }
+  const pool = new Pool({ connectionString: url });
+  const sql = async (strings: TemplateStringsArray, ...values: any[]) => {
+    let text = strings[0];
+    const params: any[] = [];
+    for (let i = 0; i < values.length; i++) {
+      params.push(values[i]);
+      text += `$${i + 1}` + strings[i + 1];
+    }
+    const res = await pool.query(text, params);
+    return res.rows;
+  };
+  sql.pool = pool;
+  return sql;
+}
 
 const TENANT_SLUG = "mkraft";
 const DEMO_PASSWORD = "Demo@Mkraft2026";
@@ -137,7 +157,7 @@ async function clean(client: any) {
 }
 
 async function main() {
-  const client = neon(connectionUrl());
+  const client = getSqlClient(connectionUrl());
   if (process.argv.includes("--clean")) {
     await clean(client);
     return;
@@ -447,6 +467,8 @@ async function seedTransactions(
   ] as Array<[string, string, string]>) {
     await client`insert into notifications (id, tenant_id, membership_id, attributes) values (${randomUUID()}, ${tenantId}, ${membershipByCode["MK-001"]}, ${JSON.stringify({ title, body, event_type: event, read: false })}::jsonb)`;
   }
+  console.info(`Successfully seeded Mkraft demo organization (${TENANT_SLUG}) with complete enterprise data!`);
+  if ((client as any).pool) await (client as any).pool.end();
 }
 
 void main().catch((error: unknown) => {

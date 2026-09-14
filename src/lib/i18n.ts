@@ -1,5 +1,5 @@
-import publicContent from '@/data/public-site.json';
-import englishInterface from '@/data/locales/en/interface.json';
+import publicContent from '@/config/public-site.json';
+import englishInterface from '@/locales/en/interface.json';
 import { locales, defaultLocale, type SupportedLocale } from '@/locales';
 
 export type Messages = Record<string, Record<string, string>>;

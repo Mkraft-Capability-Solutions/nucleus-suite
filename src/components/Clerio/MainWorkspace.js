@@ -62,6 +62,7 @@ const ROLE_PERMITTED_CONSOLES = readData("components.Clerio.MainWorkspace", "ROL
 
 const MainWorkspace = ({
     activeTab,
+    activeSubFeature,
     onTabChange,
     showCatalog = false,
     onToggleCatalog,
@@ -98,8 +99,19 @@ const MainWorkspace = ({
 
     useEffect(() => {
         const openAction = (event) => setActionRequest(event.detail);
+        const handleVoicePunch = (e) => {
+            if (e.detail?.type === 'OUT') {
+                punchOut();
+            } else {
+                punchIn();
+            }
+        };
         window.addEventListener('nucleus:open-action', openAction);
-        return () => window.removeEventListener('nucleus:open-action', openAction);
+        window.addEventListener('nucleus:trigger_punch', handleVoicePunch);
+        return () => {
+            window.removeEventListener('nucleus:open-action', openAction);
+            window.removeEventListener('nucleus:trigger_punch', handleVoicePunch);
+        };
     }, []);
 
     const completeAction = ({ action, title, values, context }) => {
@@ -1012,10 +1024,51 @@ const MainWorkspace = ({
         <div style={{ padding: '2rem' }}><h2>{readData("components.Clerio.MainWorkspace", "renderPerformance_text_118")}</h2></div>
     );
 
+    const DOMAIN_LABELS = {
+        dashboard: 'Dashboard Consoles',
+        core_hr: 'Core HR',
+        people: 'Core HR',
+        talent: 'Talent',
+        payroll_finance: 'Payroll & Finance',
+        payroll: 'Payroll & Finance',
+        workforce_ops: 'Workforce Operations',
+        analytics_ai: 'Analytics & AI',
+        analytics: 'Analytics & AI',
+        platform: 'Platform Settings',
+        settings: 'Platform Settings'
+    };
+
+    const TAB_TO_DOMAIN_MAP = {
+        people_core: 'core_hr',
+        team: 'core_hr',
+        onboarding: 'core_hr',
+        contract_workforce: 'core_hr',
+        recruitment: 'talent',
+        performance: 'talent',
+        learning: 'talent',
+        experience: 'talent',
+        payroll: 'payroll_finance',
+        compensation: 'payroll_finance',
+        compliance: 'payroll_finance',
+        attendance: 'workforce_ops',
+        leaves: 'workforce_ops',
+        projects: 'workforce_ops',
+        analytics: 'analytics_ai',
+        helpdesk: 'platform',
+        integrations: 'platform',
+        settings: 'platform',
+        access_control: 'platform'
+    };
+
     const formatTabName = (tab) => {
-        const names = readData("components.Clerio.MainWorkspace", "names_119");
+        const opMod = getOperationalModule(tab);
+        if (opMod?.title) return opMod.title;
+        const names = readData("components.Clerio.MainWorkspace", "names_119") || {};
         return names[tab] || tab.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
+
+    const effectiveDomain = activeDomain || TAB_TO_DOMAIN_MAP[activeTab] || 'core_hr';
+    const currentDomainLabel = DOMAIN_LABELS[effectiveDomain] || (effectiveDomain ? effectiveDomain.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Feature Catalog');
 
     return (
         <div className={styles.workspace}>
@@ -1028,16 +1081,22 @@ const MainWorkspace = ({
                 />
             ) : (
                 <>
-                    {/* Breadcrumb back to catalog if in a module */}
+                    {/* Breadcrumb back to domain/catalog */}
                     {activeTab !== 'dashboard' && (
-                        <div className={styles.breadcrumbBar}>
+                        <div className={styles.breadcrumbBar} aria-label="Breadcrumb">
                             <button
                                 className={styles.backToCatalogBtn}
-                                onClick={onToggleCatalog}
-                                title={readData("components.Clerio.MainWorkspace", "MainWorkspace_title_120")}
+                                onClick={() => {
+                                    if (onSelectDomain && effectiveDomain) {
+                                        onSelectDomain(effectiveDomain);
+                                    } else if (onToggleCatalog) {
+                                        onToggleCatalog();
+                                    }
+                                }}
+                                title={`Domain: ${currentDomainLabel}`}
                             >
                                 <Layers size={14} />
-                                <span>{readData("components.Clerio.MainWorkspace", "MainWorkspace_text_121")}</span>
+                                <span>{currentDomainLabel}</span>
                             </button>
                             <span className={styles.breadcrumbSep}>{readData("components.Clerio.MainWorkspace", "MainWorkspace_text_122")}</span>
                             <span className={styles.breadcrumbCurrent}>{formatTabName(activeTab)}</span>
@@ -1097,13 +1156,13 @@ const MainWorkspace = ({
             {/* Module 7: People Intelligence / Analytics */}
                 {activeTab === 'analytics' && (
                     <RoleProtected moduleKey="analytics" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER]}>
-                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                     </RoleProtected>
                 )}
 
                 {activeTab === 'operational_reports' && (
                     <RoleProtected moduleKey="analytics" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER]}>
-                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                        <AnalyticsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature="operational_reports" />
                     </RoleProtected>
                 )}
 

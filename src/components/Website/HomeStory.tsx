@@ -4,7 +4,7 @@ import ArrowForward from '@mui/icons-material/ArrowForward';
 import AutoAwesomeOutlined from '@mui/icons-material/AutoAwesomeOutlined';
 import ShieldOutlined from '@mui/icons-material/ShieldOutlined';
 import HomePreview from './HomePreview';
-import type content from '@/data/public-site.json';
+import type content from '@/config/public-site.json';
 import styles from './HomeStory.module.css';
 export type HomeStoryCopy=typeof content.homeStory;
 export default function HomeStory({copy,preview}:{copy:HomeStoryCopy;preview:typeof content.homeExperience}) {

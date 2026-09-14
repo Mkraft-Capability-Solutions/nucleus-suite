@@ -583,3 +583,10 @@
 }
 
 @container(max-width:500px){.reconCardHead{flex-wrap:wrap;gap:10px}.reconCardHead>*{min-width:0;overflow-wrap:anywhere}}
+
+.workersSection, .vendorsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+

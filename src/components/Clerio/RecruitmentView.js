@@ -7,7 +7,7 @@ import React, { useState } from 'react';
 import {
     Briefcase, Sparkles, UserPlus, FileCheck, CheckCircle2,
     Shield, Filter, Plus, MessageCircle, ExternalLink, ChevronRight, Search,
-    Building2, Users, AlertTriangle, CheckSquare, Award, ArrowUpRight, Lock, DollarSign
+    Building2, Users, AlertTriangle, CheckSquare, Award, ArrowUpRight, Lock, DollarSign, UploadCloud
 } from 'lucide-react';
 import styles from './RecruitmentView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -88,7 +88,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                     <h2>{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_3")}</h2>
                     <p>{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_4")}{establishmentRulesetVersion}{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_5")}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     {(onNavigate || onSelectConsole) && (
                         <button
                             className={styles.btnSecondary}
@@ -109,6 +109,38 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                         >
                             <Sparkles size={15} />{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_7")}</button>
                     )}
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+                            }
+                        }}
+                        title="Upload ATS Candidate Resumes & CSV Profiles in Bulk"
+                    >
+                        <UploadCloud size={15} /> Bulk ATS Import
+                    </button>
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_ctc_exception', {
+                                    detail: {
+                                        candidateName: 'Vikram Malhotra',
+                                        jobRole: 'Lead Distributed Systems Architect',
+                                        department: 'Engineering',
+                                        budgetedCtc: 3800000,
+                                        requestedCtc: 4600000,
+                                        variancePercent: 21.05
+                                    }
+                                }));
+                            }
+                        }}
+                        style={{ border: '1px solid rgba(245, 158, 11, 0.4)', color: '#d97706' }}
+                        title="Raise or Review Talent CTC Exception for Out-of-Budget Candidates"
+                    >
+                        <DollarSign size={15} /> CTC Exception Workflow
+                    </button>
                     <button className={styles.btnSecondary} onClick={() => setIsRefModalOpen(true)}>
                         <UserPlus size={16} />{readData("components.Clerio.RecruitmentView", "RecruitmentView_text_8")}</button>
                     <button className={styles.btnPrimary} onClick={() => setIsReqModalOpen(true)}>

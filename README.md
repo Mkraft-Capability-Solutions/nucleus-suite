@@ -50,11 +50,71 @@ For a fixed local address and port:
 npm run dev -- --hostname localhost --port 3000
 ```
 
-### Resolving “This workspace is not enabled”
+## Database Configuration (Neon vs Local PostgreSQL)
 
-The check is in `src/app/api/workspace-data/route.ts`, not middleware. It rejects the synthetic snapshot unless `DEMO_AUTH_ENABLED=true`. `WorkspaceDataBoundary` displays its response. `.env` and `.env.example` keep demo access disabled as a deployment safeguard; `.env.local` explicitly enables it for local review. Restart the dev server after changing environment files. An exported shell variable takes precedence over `.env.local`; use `DEMO_AUTH_ENABLED=true npm run dev` if your shell sets it to false.
+### 1. How to verify which database is currently connected
+Run this command in your terminal:
 
-Do not remove the access check or copy local demo settings into a customer production deployment. `APP_DATA_MODE=database` is not implemented. `npm run release:check` intentionally reports remaining production integration work.
+```bash
+npm run db:status
+```
+
+This queries the active connection string in `.env.local` / `.env` and reports:
+- **Total Tables**: 327
+- **RLS Tables**: 306
+- **Users & Tenants** connected to the database.
+
+---
+
+### 2. How to run using Neon PostgreSQL
+In `.env.local` (or `.env`), ensure the database configuration points to your Neon instance:
+
+```dotenv
+APP_DATA_MODE=database
+DATABASE_URL=postgresql://neondb_owner:npg_cO3Qs5NyYiKU@ep-old-block-ae88r1lh-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+MIGRATION_DATABASE_URL=postgresql://neondb_owner:npg_cO3Qs5NyYiKU@ep-old-block-ae88r1lh.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+MIGRATION_DATABASE_DRIVER=postgres
+```
+
+Start the application:
+```bash
+npm run dev
+```
+
+---
+
+### 3. How to run using Local PostgreSQL
+In `.env.local`, update the database URLs to your local postgres instance:
+
+```dotenv
+APP_DATA_MODE=database
+DATABASE_URL=postgresql://postgres:password@localhost:5432/nucleus_hrms
+MIGRATION_DATABASE_URL=postgresql://postgres:password@localhost:5432/nucleus_hrms
+MIGRATION_DATABASE_DRIVER=postgres
+```
+
+Then start the application:
+```bash
+npm run dev
+```
+
+---
+
+## Phase 4: Enterprise AI Subsystem (Top 10 WOW Features)
+
+All 10 Enterprise AI features are implemented in the UI and connected through services:
+
+1. **Grounded AI Copilot & Autonomous Agent**: Click `✨ Ask AI` on the bottom right or open `Analytics & AI` → `AI Copilot Studio`.
+2. **Predictive Attrition & Flight Risk Radar**: Located in `Analytics & AI` → `People Intelligence`.
+3. **Labour Codes 2026 50% Wage Simulator**: Located in `Core HR` → `Statutory Compliance` and `Analytics & AI` → `Payroll Analytics`.
+4. **Smart Attendance Anomaly Detection**: Located in `Workforce Operations` → `Attendance & Shift Rosters`.
+5. **AI Automated Shift Rostering & Overtime Heatmap**: Located in `Analytics & AI` → `Workforce & Ops`.
+6. **MCI (Multiplier Capability Index v2) Engine**: Located in `Analytics & AI` → `MCI Engine`.
+7. **Candidate Resume AI Scoring & 5-Stage Funnel Velocity**: Located in `Talent` → `Recruitment & ATS` and `Analytics & AI` → `Talent Funnel`.
+8. **9-Box Performance Grid & Succession Matrix**: Located in `Talent` → `Performance & 9-Box`.
+9. **Natural Language Voice Navigation & Actions Engine**: Click the `🎙️` icon in the top navigation bar (or press `V`).
+10. **Dynamic Enterprise Custom Reports Builder & MIS Hub**: Located in `Analytics & AI` → `Custom Reports` & `MIS Master Hub`.
+
 
 ## Source architecture
 

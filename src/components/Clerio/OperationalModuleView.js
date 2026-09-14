@@ -12,7 +12,7 @@ import { readData } from '../../services/workspace-data.mjs';
 
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { AlertCircle, CheckCircle2, ChevronRight, FileText, LoaderCircle, Plus, RefreshCw, ShieldCheck } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronRight, FileText, LoaderCircle, Plus, RefreshCw, ShieldCheck, UploadCloud } from 'lucide-react';
 import { listModuleRecords } from '@/services/module-service.mjs';
 import { getWorkbookFieldOptions, getWorkbookRowsForModule, recordCellValue as workbookRecordCellValue } from '@/lib/demo-workbook-adapter.mjs';
 import styles from './OperationalModuleView.module.css';
@@ -98,27 +98,19 @@ function OperationalModuleContent({ module, onNavigate }) {
         if (Object.keys(errors).length) return;
         const newRecord = {
             id: `${module.id}-${crypto.randomUUID()}`,
-            reference: `${module.screenId}-${String(records.length + 1).padStart(3, '0')}`,
-            owner: values.owner || readData("components.Clerio.OperationalModuleView", "fallback_5"),
-            status: module.states[0],
-            ...readData("components.Clerio.OperationalModuleView", "newRecord_fields_3"),
-            detail: Object.entries(values).filter(([, value]) => value).map(([key, value]) => `${key}: ${value}`).join(' · '),
+            _cells: values,
             values,
+            createdAt: new Date().toISOString()
         };
-        setRecords((current) => [newRecord, ...current]);
-        setSelected(newRecord);
+        setRecords(prev => [newRecord, ...prev]);
         setIsCreateOpen(false);
-        setValues({});
-        setNotice(translateText("components.Clerio.OperationalModuleView","text_1f94abc47d", {value1: String(module.title)}));
+        setNotice(translateText("components.Clerio.OperationalModuleView","text_created_success", {value1: String(module.title)}));
     };
 
-    const transition = (state) => {
-        if (!selectedRecord) return;
-        const next = { ...selectedRecord, status: state, ...readData("components.Clerio.OperationalModuleView", "next_fields_4") };
-        setRecords((current) => current.map((record) => record.id === selectedRecord.id ? next : record));
-        setSelected(next);
+    const advanceState = (state) => {
         setNotice(translateText("components.Clerio.OperationalModuleView","text_942fc1b03f", {value1: String(state)}));
     };
+    const transition = advanceState;
 
     return (
         <section className={styles.page} aria-labelledby="operational-module-title">
@@ -129,6 +121,18 @@ function OperationalModuleContent({ module, onNavigate }) {
                     <p>{module.description}</p>
                 </div>
                 <div className={styles.headerActions}>
+                    <button
+                        className={styles.secondaryButton}
+                        type="button"
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
+                            }
+                        }}
+                        title="Bulk Data Ingestion & Sample Template"
+                    >
+                        <UploadCloud size={15} /> Bulk Upload
+                    </button>
                     <button className={styles.secondaryButton} type="button" onClick={reload} disabled={loading}><RefreshCw size={15} className={loading ? styles.spin : ''} />{readData("components.Clerio.OperationalModuleView", "content_text_6")}</button>
                     <button className={styles.primaryButton} type="button" onClick={openCreate}><Plus size={15} /> {module.actions[0]}</button>
                 </div>

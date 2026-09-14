@@ -1,8 +1,8 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
-const catalog = require('../src/data/ui/navigation.catalog.json');
-const registry = require('../src/data/ui/lib.operational-module-registry.json');
+const catalog = require('../src/config/ui/navigation.catalog.json');
+const registry = require('../src/config/ui/lib.operational-module-registry.json');
 
 test('all operational screens and main workspace destinations appear in the shared menu', () => {
     const items = catalog.domains.flatMap(domain => domain.groups.flatMap(group => group.items));

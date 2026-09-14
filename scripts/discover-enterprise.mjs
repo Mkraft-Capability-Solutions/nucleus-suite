@@ -3,12 +3,12 @@ import { join, relative } from 'node:path';
 const root = process.cwd();
 function files(dir) { return readdirSync(dir, { withFileTypes: true }).flatMap(entry => entry.isDirectory() ? files(join(dir, entry.name)) : [join(dir, entry.name)]); }
 const source = files(join(root, 'src')).map(path => relative(root, path));
-const navigation = JSON.parse(readFileSync('src/data/ui/navigation.catalog.json', 'utf8'));
+const navigation = JSON.parse(readFileSync('src/config/ui/navigation.catalog.json', 'utf8'));
 const topology = JSON.parse(readFileSync('db/schema/canonical-manifest.json', 'utf8'));
 const journal = JSON.parse(readFileSync('db/migrations/meta/_journal.json', 'utf8'));
 const migrationFiles = files('db/migrations').filter(path => path.endsWith('.sql')).sort();
 const entries = navigation.domains.flatMap(domain => domain.groups.flatMap(group => group.items.map(item => ({ domain: domain.id, group: group.heading, ...item }))));
-const resources = files('src/data/ui').filter(path => path.endsWith('.json')).map(path => {
+const resources = files('src/config/ui').filter(path => path.endsWith('.json')).map(path => {
  let strings = 0; function walk(value) { if (typeof value === 'string') strings++; else if (value && typeof value === 'object') Object.values(value).forEach(walk); }
  walk(JSON.parse(readFileSync(path, 'utf8'))); return { path, stringValues: strings };
 });

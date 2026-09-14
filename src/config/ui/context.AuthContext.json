@@ -17,7 +17,7 @@
       "id": "DEMO-SUPER_ADMIN",
       "designation": "System Administrator",
       "dept": "Platform",
-      "defaultConsole": "S10",
+      "defaultConsole": "S1",
       "avatar": "/images/favicon_io/android-chrome-192x192.png"
     },
     "ADMIN": {
@@ -28,7 +28,7 @@
       "id": "DEMO-ADMIN",
       "designation": "Workspace Owner",
       "dept": "Administration",
-      "defaultConsole": "S10",
+      "defaultConsole": "S1",
       "avatar": "/images/favicon_io/android-chrome-192x192.png"
     },
     "HR_MANAGER": {
@@ -40,6 +40,17 @@
       "designation": "Head of HR",
       "dept": "Human Resources",
       "defaultConsole": "S2",
+      "avatar": "/images/favicon_io/android-chrome-192x192.png"
+    },
+    "FINANCE_MANAGER": {
+      "role": "FINANCE_MANAGER",
+      "email": "payroll@nucleus.com",
+      "name": "Rahul Verma",
+      "employeeId": "MK-105",
+      "id": "MK-105",
+      "designation": "Head of Payroll & Finance",
+      "dept": "Finance",
+      "defaultConsole": "S5",
       "avatar": "/images/favicon_io/android-chrome-192x192.png"
     },
     "MANAGER": {

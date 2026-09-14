@@ -224,11 +224,11 @@ button, [role="button"] {
   font-family: inherit;
   font-size: inherit;
   cursor: pointer;
-  min-height: 2.25rem;
-  max-width: 100%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  border: none;
+  background: transparent;
+  box-sizing: border-box;
+  text-align: center;
+  color: inherit;
 }
 
 button:disabled, [role="button"][aria-disabled="true"] {
