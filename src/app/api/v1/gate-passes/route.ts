@@ -1,9 +1,20 @@
 import { createHash } from "node:crypto";
 import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
-import { fail, HttpError, ok, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
-import { requestGatePass, requestGatePassSchema } from "@/server/attendance/service";
+import { collection, fail, HttpError, ok, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { listGatePasses, requestGatePass, requestGatePassSchema } from "@/server/attendance/service";
 
 export const dynamic = "force-dynamic";
+
+export async function GET(request: Request) {
+  const requestId = requestIdFrom(request.headers);
+  try {
+    const access = await requireAccess(request);
+    const passes = await listGatePasses(access);
+    return collection({ type: "gate-pass", items: passes, requestId, self: "/api/v1/gate-passes", nextCursor: null });
+  } catch (error) {
+    return fail(error, requestId);
+  }
+}
 
 export async function POST(request: Request) {
   const requestId = requestIdFrom(request.headers);

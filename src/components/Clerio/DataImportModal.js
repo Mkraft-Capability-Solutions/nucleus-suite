@@ -57,6 +57,7 @@ const DataImportModal = ({ isOpen, onClose }) => {
     const [selectedPreset, setSelectedPreset] = useState(readData("components.Clerio.DataImportModal", "initialState_2"));
     const [currentFile, setCurrentFile] = useState(PRESET_DATASETS.biometric);
     const [mappings, setMappings] = useState(() => inferMappings(PRESET_DATASETS.biometric));
+    const fileInputRef = useRef(null);
 
     if (!isOpen) return null;
 
@@ -111,8 +112,6 @@ const DataImportModal = ({ isOpen, onClose }) => {
         setStep(1);
         onClose();
     };
-
-    const fileInputRef = useRef(null);
 
     const downloadSampleTemplate = (typeKey) => {
         const templates = {

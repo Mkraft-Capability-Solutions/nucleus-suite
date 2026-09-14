@@ -16,7 +16,7 @@ import LeavePolicyReference from '@/components/Leave/LeavePolicyReference';
 import LeaveWorkflowPanel from '@/components/Leave/LeaveWorkflowPanel';
 import Dialog from '@mui/material/Dialog';
 
-const LeaveView = () => {
+const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
@@ -31,6 +31,22 @@ const LeaveView = () => {
     } = useHRMS();
 
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.LeaveView", "initialState_1")); // 'balances_apply' | 'approval_pipeline' | 'comp_off_clock' | 'early_return_recredit' | 'policy_matrix'
+
+    // Synchronize with contextual navigation
+    React.useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'leave_requests' || activeSubFeature === 'leave_ledger') {
+            setActiveTab('balances_apply');
+        } else if (activeSubFeature === 'approval_inbox' || activeSubFeature === 'leave_approval') {
+            setActiveTab('approval_pipeline');
+        } else if (activeSubFeature === 'early_return') {
+            setActiveTab('early_return_recredit');
+        } else if (activeSubFeature === 'leave_policy_admin' || activeSubFeature === 'leave_types') {
+            setActiveTab('policy_matrix');
+        } else if (activeSubFeature === 'comp_off' || activeSubFeature === 'coff_lapse') {
+            setActiveTab('comp_off_clock');
+        }
+    }, [activeSubFeature]);
     const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
     // Early return modal / trigger state
@@ -153,6 +169,11 @@ const LeaveView = () => {
                     onClick={() => setActiveTab('policy_matrix')}
                 >
                     <ShieldCheck size={15} />{readData("components.Clerio.LeaveView", "LeaveView_text_35")}</button>
+                <button
+                    className={`${styles.tabBtn} ${activeTab === 'leave_credit' ? styles.tabBtnActive : ''}`}
+                    onClick={() => setActiveTab('leave_credit')}
+                >
+                    <Sparkles size={15} /> Auto Credit Allocation</button>
             </div>
 
             {/* TAB 1: Balances & Apply Leave */}
@@ -467,8 +488,112 @@ const LeaveView = () => {
                 </Dialog>
             )}
             <LeaveApplicationDialog open={isApplyModalOpen} onClose={() => setIsApplyModalOpen(false)} />
+
+            {/* TAB: Auto Credit Allocation (Demo Point #7) */}
+            {activeTab === 'leave_credit' && (
+                <LeaveCreditAllocationPanel user={user} />
+            )}
         </div>
     );
 };
+
+// Standalone panel to avoid polluting LeaveView with extra hooks
+function LeaveCreditAllocationPanel({ user }) {
+    const { employees, computeAutoLeaveAllocation, isSeniorManagement } = useHRMS();
+    const [selectedEmpId, setSelectedEmpId] = React.useState(user?.employeeId || (employees[0]?.id ?? ''));
+    const refDate = new Date();
+
+    const selectedEmp = employees.find(e => e.id === selectedEmpId) || employees[0] || {};
+    const allocation = computeAutoLeaveAllocation ? computeAutoLeaveAllocation(selectedEmp, refDate) : { EL: 0, CL: 0, SL: 0, BL: 0, notes: [], isEligible: true };
+
+    const isMgmt = selectedEmp.designation ? isSeniorManagement(selectedEmp.designation) : false;
+
+    return (
+        <div style={{ padding: '0.5rem 0' }}>
+            {/* Info Banner */}
+            <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10, padding: '12px 16px', marginBottom: '1rem', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                <Info size={18} style={{ color: '#6366f1', marginTop: 2, flexShrink: 0 }} />
+                <div style={{ fontSize: '0.82rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+                    <strong style={{ color: 'var(--text)' }}>Auto Leave Credit Rules (Demo Point #7)</strong><br />
+                    AGM &amp; above: 18 EL + 6 CL + 6 SL (Jan 1). Regular staff: 1.5 EL/month, CL/SL prorated by joining month.
+                    New joiners: No EL for 6 months, then 9 EL credited. Trainees: CL only. Contractual: No credit.
+                    Birthday Leave: 1 day for all eligible employees. Max 2 CL/month, Max 10 EL/month. CL ≠ EL/SL.
+                </div>
+            </div>
+
+            {/* Employee Selector */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1rem' }}>
+                <label style={{ color: 'var(--text-2)', fontSize: '0.83rem', fontWeight: 600 }}>Employee:</label>
+                <select
+                    value={selectedEmpId}
+                    onChange={e => setSelectedEmpId(e.target.value)}
+                    style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}
+                >
+                    {employees.map(e => (
+                        <option key={e.id} value={e.id}>{e.name} — {e.role || e.designation} ({e.dept})</option>
+                    ))}
+                </select>
+                {isMgmt && <span style={{ background: '#6366f1', color: '#fff', borderRadius: 99, padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700 }}>Senior Management</span>}
+            </div>
+
+            {/* Allocation Cards */}
+            {allocation.isEligible ? (
+                <>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
+                        {[
+                            { code: 'EL', label: 'Earned Leave', days: allocation.EL, color: '#6366f1', emoji: '🌴' },
+                            { code: 'CL', label: 'Casual Leave', days: allocation.CL, color: '#0891b2', emoji: '☀️' },
+                            { code: 'SL', label: 'Sick Leave', days: allocation.SL, color: '#059669', emoji: '🏥' },
+                            { code: 'BL', label: 'Birthday Leave', days: allocation.BL, color: '#d97706', emoji: '🎂' },
+                        ].map(({ code, label, days, color, emoji }) => (
+                            <div key={code} style={{ background: 'var(--card)', border: `1px solid ${color}30`, borderTop: `3px solid ${color}`, borderRadius: 10, padding: '14px 16px' }}>
+                                <div style={{ fontSize: '1.5rem' }}>{emoji}</div>
+                                <div style={{ fontSize: '2rem', fontWeight: 800, color, lineHeight: 1.1, marginTop: 4 }}>{days}</div>
+                                <div style={{ color: 'var(--text-2)', fontSize: '0.75rem', marginTop: 4 }}>{label}</div>
+                                <div style={{ color: 'var(--text-3)', fontSize: '0.7rem', marginTop: 2 }}>{code} • Days/Year</div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Restrictions */}
+                    <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '1rem', marginBottom: '1rem' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.87rem', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <AlertTriangle size={15} color="#d97706" /> Leave Restrictions &amp; Rules
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                            {[
+                                ['Max CL per Month', '2 days'],
+                                ['Max EL per Month', '10 days'],
+                                ['CL + EL/SL', 'Cannot be combined'],
+                                ['Year-end EL', 'Encashed'],
+                                ['Year-end CL + SL', 'Lapsed (no carry)'],
+                                ['COFF Lapse', 'After 60 days'],
+                            ].map(([rule, value]) => (
+                                <div key={rule} style={{ background: 'var(--surface)', borderRadius: 7, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span style={{ color: 'var(--text-2)', fontSize: '0.78rem' }}>{rule}</span>
+                                    <span style={{ color: 'var(--text)', fontSize: '0.78rem', fontWeight: 600 }}>{value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Calculation Notes */}
+                    <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '1rem' }}>
+                        <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.87rem', marginBottom: '0.6rem' }}>Calculation Basis</div>
+                        <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-2)', fontSize: '0.8rem', lineHeight: 1.8 }}>
+                            {allocation.notes.map((note, i) => <li key={i}>{note}</li>)}
+                        </ul>
+                    </div>
+                </>
+            ) : (
+                <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-2)' }}>
+                    <AlertCircle size={32} style={{ color: '#dc2626', marginBottom: 8 }} /><br />
+                    <strong style={{ color: 'var(--text)' }}>Not Eligible for Leave Credit</strong><br />
+                    <span style={{ fontSize: '0.82rem' }}>{allocation.notes[0]}</span>
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default LeaveView;

@@ -1,10 +1,16 @@
 'use client';
 import { readData } from '../services/workspace-data.mjs';
 
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from '@/services/auth-service.mjs';
 import { ROLE_PERMISSIONS, ROLES } from '../utils/permissions';
+
+/** Storage keys */
+const SESSION_KEY = 'nucleus_session';
+const ACTIVITY_KEY = 'nucleus_last_activity';
+/** 2 hours in milliseconds */
+const IDLE_TIMEOUT_MS = 2 * 60 * 60 * 1000;
 
 export const DEFAULT_MODULE_PERMISSIONS = {
     people_core: [ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.MANAGER, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE],
@@ -69,9 +75,76 @@ const roleProfiles = readData("context.AuthContext", "roleProfiles_4");
 export const AuthProvider = ({ children }) => {
     const router = useRouter();
     const [isSigningOut, setIsSigningOut] = useState(false);
-    const [user, setUser] = useState(null);
+    const idleTimerRef = useRef(null);
+
+    // ── Restore session from localStorage on mount ──────────────────────────
+    const [user, setUser] = useState(() => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const raw = localStorage.getItem(SESSION_KEY);
+            if (!raw) return null;
+            const { userData, lastActivity } = JSON.parse(raw);
+            const idleMs = Date.now() - (lastActivity || 0);
+            if (idleMs > IDLE_TIMEOUT_MS) {
+                // Session expired while browser was closed
+                localStorage.removeItem(SESSION_KEY);
+                localStorage.removeItem(ACTIVITY_KEY);
+                return null;
+            }
+            return userData || null;
+        } catch {
+            return null;
+        }
+    });
+
     const isLoading = false;
     const [isAccessControlOpen, setIsAccessControlOpen] = useState(false);
+
+    // ── Update last-activity timestamp in localStorage ───────────────────────
+    const refreshActivity = useCallback(() => {
+        try {
+            localStorage.setItem(ACTIVITY_KEY, String(Date.now()));
+            // Also keep lastActivity inside the session blob for cross-tab read on mount
+            const raw = localStorage.getItem(SESSION_KEY);
+            if (raw) {
+                const session = JSON.parse(raw);
+                session.lastActivity = Date.now();
+                localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+            }
+        } catch { /* Storage unavailable */ }
+    }, []);
+
+    // ── Attach activity listeners & idle-check interval ──────────────────────
+    useEffect(() => {
+        if (!user) return;
+
+        const EVENTS = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+        EVENTS.forEach(ev => window.addEventListener(ev, refreshActivity, { passive: true }));
+
+        // Check idle every 60 seconds
+        idleTimerRef.current = setInterval(() => {
+            try {
+                const lastActivity = parseInt(localStorage.getItem(ACTIVITY_KEY) || '0', 10);
+                if (lastActivity && Date.now() - lastActivity > IDLE_TIMEOUT_MS) {
+                    // Idle for more than 2 hours — auto-logout
+                    clearInterval(idleTimerRef.current);
+                    setIsSigningOut(true);
+                    setUser(null);
+                    localStorage.removeItem(SESSION_KEY);
+                    localStorage.removeItem(ACTIVITY_KEY);
+                    router.replace('/');
+                }
+            } catch { /* Storage unavailable */ }
+        }, 60_000);
+
+        // Stamp activity immediately on login/restore
+        refreshActivity();
+
+        return () => {
+            EVENTS.forEach(ev => window.removeEventListener(ev, refreshActivity));
+            clearInterval(idleTimerRef.current);
+        };
+    }, [user, refreshActivity, router]);
 
     // Dynamic Permissions State
     const [modulePermissions, setModulePermissions] = useState(DEFAULT_MODULE_PERMISSIONS);
@@ -305,6 +378,15 @@ export const AuthProvider = ({ children }) => {
             const nextUser = { ...profile, ...authenticatedUser };
             setUser(nextUser);
 
+            // Persist session to localStorage
+            try {
+                localStorage.setItem(SESSION_KEY, JSON.stringify({
+                    userData: nextUser,
+                    lastActivity: Date.now(),
+                }));
+                localStorage.setItem(ACTIVITY_KEY, String(Date.now()));
+            } catch { /* Storage unavailable */ }
+
             return true;
         } catch {
             return false;
@@ -315,8 +397,14 @@ export const AuthProvider = ({ children }) => {
         setIsSigningOut(true);
         router.replace('/');
         setUser(null);
+        clearInterval(idleTimerRef.current);
         resetPermissionsToDefault();
-        try { localStorage.removeItem('nucleus_user'); } catch { /* Storage may be unavailable. */ }
+        try {
+            localStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem(ACTIVITY_KEY);
+            localStorage.removeItem('nucleus_user');
+            sessionStorage.removeItem('nucleus_nav_state');
+        } catch { /* Storage may be unavailable. */ }
     };
 
     const switchRole = (roleKey) => {

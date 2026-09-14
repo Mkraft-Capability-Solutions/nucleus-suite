@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     DollarSign, Download, PieChart, FileText, TrendingUp, ShieldCheck,
     Zap, Sparkles, Globe, ArrowRight, CheckCircle2, RefreshCw,
@@ -14,7 +14,7 @@ import styles from './PayrollView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
-const PayrollView = ({ onNavigate, onSelectConsole }) => {
+const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
@@ -30,6 +30,21 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
 
     // Active Tab state
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.PayrollView", "initialState_1")); // overview, offcycle, loans, fnf, scoping
+
+    useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'full_and_final' || activeSubFeature === 'fnf' || activeSubFeature === 'payroll_fnf') {
+            setActiveTab('fnf');
+        } else if (activeSubFeature === 'loans_advances' || activeSubFeature === 'loans') {
+            setActiveTab('loans');
+        } else if (activeSubFeature === 'salary_simulator' || activeSubFeature === 'offcycle' || activeSubFeature === 'payroll_ewa') {
+            setActiveTab('offcycle');
+        } else if (activeSubFeature === 'gl_mapping' || activeSubFeature === 'scoping' || activeSubFeature === 'payroll_accounting') {
+            setActiveTab('scoping');
+        } else if (activeSubFeature === 'payroll_runs' || activeSubFeature === 'pre_payroll_audit' || activeSubFeature === 'payslips' || activeSubFeature === 'overview' || activeSubFeature === 'payroll_global') {
+            setActiveTab('overview');
+        }
+    }, [activeSubFeature]);
 
     // Country selection
     const [selectedCountry, setSelectedCountry] = useState(readData("components.Clerio.PayrollView", "initialState_2"));
@@ -53,7 +68,21 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
     // Handle EWA
     const handleEWASubmit = (e) => {
         e.preventDefault();
-        requestEWA(ewaAmount);
+        const amount = Number(ewaAmount);
+        if (!ewaAmount || !Number.isFinite(amount) || amount <= 0) {
+            showToast('Validation Error', 'EWA amount is required and must be a positive number.', 'error');
+            return;
+        }
+        if (amount < 1000) {
+            showToast('Validation Error', 'Minimum EWA withdrawal is ₹1,000.', 'error');
+            return;
+        }
+        const pendingEwa = (ewaTransactions || []).find(t => t.status === 'PENDING');
+        if (pendingEwa) {
+            showToast('Duplicate Entry', 'You already have a pending EWA request. Please wait for it to be processed before submitting another.', 'error');
+            return;
+        }
+        requestEWA(amount);
     };
 
     // Download Tally XML
@@ -127,14 +156,41 @@ const PayrollView = ({ onNavigate, onSelectConsole }) => {
     // Handle Loan Submit
     const handleLoanSubmit = (e) => {
         e.preventDefault();
+        const errors = [];
+        if (!loanApplicantId) errors.push('Applicant Employee ID is required');
+        const amount = parseFloat(loanAmount);
+        if (!loanAmount || !Number.isFinite(amount) || amount <= 0)
+            errors.push('Loan amount is required and must be a positive number');
+        const tenure = parseInt(loanTenure, 10);
+        if (!loanTenure || !Number.isFinite(tenure) || tenure < 1 || tenure > 60)
+            errors.push('Loan tenure must be between 1 and 60 months');
+        if (!loanPurpose.trim() || loanPurpose.trim().length < 10)
+            errors.push('Loan purpose must be at least 10 characters');
+        if (isManagementOverride && (!overrideReason.trim() || overrideReason.trim().length < 10))
+            errors.push('Override justification must be at least 10 characters');
+
+        if (errors.length > 0) {
+            showToast('Validation Error', errors[0], 'error');
+            return;
+        }
+
+        // Duplicate check — applicant must not have an active outstanding loan
+        const activeLoan = (companyLoans || []).find(l =>
+            l.applicantId === loanApplicantId && l.status === 'ACTIVE'
+        );
+        if (activeLoan) {
+            showToast('Duplicate Entry', `Employee ${loanApplicantId} already has an active loan (${activeLoan.loanId}). A new loan cannot be applied while one is outstanding.`, 'error');
+            return;
+        }
+
         const res = applyForCompanyLoan({
             applicantId: loanApplicantId,
-            amount: parseFloat(loanAmount),
-            tenureMonths: parseInt(loanTenure, 10),
-            purpose: loanPurpose,
-            guarantorIds: [loanGuarantor1, loanGuarantor2],
+            amount,
+            tenureMonths: tenure,
+            purpose: loanPurpose.trim(),
+            guarantorIds: [loanGuarantor1, loanGuarantor2].filter(Boolean),
             isManagementOverride,
-            overrideReason
+            overrideReason: isManagementOverride ? overrideReason.trim() : ''
         });
         if (res.success) {
             setIsLoanModalOpen(false);

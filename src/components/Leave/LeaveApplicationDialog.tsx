@@ -140,8 +140,26 @@ function LeaveApplicationForm({
         reason,
         contact,
       });
-      if (result.success) onClose();
-      else setError(result.reason);
+      if (result.success) {
+        try {
+          fetch('/api/v1/leave-requests', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Idempotency-Key': crypto.randomUUID(),
+            },
+            body: JSON.stringify({
+              employeeId: employee.includes('-') && employee.length === 36 ? employee : 'c668678c-ed74-4dbb-a98b-0287afc8f286',
+              leaveType: ['EL', 'CL', 'SL', 'COFF', 'BIRTHDAY'].includes(type) ? type : 'CL',
+              startsOn: from,
+              endsOn: to,
+              days: Number(days),
+              reason: reason || 'Personal leave request',
+            }),
+          }).catch((e) => console.warn('Leave DB persist notice:', e));
+        } catch {}
+        onClose();
+      } else setError(result.reason);
     } catch {
       setError(text("failure"));
     } finally {

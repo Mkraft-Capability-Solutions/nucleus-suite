@@ -33,6 +33,7 @@ import ComplianceView from './ComplianceView';
 import HelpdeskView from './HelpdeskView';
 import ContractWorkforceView from './ContractWorkforceView';
 import CatalogGridView from './CatalogGridView';
+import OrgChartView from './OrgChartView';
 import CMSModal from './CMSModal';
 import NucleusActionModal from './ActionFormModal';
 import OperationalModuleView from './OperationalModuleView';
@@ -1020,47 +1021,47 @@ const MainWorkspace = ({
             {/* Module 1: People Core */}
             {activeTab === 'people_core' && (
                 <RoleProtected moduleKey="people_core" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
-                    <PeopleCoreView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <PeopleCoreView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 2: Global Payroll & EWA */}
             {activeTab === 'payroll' && (
                 <RoleProtected moduleKey="payroll" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.FINANCE_MANAGER, ROLES.HR_MANAGER, ROLES.EMPLOYEE, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
-                    <PayrollView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <PayrollView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 3: Talent Acquisition / ATS */}
             {activeTab === 'recruitment' && (
                 <RoleProtected moduleKey="recruitment" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
-                    <RecruitmentView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <RecruitmentView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 4: Onboarding & Lifecycle */}
             {activeTab === 'onboarding' && (
                 <RoleProtected moduleKey="onboarding" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
-                    <OnboardingView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <OnboardingView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 5: Performance & OKRs */}
             {activeTab === 'performance' && (
                 <RoleProtected moduleKey="performance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
-                    <PerformanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <PerformanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 6: Attendance & Leaves */}
             {activeTab === 'attendance' && (
                 <RoleProtected moduleKey="attendance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <AttendanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <AttendanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
             {activeTab === 'leaves' && (
                 <RoleProtected moduleKey="leaves" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <LeaveView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <LeaveView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
@@ -1080,75 +1081,81 @@ const MainWorkspace = ({
             {/* Module 8: Learning & Development (L&D) */}
             {activeTab === 'learning' && (
                 <RoleProtected moduleKey="learning" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <LearningView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <LearningView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 9: Compensation & Benefits */}
             {activeTab === 'compensation' && (
                 <RoleProtected moduleKey="compensation" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <CompensationView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <CompensationView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 10: Experience, MCI & Vedic Wellbeing */}
             {activeTab === 'experience' && (
                 <RoleProtected moduleKey="experience" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <ExperienceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <ExperienceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 11: Integrations & API Platform */}
             {activeTab === 'integrations' && (
                 <RoleProtected moduleKey="integrations" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER]}>
-                    <IntegrationsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <IntegrationsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 6: Statutory Compliance Engine & Labour Codes Simulator */}
             {activeTab === 'compliance' && (
                 <RoleProtected moduleKey="compliance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER]}>
-                    <ComplianceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <ComplianceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 7: Helpdesk & Grounded Policy Assistant */}
             {activeTab === 'helpdesk' && (
                 <RoleProtected moduleKey="helpdesk" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <HelpdeskView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <HelpdeskView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Module 13: Contract & Contingent Workforce */}
             {activeTab === 'contract_workforce' && (
                 <RoleProtected moduleKey="contract_workforce" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.FINANCE_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
-                    <ContractWorkforceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <ContractWorkforceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Workspaces, Teams & Settings */}
+            {activeTab === 'org_chart' && (
+                <RoleProtected moduleKey="org_chart" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
+                    <OrgChartView activeSubFeature={activeSubFeature} />
+                </RoleProtected>
+            )}
+
             {activeTab === 'projects' && (
                 <RoleProtected moduleKey="projects" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
-                    <ProjectView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <ProjectView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {activeTab === 'team' && (
                 <RoleProtected moduleKey="team" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
-                    <TeamView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <TeamView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {activeTab === 'settings' && (
                 <RoleProtected moduleKey="settings" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
-                    <SettingsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <SettingsView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 
             {/* Platform Security & Access Control Governance Studio (Dedicated Page) */}
             {activeTab === 'access_control' && (
                 <RoleProtected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN]}>
-                    <AccessControlView onNavigate={onTabChange} onSelectConsole={onSelectConsole} />
+                    <AccessControlView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
 

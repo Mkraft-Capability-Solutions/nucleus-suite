@@ -6,7 +6,7 @@ import Dialog from '@mui/material/Dialog';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
     Users, Network, FileText, History, Layers, ShieldCheck,
     Search, Plus, Filter, Download, ArrowUpRight, CheckCircle2, AlertCircle,
@@ -20,13 +20,37 @@ import EmployeeCreationWizard from './EmployeeCreationWizard';
 import BulkOnboardingModal from './BulkOnboardingModal';
 import LegalEntityModal from './LegalEntityModal';
 import LocationMasterModal from './LocationMasterModal';
+import OrgChartView from './OrgChartView';
 import { downloadCSV } from '@/utils/exportUtils';
 
-const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
+const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
-    const { positions, documents, auditLogs, showToast } = useHRMS();
+    const {
+        positions, documents, auditLogs, showToast, employees,
+        recognitionAwards, grantRecognitionAward,
+        sanctionedQuotas, calculateDepartmentCapacity,
+    } = useHRMS();
     const [activeSection, setActiveSection] = useState(readData("components.Clerio.PeopleCoreView", "initialState_1"));
+
+    useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'legal_entity' || activeSubFeature === 'entities') {
+            setActiveSection('entities');
+        } else if (activeSubFeature === 'location_master' || activeSubFeature === 'locations') {
+            setActiveSection('locations');
+        } else if (activeSubFeature === 'position_register' || activeSubFeature === 'positions' || activeSubFeature === 'sanctioned_strength') {
+            setActiveSection('positions');
+        } else if (activeSubFeature === 'document_vault' || activeSubFeature === 'documents') {
+            setActiveSection('documents');
+        } else if (activeSubFeature === 'orgchart' || activeSubFeature === 'org_chart') {
+            setActiveSection('orgchart');
+        } else if (activeSubFeature === 'person_record' || activeSubFeature === 'core_people' || activeSubFeature === 'directory' || activeSubFeature === 'assignment_admin') {
+            setActiveSection('directory');
+        } else if (activeSubFeature === 'star_employees') {
+            setActiveSection('star_employees');
+        }
+    }, [activeSubFeature]);
     const [searchQuery, setSearchQuery] = useState('');
     const [reassignTarget, setReassignTarget] = useState(null);
     const [selectedNewManager, setSelectedNewManager] = useState('');
@@ -182,6 +206,18 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                     <Layers size={16} /> Positions (SCR-012)
                 </button>
                 <button
+                    className={`${styles.tabBtn} ${activeSection === 'star_employees' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveSection('star_employees')}
+                >
+                    ⭐ Star Employees
+                </button>
+                <button
+                    className={`${styles.tabBtn} ${activeSection === 'manpower' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveSection('manpower')}
+                >
+                    <Users size={16} /> Approved Manpower
+                </button>
+                <button
                     className={`${styles.tabBtn} ${activeSection === 'documents' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('documents')}
                 >
@@ -324,45 +360,21 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                 </div>
             )}
 
-            {/* Section 2: Dynamic Org Graph */}
+            {/* Section 2: Dynamic Org Chart — Demo Point #22 */}
             {activeSection === 'orgchart' && (
-                <div className={styles.card}>
-                    <div className={styles.cardHeader}>
-                        <h3><Network size={20} color="var(--info)" />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_31")}</h3>
-                        <span style={{ fontSize: '0.85rem', color: 'var(--text-2)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_32")}</span>
-                    </div>
-
-                    <div className={styles.orgTree}>
-                        <div className={styles.orgNode} style={{ border: '2px solid var(--info)', background: 'var(--info-wash)' }}>
-                            <strong style={{ color: 'var(--info)', fontSize: '1.05rem' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_33")}</strong>
-                            <p style={{ fontSize: '0.85rem', color: 'var(--text-2)', margin: '0.2rem 0 0' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_34")}</p>
-                        </div>
-
-                        <div className={styles.orgChildren}>
-                            <div className={styles.orgNode}>
-                                <strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_35")}</strong>
-                                <div style={{ fontSize: '0.8rem', color: 'var(--info)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_36")}</div>
-                                <span className={`${styles.badge} ${styles.badgeVerified}`} style={{ marginTop: '0.5rem' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_37")}</span>
-                                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <div style={{ background: 'var(--card-2)', border: '1px solid var(--line)', padding: '0.5rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.82rem', color: 'var(--text)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_38")}<strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_39")}</strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_40")}</div>
-                                    <div style={{ background: 'var(--card-2)', border: '1px solid var(--line)', padding: '0.5rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.82rem', color: 'var(--text)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_41")}<strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_42")}</strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_43")}</div>
-                                </div>
-                            </div>
-
-                            <div className={styles.orgNode}>
-                                <strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_44")}</strong>
-                                <div style={{ fontSize: '0.8rem', color: 'var(--agent)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_45")}</div>
-                                <span className={`${styles.badge} ${styles.badgeVerified}`} style={{ marginTop: '0.5rem' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_46")}</span>
-                                <div style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                                    <div style={{ background: 'var(--card-2)', border: '1px solid var(--line)', padding: '0.5rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.82rem', color: 'var(--text)' }}>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_47")}<strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_48")}</strong>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_49")}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <OrgChartView />
             )}
 
-            {/* Section 3: Position Management */}
+            {/* Section: Star Employees — Demo Point #18 */}
+            {activeSection === 'star_employees' && (
+                <StarEmployeesPanel employees={employees} recognitionAwards={recognitionAwards} grantRecognitionAward={grantRecognitionAward} showToast={showToast} />
+            )}
+
+            {/* Section: Approved Manpower — Demo Point #25 */}
+            {activeSection === 'manpower' && (
+                <ApprovedManpowerPanel employees={employees} positions={positions} sanctionedQuotas={sanctionedQuotas} calculateDepartmentCapacity={calculateDepartmentCapacity} />
+            )}
+
             {activeSection === 'positions' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
@@ -664,7 +676,53 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
             <EmployeeCreationWizard
                 isOpen={isWizardOpen}
                 onClose={() => setIsWizardOpen(false)}
-                onSave={(newEmp) => setCustomEmployees(prev => [newEmp, ...prev])}
+                onSave={async (newEmp) => {
+                    setCustomEmployees(prev => [newEmp, ...prev]);
+                    try {
+                        const details = newEmp.details || {};
+                        await fetch('/api/v1/people', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Idempotency-Key': crypto.randomUUID(),
+                            },
+                            body: JSON.stringify({
+                                employeeCode: newEmp.id,
+                                firstName: details.firstName || newEmp.name.split(' ')[0] || 'Employee',
+                                lastName: details.lastName || newEmp.name.split(' ').slice(1).join(' ') || '-',
+                                workEmail: details.officialEmail || details.personalEmail || `${newEmp.id.toLowerCase()}@nucleus.com`,
+                                designation: newEmp.role || 'Associate',
+                                department: newEmp.dept || 'General',
+                                location: newEmp.location || 'Head Office',
+                                joiningDate: details.joiningDate || new Date().toISOString().split('T')[0],
+                                workerCategory: details.workerCategory || 'PERM',
+                                hasRestDays: details.hasRestDays ?? true,
+                                otEligibility: details.otEligibility || 'ALL_DAYS',
+                                salaryLocationScope: details.salaryLocationScope || 'PLANT',
+                                isTrainee: Boolean(details.isTrainee),
+                                traineeType: details.traineeType || undefined,
+                                assignedShift: details.assignedShift || 'GENERAL',
+                                panNumber: details.panNumber || undefined,
+                                aadhaarLast4: details.aadhaarNumber ? details.aadhaarNumber.slice(-4) : undefined,
+                                uan: details.uan || undefined,
+                                esicNumber: details.esicNumber || undefined,
+                                bankAccountNo: details.accountToken || undefined,
+                                bankIfsc: details.ifsc || undefined,
+                                bankName: details.bankName || undefined,
+                                emergencyContactName: details.emergencyName || undefined,
+                                emergencyContactPhone: details.emergencyPhone || undefined,
+                                emergencyContactRelation: details.emergencyRelation || undefined,
+                                biometricEnrolId: details.biometricEnrolId || undefined,
+                                accessCardNo: details.accessCardNo || undefined,
+                                lockerNo: details.lockerNo || undefined,
+                            }),
+                        });
+                        showToast('Database Synchronized', `Employee record persisted to Neon PostgreSQL.`, 'success');
+                    } catch (e) {
+                        console.warn('Individual employee database sync:', e);
+                    }
+                }}
+                existingEmployees={directoryEmployees}
             />
 
             <BulkOnboardingModal
@@ -677,15 +735,158 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole }) => {
                 isOpen={isEntityModalOpen}
                 onClose={() => setIsEntityModalOpen(false)}
                 onSave={(ent) => setEntitiesList(prev => [ent, ...prev])}
+                existingEntities={entitiesList}
             />
 
             <LocationMasterModal
                 isOpen={isLocationModalOpen}
                 onClose={() => setIsLocationModalOpen(false)}
                 onSave={(loc) => setLocationsList(prev => [loc, ...prev])}
+                existingLocations={locationsList}
             />
         </div>
     );
 };
+
+// ── Star Employees Panel (Demo Point #18) ──────────────────────────────────
+function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitionAward, showToast }) {
+    const [nominee, setNominee] = React.useState('');
+    const [category, setCategory] = React.useState('Star Employee of the Month');
+    const [note, setNote] = React.useState('');
+    const [month] = React.useState(new Date().toLocaleString('default', { month: 'long', year: 'numeric' }));
+
+    const handleGrant = () => {
+        if (!nominee) { showToast('Select Employee', 'Please select an employee to nominate.', 'error'); return; }
+        const emp = employees.find(e => e.name === nominee || e.id === nominee);
+        grantRecognitionAward && grantRecognitionAward({ employeeId: emp?.id, employeeName: emp?.name || nominee, award: category, period: month, note });
+        showToast('🌟 Award Granted', `${emp?.name || nominee} recognized as ${category} for ${month}!`, 'success');
+        setNominee(''); setNote('');
+    };
+
+    return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {/* Nomination Form */}
+            <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem', borderTop: '3px solid #f59e0b' }}>
+                <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem' }}>
+                    ⭐ Nominate Star Employee — {month}
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Employee</span>
+                        <select value={nominee} onChange={e => setNominee(e.target.value)}
+                            style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}>
+                            <option value="">Select employee…</option>
+                            {employees.map(e => <option key={e.id} value={e.id}>{e.name} — {e.dept}</option>)}
+                        </select>
+                    </label>
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Award Category</span>
+                        <select value={category} onChange={e => setCategory(e.target.value)}
+                            style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}>
+                            <option>Star Employee of the Month</option>
+                            <option>Best Team Player</option>
+                            <option>Innovation Award</option>
+                            <option>Customer Champion</option>
+                            <option>Leadership Excellence</option>
+                            <option>Safety Champion</option>
+                        </select>
+                    </label>
+                    <label style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Citation / Note</span>
+                        <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
+                            placeholder="Brief description of achievement…"
+                            style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem', resize: 'vertical' }} />
+                    </label>
+                </div>
+                <button onClick={handleGrant}
+                    style={{ marginTop: '0.75rem', padding: '8px 20px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}>
+                    ⭐ Grant Award
+                </button>
+            </div>
+
+            {/* Awards History */}
+            <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem' }}>
+                <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', fontSize: '1rem' }}>Recognition History</h3>
+                {(recognitionAwards || []).length === 0 ? (
+                    <div style={{ color: 'var(--text-3)', textAlign: 'center', padding: '2rem' }}>No awards granted yet.</div>
+                ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {[...(recognitionAwards || [])].reverse().map((award, i) => (
+                            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'var(--surface)', borderRadius: 8, border: '1px solid var(--line-soft)' }}>
+                                <span style={{ fontSize: '1.4rem' }}>⭐</span>
+                                <div>
+                                    <div style={{ color: 'var(--text)', fontWeight: 600, fontSize: '0.87rem' }}>{award.employeeName || award.employee_name}</div>
+                                    <div style={{ color: 'var(--text-2)', fontSize: '0.75rem' }}>{award.award} · {award.period || award.date}</div>
+                                    {award.note && <div style={{ color: 'var(--text-3)', fontSize: '0.73rem', marginTop: 2 }}>{award.note}</div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+// ── Approved Manpower Panel (Demo Point #25) ────────────────────────────────
+function ApprovedManpowerPanel({ employees, positions, sanctionedQuotas, calculateDepartmentCapacity }) {
+    const depts = [...new Set([
+        ...(employees || []).map(e => e.dept),
+        ...Object.keys(sanctionedQuotas || {}),
+    ])].filter(Boolean);
+
+    return (
+        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem' }}>
+            <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem' }}>
+                <span>👥</span> Approved Manpower vs Actual Headcount
+            </h3>
+            <p style={{ color: 'var(--text-2)', fontSize: '0.8rem', margin: '0 0 1rem' }}>
+                Sanctioned quotas define approved headcount per department. Variance shows open/excess positions.
+            </p>
+            <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
+                    <thead>
+                        <tr style={{ background: 'var(--surface)' }}>
+                            {['Department', 'Sanctioned', 'Actual', 'Open Positions', 'Variance', 'Status'].map(h => (
+                                <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: 'var(--text-2)', fontWeight: 600, borderBottom: '1px solid var(--line)' }}>{h}</th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {depts.map(dept => {
+                            const sanctioned = (sanctionedQuotas && sanctionedQuotas[dept]) ? sanctionedQuotas[dept] : 10;
+                            const actual = (employees || []).filter(e => e.dept === dept && e.status !== 'Inactive').length;
+                            const openPositions = (positions || []).filter(p => p.dept === dept && p.status === 'Open').length;
+                            const variance = actual - sanctioned;
+                            const capacity = calculateDepartmentCapacity ? calculateDepartmentCapacity(dept, actual, sanctioned) : {};
+                            const isOver = variance > 0;
+                            const isUnder = actual < sanctioned * 0.8;
+                            return (
+                                <tr key={dept} style={{ borderBottom: '1px solid var(--line-soft)' }}>
+                                    <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text)' }}>{dept}</td>
+                                    <td style={{ padding: '10px 12px', color: 'var(--text)' }}>{sanctioned}</td>
+                                    <td style={{ padding: '10px 12px', color: 'var(--text)' }}>{actual}</td>
+                                    <td style={{ padding: '10px 12px', color: '#6366f1' }}>{openPositions}</td>
+                                    <td style={{ padding: '10px 12px', color: isOver ? '#dc2626' : isUnder ? '#d97706' : '#059669', fontWeight: 700 }}>
+                                        {variance > 0 ? `+${variance}` : variance}
+                                    </td>
+                                    <td style={{ padding: '10px 12px' }}>
+                                        <span style={{
+                                            background: isOver ? 'rgba(220,38,38,0.12)' : isUnder ? 'rgba(217,119,6,0.12)' : 'rgba(5,150,105,0.12)',
+                                            color: isOver ? '#dc2626' : isUnder ? '#d97706' : '#059669',
+                                            borderRadius: 99, padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700
+                                        }}>
+                                            {isOver ? 'Over-strength' : isUnder ? 'Under-staffed' : 'On Target'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    );
+}
 
 export default PeopleCoreView;

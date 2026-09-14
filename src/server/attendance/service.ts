@@ -548,3 +548,24 @@ export async function decideGatePass(access: Access, id: string, approve: boolea
   ]);
   return { id, status };
 }
+
+export async function listGatePasses(access: Access) {
+  enforce(access.context, "attendance.read", { tenantId: access.tenantId });
+  const [rows] = await tenantTx(access, [
+    sqlClient`
+      select gp.id, gp.employee_id, gp.attributes, coalesce(e.employee_code, 'EMP-101') as employee_code,
+             coalesce(concat(e.first_name, ' ', e.last_name), 'Employee') as employee_name
+      from gate_passes gp
+      left join employees e on e.id = gp.employee_id
+      where gp.tenant_id = ${access.tenantId}
+      order by gp.created_at desc limit 100
+    `
+  ]);
+  return (rows as any[]).map(r => ({
+    id: r.id,
+    employee_id: r.employee_id,
+    employeeCode: r.employee_code,
+    employeeName: r.employee_name,
+    ...(typeof r.attributes === 'object' && r.attributes !== null ? r.attributes : {})
+  }));
+}

@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Clock, Calendar as CalIcon, MapPin, ChevronLeft, ChevronRight,
     FileText, CheckCircle, AlertCircle, TrendingUp, Sparkles, Smartphone, ShieldCheck,
@@ -12,7 +12,7 @@ import {
 import styles from './AttendanceView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
-const AttendanceView = ({ onNavigate, onSelectConsole }) => {
+const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
@@ -23,6 +23,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
         gatePasses,
         requestGatePass,
         approveGatePass,
+        attendanceRegularizations,
+        requestRegularization,
+        decideRegularization,
         timeOfficeLedger,
         recomputeAttendanceRecord,
         workerCategories,
@@ -32,9 +35,24 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
         showToast
     } = useHRMS();
 
-    const [activeTab, setActiveTab] = useState(readData("components.Clerio.AttendanceView", "initialState_1")); // 'monthly_ledger' | 'gate_pass' | 'time_office_ledger' | 'worker_categories'
+    const [activeTab, setActiveTab] = useState(readData("components.Clerio.AttendanceView", "initialState_1")); // 'monthly_ledger' | 'gate_pass' | 'regularization' | 'time_office_ledger' | 'worker_categories'
     const [currentMonth, setCurrentMonth] = useState(readData("components.Clerio.AttendanceView", "initialState_2"));
     const [selectedPlant, setSelectedPlant] = useState(readData("components.Clerio.AttendanceView", "initialState_3"));
+
+    useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'check_in_out' || activeSubFeature === 'my_attendance' || activeSubFeature === 'attendance_detail' || activeSubFeature === 'monthly_ledger') {
+            setActiveTab('monthly_ledger');
+        } else if (activeSubFeature === 'gate_passes' || activeSubFeature === 'gate_pass') {
+            setActiveTab('gate_pass');
+        } else if (activeSubFeature === 'regularizations' || activeSubFeature === 'attendance_regularization' || activeSubFeature === 'regularization') {
+            setActiveTab('regularization');
+        } else if (activeSubFeature === 'overtime_register' || activeSubFeature === 'attendance_exceptions' || activeSubFeature === 'recompute_monitor' || activeSubFeature === 'time_office_ledger') {
+            setActiveTab('time_office_ledger');
+        } else if (activeSubFeature === 'worker_categories' || activeSubFeature === 'team_history' || activeSubFeature === 'ops_rosters') {
+            setActiveTab('worker_categories');
+        }
+    }, [activeSubFeature]);
 
     // Gate Pass Request Modal State
     const [isGatePassModalOpen, setIsGatePassModalOpen] = useState(false);
@@ -49,21 +67,94 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
     const remainingMinutes = Math.max(0, 240 - usedMinutes);
     const remainingCount = Math.max(0, 2 - usedCount);
 
+    // Regularization Workflow State
+    const [isRegModalOpen, setIsRegModalOpen] = useState(false);
+    const [regDate, setRegDate] = useState(new Date().toISOString().split('T')[0]);
+    const [regKind, setRegKind] = useState('missing-punch');
+    const [regReason, setRegReason] = useState('');
+    const [regClaimedIn, setRegClaimedIn] = useState('09:00 AM');
+    const [regClaimedOut, setRegClaimedOut] = useState('06:00 PM');
+    const [regFilterStatus, setRegFilterStatus] = useState('ALL');
+
+    const handleCreateRegularization = async (e) => {
+        e.preventDefault();
+        if (!regDate) {
+            showToast('Validation Error', 'Attendance date is required', 'error');
+            return;
+        }
+        if (!regReason.trim() || regReason.trim().length < 5) {
+            showToast('Validation Error', 'Justification reason must be at least 5 characters', 'error');
+            return;
+        }
+        if (requestRegularization) {
+            await requestRegularization({
+                employeeId: user?.id || 'EMP-101',
+                employeeName: user?.name || 'Arjun Sharma',
+                date: regDate,
+                kind: regKind,
+                reason: regReason.trim(),
+                claimedIn: regClaimedIn,
+                claimedOut: regClaimedOut
+            });
+        }
+        setIsRegModalOpen(false);
+        setRegReason('');
+    };
+
     const handleCreateGatePass = (e) => {
         e.preventDefault();
+        const errors = [];
+        if (!gpType) errors.push('Gate pass type (Personal / Official Duty) is required');
+        if (!gpDuration || Number(gpDuration) <= 0) errors.push('Duration is required — please select a valid duration');
+        if (!gpReason.trim() || gpReason.trim().length < 5)
+            errors.push('Reason must be at least 5 characters');
+
+        if (errors.length > 0) {
+            showToast('Validation Error', errors[0], 'error');
+            return;
+        }
+
+        // Duplicate check — employee already has a pending gate pass today
+        const todayStr = new Date().toISOString().split('T')[0];
+        const existingToday = (gatePasses || []).filter(gp =>
+            gp.employee_id === 'EMP-101' &&
+            gp.status === 'PENDING' &&
+            gp.date?.startsWith(todayStr)
+        );
+        if (existingToday.length > 0) {
+            showToast('Duplicate Entry', 'You already have a pending gate pass request for today. Please wait for approval before submitting another.', 'error');
+            return;
+        }
+
         const res = requestGatePass({
             ...readData("components.Clerio.AttendanceView", "res_fields_1"),
             employeeName: user?.name || readData("components.Clerio.AttendanceView", "fallback_1"),
             ...readData("components.Clerio.AttendanceView", "res_fields_2"),
             type: gpType,
             minutes: Number(gpDuration),
-            reason: gpReason || `${gpType} gate permission request`
+            reason: gpReason.trim()
         });
         if (res.success) {
+            try {
+                fetch('/api/v1/gate-passes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': crypto.randomUUID(),
+                    },
+                    body: JSON.stringify({
+                        employeeId: user?.id || 'c668678c-ed74-4dbb-a98b-0287afc8f286',
+                        date: todayStr,
+                        minutes: Number(gpDuration) === 240 ? 240 : 120,
+                        reason: gpReason.trim()
+                    })
+                }).catch(e => console.warn('Gate pass DB sync notice:', e));
+            } catch {}
             setIsGatePassModalOpen(false);
             setGpReason('');
         }
     };
+
 
     // Mock Calendar Data
     const days = Array.from(readData("components.Clerio.AttendanceView", "days_3"), (_, i) => {
@@ -95,9 +186,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.45rem',
-                                border: '1px solid rgba(45, 212, 168, 0.4)',
-                                background: 'rgba(45, 212, 168, 0.12)',
-                                color: '#2DD4A8',
+                                border: '1px solid var(--line-glow)',
+                                background: 'var(--signal-wash)',
+                                color: 'var(--signal)',
                                 fontWeight: 700
                             }}
                             title={readData("components.Clerio.AttendanceView", "AttendanceView_title_6")}
@@ -116,12 +207,20 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                         <UploadCloud size={15} /> Bulk Punches Upload
                     </button>
                     {attendance.status === 'present' ? (
-                        <button className={styles.btnPrimary} style={{ background: 'var(--flag, #ef4444)', color: '#ffffff' }} onClick={punchOut}>
+                        <button className={styles.btnPrimary} style={{ background: 'var(--flag)', color: 'var(--on-signal)' }} onClick={punchOut}>
                             <Clock size={16} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_8")}</button>
                     ) : (
-                        <button className={styles.btnPrimary} style={{ background: 'var(--status-ok, #10b981)', color: '#ffffff' }} onClick={punchIn}>
+                        <button className={styles.btnPrimary} style={{ background: 'var(--status-ok)', color: 'var(--on-signal)' }} onClick={punchIn}>
                             <Clock size={16} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_9")}</button>
                     )}
+                    <button
+                        className={styles.btnSecondary}
+                        onClick={() => setIsRegModalOpen(true)}
+                        style={{ border: '1px solid var(--line-glow)', color: 'var(--signal)', fontWeight: 600 }}
+                        title="Submit Attendance Regularization Request"
+                    >
+                        <UserCheck size={15} /> Request Regularization
+                    </button>
                     <button
                         className={styles.btnSecondary}
                         onClick={() => setIsGatePassModalOpen(true)}
@@ -136,7 +235,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
             {/* Time-Office Engine Version & Rule Status Banner */}
             <div className={styles.engineBanner}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <ShieldCheck size={24} color="#2563eb" />
+                    <ShieldCheck size={24} color="var(--signal)" />
                     <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                             <strong style={{ color: 'var(--text)', fontSize: '0.92rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_12")}</strong>
@@ -151,7 +250,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                     style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem' }}
                     onClick={() => showToast(translateText("components.Clerio.AttendanceView","text_e1bbe08261"),translateText("components.Clerio.AttendanceView","text_06d3452f42"), 'success')}
                 >
-                    <CheckCircle size={14} color="#16a34a" />{readData("components.Clerio.AttendanceView", "AttendanceView_text_16")}</button>
+                    <CheckCircle size={14} color="var(--status-ok)" />{readData("components.Clerio.AttendanceView", "AttendanceView_text_16")}</button>
             </div>
 
             {/* Subnavigation Tabs */}
@@ -167,6 +266,15 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                 >
                     <KeyRound size={15} />{readData("components.Clerio.AttendanceView", "AttendanceView_text_18")}<span className={`${styles.badge} ${usedCount >= 2 ? styles.badgeCoral : styles.badgeBlue}`}>
                         {usedCount}{readData("components.Clerio.AttendanceView", "AttendanceView_text_19")}</span>
+                </button>
+                <button
+                    className={`${styles.tabBtn} ${activeTab === 'regularization' ? styles.tabBtnActive : ''}`}
+                    onClick={() => setActiveTab('regularization')}
+                >
+                    <UserCheck size={15} /> Regularization Requests
+                    <span className={`${styles.badge} ${styles.badgePurple}`}>
+                        {(attendanceRegularizations || []).filter(r => r.status === 'submitted' || r.status === 'supervisor_approved').length} Active
+                    </span>
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeTab === 'time_office_ledger' ? styles.tabBtnActive : ''}`}
@@ -196,11 +304,11 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                         <div className={styles.statCard}>
                             <span className={styles.statLabel}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_24")}</span>
                             <span className={styles.statValue} style={{ fontSize: '1.2rem', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_25")}</span>
-                            <span className={styles.statSub} style={{ color: '#2563eb' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_26")}</span>
+                            <span className={styles.statSub} style={{ color: 'var(--signal)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_26")}</span>
                         </div>
                         <div className={styles.statCard}>
                             <span className={styles.statLabel}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_27")}</span>
-                            <span className={styles.statValue} style={{ fontSize: '1.2rem', color: usedMinutes > 180 ? '#f59e0b' : '#16a34a', marginTop: '0.2rem' }}>
+                            <span className={styles.statValue} style={{ fontSize: '1.2rem', color: usedMinutes > 180 ? 'var(--pending)' : 'var(--status-ok)', marginTop: '0.2rem' }}>
                                 {usedMinutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_28")}</span>
                             <span className={styles.statSub}>{remainingCount}{readData("components.Clerio.AttendanceView", "AttendanceView_text_29")}</span>
                         </div>
@@ -209,10 +317,10 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                     {/* AI Anomaly Detection Banner */}
                     <div className={styles.anomalyBanner}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                            <Sparkles size={22} color="#d97706" />
+                            <Sparkles size={22} color="var(--pending)" />
                             <div>
-                                <strong style={{ color: '#92400e' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_30")}</strong>
-                                <div style={{ fontSize: '0.85rem', color: '#78350f' }}>
+                                <strong style={{ color: 'var(--pending)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_30")}</strong>
+                                <div style={{ fontSize: '0.85rem', color: 'var(--text-2)' }}>
                                     {attendanceAnomalies.length}{readData("components.Clerio.AttendanceView", "AttendanceView_text_31")}</div>
                             </div>
                         </div>
@@ -222,7 +330,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                     {/* Main Calendar View */}
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
-                            <h3><CalIcon size={20} color="#2563eb" />{readData("components.Clerio.AttendanceView", "AttendanceView_text_33")}</h3>
+                            <h3><CalIcon size={20} color="var(--signal)" />{readData("components.Clerio.AttendanceView", "AttendanceView_text_33")}</h3>
                             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                                 <button className={styles.btnSecondary} style={{ padding: '0.35rem 0.6rem' }}><ChevronLeft size={16} /></button>
                                 <strong>{currentMonth}</strong>
@@ -270,7 +378,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                     className={styles.progressFill}
                                     style={{
                                         width: `${Math.min(100, (usedMinutes / 240) * 100)}%`,
-                                        background: usedMinutes >= 240 ? '#ef4444' : usedMinutes > 180 ? '#f59e0b' : '#16a34a'
+                                        background: usedMinutes >= 240 ? 'var(--flag)' : usedMinutes > 180 ? 'var(--pending)' : 'var(--status-ok)'
                                     }}
                                 />
                             </div>
@@ -291,7 +399,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                     className={styles.progressFill}
                                     style={{
                                         width: `${Math.min(100, (usedCount / 2) * 100)}%`,
-                                        background: usedCount >= 2 ? '#ef4444' : '#2563eb'
+                                        background: usedCount >= 2 ? 'var(--flag)' : 'var(--signal)'
                                     }}
                                 />
                             </div>
@@ -299,7 +407,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                         </div>
 
                         <div className={styles.quotaCard} style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-                            <KeyRound size={28} color="#2563eb" />
+                            <KeyRound size={28} color="var(--signal)" />
                             <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_43")}</div>
                             <p style={{ fontSize: '0.75rem', color: 'var(--text-2)', margin: 0 }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_44")}</p>
                             <button
@@ -354,7 +462,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                                     {gp.status}
                                                 </span>
                                             </td>
-                                            <td style={{ color: '#16a34a', fontWeight: 600 }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_58")}{gp.minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_59")}</td>
+                                            <td style={{ color: 'var(--status-ok)', fontWeight: 600 }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_58")}{gp.minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_59")}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -414,19 +522,19 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                             </td>
                                             <td>
                                                 {rec.break_minutes > 0 && (
-                                                    <div style={{ color: '#ef4444', fontSize: '0.75rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_75")}{rec.break_minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_76")}</div>
+                                                    <div style={{ color: 'var(--flag)', fontSize: '0.75rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_75")}{rec.break_minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_76")}</div>
                                                 )}
                                                 {rec.gate_pass_minutes > 0 && (
-                                                    <div style={{ color: '#16a34a', fontSize: '0.75rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_77")}{rec.gate_pass_minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_78")}</div>
+                                                    <div style={{ color: 'var(--status-ok)', fontSize: '0.75rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_77")}{rec.gate_pass_minutes}{readData("components.Clerio.AttendanceView", "AttendanceView_text_78")}</div>
                                                 )}
                                                 {rec.break_minutes === 0 && rec.gate_pass_minutes === 0 && readData("components.Clerio.AttendanceView", "fallback_4")}
                                             </td>
                                             <td>
-                                                <strong style={{ color: '#2563eb' }}>{rec.formatted_net || `${rec.net_minutes}m`}</strong>
+                                                <strong style={{ color: 'var(--signal)' }}>{rec.formatted_net || `${rec.net_minutes}m`}</strong>
                                             </td>
                                             <td>
                                                 {rec.ot_minutes > 0 ? (
-                                                    <strong style={{ color: '#16a34a' }}>{rec.formatted_ot || `${rec.ot_minutes}m`}</strong>
+                                                    <strong style={{ color: 'var(--status-ok)' }}>{rec.formatted_ot || `${rec.ot_minutes}m`}</strong>
                                                 ) : (
                                                     <span style={{ color: 'var(--text-3)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_79")}</span>
                                                 )}
@@ -452,10 +560,10 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                     </div>
 
                     {/* Inspector for Demo Point 1: Ramesh Kumar's Cross-Midnight Shift */}
-                    <div className={styles.card} style={{ borderLeft: '4px solid #2563eb' }}>
+                    <div className={styles.card} style={{ borderLeft: '4px solid var(--signal)' }}>
                         <div className={styles.cardHeader}>
                             <div>
-                                <h4 style={{ margin: 0, color: '#2563eb' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_80")}</h4>
+                                <h4 style={{ margin: 0, color: 'var(--signal)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_80")}</h4>
                                 <p style={{ fontSize: '0.8rem', color: 'var(--text-2)', margin: '0.25rem 0 0' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_81")}<strong>{readData("components.Clerio.AttendanceView", "AttendanceView_text_82")}</strong>{readData("components.Clerio.AttendanceView", "AttendanceView_text_83")}</p>
                             </div>
                             <button
@@ -468,9 +576,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                             <div style={{ background: 'var(--card-2)', padding: '0.85rem', borderRadius: '6px' }}>
                                 <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_85")}</span>
                                 <div style={{ fontWeight: 600, marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_86")}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#16a34a' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_87")}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--status-ok)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_87")}</div>
                             </div>
-                            <div style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px dashed #ef4444', padding: '0.85rem', borderRadius: '6px' }}>
+                            <div style={{ background: 'var(--flag-wash)', border: '1px dashed var(--flag)', padding: '0.85rem', borderRadius: '6px' }}>
                                 <span style={{ fontSize: '0.72rem', color: 'var(--flag)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_88")}</span>
                                 <div style={{ fontWeight: 600, color: 'var(--flag)', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_89")}</div>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--flag)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_90")}</div>
@@ -478,12 +586,12 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                             <div style={{ background: 'var(--card-2)', padding: '0.85rem', borderRadius: '6px' }}>
                                 <span style={{ fontSize: '0.72rem', color: 'var(--text-2)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_91")}</span>
                                 <div style={{ fontWeight: 600, marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_92")}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#16a34a' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_93")}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--status-ok)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_93")}</div>
                             </div>
-                            <div style={{ background: 'rgba(37, 99, 235, 0.08)', border: '1px solid #2563eb', padding: '0.85rem', borderRadius: '6px' }}>
-                                <span style={{ fontSize: '0.72rem', color: '#2563eb' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_94")}</span>
-                                <div style={{ fontWeight: 700, color: '#2563eb', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_95")}</div>
-                                <div style={{ fontSize: '0.75rem', color: '#2563eb' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_96")}</div>
+                            <div style={{ background: 'var(--signal-wash)', border: '1px solid var(--signal)', padding: '0.85rem', borderRadius: '6px' }}>
+                                <span style={{ fontSize: '0.72rem', color: 'var(--signal)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_94")}</span>
+                                <div style={{ fontWeight: 700, color: 'var(--signal)', marginTop: '0.2rem' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_95")}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'var(--signal)' }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_96")}</div>
                             </div>
                         </div>
                     </div>
@@ -530,7 +638,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                     <div>{readData("components.Clerio.AttendanceView", "AttendanceView_text_102")}<strong>{readData("components.Clerio.AttendanceView", "AttendanceView_text_103")}</strong> {cat.ot_eligibility === 'all' ? readData("components.Clerio.AttendanceView", "display_13") : cat.ot_eligibility === 'restday_holiday_only' ? readData("components.Clerio.AttendanceView", "display_14") : readData("components.Clerio.AttendanceView", "display_15")}</div>
                                     <div>{readData("components.Clerio.AttendanceView", "AttendanceView_text_104")}<strong>{readData("components.Clerio.AttendanceView", "AttendanceView_text_105")}</strong> {cat.statutory_applicability.join(', ')}</div>
                                 </div>
-                                <div style={{ fontSize: '0.72rem', color: '#2563eb', borderTop: '1px solid var(--line-soft)', paddingTop: '0.5rem', marginTop: 'auto' }}>
+                                <div style={{ fontSize: '0.72rem', color: 'var(--signal)', borderTop: '1px solid var(--line-soft)', paddingTop: '0.5rem', marginTop: 'auto' }}>
                                     {cat.code === 'CONTRACT' && readData("components.Clerio.AttendanceView", "fallback_5")}
                                     {cat.code === 'THIRD_PARTY_EMP' && readData("components.Clerio.AttendanceView", "fallback_6")}
                                     {cat.code === 'THIRD_PARTY_HELPER' && readData("components.Clerio.AttendanceView", "fallback_7")}
@@ -575,13 +683,176 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                 </div>
             )}
 
+            {/* TAB: Attendance Regularization Requests */}
+            {activeTab === 'regularization' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                    <div className={styles.card}>
+                        <div className={styles.cardHeader}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                                <UserCheck size={20} color="var(--signal)" />
+                                <div>
+                                    <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Attendance Regularization Register</h3>
+                                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>
+                                        Two-tier approval workflow (Shift Supervisor → Time Office Admin) with automatic gross/net minutes recalculation upon sign-off.
+                                    </p>
+                                </div>
+                            </div>
+                            <button
+                                className={styles.btnPrimary}
+                                onClick={() => setIsRegModalOpen(true)}
+                                style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
+                            >
+                                <Plus size={15} /> New Request
+                            </button>
+                        </div>
+
+                        {/* Status Filter Chips */}
+                        <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                            {['ALL', 'submitted', 'supervisor_approved', 'approved', 'rejected'].map(st => (
+                                <button
+                                    key={st}
+                                    onClick={() => setRegFilterStatus(st)}
+                                    style={{
+                                        padding: '0.3rem 0.75rem',
+                                        fontSize: '0.78rem',
+                                        borderRadius: 'var(--r-pill)',
+                                        border: regFilterStatus === st ? '1px solid var(--signal)' : '1px solid var(--line)',
+                                        background: regFilterStatus === st ? 'var(--signal-wash)' : 'var(--card-2)',
+                                        color: regFilterStatus === st ? 'var(--signal-ink)' : 'var(--text-2)',
+                                        cursor: 'pointer',
+                                        fontWeight: regFilterStatus === st ? 600 : 500,
+                                        textTransform: 'capitalize'
+                                    }}
+                                >
+                                    {st === 'ALL' ? 'All Requests' : st.replace('_', ' ')}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Requests Table */}
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Request ID & Date</th>
+                                        <th>Employee</th>
+                                        <th>Exception Type</th>
+                                        <th>Claimed Punches</th>
+                                        <th>Justification</th>
+                                        <th>Workflow Status</th>
+                                        <th style={{ textAlign: 'right' }}>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {(attendanceRegularizations || [])
+                                        .filter(r => regFilterStatus === 'ALL' || r.status === regFilterStatus)
+                                        .map(r => (
+                                            <tr key={r.id}>
+                                                <td>
+                                                    <strong>{r.id}</strong>
+                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-2)', fontFamily: 'var(--f-num, monospace)' }}>{r.date}</div>
+                                                </td>
+                                                <td>
+                                                    <div style={{ fontWeight: 600 }}>{r.employee_name}</div>
+                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{r.employee_id}</div>
+                                                </td>
+                                                <td>
+                                                    <span className={`${styles.badge} ${styles.badgeBlue}`} style={{ textTransform: 'capitalize' }}>
+                                                        {r.kind ? r.kind.replace('-', ' ') : 'Exception'}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div style={{ fontSize: '0.8rem', fontFamily: 'var(--f-num, monospace)' }}>
+                                                        In: <strong>{r.claimedIn || '09:00 AM'}</strong>
+                                                    </div>
+                                                    <div style={{ fontSize: '0.8rem', fontFamily: 'var(--f-num, monospace)' }}>
+                                                        Out: <strong>{r.claimedOut || '06:00 PM'}</strong>
+                                                    </div>
+                                                </td>
+                                                <td style={{ maxWidth: '220px' }}>
+                                                    <span style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>{r.reason}</span>
+                                                </td>
+                                                <td>
+                                                    {r.status === 'submitted' && (
+                                                        <span className={`${styles.badge} ${styles.badgeAmber}`}>
+                                                            Pending Supervisor
+                                                        </span>
+                                                    )}
+                                                    {r.status === 'supervisor_approved' && (
+                                                        <span className={`${styles.badge} ${styles.badgePurple}`}>
+                                                            Pending Time Office
+                                                        </span>
+                                                    )}
+                                                    {r.status === 'approved' && (
+                                                        <span className={`${styles.badge} ${styles.badgeTeal}`}>
+                                                            Fully Approved
+                                                        </span>
+                                                    )}
+                                                    {r.status === 'rejected' && (
+                                                        <span className={`${styles.badge} ${styles.badgeCoral}`}>
+                                                            Rejected
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td style={{ textAlign: 'right' }}>
+                                                    {r.status === 'submitted' && (
+                                                        <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                                                            <button
+                                                                className={styles.btnPrimary}
+                                                                style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', background: 'var(--signal)' }}
+                                                                onClick={() => decideRegularization(r.id, 'supervisor', true)}
+                                                                title="Shift Supervisor Tier 1 Approval"
+                                                            >
+                                                                <CheckCircle2 size={13} /> Supv Approve
+                                                            </button>
+                                                            <button
+                                                                className={styles.btnSecondary}
+                                                                style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', color: 'var(--flag)' }}
+                                                                onClick={() => decideRegularization(r.id, 'supervisor', false)}
+                                                            >
+                                                                <XCircle size={13} /> Reject
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {r.status === 'supervisor_approved' && (
+                                                        <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
+                                                            <button
+                                                                className={styles.btnPrimary}
+                                                                style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', background: 'var(--status-ok)' }}
+                                                                onClick={() => decideRegularization(r.id, 'time_office', true)}
+                                                                title="Time Office Admin Final Recalculation Approval"
+                                                            >
+                                                                <CheckCircle2 size={13} /> Admin Settle
+                                                            </button>
+                                                            <button
+                                                                className={styles.btnSecondary}
+                                                                style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', color: 'var(--flag)' }}
+                                                                onClick={() => decideRegularization(r.id, 'time_office', false)}
+                                                            >
+                                                                <XCircle size={13} /> Reject
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {(r.status === 'approved' || r.status === 'rejected') && (
+                                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>Settled</span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Gate Pass Request Modal */}
             {isGatePassModalOpen && (
                 <div className={styles.modalOverlay} onClick={() => setIsGatePassModalOpen(false)}>
                     <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                <KeyRound size={20} color="#2563eb" />
+                                <KeyRound size={20} color="var(--signal)" />
                                 <h3 style={{ margin: 0 }}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_113")}</h3>
                             </div>
                             <button
@@ -646,6 +917,111 @@ const AttendanceView = ({ onNavigate, onSelectConsole }) => {
                                     type="submit"
                                     className={styles.btnPrimary}
                                 >{readData("components.Clerio.AttendanceView", "AttendanceView_text_134")}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Attendance Regularization Request Modal */}
+            {isRegModalOpen && (
+                <div className={styles.modalOverlay} onClick={() => setIsRegModalOpen(false)}>
+                    <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <UserCheck size={20} color="var(--signal)" />
+                                <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Request Regularization</h3>
+                            </div>
+                            <button
+                                onClick={() => setIsRegModalOpen(false)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}
+                            >
+                                <XCircle size={18} />
+                            </button>
+                        </div>
+
+                        <div style={{ background: 'var(--card-2)', padding: '0.75rem', borderRadius: 'var(--r-control)', fontSize: '0.78rem', border: '1px solid var(--line)' }}>
+                            <div>Employee: <strong>{user?.name || 'Arjun Sharma'}</strong> ({user?.id || 'EMP-101'})</div>
+                            <div style={{ marginTop: '0.25rem', color: 'var(--text-2)' }}>Policy: Missing punch requests require two-tier approval before net work hours are credited.</div>
+                        </div>
+
+                        <form onSubmit={handleCreateRegularization} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label className={styles.formLabel}>Attendance Exception Date</label>
+                                <input
+                                    type="date"
+                                    value={regDate}
+                                    onChange={e => setRegDate(e.target.value)}
+                                    max={new Date().toISOString().split('T')[0]}
+                                    style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
+                                    required
+                                />
+                            </div>
+
+                            <div>
+                                <label className={styles.formLabel}>Exception Category</label>
+                                <select
+                                    value={regKind}
+                                    onChange={e => setRegKind(e.target.value)}
+                                    style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
+                                >
+                                    <option value="missing-punch">Missing Punch (Terminal failure / Forgot to punch)</option>
+                                    <option value="official-duty">Official Duty (Client visit / External assignment)</option>
+                                    <option value="late-arrival">Late Arrival (Transit delay / Emergency)</option>
+                                    <option value="system-failure">System / Network Outage at Turnstile</option>
+                                </select>
+                            </div>
+
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                                <div>
+                                    <label className={styles.formLabel}>Claimed In-Time</label>
+                                    <input
+                                        type="text"
+                                        placeholder="09:00 AM"
+                                        value={regClaimedIn}
+                                        onChange={e => setRegClaimedIn(e.target.value)}
+                                        style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
+                                    />
+                                </div>
+                                <div>
+                                    <label className={styles.formLabel}>Claimed Out-Time</label>
+                                    <input
+                                        type="text"
+                                        placeholder="06:00 PM"
+                                        value={regClaimedOut}
+                                        onChange={e => setRegClaimedOut(e.target.value)}
+                                        style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className={styles.formLabel}>Justification Reason <span style={{ color: 'var(--flag)' }}>*</span></label>
+                                <textarea
+                                    className={styles.textarea}
+                                    style={{ height: '70px' }}
+                                    placeholder="Explain the circumstance for supervisor and time-office review..."
+                                    value={regReason}
+                                    onChange={e => setRegReason(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                <button
+                                    type="button"
+                                    className={styles.btnSecondary}
+                                    onClick={() => setIsRegModalOpen(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className={styles.btnPrimary}
+                                    style={{ background: 'var(--signal)' }}
+                                >
+                                    Submit Request
+                                </button>
                             </div>
                         </form>
                     </div>

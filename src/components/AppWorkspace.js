@@ -24,19 +24,52 @@ import { useScrollableTables } from '@/hooks/useScrollableTables';
 import Toast from '@/components/Clerio/Toast';
 import toastStyles from '@/components/Clerio/Toast.module.css';
 
+const NAV_STATE_KEY = 'nucleus_nav_state';
+
 const AppContent = () => {
   const { user, isLoading, isModuleAllowed } = useAuth();
   const workspaceRef = useRef(null);
   useScrollableTables(workspaceRef, Boolean(user));
   const { toasts, removeToast, showToast } = useHRMS();
 
-  // Active navigation states
-  const [activeDomain, setActiveDomain] = useState(readData("components.AppWorkspace", "initialState_1"));
-  const [activeSubFeature, setActiveSubFeature] = useState(user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"));
-  const [activeTab, setActiveTab] = useState(readData("components.AppWorkspace", "initialState_3"));
+  // ── Restore last-active page from sessionStorage (cleared on logout/tab close) ──
+  const savedNav = (() => {
+    if (typeof window === 'undefined') return null;
+    try { return JSON.parse(sessionStorage.getItem(NAV_STATE_KEY) || 'null'); } catch { return null; }
+  })();
+
+  // Active navigation states — seeded from sessionStorage when available
+  const [activeDomain, setActiveDomain] = useState(
+    savedNav?.activeDomain ?? readData("components.AppWorkspace", "initialState_1")
+  );
+  const [activeSubFeature, setActiveSubFeature] = useState(
+    savedNav?.activeSubFeature ?? (user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"))
+  );
+  const [activeTab, setActiveTab] = useState(
+    savedNav?.activeTab ?? readData("components.AppWorkspace", "initialState_3")
+  );
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // MultipliersKraft Active Console ('S1' through 'S10')
+  const [activeConsole, setActiveConsole] = useState(
+    savedNav?.activeConsole ?? (user?.defaultConsole || readData("components.AppWorkspace", "initialState_4"))
+  );
+
+  // Persist nav state to sessionStorage on every navigation change
+  useEffect(() => {
+    if (!user) return;
+    try {
+      sessionStorage.setItem(NAV_STATE_KEY, JSON.stringify({
+        activeDomain,
+        activeSubFeature,
+        activeTab,
+        activeConsole,
+      }));
+    } catch { /* Storage unavailable */ }
+  }, [activeDomain, activeSubFeature, activeTab, activeConsole, user]);
+
   useEffect(() => {
     const compact = window.matchMedia('(max-width: 960px)');
     const closeOnCompact = () => { if (compact.matches) setIsRightNavOpen(false); };
@@ -48,9 +81,6 @@ const AppContent = () => {
   const [activeFloatingDrawer, setActiveFloatingDrawer] = useState(null);
   const isAIPanelOpen = activeFloatingDrawer === 'ai';
   const isChatPanelOpen = activeFloatingDrawer === 'chat';
-
-  // MultipliersKraft Active Console ('S1' through 'S10')
-  const [activeConsole, setActiveConsole] = useState(user?.defaultConsole || readData("components.AppWorkspace", "initialState_4"));
 
   // Handle switching consoles (connected across TopNav, MainWorkspace, DualPaneNav, and RightSubNav)
   const handleSelectConsole = (consoleId) => {
@@ -157,12 +187,6 @@ const AppContent = () => {
     setActiveSubFeature(subFeatureId);
     setShowCatalog(false);
 
-    // Dedicated operational workspaces are addressed by their sub-module id.
-    if (getOperationalModule(subFeatureId)) {
-      setActiveTab(subFeatureId);
-      return;
-    }
-
     // AI Copilot special action
     if (subFeatureId === 'analytics_copilot') {
       setActiveFloatingDrawer('ai');
@@ -175,59 +199,134 @@ const AppContent = () => {
       return;
     }
 
+    // 1. Smart Attendance & Shifts
+    const attendanceItems = [
+      'attendance', 'core_attendance', 'check_in_out', 'my_attendance', 'attendance_detail',
+      'gate_passes', 'gate_pass', 'overtime_register', 'attendance_exceptions', 'recompute_monitor',
+      'team_history', 'ops_rosters', 'ops_field', 'monthly_ledger', 'time_office_ledger', 'worker_categories'
+    ];
+    if (attendanceItems.includes(subFeatureId) || subFeatureId.startsWith('attendance')) {
+      setActiveTab('attendance');
+      return;
+    }
+
+    // 2. Leave Management
+    const leaveItems = [
+      'leaves', 'core_leaves', 'leave_requests', 'leave_ledger', 'leave_policy_admin',
+      'early_return_recredit', 'policy_matrix', 'comp_off_clock'
+    ];
+    if (leaveItems.includes(subFeatureId) || subFeatureId.startsWith('leave')) {
+      setActiveTab('leaves');
+      return;
+    }
+
+    // 3. Payroll & Finance
+    const payrollItems = [
+      'payroll', 'payroll_global', 'payroll_claims', 'payroll_ewa', 'payroll_accounting',
+      'payroll_fnf', 'payroll_runs', 'pre_payroll_audit', 'salary_simulator', 'payslips',
+      'gl_mapping', 'loans_advances', 'loans', 'full_and_final', 'fnf', 'fnf_settlement',
+      'reimbursements', 'offcycle', 'scoping'
+    ];
+    if (payrollItems.includes(subFeatureId) || subFeatureId.startsWith('payroll')) {
+      setActiveTab('payroll');
+      return;
+    }
+
+    // 4. People Core & Employee Master
+    const peopleItems = [
+      'people_core', 'core_people', 'person_record', 'assignment_admin', 'legal_entity',
+      'entities', 'location_master', 'locations', 'directory', 'star_employees', 'people_classification'
+    ];
+    if (peopleItems.includes(subFeatureId) || subFeatureId.startsWith('people')) {
+      setActiveTab('people_core');
+      return;
+    }
+
+    // 5. Onboarding & Lifecycle
+    const onboardingItems = [
+      'onboarding', 'core_onboarding', 'joining_chain', 'clearance_board', 'asset_register',
+      'letters_register', 'document_vault', 'policy_acknowledgements', 'lifecycle'
+    ];
+    if (onboardingItems.includes(subFeatureId) || subFeatureId.startsWith('onboarding')) {
+      setActiveTab('onboarding');
+      return;
+    }
+
+    // 6. Organization & Workforce
+    const orgItems = [
+      'team', 'teams', 'core_org', 'position_register', 'sanctioned_strength', 'positions', 'org_chart', 'orgchart'
+    ];
+    if (orgItems.includes(subFeatureId)) {
+      setActiveTab('team');
+      return;
+    }
+
+    // 7. Talent & Recruitment
+    if (subFeatureId === 'talent_ats' || subFeatureId === 'talent_mobility' || subFeatureId.startsWith('recruitment')) {
+      setActiveTab('recruitment');
+      return;
+    }
+
+    // 8. Performance
+    if (subFeatureId === 'talent_performance' || subFeatureId === 'talent_succession' || subFeatureId.startsWith('performance')) {
+      setActiveTab('performance');
+      return;
+    }
+
+    // 9. Learning
+    if (subFeatureId === 'talent_learning' || subFeatureId.startsWith('learning')) {
+      setActiveTab('learning');
+      return;
+    }
+
+    // 10. Experience
+    if (subFeatureId === 'talent_skills' || subFeatureId === 'talent_recognition' || subFeatureId.startsWith('experience')) {
+      setActiveTab('experience');
+      return;
+    }
+
+    // 11. Compliance & Statutory
+    if (subFeatureId === 'core_compliance' || subFeatureId === 'payroll_tax' || subFeatureId.startsWith('compliance')) {
+      setActiveTab('compliance');
+      return;
+    }
+
+    // 12. Helpdesk
+    if (subFeatureId === 'core_operations' || subFeatureId.startsWith('helpdesk')) {
+      setActiveTab('helpdesk');
+      return;
+    }
+
+    // 13. Contract Workforce
+    if (subFeatureId === 'core_workforce' || subFeatureId === 'ops_contract' || subFeatureId.startsWith('contract')) {
+      setActiveTab('contract_workforce');
+      return;
+    }
+
+    // 14. Platform Governance & Access Control
+    if (subFeatureId === 'platform_access_control' || subFeatureId === 'access_control' || subFeatureId === 'access_scope') {
+      setActiveTab('access_control');
+      return;
+    }
+    if (subFeatureId === 'platform_integrations' || subFeatureId.startsWith('integration')) {
+      setActiveTab('integrations');
+      return;
+    }
+    if (subFeatureId.startsWith('platform') || subFeatureId.startsWith('setting')) {
+      setActiveTab('settings');
+      return;
+    }
+
+    // Dedicated operational module fallback if not caught by rich views
+    if (getOperationalModule(subFeatureId)) {
+      setActiveTab(subFeatureId);
+      return;
+    }
+
     const item = navigationDomains.flatMap(domain => domain.groups.flatMap(group => group.items)).find(item => item.id === subFeatureId);
     if (item?.targetTab) { setActiveTab(item.targetTab); return; }
 
-    // 1. Core HR
-    if (subFeatureId === 'core_people') setActiveTab('people_core');
-    else if (subFeatureId === 'core_attendance') setActiveTab('attendance');
-    else if (subFeatureId === 'core_leaves') setActiveTab('leaves');
-    else if (subFeatureId === 'core_onboarding') setActiveTab('onboarding');
-    else if (subFeatureId === 'core_org') setActiveTab('team');
-    else if (subFeatureId === 'core_workforce') setActiveTab('contract_workforce');
-    else if (subFeatureId === 'core_operations') setActiveTab('helpdesk');
-    else if (subFeatureId === 'core_compliance') setActiveTab('compliance');
-
-    // 2. Talent
-    else if (subFeatureId === 'talent_ats' || subFeatureId === 'talent_mobility') setActiveTab('recruitment');
-    else if (subFeatureId === 'talent_performance' || subFeatureId === 'talent_succession') setActiveTab('performance');
-    else if (subFeatureId === 'talent_learning') setActiveTab('learning');
-    else if (subFeatureId === 'talent_skills' || subFeatureId === 'talent_recognition') setActiveTab('experience');
-
-    // 3. Payroll & Finance
-    else if (subFeatureId === 'payroll_global' || subFeatureId === 'payroll_claims' || subFeatureId === 'payroll_ewa' || subFeatureId === 'payroll_accounting') setActiveTab('payroll');
-    else if (subFeatureId === 'payroll_comp') setActiveTab('compensation');
-    else if (subFeatureId === 'payroll_tax') setActiveTab('compliance');
-    else if (subFeatureId === 'payroll_fnf') setActiveTab('onboarding');
-
-    // 4. Workforce Operations
-    else if (subFeatureId === 'ops_rosters' || subFeatureId === 'ops_field') setActiveTab('attendance');
-    else if (subFeatureId === 'ops_projects' || subFeatureId === 'ops_timesheets') setActiveTab('projects');
-    else if (subFeatureId === 'ops_contract') setActiveTab('contract_workforce');
-    else if (subFeatureId === 'ops_assets') setActiveTab('onboarding');
-    else if (subFeatureId === 'ops_travel') setActiveTab('payroll');
-
-    // 5. Analytics & AI
-    else if (subFeatureId === 'analytics_exec') setActiveTab('dashboard');
-    else if (subFeatureId.startsWith('analytics')) setActiveTab('analytics');
-
-    // 6. Platform
-    else if (subFeatureId === 'platform_access_control' || subFeatureId === 'access_control') setActiveTab('access_control');
-    else if (subFeatureId === 'platform_integrations') setActiveTab('integrations');
-    else if (subFeatureId === 'platform_workflows') setActiveTab('onboarding');
-    else if (subFeatureId.startsWith('platform')) setActiveTab('settings');
-
-    // Backward-compatibility fallbacks
-    else if (subFeatureId.startsWith('attendance')) setActiveTab('attendance');
-    else if (subFeatureId.startsWith('leave')) setActiveTab('leaves');
-    else if (subFeatureId.startsWith('payroll')) setActiveTab('payroll');
-    else if (subFeatureId.startsWith('compliance')) setActiveTab('compliance');
-    else if (subFeatureId.startsWith('recruitment')) setActiveTab('recruitment');
-    else if (subFeatureId.startsWith('performance')) setActiveTab('performance');
-    else if (subFeatureId === 'team' || subFeatureId === 'teams') setActiveTab('team');
-    else if (subFeatureId === 'onboarding' || subFeatureId === 'lifecycle') setActiveTab('onboarding');
-    else if (subFeatureId === 'people_core' || subFeatureId === 'people_classification') setActiveTab('people_core');
-    else setActiveTab(subFeatureId);
+    setActiveTab(subFeatureId);
   };
 
   // Handle selecting a feature card from CatalogGridView
@@ -342,9 +441,8 @@ const AppContent = () => {
         activeConsole={activeConsole}
         onSelectConsole={handleSelectConsole}
         onSelectTab={(targetTab, domainId, subId) => {
-          setActiveTab(targetTab);
+          handleSelectSubFeature(subId || targetTab);
           if (domainId) setActiveDomain(domainId);
-          if (subId) setActiveSubFeature(subId);
           setShowCatalog(false);
           setIsModulesOpen(false);
         }}

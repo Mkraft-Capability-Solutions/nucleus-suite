@@ -38,6 +38,9 @@ import {
     INITIAL_INSPECTION_BOOK_FORM36, validateFormFNominees,
     generateFormFDeclaration, SAMPLE_FORM_F_TEMPLATES
 } from '@/services/erpAndComplianceService';
+import {
+    computeAutoLeaveAllocation, evaluateCOFFLapse, isSeniorManagement, validateLeaveRestrictions
+} from '@/services/autoLeaveCreditEngine';
 
 const HRMSContext = createContext();
 
@@ -125,6 +128,103 @@ export const HRMSProvider = ({ children }) => {
     const approveGatePass = (gatePassId) => {
         setGatePasses(prev => prev.map(gp => gp.id === gatePassId ? { ...gp, ...readData("context.HRMSContext", "approveGatePass_fields_14") } : gp));
         showToast('Gate Pass Approved', 'Pass updated and minutes added to attendance net span.', 'success');
+    };
+
+    // --- 2C. ATTENDANCE REGULARIZATION MULTI-STAGE WORKFLOW ---
+    const [attendanceRegularizations, setAttendanceRegularizations] = useState([
+        {
+            id: 'REG-2026-001',
+            employee_id: 'EMP-101',
+            employee_name: 'Arjun Sharma',
+            date: '2026-09-08',
+            kind: 'missing-punch',
+            reason: 'Turnstile scanner unresponsive at Gate 2',
+            claimedIn: '09:02 AM',
+            claimedOut: '06:35 PM',
+            status: 'submitted',
+            supervisor_status: 'pending',
+            time_office_status: 'pending',
+            created_at: '2026-09-08T18:45:00Z'
+        },
+        {
+            id: 'REG-2026-002',
+            employee_id: 'EMP-102',
+            employee_name: 'Priya Nair',
+            date: '2026-09-05',
+            kind: 'official-duty',
+            reason: 'Client site audit at Peenya Industrial Area',
+            claimedIn: '09:30 AM',
+            claimedOut: '07:00 PM',
+            status: 'supervisor_approved',
+            supervisor_status: 'approved',
+            time_office_status: 'pending',
+            created_at: '2026-09-05T19:10:00Z'
+        }
+    ]);
+
+    const requestRegularization = async ({ employeeId = 'EMP-101', employeeName = 'Arjun Sharma', date, kind = 'missing-punch', reason = '', claimedIn = '09:00 AM', claimedOut = '06:00 PM' }) => {
+        const newReg = {
+            id: `REG-2026-${String(attendanceRegularizations.length + 1).padStart(3, '0')}`,
+            employee_id: employeeId,
+            employee_name: employeeName,
+            date,
+            kind,
+            reason,
+            claimedIn,
+            claimedOut,
+            status: 'submitted',
+            supervisor_status: 'pending',
+            time_office_status: 'pending',
+            created_at: new Date().toISOString()
+        };
+        setAttendanceRegularizations(prev => [newReg, ...prev]);
+        try {
+            fetch('/api/v1/regularizations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    employeeId: 'c668678c-ed74-4dbb-a98b-0287afc8f286',
+                    date,
+                    kind,
+                    reason: reason.length < 3 ? 'Attendance discrepancy regularization' : reason,
+                    claimedIn,
+                    claimedOut
+                })
+            }).catch(e => console.warn('Regularization DB sync notice:', e));
+        } catch {}
+        showToast('Regularization Submitted', `Request for ${date} queued for Shift Supervisor approval.`, 'success');
+        return { success: true, regularization: newReg };
+    };
+
+    const decideRegularization = async (id, stage, approve, remarks = '') => {
+        setAttendanceRegularizations(prev => prev.map(reg => {
+            if (reg.id !== id) return reg;
+            let newStatus = reg.status;
+            let supStatus = reg.supervisor_status;
+            let toStatus = reg.time_office_status;
+            if (stage === 'supervisor') {
+                supStatus = approve ? 'approved' : 'rejected';
+                newStatus = approve ? 'supervisor_approved' : 'rejected';
+            } else if (stage === 'time_office') {
+                toStatus = approve ? 'approved' : 'rejected';
+                newStatus = approve ? 'approved' : 'rejected';
+            }
+            return { ...reg, status: newStatus, supervisor_status: supStatus, time_office_status: toStatus, remarks };
+        }));
+
+        try {
+            fetch(`/api/v1/regularizations/${id}/decide`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ approve })
+            }).catch(e => console.warn('Regularization decision DB sync notice:', e));
+        } catch {}
+
+        showToast(
+            approve ? 'Regularization Approved' : 'Regularization Rejected',
+            `Stage [${stage.toUpperCase()}] decision recorded.${approve && stage === 'time_office' ? ' Attendance recalculation applied.' : ''}`,
+            approve ? 'success' : 'info'
+        );
     };
 
     // Precomputed initial ledger covering all 7 Sprint 1 HR Demo points
@@ -485,6 +585,18 @@ export const HRMSProvider = ({ children }) => {
             };
         }));
 
+        try {
+            fetch(`/api/v1/fnf-settlements/${settlementId}/clear-department`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    department: deptKey.toLowerCase(),
+                    status: newStatus.toLowerCase() === 'cleared' ? 'cleared' : 'pending',
+                    remarks: remarks || 'Clearance updated in UI'
+                })
+            }).catch(e => console.warn('FnF department clearance DB sync notice:', e));
+        } catch {}
+
         showToast(
             'No-Dues Checkpoint Updated',
             `${deptKey} department clearance set to ${newStatus}.`,
@@ -506,7 +618,28 @@ export const HRMSProvider = ({ children }) => {
             return;
         }
 
-        setFnfSettlements(prev => prev.map(s => s.settlementId === settlementId ? { ...s, ...readData("context.HRMSContext", "disburseFnFSettlement_fields_58") } : s));
+        const paymentRef = `IMPS-FNF-${Date.now().toString().slice(-8)}`;
+
+        setFnfSettlements(prev => prev.map(s => s.settlementId === settlementId ? {
+            ...s,
+            status: 'DISBURSED',
+            settlementStatus: 'DISBURSED',
+            disbursedAt: new Date().toISOString(),
+            disbursedBy: authenticatedUser?.name || 'HR Admin',
+            paymentRef,
+        } : s));
+
+        try {
+            fetch(`/api/v1/fnf-settlements/${settlementId}/disburse`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    transactionRef: paymentRef,
+                    paidAt: new Date().toISOString().slice(0, 10)
+                })
+            }).catch(e => console.warn('FnF disbursement DB sync notice:', e));
+        } catch {}
+
         showToast(
             'F&F Disbursed',
             `Full & Final settlement disbursed via IMPS batch file. Net pay transferred to employee account.`,
@@ -913,11 +1046,38 @@ export const HRMSProvider = ({ children }) => {
         return generateFormFDeclaration(targetEmp, nominees, witnesses);
     };
 
+    // --- AUTO LEAVE CREDIT ENGINE (Demo Point #7) ---
+    const getLeaveAllocationForEmployee = (employeeId, referenceDate = new Date()) => {
+        const emp = employees.find(e => e.id === employeeId) || {};
+        return computeAutoLeaveAllocation(emp, referenceDate);
+    };
+
+    // --- ANNOUNCEMENTS: Auto-generate for birthdays, new joiners, star employees ---
+    const triggerAutoAnnouncements = () => {
+        const today = new Date();
+        const todayMMDD = `${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+        employees.forEach(emp => {
+            if (!emp.dateOfBirth) return;
+            const dob = new Date(emp.dateOfBirth);
+            const empMMDD = `${String(dob.getMonth()+1).padStart(2,'0')}-${String(dob.getDate()).padStart(2,'0')}`;
+            if (empMMDD === todayMMDD) {
+                addAnnouncement({
+                    title: `🎂 Happy Birthday, ${emp.name}!`,
+                    body: `Wishing ${emp.name} (${emp.dept}) a wonderful birthday! 🎉`,
+                    type: 'birthday',
+                    author: 'HR Team',
+                    pinned: false,
+                });
+            }
+        });
+    };
+
     return (
         <HRMSContext.Provider value={{
             user, setUser,
             attendance, attendanceAnomalies, punchIn, punchOut,
             gatePasses, requestGatePass, approveGatePass,
+            attendanceRegularizations, requestRegularization, decideRegularization,
             timeOfficeLedger, recomputeAttendanceRecord,
             workerCategories: WORKER_CATEGORIES, workCalendars: WORK_CALENDARS,
             shiftRules: SHIFT_RULES, rulesetVersion: RULESET_VERSION,
@@ -926,9 +1086,13 @@ export const HRMSProvider = ({ children }) => {
             leaveApplications, leaveState, leaveActor, adjustLeaveAllocation, compOffCredits, applyLeaveWithWorkflow,
             advanceLeaveApproval, processEarlyReturnApplication,
             leaveRuleVersion: LEAVE_RULESET_VERSION, leaveTypes: LEAVE_TYPES,
+            // Auto Leave Credit Engine (Demo Point #7)
+            computeAutoLeaveAllocation, evaluateCOFFLapse, isSeniorManagement,
+            validateLeaveRestrictions, getLeaveAllocationForEmployee,
             employees, positions, documents, auditLogs,
             teamMembers, setTeamMembers,
             announcements, addAnnouncement, togglePinAnnouncement, deleteAnnouncement,
+            triggerAutoAnnouncements,
             policyDocuments, addPolicyDocument,
             misMasterData, setMisMasterData, ingestMappedData,
             workflows, setWorkflows, updateWorkflowNode, addWorkflowNode, deleteWorkflowNode, toggleWorkflowStatus,

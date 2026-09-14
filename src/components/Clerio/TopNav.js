@@ -65,11 +65,40 @@ const TopNav = ({
     const [showNotifications, setShowNotifications] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showConsoleMenu, setShowConsoleMenu] = useState(false);
+    const [searchResults, setSearchResults] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
     const quickActionsRef = useRef(null);
     const notifRef = useRef(null);
     const profileRef = useRef(null);
     const consoleRef = useRef(null);
+    const searchDropdownRef = useRef(null);
+
+    // Real-time debounced search across modules and employees
+    useEffect(() => {
+        if (!searchQuery || searchQuery.trim().length < 2) {
+            setSearchResults([]);
+            setShowSearchDropdown(false);
+            return;
+        }
+        const timer = setTimeout(async () => {
+            setIsSearching(true);
+            try {
+                const res = await fetch(`/api/v1/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                if (res.ok) {
+                    const json = await res.json();
+                    setSearchResults(json.data || []);
+                    setShowSearchDropdown(true);
+                }
+            } catch (e) {
+                console.warn('Search query notice:', e);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 200);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
 
     // Auto-close dropdowns when clicking outside
     useEffect(() => {
@@ -85,6 +114,9 @@ const TopNav = ({
             }
             if (consoleRef.current && !consoleRef.current.contains(e.target)) {
                 setShowConsoleMenu(false);
+            }
+            if (searchDropdownRef.current && !searchDropdownRef.current.contains(e.target)) {
+                setShowSearchDropdown(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -113,7 +145,7 @@ const TopNav = ({
         <header className={styles.headerNav} role="banner">
             {/* Left: Global Search Bar + Dual-Pane Modules Launcher */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 0, maxWidth: '460px' }}>
-                <div className={styles.searchBarWrapper} style={{ flex: 1 }}>
+                <div className={styles.searchBarWrapper} style={{ flex: 1, position: 'relative' }}>
                     <Search sx={{ fontSize: 16 }} className={styles.searchIcon} />
                     <input
                         type="text"
@@ -121,9 +153,79 @@ const TopNav = ({
                         className={styles.searchInput}
                         value={searchQuery}
                         onChange={(e) => onSearchChange && onSearchChange(e.target.value)}
+                        onFocus={() => { if (searchResults.length > 0) setShowSearchDropdown(true); }}
                         aria-label={readData("components.Clerio.TopNav", "TopNav_aria-label_14")}
                     />
                     <div className={styles.cmdShortcut}>{readData("components.Clerio.TopNav", "TopNav_text_15")}</div>
+
+                    {/* Real-Time ⌘K Autocomplete Dropdown */}
+                    {showSearchDropdown && searchResults.length > 0 && (
+                        <div
+                            ref={searchDropdownRef}
+                            style={{
+                                position: 'absolute',
+                                top: '100%',
+                                left: 0,
+                                right: 0,
+                                marginTop: '4px',
+                                background: 'var(--card)',
+                                border: '1px solid var(--line)',
+                                borderRadius: 'var(--r-control, 8px)',
+                                boxShadow: 'var(--shadow-overlay)',
+                                zIndex: 1000,
+                                maxHeight: '320px',
+                                overflowY: 'auto',
+                                padding: '0.35rem 0',
+                            }}
+                        >
+                            {searchResults.map((item) => (
+                                <div
+                                    key={`${item.type}-${item.id}`}
+                                    onClick={() => {
+                                        if (item.type === 'module' && item.targetTab) {
+                                            onTabChange(item.targetTab, undefined, item.subFeature);
+                                        } else if (item.type === 'employee') {
+                                            onTabChange('people_core', 'workforce', item.id);
+                                        }
+                                        setShowSearchDropdown(false);
+                                    }}
+                                    style={{
+                                        padding: '0.5rem 0.85rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'space-between',
+                                        cursor: 'pointer',
+                                        borderBottom: '1px solid var(--line-soft)',
+                                        transition: 'background 0.15s ease',
+                                    }}
+                                    onMouseEnter={(e) => e.currentTarget.style.background = 'var(--signal-wash)'}
+                                    onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                                >
+                                    <div style={{ minWidth: 0, flex: 1, marginRight: '0.5rem' }}>
+                                        <div style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.title}
+                                        </div>
+                                        <div style={{ fontSize: '0.7rem', color: 'var(--text-2)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                            {item.subtitle}
+                                        </div>
+                                    </div>
+                                    <span
+                                        style={{
+                                            fontSize: '0.62rem',
+                                            padding: '0.15rem 0.45rem',
+                                            borderRadius: '4px',
+                                            fontWeight: 700,
+                                            flexShrink: 0,
+                                            background: item.type === 'module' ? 'var(--signal-wash)' : 'var(--info-wash)',
+                                            color: item.type === 'module' ? 'var(--signal)' : 'var(--info)',
+                                        }}
+                                    >
+                                        {item.type === 'module' ? (item.tag || 'MODULE') : 'EMPLOYEE'}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 {/* Dual-Pane Navigator Launcher (⌘M) */}

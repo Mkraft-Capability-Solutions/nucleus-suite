@@ -1,22 +1,62 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import {
     X, User, Phone, Shield, Users, GraduationCap, Briefcase,
-    HeartPulse, Plus, Trash2, CheckCircle2, ArrowRight, ArrowLeft
+    HeartPulse, Plus, Trash2, CheckCircle2, ArrowRight, ArrowLeft, Lock, AlertCircle
 } from 'lucide-react';
 import styles from './EmployeeCreationWizard.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { getPicklistOptions } from '@/lib/picklist-catalog';
+import { useFormValidation, validateFormFields } from '@/hooks/useFormValidation';
+import { useDuplicateCheck } from '@/hooks/useDuplicateCheck';
 
-export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
+export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existingEmployees = [] }) {
     const { showToast } = useHRMS();
     const [activeTab, setActiveTab] = useState(1);
+    const [formErrors, setFormErrors] = useState({});
+    const [touchedFields, setTouchedFields] = useState({});
+    const { isDuplicate, findDuplicate } = useDuplicateCheck(existingEmployees);
+
+    // Validation rules per tab
+    const TAB_RULES = {
+        1: [
+            { key: 'firstName',   label: 'First Name',    required: true, minLength: 1 },
+            { key: 'lastName',    label: 'Last Name',     required: true, minLength: 1 },
+            { key: 'gender',      label: 'Gender',        required: true },
+            { key: 'dateOfBirth', label: 'Date of Birth', required: true, type: 'date' },
+        ],
+        2: [
+            { key: 'mobile',        label: 'Primary Mobile',    required: true, type: 'phone' },
+            { key: 'personalEmail', label: 'Personal Email',    required: true, type: 'email' },
+            { key: 'emergencyName', label: 'Emergency Contact Name', required: true, minLength: 2 },
+            { key: 'emergencyPhone',label: 'Emergency Contact Phone', required: true, type: 'phone' },
+            { key: 'presentAddr1',  label: 'Present Address',  required: true, minLength: 5 },
+            { key: 'presentCity',   label: 'City',            required: true, minLength: 2 },
+            { key: 'presentState',  label: 'State',           required: true },
+            { key: 'presentPin',    label: 'PIN Code',        required: true, pattern: { regex: /^\d{6}$/, message: 'PIN Code must be 6 digits' } },
+        ],
+        3: [
+            { key: 'bankName',      label: 'Bank Name',         required: true },
+            { key: 'accountToken',  label: 'Account Number',    required: true, minLength: 9, maxLength: 18 },
+            { key: 'accountConfirm',label: 'Re-enter Account Number', required: true, matchKey: 'accountToken', matchLabel: 'Account Number' },
+            { key: 'ifsc',          label: 'IFSC Code',         required: true, type: 'ifsc' },
+            { key: 'accountType',   label: 'Account Type',      required: true },
+        ],
+        6: [
+            { key: 'department',   label: 'Department',    required: true },
+            { key: 'designation',  label: 'Designation',   required: true, minLength: 2 },
+            { key: 'joiningDate',  label: 'Joining Date',  required: true, type: 'date' },
+            { key: 'manager',      label: 'Reporting Manager', required: true, minLength: 2 },
+            { key: 'workerClass',  label: 'Worker Class',  required: true },
+        ],
+    };
+    const ALL_RULES = Object.values(TAB_RULES).flat();
 
     // Form state covering all 12 sections of FRM-PPL-01
     const [formData, setFormData] = useState({
         // Section 1: Identity
-        employeeCode: 'EMP-10001',
+        employeeCode: '',  // auto-generated on mount
         salutation: 'Mr',
         firstName: '',
         middleName: '',
@@ -52,6 +92,9 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
         emergencyName: '',
         emergencyRelation: 'Spouse',
         emergencyPhone: '',
+        emergencySecondaryName: '',
+        emergencySecondaryRelation: 'Parent',
+        emergencySecondaryPhone: '',
 
         // Section 4: Address
         presentAddr1: '',
@@ -128,13 +171,51 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
         workerClass: 'Permanent Full-Time',
         status: 'Active',
         effectiveFrom: new Date().toISOString().split('T')[0],
-        changeReason: 'New hire onboarding'
+        changeReason: 'New hire onboarding',
+
+        // Section 13: Labour Law & OT Classification (Demo Points 2, 3, 4, 7, 8)
+        workerCategory: 'PERM',           // PERM | CONTRACT | THIRD_PARTY_EMP | THIRD_PARTY_HELPER | TRAINEE_DET | TRAINEE_GET
+        hasRestDays: true,                // false for daily-wage contractual, 3rd-party helpers
+        otEligibility: 'ALL_DAYS',        // ALL_DAYS | REST_HOLIDAYS_ONLY | NONE
+        salaryLocationScope: 'PLANT',     // PLANT | HO (HO employees: attendance at plant, salary at HO)
+        assignedShift: 'A',               // A | B | C | GENERAL | AUTO_DETECT
+        isTrainee: false,
+        traineeType: '',                  // DET | GET
     });
+
+    // Auto-generate employee code on mount
+    useEffect(() => {
+        const existing = existingEmployees.map(e => {
+            const m = String(e.id ?? '').match(/(\d+)$/);
+            return m ? parseInt(m[1], 10) : 0;
+        });
+        const maxExisting = existing.length > 0 ? Math.max(...existing) : 10000;
+        const nextCode = `EMP-${String(maxExisting + 1).padStart(5, '0')}`;
+        setFormData(prev => ({ ...prev, employeeCode: nextCode }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
 
     if (!isOpen) return null;
 
     const handleChange = (field, val) => {
         setFormData(prev => ({ ...prev, [field]: val }));
+        // Clear error for this field when user edits it
+        if (formErrors[field]) setFormErrors(prev => { const n = {...prev}; delete n[field]; return n; });
+    };
+
+    const touchField = (key) => setTouchedFields(prev => ({ ...prev, [key]: true }));
+    const getFieldError = (key) => touchedFields[key] ? formErrors[key] ?? '' : '';
+    const FieldError = ({ fieldKey }) => {
+        const err = getFieldError(fieldKey);
+        if (!err) return null;
+        return <span className={styles.fieldError} role="alert"><AlertCircle size={12} /> {err}</span>;
+    };
+    const ic = (key) => `${styles.input} ${getFieldError(key) ? styles.inputError : ''}`;
+    const sc = (key) => `${styles.select} ${getFieldError(key) ? styles.inputError : ''}`;
+
+    const tabErrorCount = (tabNum) => {
+        const rules = TAB_RULES[tabNum] || [];
+        return rules.filter(r => !!formErrors[r.key]).length;
     };
 
     // Helper to compute full name
@@ -145,6 +226,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
             fullLegalName: `${val} ${prev.lastName}`.trim(),
             nameAsPerBank: `${val} ${prev.lastName}`.trim()
         }));
+        if (formErrors.firstName) setFormErrors(prev => { const n = {...prev}; delete n.firstName; return n; });
     };
 
     const updateLastName = (val) => {
@@ -154,6 +236,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
             fullLegalName: `${prev.firstName} ${val}`.trim(),
             nameAsPerBank: `${prev.firstName} ${val}`.trim()
         }));
+        if (formErrors.lastName) setFormErrors(prev => { const n = {...prev}; delete n.lastName; return n; });
     };
 
     // Repeating Row Handlers
@@ -178,8 +261,45 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.firstName || !formData.lastName || !formData.mobile) {
-            showToast('Validation Error', 'First name, last name, and primary mobile are required.', 'error');
+
+        // Validate ALL fields across all tabs
+        const errs = validateFormFields(formData, ALL_RULES);
+        setFormErrors(errs);
+
+        // Mark all rule fields as touched so errors show
+        const allTouched = {};
+        ALL_RULES.forEach(r => { allTouched[r.key] = true; });
+        setTouchedFields(allTouched);
+
+        if (Object.keys(errs).length > 0) {
+            // Navigate to the first tab that has errors
+            for (let tab = 1; tab <= 6; tab++) {
+                const rules = TAB_RULES[tab] || [];
+                if (rules.some(r => !!errs[r.key])) {
+                    setActiveTab(tab);
+                    break;
+                }
+            }
+            showToast('Validation Error', 'Please fix all highlighted errors before saving.', 'error');
+            return;
+        }
+
+        // Duplicate check
+        const dupCheck = findDuplicate([
+            { field: 'id',    value: formData.employeeCode, label: 'Employee Code' },
+            { field: 'mobile', value: formData.mobile,      label: 'Mobile Number' },
+        ]);
+        // Also check email manually since field key differs
+        const emailDup = existingEmployees.some(e =>
+            e.details?.personalEmail &&
+            e.details.personalEmail.toLowerCase() === formData.personalEmail.toLowerCase()
+        );
+        if (dupCheck) {
+            showToast('Duplicate Entry', `${dupCheck.label} "${formData[dupCheck.field === 'id' ? 'employeeCode' : String(dupCheck.field)]}" already exists.`, 'error');
+            return;
+        }
+        if (emailDup) {
+            showToast('Duplicate Entry', `An employee with email "${formData.personalEmail}" already exists.`, 'error');
             return;
         }
 
@@ -192,6 +312,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
             location: formData.location,
             status: formData.status,
             band: formData.workerClass,
+            mobile: formData.mobile,
             details: formData
         };
 
@@ -215,22 +336,26 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                 {/* Tabs */}
                 <div className={styles.tabs}>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 1 ? styles.activeTab : ''}`} onClick={() => setActiveTab(1)}>
-                        <User size={15} /> 1. Identity & Personal
+                        <User size={15} /> 1. Identity &amp; Personal
+                        {tabErrorCount(1) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(1)}</span>}
                     </button>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 2 ? styles.activeTab : ''}`} onClick={() => setActiveTab(2)}>
-                        <Phone size={15} /> 2. Contact & Address
+                        <Phone size={15} /> 2. Contact &amp; Address
+                        {tabErrorCount(2) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(2)}</span>}
                     </button>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 3 ? styles.activeTab : ''}`} onClick={() => setActiveTab(3)}>
-                        <Shield size={15} /> 3. Statutory & Bank
+                        <Shield size={15} /> 3. Statutory &amp; Bank
+                        {tabErrorCount(3) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(3)}</span>}
                     </button>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 4 ? styles.activeTab : ''}`} onClick={() => setActiveTab(4)}>
-                        <Users size={15} /> 4. Family & Nominees
+                        <Users size={15} /> 4. Family &amp; Nominees
                     </button>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 5 ? styles.activeTab : ''}`} onClick={() => setActiveTab(5)}>
-                        <GraduationCap size={15} /> 5. Education & Experience
+                        <GraduationCap size={15} /> 5. Education &amp; Experience
                     </button>
                     <button type="button" className={`${styles.tabBtn} ${activeTab === 6 ? styles.activeTab : ''}`} onClick={() => setActiveTab(6)}>
-                        <Briefcase size={15} /> 6. Medical, Site & Control
+                        <Briefcase size={15} /> 6. Medical, Site &amp; Control
+                        {tabErrorCount(6) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(6)}</span>}
                     </button>
                 </div>
 
@@ -241,9 +366,16 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                         <div className={styles.sectionGroup}>
                             <div className={styles.sectionTitle}>Identity Attributes</div>
                             <div className={styles.formGrid}>
+                                {/* Employee Code — Read Only, Auto-Generated */}
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Employee Code <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.employeeCode} onChange={e => handleChange('employeeCode', e.target.value)} required />
+                                    <span className={styles.fieldLabel}>
+                                        Employee Code
+                                        <span className={styles.autoTag}><Lock size={11} /> Auto-assigned</span>
+                                    </span>
+                                    <div className={styles.readOnlyId}>
+                                        <Lock size={13} />
+                                        <span>{formData.employeeCode || 'Generating…'}</span>
+                                    </div>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Salutation</span>
@@ -255,7 +387,8 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>First Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.firstName} onChange={e => updateFirstName(e.target.value)} required />
+                                    <input className={ic('firstName')} value={formData.firstName} onChange={e => updateFirstName(e.target.value)} onBlur={() => touchField('firstName')} required />
+                                    <FieldError fieldKey="firstName" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Middle Name</span>
@@ -263,7 +396,8 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Last Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.lastName} onChange={e => updateLastName(e.target.value)} required />
+                                    <input className={ic('lastName')} value={formData.lastName} onChange={e => updateLastName(e.target.value)} onBlur={() => touchField('lastName')} required />
+                                    <FieldError fieldKey="lastName" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Full Name (Aadhaar match)</span>
@@ -271,18 +405,20 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Gender <span className={styles.required}>*</span></span>
-                                    <select className={styles.select} value={formData.gender} onChange={e => handleChange('gender', e.target.value)}>
+                                    <select className={sc('gender')} value={formData.gender} onChange={e => handleChange('gender', e.target.value)} onBlur={() => touchField('gender')}>
                                         {(getPicklistOptions('PL_GENDER').length > 0 ? getPicklistOptions('PL_GENDER') : [{value: 'Male', label: 'Male'}, {value: 'Female', label: 'Female'}, {value: 'Other', label: 'Other'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
                                     </select>
+                                    <FieldError fieldKey="gender" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Date of Birth <span className={styles.required}>*</span></span>
-                                    <input type="date" className={styles.input} value={formData.dateOfBirth} onChange={e => handleChange('dateOfBirth', e.target.value)} required />
+                                    <input type="date" className={ic('dateOfBirth')} value={formData.dateOfBirth} onChange={e => handleChange('dateOfBirth', e.target.value)} onBlur={() => touchField('dateOfBirth')} required />
+                                    <FieldError fieldKey="dateOfBirth" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Blood Group <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>Blood Group</span>
                                     <select className={styles.select} value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
                                         {(getPicklistOptions('PL_BLOOD_GROUP').length > 0 ? getPicklistOptions('PL_BLOOD_GROUP') : [{value: 'A+', label: 'A+'}, {value: 'A-', label: 'A-'}, {value: 'B+', label: 'B+'}, {value: 'B-', label: 'B-'}, {value: 'O+', label: 'O+'}, {value: 'O-', label: 'O-'}, {value: 'AB+', label: 'AB+'}, {value: 'AB-', label: 'AB-'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -363,6 +499,24 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Emergency Phone <span className={styles.required}>*</span></span>
                                     <input className={styles.input} value={formData.emergencyPhone} onChange={e => handleChange('emergencyPhone', e.target.value)} required />
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Secondary Emergency Name</span>
+                                    <input className={styles.input} placeholder="Secondary contact name" value={formData.emergencySecondaryName || ''} onChange={e => handleChange('emergencySecondaryName', e.target.value)} />
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Secondary Relation</span>
+                                    <select className={styles.select} value={formData.emergencySecondaryRelation || 'Parent'} onChange={e => handleChange('emergencySecondaryRelation', e.target.value)}>
+                                        <option value="Parent">Parent</option>
+                                        <option value="Sibling">Sibling</option>
+                                        <option value="Spouse">Spouse</option>
+                                        <option value="Friend">Friend</option>
+                                        <option value="Guardian">Guardian</option>
+                                    </select>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Secondary Phone</span>
+                                    <input className={styles.input} placeholder="+91 9876543210" value={formData.emergencySecondaryPhone || ''} onChange={e => handleChange('emergencySecondaryPhone', e.target.value)} />
                                 </label>
                             </div>
 
@@ -588,26 +742,30 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Department <span className={styles.required}>*</span></span>
-                                    <select className={styles.select} value={formData.department} onChange={e => handleChange('department', e.target.value)}>
-                                        <option>Engineering</option><option>Product</option><option>Human Resources</option><option>Finance</option><option>Operations</option>
+                                    <select className={sc('department')} value={formData.department} onChange={e => handleChange('department', e.target.value)} onBlur={() => touchField('department')}>
+                                        <option>Engineering</option><option>Product</option><option>Human Resources</option><option>Finance</option><option>Operations</option><option>Quality</option><option>Production</option><option>Maintenance</option><option>Safety</option><option>Purchase</option>
                                     </select>
+                                    <FieldError fieldKey="department" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Designation <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.designation} onChange={e => handleChange('designation', e.target.value)} required />
+                                    <input className={ic('designation')} value={formData.designation} onChange={e => handleChange('designation', e.target.value)} onBlur={() => touchField('designation')} required />
+                                    <FieldError fieldKey="designation" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Date of Joining <span className={styles.required}>*</span></span>
-                                    <input type="date" className={styles.input} value={formData.joiningDate} onChange={e => handleChange('joiningDate', e.target.value)} required />
+                                    <input type="date" className={ic('joiningDate')} value={formData.joiningDate} onChange={e => handleChange('joiningDate', e.target.value)} onBlur={() => touchField('joiningDate')} required />
+                                    <FieldError fieldKey="joiningDate" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Reporting Manager <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.manager} onChange={e => handleChange('manager', e.target.value)} required />
+                                    <input className={ic('manager')} value={formData.manager} onChange={e => handleChange('manager', e.target.value)} onBlur={() => touchField('manager')} required />
+                                    <FieldError fieldKey="manager" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Work Location <span className={styles.required}>*</span></span>
                                     <select className={styles.select} value={formData.location} onChange={e => handleChange('location', e.target.value)}>
-                                        <option>Bangalore Plant</option><option>Mumbai Corporate HQ</option><option>Delhi Logistics Hub</option>
+                                        <option>Bangalore Plant</option><option>Mumbai Corporate HQ</option><option>Delhi Logistics Hub</option><option>Pune Factory</option><option>Chennai Office</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
@@ -618,7 +776,62 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave }) {
                                 </label>
                             </div>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Site & Facilities</div>
+                            {/* Labour Law & OT Classification — Demo Points 2, 3, 4, 7, 8, 13 */}
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Labour Law & OT Classification</div>
+                            <div className={styles.formGrid}>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Worker Category</span>
+                                    <select className={styles.select} value={formData.workerCategory} onChange={e => {
+                                        const cat = e.target.value;
+                                        handleChange('workerCategory', cat);
+                                        // Auto-set rest day eligibility based on category
+                                        if (cat === 'CONTRACT' || cat === 'THIRD_PARTY_HELPER') handleChange('hasRestDays', false);
+                                        else handleChange('hasRestDays', true);
+                                        if (cat === 'TRAINEE_DET' || cat === 'TRAINEE_GET') { handleChange('isTrainee', true); handleChange('traineeType', cat === 'TRAINEE_DET' ? 'DET' : 'GET'); }
+                                        else { handleChange('isTrainee', false); handleChange('traineeType', ''); }
+                                    }}>
+                                        <option value="PERM">Permanent Employee</option>
+                                        <option value="CONTRACT">Contractual (Daily Wage — No Rest Day)</option>
+                                        <option value="THIRD_PARTY_EMP">3rd Party Employee (With Rest Days)</option>
+                                        <option value="THIRD_PARTY_HELPER">3rd Party Helper (No Rest Days)</option>
+                                        <option value="TRAINEE_DET">Trainee — DET (Graduate Engineer)</option>
+                                        <option value="TRAINEE_GET">Trainee — GET (Diploma Engineer)</option>
+                                    </select>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Rest Day Eligibility</span>
+                                    <select className={styles.select} value={formData.hasRestDays ? 'YES' : 'NO'} onChange={e => handleChange('hasRestDays', e.target.value === 'YES')}>
+                                        <option value="YES">Yes — Weekly Off Applies</option>
+                                        <option value="NO">No — Paid for All Working Days</option>
+                                    </select>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>OT Eligibility</span>
+                                    <select className={styles.select} value={formData.otEligibility} onChange={e => handleChange('otEligibility', e.target.value)}>
+                                        <option value="ALL_DAYS">All Days (Regular + Rest Days)</option>
+                                        <option value="REST_HOLIDAYS_ONLY">Rest Days &amp; Holidays Only</option>
+                                        <option value="NONE">Not Eligible for OT</option>
+                                    </select>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Salary Location Scope</span>
+                                    <select className={styles.select} value={formData.salaryLocationScope} onChange={e => handleChange('salaryLocationScope', e.target.value)}>
+                                        <option value="PLANT">Plant (Attendance + Salary at Plant)</option>
+                                        <option value="HO">Head Office (Attendance at Plant, Salary at HO)</option>
+                                    </select>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Default Assigned Shift</span>
+                                    <select className={styles.select} value={formData.assignedShift} onChange={e => handleChange('assignedShift', e.target.value)}>
+                                        <option value="A">A Shift (08:00 AM – 08:00 PM, 12 Hrs)</option>
+                                        <option value="B">B Shift (08:00 PM – 08:00 AM, 12 Hrs)</option>
+                                        <option value="GENERAL">General Shift (09:00 AM – 06:00 PM, 9 Hrs)</option>
+                                        <option value="AUTO_DETECT">Auto-Detect from Punch Time</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Site &amp; Facilities</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Biometric Enrolment ID</span>

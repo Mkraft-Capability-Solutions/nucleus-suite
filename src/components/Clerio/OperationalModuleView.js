@@ -91,7 +91,7 @@ function OperationalModuleContent({ module, onNavigate }) {
         finally { setLoading(false); }
     };
 
-    const submit = (event) => {
+    const submit = async (event) => {
         event.preventDefault();
         const errors = validateForm(formFields, values);
         setFormErrors(errors);
@@ -104,6 +104,36 @@ function OperationalModuleContent({ module, onNavigate }) {
         };
         setRecords(prev => [newRecord, ...prev]);
         setIsCreateOpen(false);
+
+        if (module.endpoint) {
+            try {
+                const res = await fetch(module.endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': crypto.randomUUID(),
+                    },
+                    body: JSON.stringify(values),
+                });
+                if (res.ok) {
+                    const json = await res.json().catch(() => null);
+                    if (json?.attributes || json?.id) {
+                        setRecords(prev => [
+                            {
+                                id: json.id || newRecord.id,
+                                _cells: json.attributes || values,
+                                values: json.attributes || values,
+                                createdAt: new Date().toISOString(),
+                            },
+                            ...prev.filter(r => r.id !== newRecord.id),
+                        ]);
+                    }
+                }
+            } catch (postErr) {
+                console.warn(`Live DB persist for ${module.id} notice:`, postErr);
+            }
+        }
+
         setNotice(translateText("components.Clerio.OperationalModuleView","text_created_success", {value1: String(module.title)}));
     };
 

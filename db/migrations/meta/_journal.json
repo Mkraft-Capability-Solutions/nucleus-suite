@@ -141,6 +141,13 @@
       "when": 1789272000000,
       "tag": "0020_india_payroll_default",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789272120000,
+      "tag": "0021_production_hr_features",
+      "breakpoints": true
     }
   ]
 }

@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
     UserCheck, Clock, CheckCircle2, AlertCircle, ArrowRight,
     Sparkles, FileText, Send, User, ChevronRight, Layers, Workflow,
@@ -15,7 +15,7 @@ import { useHRMS } from '@/context/HRMSContext';
 import WorkflowBuilderModal from './WorkflowBuilderModal';
 import { launchAction } from '@/lib/action-launcher';
 
-const OnboardingView = () => {
+const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
@@ -27,6 +27,24 @@ const OnboardingView = () => {
     } = useHRMS();
 
     const [activeTab, setActiveTab] = useState(readData("components.Clerio.OnboardingView", "initialState_1")); // default to 'assets' to showcase Sprint 4!
+
+    useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'asset_register' || activeSubFeature === 'assets' || activeSubFeature === 'ops_assets') {
+            setActiveTab('assets');
+        } else if (activeSubFeature === 'letters_register' || activeSubFeature === 'letters') {
+            setActiveTab('letters');
+        } else if (activeSubFeature === 'recognition' || activeSubFeature === 'talent_recognition') {
+            setActiveTab('recognition');
+        } else if (activeSubFeature === 'studio' || activeSubFeature === 'platform_workflows') {
+            setActiveTab('studio');
+        } else if (activeSubFeature === 'milestones' || activeSubFeature === 'induction_tasks') {
+            setActiveTab('milestones');
+        } else if (activeSubFeature === 'joining_chain' || activeSubFeature === 'clearance_board' || activeSubFeature === 'chains') {
+            setActiveTab('chains');
+        }
+    }, [activeSubFeature]);
+
     const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
 
     // Asset Allocation Modal State
@@ -64,6 +82,20 @@ const OnboardingView = () => {
             assignedToEmployeeId: assetEmpId,
             replacementValue: assetValue
         });
+        try {
+            fetch('/api/v1/assets/allocate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    assetType,
+                    brand: assetBrand,
+                    model: assetModel,
+                    serialNumber: assetSerial,
+                    assignedToEmployeeId: assetEmpId,
+                    replacementValue: assetValue
+                })
+            }).catch(e => console.warn('Asset DB sync notice:', e));
+        } catch {}
         setIsAssetModalOpen(false);
         setAssetSerial('');
     };

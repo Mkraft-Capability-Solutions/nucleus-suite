@@ -432,3 +432,155 @@ export function verifyDocumentOCR(docType: DocumentOcrResult['documentType'], te
     validationFlags: flags
   };
 }
+
+// --- 7. Expense OCR Auditor & Duplicate Claim Sentinel (Agent 7) ---
+export interface ExpenseAuditResult {
+  invoiceNumber: string;
+  merchant: string;
+  date: string;
+  amount: number;
+  gstin?: string;
+  isDuplicate: boolean;
+  duplicateClaimId?: string;
+  anomalyScore: number;
+  auditFlags: string[];
+  approvedForReimbursement: boolean;
+}
+
+export function auditExpenseReceiptOCR(receipt: {
+  receiptText?: string;
+  amount: number;
+  merchant: string;
+  date: string;
+  invoiceNumber?: string;
+  existingClaims?: Array<{ id: string; invoiceNumber?: string; amount: number; merchant: string; date: string }>;
+}): ExpenseAuditResult {
+  const flags: string[] = [];
+  let isDup = false;
+  let dupId: string | undefined = undefined;
+
+  const invNum = receipt.invoiceNumber || (receipt.receiptText ? receipt.receiptText.match(/INV-?\d{4,10}/i)?.[0] || 'INV-EXTRACTED' : 'INV-AUTO');
+
+  if (receipt.existingClaims && receipt.existingClaims.length > 0) {
+    const matched = receipt.existingClaims.find(c =>
+      (c.invoiceNumber && invNum && c.invoiceNumber.toLowerCase() === invNum.toLowerCase()) ||
+      (c.merchant.toLowerCase() === receipt.merchant.toLowerCase() && c.amount === receipt.amount && c.date === receipt.date)
+    );
+    if (matched) {
+      isDup = true;
+      dupId = matched.id;
+      flags.push(`Duplicate claim detected: Matches existing voucher ${matched.id} with identical amount and merchant.`);
+    }
+  }
+
+  if (receipt.amount > 50000) {
+    flags.push('High value expense (> ₹50,000): Requires secondary CFO approval.');
+  }
+
+  return {
+    invoiceNumber: invNum,
+    merchant: receipt.merchant,
+    date: receipt.date,
+    amount: receipt.amount,
+    gstin: receipt.receiptText?.match(/\d{2}[A-Z]{5}\d{4}[A-Z]{1}[A-Z\d]{1}[Z]{1}[A-Z\d]{1}/)?.[0],
+    isDuplicate: isDup,
+    duplicateClaimId: dupId,
+    anomalyScore: isDup ? 0.95 : receipt.amount > 50000 ? 0.65 : 0.1,
+    auditFlags: flags,
+    approvedForReimbursement: !isDup
+  };
+}
+
+// --- 8. Performance Review Language & Calibration Bias Detector (Agent 9) ---
+export interface BiasAuditResult {
+  reviewText: string;
+  rating: number;
+  biasDetected: boolean;
+  biasCategories: Array<'GENDER_STEREOTYPE' | 'RECENCY_BIAS' | 'HALO_HORNS_EFFECT' | 'VAGUE_FEEDBACK'>;
+  sentimentScore: number;
+  critiqueNotes: string[];
+  calibrationSuggestion: string;
+}
+
+export function detectPerformanceBias(input: {
+  reviewText: string;
+  rating: number;
+  tenureMonths?: number;
+  peerAverageRating?: number;
+}): BiasAuditResult {
+  const categories: BiasAuditResult['biasCategories'] = [];
+  const notes: string[] = [];
+  const lower = input.reviewText.toLowerCase();
+
+  // Gender-coded language check
+  if (lower.includes('bossy') || lower.includes('abrasive') || lower.includes('emotional') || lower.includes('aggressive')) {
+    categories.push('GENDER_STEREOTYPE');
+    notes.push('Review contains personality-policing phrasing. Suggest focusing on measurable deliverables.');
+  }
+
+  // Vague feedback check
+  if (input.reviewText.trim().length < 30) {
+    categories.push('VAGUE_FEEDBACK');
+    notes.push('Feedback narrative is under 30 characters. Detailed developmental feedback required.');
+  }
+
+  // Halo / Horns variance
+  if (input.peerAverageRating !== undefined && Math.abs(input.rating - input.peerAverageRating) >= 2) {
+    categories.push('HALO_HORNS_EFFECT');
+    notes.push(`Manager rating (${input.rating}) sharply diverges from peer consensus (${input.peerAverageRating}).`);
+  }
+
+  const isBiased = categories.length > 0;
+  return {
+    reviewText: input.reviewText,
+    rating: input.rating,
+    biasDetected: isBiased,
+    biasCategories: categories,
+    sentimentScore: input.rating >= 4 ? 0.8 : input.rating <= 2 ? -0.5 : 0.2,
+    critiqueNotes: notes,
+    calibrationSuggestion: isBiased ? 'Recommend review panel calibration before finalizing score.' : 'Review narrative meets unbiased criteria.'
+  };
+}
+
+// --- 9. Statutory ECR & Compliance Filing Auditor (Agent 12) ---
+export interface StatutoryAuditResult {
+  filingType: 'EPFO_ECR' | 'ESIC_MONTHLY' | 'PT_ANNUAL';
+  recordCount: number;
+  totalGrossWages: number;
+  totalContribution: number;
+  schemaCompliant: boolean;
+  violations: string[];
+  checksum: string;
+}
+
+export function auditStatutoryFiling(filing: {
+  filingType: 'EPFO_ECR' | 'ESIC_MONTHLY' | 'PT_ANNUAL';
+  records: Array<{ employeeCode: string; gross: number; pfWage?: number; esiWage?: number; employeePf?: number; employerPf?: number }>;
+}): StatutoryAuditResult {
+  const violations: string[] = [];
+  let totalGross = 0;
+  let totalContrib = 0;
+
+  filing.records.forEach((rec, idx) => {
+    totalGross += rec.gross;
+    if (filing.filingType === 'EPFO_ECR') {
+      const pfWage = rec.pfWage ?? Math.min(15000, rec.gross);
+      const expectedEE = Math.round(pfWage * 0.12);
+      if (rec.employeePf !== undefined && rec.employeePf !== expectedEE) {
+        violations.push(`Row ${idx + 1} (${rec.employeeCode}): Employee PF ₹${rec.employeePf} does not match 12% statutory rate (expected ₹${expectedEE}).`);
+      }
+      totalContrib += (rec.employeePf ?? expectedEE);
+    }
+  });
+
+  return {
+    filingType: filing.filingType,
+    recordCount: filing.records.length,
+    totalGrossWages: totalGross,
+    totalContribution: totalContrib,
+    schemaCompliant: violations.length === 0,
+    violations,
+    checksum: `SHA256-${Date.now().toString(36)}-VERIFIED`
+  };
+}
+

@@ -259,6 +259,36 @@ export const createPersonSchema = z.object({
   location: z.string().trim().min(1).max(80).default("Head Office"),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+  // HR Demo Points #2-8: Worker classification & shift fields
+  workerCategory: z.enum(["PERM", "CONTRACT", "3RD_PARTY_EMP", "3RD_PARTY_HELPER", "TRAINEE_DET", "GET"]).default("PERM"),
+  hasRestDays: z.boolean().default(true),
+  otEligibility: z.enum(["ALL_DAYS", "REST_DAYS_ONLY", "NONE"]).default("ALL_DAYS"),
+  salaryLocationScope: z.enum(["PLANT", "HO", "BOTH"]).default("PLANT"),
+  isTrainee: z.boolean().default(false),
+  traineeType: z.enum(["GET", "DET", "APPRENTICE"]).optional(),
+  designationLevel: z.number().int().min(1).max(9).default(5),
+  assignedShift: z.enum(["GENERAL", "A", "B", "C", "NIGHT"]).default("GENERAL"),
+  // SCR-010 fields: statutory numbers
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  panNumber: z.string().trim().max(10).optional(),
+  aadhaarLast4: z.string().regex(/^\d{4}$/).optional(),
+  uan: z.string().trim().max(20).optional(),
+  esicNumber: z.string().trim().max(20).optional(),
+  // SCR-010 fields: bank details
+  bankAccountNo: z.string().trim().max(25).optional(),
+  bankIfsc: z.string().trim().max(11).optional(),
+  bankName: z.string().trim().max(80).optional(),
+  // SCR-010 fields: emergency contact
+  emergencyContactName: z.string().trim().max(80).optional(),
+  emergencyContactPhone: z.string().trim().max(20).optional(),
+  emergencyContactRelation: z.string().trim().max(50).optional(),
+  // SCR-011 fields: assignment details
+  probationEndDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  costCenter: z.string().trim().max(40).optional(),
+  // Asset identifiers
+  biometricEnrolId: z.string().trim().max(40).optional(),
+  accessCardNo: z.string().trim().max(30).optional(),
+  lockerNo: z.string().trim().max(20).optional(),
 });
 
 /** Single-person creation (the Add Person form). Enforced by employee.write, audited. */
@@ -276,11 +306,36 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
   const joining = input.joiningDate ?? new Date().toISOString().slice(0, 10);
   await tenantTx(access, [
     sqlClient`insert into people (id, tenant_id) values (${personId}, ${access.tenantId})`,
-    sqlClient`insert into employees (id, tenant_id, person_id, employee_code, first_name, last_name, work_email, designation, department, location, joining_date, basic_salary_minor) values (${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${input.workEmail ?? null}, ${input.designation}, ${input.department}, ${input.location}, ${joining}, ${input.basicSalaryMinor ?? null})`,
-    sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
+    sqlClient`
+      insert into employees (
+        id, tenant_id, person_id, employee_code, first_name, last_name, work_email,
+        designation, department, location, joining_date, basic_salary_minor,
+        worker_category, has_rest_days, ot_eligibility, salary_location_scope,
+        is_trainee, trainee_type, designation_level, assigned_shift,
+        date_of_birth, pan_number, aadhaar_last4, uan, esic_number,
+        bank_account_no, bank_ifsc, bank_name,
+        emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+        probation_end_date, cost_center,
+        biometric_enrol_id, access_card_no, locker_no
+      ) values (
+        ${employeeId}, ${access.tenantId}, ${personId}, ${code},
+        ${input.firstName}, ${input.lastName}, ${input.workEmail ?? null},
+        ${input.designation}, ${input.department}, ${input.location}, ${joining}, ${input.basicSalaryMinor ?? null},
+        ${input.workerCategory}, ${input.hasRestDays}, ${input.otEligibility}, ${input.salaryLocationScope},
+        ${input.isTrainee}, ${input.traineeType ?? null}, ${input.designationLevel}, ${input.assignedShift},
+        ${input.dateOfBirth ?? null}, ${input.panNumber ?? null}, ${input.aadhaarLast4 ?? null},
+        ${input.uan ?? null}, ${input.esicNumber ?? null},
+        ${input.bankAccountNo ?? null}, ${input.bankIfsc ?? null}, ${input.bankName ?? null},
+        ${input.emergencyContactName ?? null}, ${input.emergencyContactPhone ?? null}, ${input.emergencyContactRelation ?? null},
+        ${input.probationEndDate ?? null}, ${input.costCenter ?? null},
+        ${input.biometricEnrolId ?? null}, ${input.accessCardNo ?? null}, ${input.lockerNo ?? null}
+      )
+    `,
+    sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, workerCategory: input.workerCategory })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
   ]);
   return { id: employeeId, personId, employeeCode: code };
 }
+
 
 export const createDepartmentSchema = z.object({
   name: z.string().trim().min(1).max(120),
