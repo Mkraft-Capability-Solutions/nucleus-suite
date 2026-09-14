@@ -20,6 +20,9 @@ const RightSubNav = ({
     onClose
 }) => {
     const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
+    const [collapsedGroups, setCollapsedGroups] = React.useState({});
+    const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
+
     if (!isOpen) return null;
 
     // Primary Categories with Exact Sub Modules
@@ -56,72 +59,154 @@ const RightSubNav = ({
             .filter((group) => group.items.length > 0),
     };
 
+    const toggleGroup = (heading) => {
+        setCollapsedGroups(prev => ({
+            ...prev,
+            [heading]: !prev[heading]
+        }));
+    };
+
+    const allCollapsed = currentConfig.groups.length > 0 && currentConfig.groups.every(g => Boolean(collapsedGroups[g.heading]));
+    const toggleAllGroups = () => {
+        if (allCollapsed) {
+            setCollapsedGroups({});
+        } else {
+            const next = {};
+            currentConfig.groups.forEach(g => { next[g.heading] = true; });
+            setCollapsedGroups(next);
+        }
+    };
+
+    if (isPanelCollapsed) {
+        return (
+            <aside className={styles.rightNavCollapsed} aria-label="Right navigation collapsed">
+                <button
+                    className={styles.expandRailBtn}
+                    onClick={() => setIsPanelCollapsed(false)}
+                    title="Expand right sidebar"
+                    aria-label="Expand right sidebar"
+                >
+                    <ChevronRight sx={{ fontSize: 18, transform: 'rotate(180deg)' }} />
+                </button>
+                <div className={styles.collapsedRailLabel}>
+                    <span>{currentConfig.title}</span>
+                </div>
+            </aside>
+        );
+    }
+
     return (
         <aside className={styles.rightNavContainer} aria-label={readData("components.Clerio.RightSubNav", "RightSubNav_aria-label_130")}>
             {/* Header */}
             <div className={styles.header}>
-                <div>
+                <div className={styles.headerTitleWrap}>
                     <h3>{currentConfig.title}</h3>
                     {currentConfig.subtitle && <p className={styles.subTitle}>{currentConfig.subtitle}</p>}
                 </div>
-                {onClose && (
+                <div className={styles.headerActions}>
+                    {currentConfig.groups.length > 1 && (
+                        <button
+                            className={styles.iconBtn}
+                            onClick={toggleAllGroups}
+                            title={allCollapsed ? "Expand all sections" : "Collapse all sections"}
+                            aria-label={allCollapsed ? "Expand all sections" : "Collapse all sections"}
+                        >
+                            <ChevronRight sx={{ fontSize: 16, transform: allCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 0.15s ease' }} />
+                        </button>
+                    )}
                     <button
-                        className={styles.closeBtn}
-                        onClick={onClose}
-                        title={readData("components.Clerio.RightSubNav", "RightSubNav_title_131")}
-                        aria-label={readData("components.Clerio.RightSubNav", "RightSubNav_aria-label_132")}
+                        className={styles.iconBtn}
+                        onClick={() => setIsPanelCollapsed(true)}
+                        title="Collapse right sidebar"
+                        aria-label="Collapse right sidebar"
                     >
-                        <X sx={{ fontSize: 16 }} />
+                        <ChevronRight sx={{ fontSize: 16 }} />
                     </button>
-                )}
+                    {onClose && (
+                        <button
+                            className={styles.closeBtn}
+                            onClick={onClose}
+                            title={readData("components.Clerio.RightSubNav", "RightSubNav_title_131")}
+                            aria-label={readData("components.Clerio.RightSubNav", "RightSubNav_aria-label_132")}
+                        >
+                            <X sx={{ fontSize: 16 }} />
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Scrollable Groups */}
             <div className={styles.scrollArea}>
-                {currentConfig.groups.map((group, gIdx) => (
-                    <div key={gIdx} className={styles.navGroup}>
-                        <div className={styles.groupHeading}>{group.heading}</div>
-                        <div className={styles.itemsList}>
-                            {group.items.map((item) => {
-                                const Icon = item.icon;
-                                const isSelected = activeSubFeature === item.id;
+                {currentConfig.groups.map((group, gIdx) => {
+                    const isCollapsed = Boolean(collapsedGroups[group.heading]);
+                    return (
+                        <div key={gIdx} className={styles.navGroup}>
+                            <button
+                                type="button"
+                                className={styles.groupHeadingBtn}
+                                onClick={() => toggleGroup(group.heading)}
+                                aria-expanded={!isCollapsed}
+                                title={isCollapsed ? `Expand ${group.heading}` : `Collapse ${group.heading}`}
+                            >
+                                <span className={styles.groupHeadingText}>{group.heading}</span>
+                                <div className={styles.groupHeadingMeta}>
+                                    {isCollapsed && (
+                                        <span className={styles.groupCountBadge}>{group.items.length}</span>
+                                    )}
+                                    <ChevronRight
+                                        sx={{
+                                            fontSize: 14,
+                                            transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                                            transition: 'transform 0.18s ease',
+                                            color: 'var(--text-3)'
+                                        }}
+                                    />
+                                </div>
+                            </button>
+                            {!isCollapsed && (
+                                <div className={styles.itemsList}>
+                                    {group.items.map((item) => {
+                                        const Icon = item.icon;
+                                        const isSelected = activeSubFeature === item.id;
 
-                                return (
-                                    <button
-                                        key={item.id}
-                                        className={`
-                                            ${styles.navItem}
-                                            ${isSelected ? styles.navItemActive : ''}
-                                            ${item.highlight && !isSelected ? styles.navItemHighlight : ''}
-                                        `}
-                                        onClick={() => onSelectSubFeature(item.id)}
-                                    >
-                                        <div className={styles.itemIcon}>
-                                            <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Clerio.RightSubNav", "display_1") : readData("components.Clerio.RightSubNav", "display_2")} />
-                                        </div>
-                                        <span className={styles.itemLabel} title={item.label}>{item.label}</span>
-                                        {item.tag && (
-                                            <span
-                                                style={{
-                                                    fontSize: '0.62rem',
-                                                    padding: '0.1rem 0.35rem',
-                                                    borderRadius: '4px',
-                                                    fontWeight: 600,
-                                                    background: isSelected ? 'var(--signal-ink)' : 'var(--card-2)',
-                                                    color: isSelected ? 'var(--on-signal, #fff)' : 'var(--text-3)',
-                                                    flexShrink: 0,
-                                                    marginLeft: 'auto',
-                                                }}
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                className={`
+                                                    ${styles.navItem}
+                                                    ${isSelected ? styles.navItemActive : ''}
+                                                    ${item.highlight && !isSelected ? styles.navItemHighlight : ''}
+                                                `}
+                                                onClick={() => onSelectSubFeature(item.id)}
                                             >
-                                                {item.tag}
-                                            </span>
-                                        )}
-                                    </button>
-                                );
-                            })}
+                                                <div className={styles.itemIcon}>
+                                                    <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Clerio.RightSubNav", "display_1") : readData("components.Clerio.RightSubNav", "display_2")} />
+                                                </div>
+                                                <span className={styles.itemLabel} title={item.label}>{item.label}</span>
+                                                {item.tag && (
+                                                    <span
+                                                        style={{
+                                                            fontSize: '0.62rem',
+                                                            padding: '0.1rem 0.35rem',
+                                                            borderRadius: 'var(--r-pill, 4px)',
+                                                            fontWeight: 600,
+                                                            background: isSelected ? 'var(--signal-ink)' : 'var(--card-2)',
+                                                            color: isSelected ? 'var(--on-signal, #fff)' : 'var(--text-3)',
+                                                            flexShrink: 0,
+                                                            marginLeft: 'auto',
+                                                        }}
+                                                    >
+                                                        {item.tag}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </aside>
     );

@@ -327,34 +327,82 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
-                        <h2><User size={20} color="#38bdf8" /> Add Employee Master (FRM-PPL-01)</h2>
+                        <h2><User size={20} className={styles.headerIcon} /> Add Employee Master (FRM-PPL-01)</h2>
                         <p>Complete 117-field statutory employee onboarding wizard</p>
                     </div>
-                    <button className={styles.closeBtn} onClick={onClose} type="button"><X size={20} /></button>
+                    <button className={styles.closeBtn} onClick={onClose} type="button" title="Close"><X size={20} /></button>
                 </div>
 
-                {/* Tabs */}
-                <div className={styles.tabs}>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 1 ? styles.activeTab : ''}`} onClick={() => setActiveTab(1)}>
-                        <User size={15} /> 1. Identity &amp; Personal
+                {/* Tabs - Form Step Navigation fitting perfectly within modal window */}
+                <div className={styles.tabs} role="tablist" aria-label="Employee Creation Wizard Steps">
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 1}
+                        title="1. Identity & Personal Attributes"
+                        className={`${styles.tabBtn} ${activeTab === 1 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(1)}
+                    >
+                        <User size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>1. Identity</span>
                         {tabErrorCount(1) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(1)}</span>}
                     </button>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 2 ? styles.activeTab : ''}`} onClick={() => setActiveTab(2)}>
-                        <Phone size={15} /> 2. Contact &amp; Address
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 2}
+                        title="2. Contact & Address Details"
+                        className={`${styles.tabBtn} ${activeTab === 2 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(2)}
+                    >
+                        <Phone size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>2. Contact</span>
                         {tabErrorCount(2) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(2)}</span>}
                     </button>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 3 ? styles.activeTab : ''}`} onClick={() => setActiveTab(3)}>
-                        <Shield size={15} /> 3. Statutory &amp; Bank
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 3}
+                        title="3. Statutory IDs & Bank Details"
+                        className={`${styles.tabBtn} ${activeTab === 3 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(3)}
+                    >
+                        <Shield size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>3. Statutory</span>
                         {tabErrorCount(3) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(3)}</span>}
                     </button>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 4 ? styles.activeTab : ''}`} onClick={() => setActiveTab(4)}>
-                        <Users size={15} /> 4. Family &amp; Nominees
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 4}
+                        title="4. Family & Nominees"
+                        className={`${styles.tabBtn} ${activeTab === 4 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(4)}
+                    >
+                        <Users size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>4. Family</span>
                     </button>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 5 ? styles.activeTab : ''}`} onClick={() => setActiveTab(5)}>
-                        <GraduationCap size={15} /> 5. Education &amp; Experience
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 5}
+                        title="5. Education & Work Experience"
+                        className={`${styles.tabBtn} ${activeTab === 5 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(5)}
+                    >
+                        <GraduationCap size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>5. Education</span>
                     </button>
-                    <button type="button" className={`${styles.tabBtn} ${activeTab === 6 ? styles.activeTab : ''}`} onClick={() => setActiveTab(6)}>
-                        <Briefcase size={15} /> 6. Medical, Site &amp; Control
+                    <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 6}
+                        title="6. Placement, Medical & Facilities Control"
+                        className={`${styles.tabBtn} ${activeTab === 6 ? styles.activeTab : ''}`}
+                        onClick={() => setActiveTab(6)}
+                    >
+                        <Briefcase size={14} className={styles.tabIcon} />
+                        <span className={styles.tabLabel}>6. Placement</span>
                         {tabErrorCount(6) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(6)}</span>}
                     </button>
                 </div>
