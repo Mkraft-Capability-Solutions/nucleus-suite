@@ -39,6 +39,20 @@ describe('interface translations', () => {
     const fallbackMessages = getMessagesForLocale('xx_INVALID');
     expect(fallbackMessages.common.save).toBe('Save');
   });
+
+  it('supports dot-notation lookups and single-string queries', () => {
+    const esMessages = getMessagesForLocale('es');
+    const hiMessages = getMessagesForLocale('hi');
+
+    // Dot notation
+    expect(translate(esMessages, 'common.save')).toBe('Guardar');
+    expect(translate(hiMessages, 'navigation.dashboard')).toBe('डैशबोर्ड');
+
+    // Single query matching English phrase
+    expect(translate(esMessages, 'Save')).toBe('Guardar');
+    expect(translate(hiMessages, 'Dashboard')).toBe('डैशबोर्ड');
+    expect(translate(hiMessages, 'Apply for Leave')).toBe('छुट्टी का आवेदन करें');
+  });
 });
 
 it('indexes public copy while preserving routing and icon identifiers', () => {

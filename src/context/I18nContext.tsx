@@ -23,7 +23,10 @@ function getInitialLocale(defaultVal: string): string {
   if (typeof window === 'undefined') return defaultVal;
   try {
     const saved = localStorage.getItem(LOCALE_STORAGE_KEY);
-    return saved || defaultVal;
+    if (saved) return saved;
+    const match = document.cookie.match(/nucleus_locale=([^;]+)/);
+    if (match?.[1]) return match[1];
+    return defaultVal;
   } catch {
     return defaultVal;
   }
@@ -51,13 +54,14 @@ export function I18nProvider({
     if (typeof window !== 'undefined') {
       try {
         localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
+        document.cookie = `nucleus_locale=${newLocale};path=/;max-age=31536000;SameSite=Lax`;
         document.documentElement.lang = newLocale;
         const meta = supportedLanguages.find((l) => l.code === newLocale);
         if (meta) {
           document.documentElement.dir = meta.dir;
         }
       } catch {
-        // Ignore localStorage write errors
+        // Ignore storage write errors
       }
     }
   }, []);
@@ -78,7 +82,11 @@ export function I18nProvider({
 export function useTranslation() {
   const { locale, messages, setLocale, supportedLanguages } = useContext(I18nContext);
   const t = useCallback(
-    (namespace: string, key: string, params?: TranslationParams) => translate(messages, namespace, key, params),
+    (
+      namespaceOrKey: string,
+      keyOrParams?: string | TranslationParams,
+      params?: TranslationParams,
+    ) => translate(messages, namespaceOrKey, keyOrParams, params),
     [messages],
   );
   return { locale, t, setLocale, supportedLanguages };
