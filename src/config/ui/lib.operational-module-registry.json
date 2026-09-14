@@ -7,19 +7,66 @@
       "primary": "plt_platform",
       "endpoint": "/api/v1/organization/entities",
       "fields": [
-        { "key": "entityCode", "label": "Entity code", "required": true, "type": "text" },
-        { "key": "registeredName", "label": "Registered name", "required": true, "type": "text" },
-        { "key": "entityType", "label": "Entity type", "required": true, "type": "text" },
-        { "key": "cinLlpin", "label": "CIN / LLPIN", "required": true, "type": "text" },
-        { "key": "entityPan", "label": "PAN", "required": true, "type": "text" },
-        { "key": "tan", "label": "TAN", "required": true, "type": "text" },
-        { "key": "effectiveFrom", "label": "Effective from", "required": true, "type": "date" }
+        {
+          "key": "entityCode",
+          "label": "Entity code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "registeredName",
+          "label": "Registered name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entityType",
+          "label": "Entity type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "cinLlpin",
+          "label": "CIN / LLPIN",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entityPan",
+          "label": "PAN",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "tan",
+          "label": "TAN",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
       ],
       "description": "Manage corporate legal entities, incorporation details, and tax registrations.",
       "stateLabel": "Status",
-      "states": ["Active", "Inactive"],
-      "actions": ["Create entity", "Edit entity"],
-      "columns": ["Entity code", "Registered name", "Type", "PAN", "Status"],
+      "states": [
+        "Active",
+        "Inactive"
+      ],
+      "actions": [
+        "Create entity",
+        "Edit entity"
+      ],
+      "columns": [
+        "Entity code",
+        "Registered name",
+        "Type",
+        "PAN",
+        "Status"
+      ],
       "apiMethod": "GET"
     },
     {
@@ -29,18 +76,60 @@
       "primary": "plt_platform",
       "endpoint": "/api/v1/organization/locations",
       "fields": [
-        { "key": "locationCode", "label": "Location code", "required": true, "type": "text" },
-        { "key": "locationName", "label": "Location name", "required": true, "type": "text" },
-        { "key": "entityCode", "label": "Legal entity", "required": true, "type": "text" },
-        { "key": "locationType", "label": "Location type", "required": true, "type": "text" },
-        { "key": "stateCode", "label": "State", "required": true, "type": "text" },
-        { "key": "timeZone", "label": "Time zone", "required": true, "type": "text" }
+        {
+          "key": "locationCode",
+          "label": "Location code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "locationName",
+          "label": "Location name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entityCode",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "locationType",
+          "label": "Location type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "stateCode",
+          "label": "State",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "timeZone",
+          "label": "Time zone",
+          "required": true,
+          "type": "text"
+        }
       ],
       "description": "Manage physical locations, plant sites, holiday calendars, shift groups and geofencing.",
       "stateLabel": "Status",
-      "states": ["Active", "Inactive"],
-      "actions": ["Create location", "Edit location"],
-      "columns": ["Location code", "Location name", "Legal entity", "State", "Status"],
+      "states": [
+        "Active",
+        "Inactive"
+      ],
+      "actions": [
+        "Create location",
+        "Edit location"
+      ],
+      "columns": [
+        "Location code",
+        "Location name",
+        "Legal entity",
+        "State",
+        "Status"
+      ],
       "apiMethod": "GET"
     },
     {
@@ -401,7 +490,7 @@
       "screenId": "SCR-014",
       "title": "Document vault",
       "primary": "people_core",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/document_vault/records",
       "fields": [
         {
           "key": "employee",
@@ -465,7 +554,7 @@
       "screenId": "SCR-022",
       "title": "Attendance day detail",
       "primary": "attendance",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/attendance_detail/records",
       "fields": [
         {
           "key": "employee",
@@ -516,7 +605,7 @@
       "screenId": "SCR-024",
       "title": "Overtime register",
       "primary": "attendance",
-      "endpoint": null,
+      "endpoint": "/api/v1/ot-requests",
       "fields": [
         {
           "key": "employee",
@@ -577,7 +666,7 @@
       "screenId": "SCR-025",
       "title": "Attendance exception queue",
       "primary": "attendance",
-      "endpoint": null,
+      "endpoint": "/api/v1/regularizations",
       "fields": [
         {
           "key": "employee",
@@ -732,7 +821,7 @@
       "screenId": "SCR-032",
       "title": "Leave policy configuration",
       "primary": "leaves",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/leave_policy_admin/records",
       "fields": [
         {
           "key": "leaveType",
@@ -793,7 +882,7 @@
       "screenId": "SCR-054",
       "title": "Tax declaration and projection",
       "primary": "payroll",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/tax_declarations/records",
       "fields": [
         {
           "key": "employee",
@@ -860,7 +949,7 @@
       "screenId": "SCR-055",
       "title": "Bank disbursement control",
       "primary": "payroll",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/bank_disbursement/records",
       "fields": [
         {
           "key": "payrollRun",
@@ -970,7 +1059,7 @@
       "screenId": "SCR-070",
       "title": "Rule-pack manager",
       "primary": "compliance",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/rule_pack_manager/records",
       "fields": [
         {
           "key": "packName",
@@ -1030,7 +1119,7 @@
       "screenId": "SCR-071",
       "title": "Golden-case library",
       "primary": "compliance",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/golden_case_library/records",
       "fields": [
         {
           "key": "caseName",
@@ -1140,7 +1229,7 @@
       "screenId": "SCR-102",
       "title": "GL mapping and journal",
       "primary": "payroll",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/gl_mapping/records",
       "fields": [
         {
           "key": "payComponent",
@@ -1198,7 +1287,7 @@
       "screenId": "SCR-103",
       "title": "Payroll reconciliation",
       "primary": "payroll",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/reconciliation/records",
       "fields": [
         {
           "key": "payrollRun",
@@ -1352,7 +1441,7 @@
       "screenId": "SCR-061",
       "title": "Clearance board",
       "primary": "onboarding",
-      "endpoint": null,
+      "endpoint": "/api/v1/ops/modules/clearance_board/records",
       "fields": [
         {
           "key": "employee",
@@ -1413,7 +1502,7 @@
       "screenId": "SCR-064",
       "title": "Asset register",
       "primary": "onboarding",
-      "endpoint": null,
+      "endpoint": "/api/v1/assets",
       "fields": [
         {
           "key": "assetTag",
@@ -1526,7 +1615,7 @@
       "screenId": "SCR-067",
       "title": "Letters and issue register",
       "primary": "onboarding",
-      "endpoint": null,
+      "endpoint": "/api/v1/hr-letters",
       "fields": [
         {
           "key": "employee",
@@ -2053,7 +2142,7 @@
       "screenId": "SCR-020",
       "title": "Check in and check out",
       "primary": "attendance",
-      "endpoint": null,
+      "endpoint": "/api/v1/attendance/punches",
       "fields": [
         {
           "key": "employee",
@@ -2111,7 +2200,7 @@
       "screenId": "SCR-021",
       "title": "My attendance history",
       "primary": "attendance",
-      "endpoint": null,
+      "endpoint": "/api/v1/attendance/days",
       "fields": [
         {
           "key": "fromDate",
@@ -2576,7 +2665,7 @@
       "screenId": "SCR-056",
       "title": "Full and final settlement",
       "primary": "payroll",
-      "endpoint": null,
+      "endpoint": "/api/v1/fnf-settlements",
       "fields": [
         {
           "key": "employee",
