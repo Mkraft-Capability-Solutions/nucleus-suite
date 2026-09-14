@@ -3393,7 +3393,7 @@
       "id": "roster_schedule",
       "screenId": "SCR-029",
       "formId": "FRM-TIM-02",
-      "title": "Roster / shift schedule",
+      "title": "Roster / Shift Schedule",
       "primary": "attendance",
       "endpoint": "/api/v1/ops/modules/roster_schedule/records",
       "fields": [
@@ -3620,8 +3620,8 @@
         "Closed"
       ],
       "actions": [
-        "Create roster / shift schedule",
-        "Edit roster / shift schedule"
+        "Create Roster / Shift Schedule",
+        "Edit Roster / Shift Schedule"
       ],
       "columns": [
         "Location",
@@ -7313,7 +7313,9 @@
         "asset_register",
         "letters_register",
         "policy_acknowledgements",
-        "employee_home"
+        "employee_home",
+        "probation_confirmation",
+        "resignation_exit"
       ]
     },
     {
@@ -7327,7 +7329,9 @@
         "overtime_register",
         "attendance_exceptions",
         "recompute_monitor",
-        "team_history"
+        "team_history",
+        "shift_master",
+        "roster_schedule"
       ]
     },
     {
@@ -7336,7 +7340,9 @@
       "ids": [
         "leave_requests",
         "leave_ledger",
-        "leave_policy_admin"
+        "leave_policy_admin",
+        "compensatory_off",
+        "leave_encashment"
       ]
     },
     {
@@ -7352,7 +7358,10 @@
         "full_and_final",
         "gl_mapping",
         "reconciliation",
-        "loans_advances"
+        "loans_advances",
+        "pay_component_master",
+        "reimbursement_claim",
+        "salary_advance"
       ]
     },
     {
@@ -7363,7 +7372,10 @@
         "referrals",
         "learning_paths",
         "recognition_register",
-        "announcement_management"
+        "announcement_management",
+        "candidate_application",
+        "interview_feedback",
+        "offer_management"
       ]
     },
     {
@@ -7373,7 +7385,8 @@
         "rule_pack_manager",
         "golden_case_library",
         "obligation_calendar",
-        "statutory_register"
+        "statutory_register",
+        "contractor_invoice"
       ]
     },
     {
@@ -7390,7 +7403,8 @@
       "ids": [
         "assistant_helpdesk",
         "agent_ledger",
-        "operational_reports"
+        "operational_reports",
+        "helpdesk_ticket"
       ]
     }
   ],

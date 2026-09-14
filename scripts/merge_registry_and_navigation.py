@@ -28,7 +28,7 @@ NEW_FORM_MODULES = {
     'FRM-TIM-02': {
         'id': 'roster_schedule',
         'screenId': 'SCR-029',
-        'title': 'Roster / shift schedule',
+        'title': 'Roster / Shift Schedule',
         'primary': 'attendance',
         'domain': 'core_hr',
         'groupHeading': 'Attendance Operations',

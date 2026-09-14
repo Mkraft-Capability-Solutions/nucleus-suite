@@ -1132,6 +1132,20 @@
     "employee_home": "HomeOutlined",
     "learning_paths": "SchoolOutlined",
     "announcement_management": "CampaignOutlined",
-    "obligation_calendar": "EventRepeatOutlined"
+    "obligation_calendar": "EventRepeatOutlined",
+    "shift_master": "AccessTime",
+    "roster_schedule": "CalendarMonthOutlined",
+    "compensatory_off": "EventAvailableOutlined",
+    "leave_encashment": "PaidOutlined",
+    "probation_confirmation": "CheckCircleOutline",
+    "resignation_exit": "ExitToAppOutlined",
+    "pay_component_master": "CalculateOutlined",
+    "reimbursement_claim": "ReceiptLongOutlined",
+    "salary_advance": "PaidOutlined",
+    "candidate_application": "PersonAddAltOutlined",
+    "interview_feedback": "CheckCircleOutline",
+    "offer_management": "MailOutline",
+    "contractor_invoice": "ReceiptOutlined",
+    "helpdesk_ticket": "SupportAgentOutlined"
   }
 }
