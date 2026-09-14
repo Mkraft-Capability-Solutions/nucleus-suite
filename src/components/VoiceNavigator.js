@@ -6,17 +6,20 @@ import MicOff from '@mui/icons-material/MicOff';
 import Close from '@mui/icons-material/Close';
 import AutoAwesome from '@mui/icons-material/AutoAwesome';
 import Send from '@mui/icons-material/Send';
-import InfoOutlined from '@mui/icons-material/InfoOutlined';
 import VolumeUpOutlined from '@mui/icons-material/VolumeUpOutlined';
+import BrandLogo from '@/components/BrandLogo';
+import { useAuth } from '@/context/AuthContext';
 import styles from './VoiceNavigator.module.css';
 
-import { parseVoiceCommand, speakAloud } from '@/utils/voiceCommandEngine';
+import { parseVoiceCommand, speakAloud, getTimeGreeting } from '@/utils/voiceCommandEngine';
 
 export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectConsole, onOpenModal }) {
+  const { user } = useAuth();
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [inputText, setInputText] = useState('');
-  const [feedback, setFeedback] = useState('Click the microphone or speak any command below.');
+  const [feedback, setFeedback] = useState('');
   const recognitionRef = useRef(null);
   const silenceTimerRef = useRef(null);
 
@@ -37,15 +40,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     setTranscript(cleanCmd);
     setInputText(cleanCmd);
     setFeedback(result.speechText);
+    setIsSpeaking(true);
 
-    // Announce action aloud immediately
-    speakAloud(result.speechText);
-
-    // Stop recognition when executing command
+    // Stop recognition during command execution
     if (recognitionRef.current) {
       try { recognitionRef.current.stop(); } catch {}
     }
     setIsListening(false);
+
+    // Announce action aloud with Siri voice narration
+    speakAloud(result.speechText, () => {
+      setIsSpeaking(false);
+    });
 
     setTimeout(() => {
       if (result.type === 'ACTION') {
@@ -73,10 +79,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         if (onNavigate) onNavigate('people_core', 'core_hr');
         onClose();
       }
-    }, 900);
+    }, 850);
   }, [onClose, onNavigate, onSelectConsole, onOpenModal]);
 
-  const startListening = () => {
+  const startListening = useCallback(() => {
     if (typeof window === 'undefined') return;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -98,7 +104,6 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onstart = () => {
         setIsListening(true);
-        setFeedback('🎙️ Nucleus Voice Assist is listening... Speak now into your microphone.');
       };
 
       recognition.onresult = (event) => {
@@ -118,12 +123,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           setInputText(clean);
           setFeedback(`Heard: "${clean}"`);
 
-          // Clear any previous debounce timer
           if (silenceTimerRef.current) {
             clearTimeout(silenceTimerRef.current);
           }
 
-          // Auto-execute if final or after 1.2s of silence
           if (isFinal) {
             executeCommand(clean);
           } else {
@@ -134,9 +137,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         }
       };
 
-      recognition.onspeechend = () => {
-        // Speech ended
-      };
+      recognition.onspeechend = () => {};
 
       recognition.onend = () => {
         setIsListening(false);
@@ -144,10 +145,9 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onerror = (event) => {
         if (event.error === 'no-speech') {
-          setFeedback('Nucleus Voice Assist: No speech detected. Click the mic and speak clearly.');
+          // Keep waiting for user
         } else {
           setIsListening(false);
-          setFeedback('Nucleus Voice Assist: Ready. Click the microphone, speak, or type below.');
         }
       };
 
@@ -156,9 +156,8 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsListening(true);
     } catch (err) {
       setIsListening(false);
-      setFeedback('Click the microphone to activate Nucleus Voice Assist, or type any command.');
     }
-  };
+  }, [executeCommand]);
 
   const toggleListening = () => {
     if (isListening) {
@@ -169,20 +168,20 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsListening(false);
       if (inputText.trim()) {
         executeCommand(inputText.trim());
-      } else {
-        setFeedback('Nucleus Voice Assist paused. Click the microphone to speak again.');
       }
     } else {
       startListening();
     }
   };
 
+  // On modal open: Greet user personalized with local time and name
   useEffect(() => {
     if (!isOpen) {
       setIsListening(false);
+      setIsSpeaking(false);
       setTranscript('');
       setInputText('');
-      setFeedback('Click the microphone or speak any command below.');
+      setFeedback('');
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch {}
@@ -190,7 +189,15 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       return;
     }
 
-    setFeedback('Click the microphone or speak any command below.');
+    const greeting = getTimeGreeting(user?.name);
+    setFeedback(greeting);
+    setIsSpeaking(true);
+
+    // Speak greeting aloud immediately, then begin listening
+    speakAloud(greeting, () => {
+      setIsSpeaking(false);
+      startListening();
+    });
 
     return () => {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
@@ -198,7 +205,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         try { recognitionRef.current.stop(); } catch {}
       }
     };
-  }, [isOpen]);
+  }, [isOpen, user?.name, startListening]);
 
   if (!isOpen) return null;
 
@@ -222,56 +229,61 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
   return (
     <div className={styles.voiceModalOverlay} onClick={onClose} role="dialog" aria-modal="true">
       <div className={styles.voiceModalContainer} onClick={(e) => e.stopPropagation()}>
-        <button className={styles.closeVoiceBtn} onClick={onClose} title="Close Nucleus Voice Assist">
-          <Close sx={{ fontSize: 18 }} />
+        <button className={styles.closeVoiceBtn} onClick={onClose} title="Close Nucleus Talk">
+          <Close sx={{ fontSize: 16 }} />
         </button>
 
-        {/* Pulsating Interactive Microphone Button */}
-        <button
-          type="button"
+        {/* Siri-Inspired Dynamic Animated Nucleus Logo Orb with Fluid Wave Movement */}
+        <div
+          className={`${styles.siriOrbContainer} ${isSpeaking ? styles.siriSpeaking : ''} ${isListening ? styles.siriListening : ''}`}
           onClick={toggleListening}
-          className={`${styles.micActionBtn} ${isListening ? styles.micPulsing : ''}`}
-          style={{
-            width: '68px',
-            height: '68px',
-            borderRadius: '50%',
-            background: isListening ? 'var(--signal, #7c3aed)' : 'var(--card-2, #f8fafc)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: isListening ? 'var(--on-signal, #ffffff)' : 'var(--signal, #7c3aed)',
-            border: '2px solid var(--signal, #7c3aed)',
-            cursor: 'pointer',
-            boxShadow: isListening ? '0 0 24px var(--signal, #7c3aed)' : 'var(--shadow-subtle)',
-            transition: 'all 0.25s ease',
-            margin: '0.25rem auto 0'
-          }}
-          title={isListening ? "Nucleus Voice Assist listening... Click to Stop" : "Click to Speak"}
+          title={isListening ? "Nucleus Voice Assist listening... Click to pause" : "Click to activate microphone"}
         >
-          {isListening ? <Mic sx={{ fontSize: 34 }} /> : <Mic sx={{ fontSize: 34 }} />}
-        </button>
+          <div className={styles.siriAuraRing1} />
+          <div className={styles.siriAuraRing2} />
+          <div className={styles.siriAuraRing3} />
+          <div className={styles.siriCenterWaveDot} />
 
-        <h3 style={{ margin: '0.85rem 0 0.25rem', fontSize: '1.35rem', color: 'var(--text, #0f172a)', fontWeight: 700, letterSpacing: '-0.01em' }}>
+          <div className={styles.siriCoreLogo}>
+            <BrandLogo size={52} />
+          </div>
+        </div>
+
+        <h3 style={{ 
+          margin: '0.25rem 0 0.4rem', 
+          fontSize: '1.35rem', 
+          color: 'var(--text, #0f172a)', 
+          fontWeight: 800, 
+          letterSpacing: '-0.02em',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px'
+        }}>
           Nucleus Talk
+          <AutoAwesome sx={{ fontSize: 18, color: '#8b5cf6' }} />
         </h3>
         
         <p style={{ 
-          margin: '0 0 0.75rem', 
-          fontSize: '0.84rem', 
+          margin: '0 0 0.85rem', 
+          fontSize: '0.92rem', 
           color: 'var(--text-2, #64748b)', 
           maxWidth: '440px', 
-          lineHeight: 1.45
+          lineHeight: 1.45,
+          fontWeight: 500
         }}>
-          {feedback}
+          {feedback || 'How can I help you today?'}
         </p>
 
-        {isListening && (
-          <div className={styles.voiceWaveform}>
-            <div className={styles.waveBar}></div>
-            <div className={styles.waveBar}></div>
-            <div className={styles.waveBar}></div>
-            <div className={styles.waveBar}></div>
-            <div className={styles.waveBar}></div>
+        {/* Siri Dynamic Sound Waveform */}
+        {(isListening || isSpeaking) && (
+          <div className={styles.siriWaveform}>
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
+            <div className={styles.siriWaveBar} />
           </div>
         )}
 
@@ -281,14 +293,14 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
             e.preventDefault();
             if (inputText.trim()) executeCommand(inputText.trim());
           }}
-          style={{ width: '100%', display: 'flex', gap: '8px', marginBottom: '1rem' }}
+          style={{ width: '100%', display: 'flex', gap: '8px', marginBottom: '1.1rem' }}
         >
           <input
             type="text"
             className={styles.commandInput}
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
-            placeholder='Nucleus Voice Assist: Speak or type any action...'
+            placeholder='Speak or type any action...'
             aria-label="Nucleus Voice Assist command input"
           />
           <button 
@@ -302,7 +314,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         </form>
 
         <div style={{ width: '100%' }}>
-          <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-2, #64748b)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--text-2, #64748b)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.6px' }}>
             Instant Action Shortcuts (Click to Announce & Execute)
           </div>
           <div className={styles.commandExamples}>
@@ -313,7 +325,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
                 className={styles.exampleChip}
                 onClick={() => executeCommand(cmd)}
               >
-                <VolumeUpOutlined sx={{ fontSize: 13, marginRight: '4px', color: 'var(--signal)' }} />
+                <VolumeUpOutlined sx={{ fontSize: 13, marginRight: '5px', color: 'var(--signal, #7c3aed)' }} />
                 {cmd}
               </button>
             ))}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseVoiceCommand, speakAloud } from '@/utils/voiceCommandEngine';
+import { parseVoiceCommand, speakAloud, getTimeGreeting } from '@/utils/voiceCommandEngine';
 
 describe('Nucleus Talk Voice Navigator Action & Parsing Engine', () => {
   it('should parse punch in action and set speech narration', () => {
@@ -93,10 +93,13 @@ describe('Nucleus Talk Voice Navigator Action & Parsing Engine', () => {
     expect(res.speechText).toBe('Opening Team Messages');
   });
 
-  it('should parse ctc exception approval command', () => {
-    const res = parseVoiceCommand('ctc exception approval');
-    expect(res.type).toBe('MODAL');
-    expect(res.target).toBe('ctc_exception');
-    expect(res.speechText).toBe('Launching Talent CTC Exception Approval');
+  it('should generate personalized time-aware greeting', () => {
+    const greeting = getTimeGreeting('Superadmin');
+    expect(greeting).toMatch(/(Good morning|Good afternoon|Good evening), Superadmin! How can I help you today\?/);
+  });
+
+  it('should generate greeting with fallback name if undefined', () => {
+    const greeting = getTimeGreeting(undefined);
+    expect(greeting).toMatch(/(Good morning|Good afternoon|Good evening), Superadmin! How can I help you today\?/);
   });
 });

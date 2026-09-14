@@ -195,9 +195,25 @@ export function parseVoiceCommand(text: string): VoiceCommandResult {
   return { type: 'UNKNOWN', speechText: `Opening ${text}` };
 }
 
+export function getTimeGreeting(userName?: string): string {
+  const hour = new Date().getHours();
+  let greetingTime = 'Good evening';
+  if (hour < 12) {
+    greetingTime = 'Good morning';
+  } else if (hour < 17) {
+    greetingTime = 'Good afternoon';
+  }
+
+  const name = userName ? userName.trim().split(' ')[0] : 'Superadmin';
+  return `${greetingTime}, ${name}! How can I help you today?`;
+}
+
 // Global speech synthesis runner (optimized for Chrome/Safari/Edge with natural voice fallback)
-export function speakAloud(text: string) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+export function speakAloud(text: string, onEnd?: () => void) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    if (onEnd) onEnd();
+    return;
+  }
   try {
     // 1. Immediately cancel any stale utterance and resume synthesis
     window.speechSynthesis.cancel();
@@ -244,18 +260,22 @@ export function speakAloud(text: string) {
         (window as any).__nucleusSpeech = utterance;
         utterance.onend = () => {
           (window as any).__nucleusSpeech = null;
+          if (onEnd) onEnd();
         };
         utterance.onerror = (e) => {
           console.warn('SpeechSynthesis utterance error:', e);
           (window as any).__nucleusSpeech = null;
+          if (onEnd) onEnd();
         };
 
         window.speechSynthesis.speak(utterance);
       } catch (e) {
         console.warn('SpeechSynthesis inner error:', e);
+        if (onEnd) onEnd();
       }
     }, 50);
   } catch (err) {
     console.warn('SpeechSynthesis error:', err);
+    if (onEnd) onEnd();
   }
 }
