@@ -100,6 +100,8 @@ function recordValue(record, column, module, liveReferences) {
             val = all.shiftCode || all.shift || all.shiftId;
         } else if (norm === 'assignment') {
             val = [all.designation, all.location].filter(Boolean).join(' · ');
+        } else if (norm === 'form') {
+            val = all.formCode || all.form;
         }
     }
 

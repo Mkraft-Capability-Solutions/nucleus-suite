@@ -12,6 +12,7 @@ export async function listModuleRecords(moduleId) {
             _cells: item.attributes || {},
             values: item.attributes || {},
             attributes: item.attributes || {},
+            status: item.status,
             createdAt: item.createdAt || new Date().toISOString()
         }));
         return serverRows;

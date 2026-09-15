@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ modu
   if (!table) return NextResponse.json({ error: `Module ${moduleId} not found or no DB schema mapped` }, { status: 404 });
 
   const query = db.select().from(table).where(eq(table.tenantId, access.tenantId)).toSQL();
-  const rows = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
   return NextResponse.json({ data: rows });
 }
 

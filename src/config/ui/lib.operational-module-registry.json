@@ -1687,7 +1687,7 @@
       "screenId": "SCR-073",
       "title": "Statutory forms and registers",
       "primary": "compliance",
-      "endpoint": "/api/v1/compliance/forms",
+      "endpoint": "/api/v1/ops/modules/statutory_register/records",
       "fields": [
         {
           "key": "formCode",
