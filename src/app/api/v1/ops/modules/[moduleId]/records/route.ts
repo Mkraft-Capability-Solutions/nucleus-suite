@@ -3,6 +3,7 @@ import { ok, fail } from "@/server/platform/http";
 import * as schema from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
+import { buildZodSchemaForModule } from "@/lib/validations/universal";
 
 // Helper to resolve moduleId to the corresponding Drizzle table
 function resolveTable(moduleId: string) {
@@ -34,12 +35,19 @@ export async function POST(req: NextRequest, { params }: { params: { moduleId: s
   if (!table) return fail(`Module ${params.moduleId} not found or no DB schema mapped`, 404);
 
   const body = await req.json().catch(() => ({}));
+  
+  // Zod Server-Side Universal Validation
+  const zodSchema = buildZodSchemaForModule(params.moduleId);
+  const parseResult = zodSchema.safeParse(body);
+  if (!parseResult.success) {
+    return fail(`Validation Failed: ${parseResult.error.errors.map(e => e.message).join(", ")}`, 400);
+  }
 
   const [inserted] = await tenantTx(access, (tx) =>
     tx.insert(table).values({
       tenantId: access.tenantId,
       employeeId: body.employeeId || null,
-      attributes: body,
+      attributes: parseResult.data,
       status: "active"
     }).returning()
   );

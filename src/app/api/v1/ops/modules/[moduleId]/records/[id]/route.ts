@@ -1,78 +1,65 @@
-import { requireAccess } from "@/server/platform/access";
-import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
-import { getModuleRecord, updateModuleRecord } from "@/server/ops/modules-service";
+import { requireAccess, tenantTx, collection } from "@/server/platform/access";
+import { ok, fail } from "@/server/platform/http";
+import * as schema from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
+import { NextRequest } from "next/server";
+import { buildZodSchemaForModule } from "@/lib/validations/universal";
 
-export const dynamic = "force-dynamic";
+// Helper to resolve moduleId to the corresponding Drizzle table
+function resolveTable(moduleId: string) {
+  const camelCase = moduleId.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+  if (camelCase === 'reconciliation') return schema.reconciliationTable;
+  const table = (schema as any)[camelCase];
+  return table || null;
+}
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ moduleId: string; id: string }> }
-) {
-  const requestId = requestIdFrom(request.headers);
-  try {
-    const access = await requireAccess(request);
-    const { moduleId, id } = await params;
-    const record = await getModuleRecord(access, moduleId, id);
+export async function GET(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+  const access = await requireAccess(req);
+  const table = resolveTable(params.moduleId);
+  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
 
-    return ok({
-      type: "operational-module-record",
-      id: record.id,
-      version: 1,
-      attributes: {
-        ...record.values,
-        createdAt: record.createdAt,
-      },
-      requestId,
-      self: `/api/v1/ops/modules/${moduleId}/records/${id}`,
-    });
-  } catch (error) {
-    return fail(error, requestId);
+  const [rows] = await tenantTx(access, (tx) =>
+    tx.select().from(table).where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
+  );
+  if (!rows || rows.length === 0) return fail("Record not found", 404);
+  return ok(rows[0]);
+}
+
+export async function PATCH(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+  const access = await requireAccess(req);
+  const table = resolveTable(params.moduleId);
+  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
+
+  const body = await req.json().catch(() => ({}));
+  
+  const zodSchema = buildZodSchemaForModule(params.moduleId);
+  const parseResult = zodSchema.safeParse(body);
+  if (!parseResult.success) {
+    return fail(`Validation Failed: ${parseResult.error.errors.map(e => e.message).join(", ")}`, 400);
   }
+  
+  const [updated] = await tenantTx(access, (tx) =>
+    tx.update(table)
+      .set({ attributes: parseResult.data, updatedAt: new Date() })
+      .where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
+      .returning()
+  );
+
+  if (!updated) return fail("Record not found", 404);
+  return ok(updated);
 }
 
-export async function PUT(
-  request: Request,
-  { params }: { params: Promise<{ moduleId: string; id: string }> }
-) {
-  return handleUpdate(request, params);
-}
+export async function DELETE(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+  const access = await requireAccess(req);
+  const table = resolveTable(params.moduleId);
+  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
 
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ moduleId: string; id: string }> }
-) {
-  return handleUpdate(request, params);
-}
+  const [deleted] = await tenantTx(access, (tx) =>
+    tx.delete(table)
+      .where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
+      .returning()
+  );
 
-async function handleUpdate(
-  request: Request,
-  paramsPromise: Promise<{ moduleId: string; id: string }>
-) {
-  const requestId = requestIdFrom(request.headers);
-  try {
-    const access = await requireAccess(request);
-    const { moduleId, id } = await paramsPromise;
-    const raw = await request.json().catch(() => null);
-    if (!raw || typeof raw !== "object") {
-      throw new HttpError({
-        status: 400,
-        code: "BAD_REQUEST",
-        message: "Payload must be an object.",
-      });
-    }
-
-    const { id: _ignored, ...payload } = raw as Record<string, unknown>;
-    const result = await updateModuleRecord(access, moduleId, id, payload, requestId);
-
-    return ok({
-      type: "operational-module-record",
-      id: result.id,
-      version: 1,
-      attributes: result.attributes,
-      requestId,
-      self: `/api/v1/ops/modules/${moduleId}/records/${result.id}`,
-    });
-  } catch (error) {
-    return fail(error, requestId);
-  }
+  if (!deleted) return fail("Record not found", 404);
+  return ok(deleted);
 }

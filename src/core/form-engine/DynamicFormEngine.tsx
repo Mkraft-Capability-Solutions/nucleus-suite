@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from 'react';
+import { z } from "zod";
 import {
   Dialog,
   DialogTitle,
@@ -67,14 +68,52 @@ export function DynamicFormEngine({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
+    const shape: Record<string, z.ZodTypeAny> = {};
+    
     schema.sections.forEach((sec) => {
-      sec.fields.forEach((f) => {
-        const val = formData[f.key];
-        if (f.required && (val === undefined || val === '' || val === null)) {
-          newErrors[f.key] = `${f.label} is required`;
+      sec.fields.forEach((field) => {
+        let fieldSchema: z.ZodTypeAny;
+        switch (field.type) {
+          case 'number':
+          case 'currency':
+            fieldSchema = z.number();
+            break;
+          case 'switch':
+          case 'boolean':
+          case 'checkbox':
+            fieldSchema = z.boolean();
+            break;
+          case 'date':
+            fieldSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date YYYY-MM-DD");
+            break;
+          case 'email':
+            fieldSchema = z.string().email();
+            break;
+          default:
+            fieldSchema = z.string();
         }
+
+        if (!field.required) {
+          fieldSchema = fieldSchema.optional().nullable().or(z.literal(''));
+        } else {
+          if (fieldSchema instanceof z.ZodString) {
+            fieldSchema = fieldSchema.min(1, `${field.label || field.key} is required`);
+          }
+        }
+        shape[field.key] = fieldSchema;
       });
     });
+
+    const zodSchema = z.object(shape).passthrough();
+    const result = zodSchema.safeParse(formData);
+
+    if (!result.success) {
+      result.error.errors.forEach(err => {
+        const key = err.path[0] as string;
+        if (key) newErrors[key] = err.message;
+      });
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
