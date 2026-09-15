@@ -577,6 +577,7 @@ export const probationConfirmation = pgTable("probation_confirmation", moduleTab
 export const resignationExit = pgTable("resignation_exit", moduleTableConfig);
 export const attendanceDetail = pgTable("attendance_detail", moduleTableConfig);
 export const shiftMaster = pgTable("shift_master", moduleTableConfig);
+export const locationMaster = pgTable("location_master", moduleTableConfig);
 export const rosterSchedule = pgTable("roster_schedule", moduleTableConfig);
 export const leavePolicyAdmin = pgTable("leave_policy_admin", moduleTableConfig);
 export const compensatoryOff = pgTable("compensatory_off", moduleTableConfig);

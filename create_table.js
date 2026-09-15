@@ -8,7 +8,7 @@ async function main() {
   await client.connect();
   
   await client.query(`
-    CREATE TABLE IF NOT EXISTS statutory_register (
+    CREATE TABLE IF NOT EXISTS location_master (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       tenant_id text NOT NULL,
       employee_id uuid,
@@ -20,7 +20,7 @@ async function main() {
     );
   `);
   
-  console.log("Created statutory_register table successfully.");
+  console.log("Created location_master table successfully.");
   await client.end();
 }
 
