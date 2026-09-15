@@ -3,7 +3,7 @@ import * as schema from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { buildZodSchemaForModule } from "@/lib/validations/universal";
-import { db, sqlClient } from "@/lib/db";
+import { db } from "@/lib/db";
 
 // Helper to resolve moduleId to the corresponding Drizzle table
 function resolveTable(moduleId: string) {
@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ modu
   if (!table) return NextResponse.json({ error: `Module ${moduleId} not found or no DB schema mapped` }, { status: 404 });
 
   const query = db.select().from(table).where(eq(table.tenantId, access.tenantId)).toSQL();
-  const rows = await tenantTx(access, [ sqlClient(query.sql, query.params) ]);
+  const rows = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
   return NextResponse.json({ data: rows });
 }
 
@@ -47,6 +47,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ mod
     status: "active"
   }).returning().toSQL();
 
-  const [inserted] = await tenantTx(access, [ sqlClient(query.sql, query.params) ]);
+  const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
   return NextResponse.json({ data: inserted });
 }

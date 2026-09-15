@@ -91,8 +91,16 @@ export function stripPrelude<T>(results: T[]): T[] {
  * ONLY the statement results (prelude outputs stripped). Always use this
  * instead of manual sqlClient.transaction + destructuring.
  */
-export async function tenantTx(access: Access, statements: ReturnType<typeof tenantPrelude>): Promise<unknown[]> {
-  const results = (await sqlClient.transaction([...tenantPrelude(access), ...statements])) as unknown[];
+export async function tenantTx(access: Access, statements: any[]): Promise<unknown[]> {
+  const neonStatements = statements.map(stmt => {
+    if (stmt && typeof stmt.text === 'string' && Array.isArray(stmt.values)) {
+      const parts = stmt.text.split(/\$\d+/);
+      (parts as any).raw = parts;
+      return sqlClient(parts as unknown as TemplateStringsArray, ...stmt.values);
+    }
+    return stmt;
+  });
+  const results = (await sqlClient.transaction([...tenantPrelude(access), ...neonStatements])) as unknown[];
   return stripPrelude(results);
 }
 
