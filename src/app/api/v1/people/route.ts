@@ -49,7 +49,16 @@ export async function POST(request: Request) {
   try {
     const access = await requireAccess(request);
     const key = requireIdempotencyKey(request.headers);
-    const parsed = createPersonSchema.safeParse(await request.json().catch(() => null));
+    const rawJson = await request.json().catch(() => null);
+    const sanitized = rawJson && typeof rawJson === "object"
+      ? Object.fromEntries(
+          Object.entries(rawJson).map(([k, v]) => [
+            k,
+            typeof v === "string" && v.trim() === "" ? undefined : v,
+          ])
+        )
+      : rawJson;
+    const parsed = createPersonSchema.safeParse(sanitized);
     if (!parsed.success) {
       throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "The person payload is invalid.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }

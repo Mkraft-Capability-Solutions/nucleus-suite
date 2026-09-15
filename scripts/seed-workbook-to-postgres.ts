@@ -77,12 +77,13 @@ async function main() {
     }
 
     // 2. Ensure / Get Tenant 'mkraft'
+    const FIXED_NUCLEUS_TENANT_ID = "5fd242d5-5627-47d0-a667-b099ef0acba9";
     let tenantRes = await client.query("SELECT id FROM tenants WHERE slug = $1 LIMIT 1", [TENANT_SLUG]);
     let tenantId: string;
     if (tenantRes.rows.length === 0) {
-      tenantId = randomUUID();
+      tenantId = FIXED_NUCLEUS_TENANT_ID;
       await client.query(
-        "INSERT INTO tenants (id, name, slug, legal_name, default_currency, timezone, status) VALUES ($1, 'Mkraft Textiles', $2, 'Mkraft Textiles Pvt Ltd', 'INR', 'Asia/Kolkata', 'active')",
+        "INSERT INTO tenants (id, name, slug, legal_name, default_currency, timezone, status) VALUES ($1, 'Mkraft Textiles', $2, 'Mkraft Textiles Pvt Ltd', 'INR', 'Asia/Kolkata', 'active') ON CONFLICT (slug) DO NOTHING",
         [tenantId, TENANT_SLUG]
       );
     } else {
@@ -141,11 +142,17 @@ async function main() {
       const name = loc["Location name"] || code;
       const city = loc["City"] || "";
       const state = loc["State"] || "";
-      const id = randomUUID();
-      await client.query(
-        "INSERT INTO locations (id, tenant_id, establishment_id, record_status, attributes) VALUES ($1, $2, $3, 'active', $4::jsonb)",
-        [id, tenantId, defaultEstablishmentId, JSON.stringify({ code, name, city, state, ...loc })]
-      );
+      let locRes = await client.query("SELECT id FROM locations WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+      let id: string;
+      if (locRes.rows.length === 0) {
+        id = randomUUID();
+        await client.query(
+          "INSERT INTO locations (id, tenant_id, establishment_id, record_status, attributes) VALUES ($1, $2, $3, 'active', $4::jsonb)",
+          [id, tenantId, defaultEstablishmentId, JSON.stringify({ code, name, city, state, ...loc })]
+        );
+      } else {
+        id = locRes.rows[0].id;
+      }
       locationIds[code] = id;
       locationIds[name] = id;
     }
@@ -173,13 +180,19 @@ async function main() {
       const code = unit["Org unit code"] || unit["Code"] || "DEPT";
       const name = unit["Org unit name"] || code;
       const type = (unit["Type"] || "").toLowerCase();
-      const id = randomUUID();
 
       if (type.includes("business unit") || type.includes("division") || type.includes("entity")) {
-        await client.query(
-          "INSERT INTO business_units (id, tenant_id, legal_entity_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
-          [id, tenantId, defaultLegalEntityId, JSON.stringify({ code, name, ...unit })]
-        );
+        let buRes = await client.query("SELECT id FROM business_units WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+        let id: string;
+        if (buRes.rows.length === 0) {
+          id = randomUUID();
+          await client.query(
+            "INSERT INTO business_units (id, tenant_id, legal_entity_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
+            [id, tenantId, defaultLegalEntityId, JSON.stringify({ code, name, ...unit })]
+          );
+        } else {
+          id = buRes.rows[0].id;
+        }
         buIds[code] = id;
         buIds[name] = id;
       }
@@ -192,11 +205,17 @@ async function main() {
       if (type.includes("business unit") || type.includes("division") || type.includes("entity")) continue;
       
       const buId = buIds[unit["Parent"]] || defaultBusinessUnitId;
-      const id = randomUUID();
-      await client.query(
-        "INSERT INTO departments (id, tenant_id, business_unit_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
-        [id, tenantId, buId, JSON.stringify({ code, name, ...unit })]
-      );
+      let deptRes = await client.query("SELECT id FROM departments WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+      let id: string;
+      if (deptRes.rows.length === 0) {
+        id = randomUUID();
+        await client.query(
+          "INSERT INTO departments (id, tenant_id, business_unit_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
+          [id, tenantId, buId, JSON.stringify({ code, name, ...unit })]
+        );
+      } else {
+        id = deptRes.rows[0].id;
+      }
       deptIds[code] = id;
       deptIds[name] = id;
     }
@@ -212,21 +231,32 @@ async function main() {
       const band = des["Band"] || "G-STAFF";
       
       if (!gradeIds[band]) {
-        const gid = randomUUID();
-        await client.query(
-          "INSERT INTO grades (id, tenant_id, attributes) VALUES ($1, $2, $3::jsonb)",
-          [gid, tenantId, JSON.stringify({ code: band, name: `Grade ${band}` })]
-        );
-        gradeIds[band] = gid;
+        let gRes = await client.query("SELECT id FROM grades WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, band]);
+        if (gRes.rows.length === 0) {
+          const gid = randomUUID();
+          await client.query(
+            "INSERT INTO grades (id, tenant_id, attributes) VALUES ($1, $2, $3::jsonb)",
+            [gid, tenantId, JSON.stringify({ code: band, name: `Grade ${band}` })]
+          );
+          gradeIds[band] = gid;
+        } else {
+          gradeIds[band] = gRes.rows[0].id;
+        }
       }
 
-      const jpid = randomUUID();
-      await client.query(
-        "INSERT INTO job_profiles (id, tenant_id, default_grade_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
-        [jpid, tenantId, gradeIds[band], JSON.stringify({ code, name: title, band, ...des })]
-      );
-      jobProfileIds[code] = jpid;
-      jobProfileIds[title] = jpid;
+      let jpRes = await client.query("SELECT id FROM job_profiles WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+      if (jpRes.rows.length === 0) {
+        const jpid = randomUUID();
+        await client.query(
+          "INSERT INTO job_profiles (id, tenant_id, default_grade_id, attributes) VALUES ($1, $2, $3, $4::jsonb)",
+          [jpid, tenantId, gradeIds[band], JSON.stringify({ code, name: title, band, ...des })]
+        );
+        jobProfileIds[code] = jpid;
+        jobProfileIds[title] = jpid;
+      } else {
+        jobProfileIds[code] = jpRes.rows[0].id;
+        jobProfileIds[title] = jpRes.rows[0].id;
+      }
     }
     const defaultGradeId = Object.values(gradeIds)[0] || randomUUID();
     const defaultJobProfileId = Object.values(jobProfileIds)[0] || randomUUID();
@@ -240,11 +270,17 @@ async function main() {
       const dept = deptIds[pos["Org unit"]] || defaultDeptId;
       const grade = gradeIds[pos["Grade"]] || defaultGradeId;
       const profile = jobProfileIds[title] || defaultJobProfileId;
-      const id = randomUUID();
-      await client.query(
-        "INSERT INTO positions (id, tenant_id, department_id, grade_id, job_profile_id, attributes) VALUES ($1, $2, $3, $4, $5, $6::jsonb)",
-        [id, tenantId, dept, grade, profile, JSON.stringify({ code, name: title, ...pos })]
-      );
+      let posRes = await client.query("SELECT id FROM positions WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+      let id: string;
+      if (posRes.rows.length === 0) {
+        id = randomUUID();
+        await client.query(
+          "INSERT INTO positions (id, tenant_id, department_id, grade_id, job_profile_id, attributes) VALUES ($1, $2, $3, $4, $5, $6::jsonb)",
+          [id, tenantId, dept, grade, profile, JSON.stringify({ code, name: title, ...pos })]
+        );
+      } else {
+        id = posRes.rows[0].id;
+      }
       positionIds[code] = id;
       positionIds[title] = id;
     }
@@ -255,11 +291,17 @@ async function main() {
     for (const lt of leaveTypesSheet) {
       const code = lt["Leave type"] || lt["Code"] || "CL";
       const name = lt["Name"] || code;
-      const id = randomUUID();
-      await client.query(
-        "INSERT INTO leave_types (id, tenant_id, attributes) VALUES ($1, $2, $3::jsonb)",
-        [id, tenantId, JSON.stringify({ code, name, ...lt })]
-      );
+      let ltRes = await client.query("SELECT id FROM leave_types WHERE tenant_id = $1 AND attributes->>'code' = $2", [tenantId, code]);
+      let id: string;
+      if (ltRes.rows.length === 0) {
+        id = randomUUID();
+        await client.query(
+          "INSERT INTO leave_types (id, tenant_id, attributes) VALUES ($1, $2, $3::jsonb)",
+          [id, tenantId, JSON.stringify({ code, name, ...lt })]
+        );
+      } else {
+        id = ltRes.rows[0].id;
+      }
       leaveTypeIds[code] = id;
     }
 

@@ -28,7 +28,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
-        positions, documents, auditLogs, showToast, employees,
+        positions, documents, auditLogs, showToast, employees, addEmployee,
         recognitionAwards, grantRecognitionAward,
         sanctionedQuotas, calculateDepartmentCapacity,
     } = useHRMS();
@@ -74,15 +74,23 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const [isEntityModalOpen, setIsEntityModalOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
-    // Dynamic UI Master Datasets (Client-side state)
-    const [customEmployees, setCustomEmployees] = useState([]);
+    // Dynamic UI Master Datasets (Client-side state with local persistence)
+    const [customEmployees, setCustomEmployees] = useState(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('nucleus_custom_employees');
+                if (stored) return JSON.parse(stored);
+            } catch (_) {}
+        }
+        return [];
+    });
 
     // Live Database Ingestion for Nucleus
     useEffect(() => {
         let active = true;
         async function fetchDbEmployees() {
             try {
-                const res = await fetch('/api/v1/people?pageSize=100');
+                const res = await fetch('/api/v1/people?pageSize=200');
                 if (!res.ok) return;
                 const json = await res.json();
                 if (active && Array.isArray(json.data) && json.data.length > 0) {
@@ -98,9 +106,18 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         details: item
                     }));
                     setCustomEmployees(prev => {
-                        const existingIds = new Set(dbPeople.map(p => p.id));
-                        const filtered = prev.filter(p => !existingIds.has(p.id));
-                        return [...dbPeople, ...filtered];
+                        const map = new Map();
+                        // 1. Keep local cached items
+                        prev.forEach(p => map.set(p.id, p));
+                        // 2. Merge authoritative database records
+                        dbPeople.forEach(p => map.set(p.id, { ...map.get(p.id), ...p }));
+                        const merged = Array.from(map.values());
+                        if (typeof window !== 'undefined') {
+                            try {
+                                localStorage.setItem('nucleus_custom_employees', JSON.stringify(merged));
+                            } catch (_) {}
+                        }
+                        return merged;
                     });
                 }
             } catch (err) {
@@ -131,10 +148,17 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         band: record.source['Worker class'] || readData("components.Clerio.PeopleCoreView", "fallback_2"),
     })), []);
 
-    const directoryEmployees = useMemo(() => [
-        ...customEmployees,
-        ...workbookEmployees.map((employee) => ({ ...employee, manager: managerOverrides[employee.id] || employee.manager }))
-    ], [customEmployees, workbookEmployees, managerOverrides]);
+    // Deduplicate workbook entries against custom/database employees so zero duplicates exist
+    const directoryEmployees = useMemo(() => {
+        const customIds = new Set(customEmployees.map(e => e.id));
+        const workbookUnique = workbookEmployees
+            .filter(e => !customIds.has(e.id))
+            .map(employee => ({
+                ...employee,
+                manager: managerOverrides[employee.id] || employee.manager
+            }));
+        return [...customEmployees, ...workbookUnique];
+    }, [customEmployees, workbookEmployees, managerOverrides]);
 
     const filteredEmployees = directoryEmployees.filter(emp =>
         emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -892,59 +916,116 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     if (wizardMode === 'edit') {
                         setCustomEmployees(prev => {
                             const idx = prev.findIndex(e => e.id === savedEmp.id);
+                            const next = [...prev];
                             if (idx >= 0) {
-                                const next = [...prev];
                                 next[idx] = { ...next[idx], ...savedEmp };
-                                return next;
+                            } else {
+                                next.unshift(savedEmp);
                             }
-                            return [savedEmp, ...prev];
+                            if (typeof window !== 'undefined') {
+                                try {
+                                    localStorage.setItem('nucleus_custom_employees', JSON.stringify(next));
+                                } catch (_) {}
+                            }
+                            return next;
                         });
                         setManagerOverrides(prev => ({ ...prev, [savedEmp.id]: savedEmp.manager }));
                     } else {
-                        setCustomEmployees(prev => [savedEmp, ...prev]);
+                        setCustomEmployees(prev => {
+                            const next = [savedEmp, ...prev.filter(e => e.id !== savedEmp.id)];
+                            if (typeof window !== 'undefined') {
+                                try {
+                                    localStorage.setItem('nucleus_custom_employees', JSON.stringify(next));
+                                } catch (_) {}
+                            }
+                            return next;
+                        });
                     }
+
+                    if (typeof addEmployee === 'function') {
+                        addEmployee(savedEmp);
+                    }
+
                     try {
                         const details = savedEmp.details || {};
-                        await fetch('/api/v1/people', {
+                        const safeUUID = (typeof crypto !== 'undefined' && crypto?.randomUUID)
+                            ? crypto.randomUUID()
+                            : `idemp-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+                        const nameParts = (savedEmp.name || '').trim().split(/\s+/);
+                        const fallbackFirst = nameParts[0] || 'Employee';
+                        const fallbackLast = nameParts.slice(1).join(' ') || '-';
+
+                        const rawPayload = {
+                            employeeCode: savedEmp.id,
+                            firstName: details.firstName || fallbackFirst,
+                            lastName: details.lastName || fallbackLast,
+                            workEmail: details.officialEmail || details.personalEmail || `${savedEmp.id.toLowerCase().replace(/[^a-z0-9]/g, '')}@nucleus.com`,
+                            designation: savedEmp.role || 'Associate',
+                            department: savedEmp.dept || 'General',
+                            location: savedEmp.location || 'Head Office',
+                            joiningDate: details.joiningDate || new Date().toISOString().split('T')[0],
+                            workerCategory: details.workerCategory || 'PERM',
+                            hasRestDays: details.hasRestDays ?? true,
+                            otEligibility: details.otEligibility || 'ALL_DAYS',
+                            salaryLocationScope: details.salaryLocationScope || 'PLANT',
+                            isTrainee: Boolean(details.isTrainee),
+                            traineeType: details.traineeType || undefined,
+                            assignedShift: details.assignedShift || 'GENERAL',
+                            panNumber: details.panNumber || details.pan || undefined,
+                            aadhaarLast4: details.aadhaarNumber || details.aadhaar ? (details.aadhaarNumber || details.aadhaar).slice(-4) : undefined,
+                            uan: details.uan || undefined,
+                            esicNumber: details.esicNumber || details.esic || undefined,
+                            bankAccountNo: details.accountToken || undefined,
+                            bankIfsc: details.ifsc || undefined,
+                            bankName: details.bankName || undefined,
+                            emergencyContactName: details.emergencyName || details.emergencyContactName || undefined,
+                            emergencyContactPhone: details.emergencyPhone || details.emergencyContactPhone || undefined,
+                            emergencyContactRelation: details.emergencyRelation || undefined,
+                            biometricEnrolId: details.biometricEnrolId || undefined,
+                            accessCardNo: details.accessCardNo || undefined,
+                            lockerNo: details.lockerNo || undefined,
+                        };
+
+                        const cleanPayload = {};
+                        for (const [k, v] of Object.entries(rawPayload)) {
+                            if (v !== undefined && v !== null && v !== '') {
+                                cleanPayload[k] = v;
+                            }
+                        }
+
+                        const res = await fetch('/api/v1/people', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'Idempotency-Key': crypto.randomUUID(),
+                                'Idempotency-Key': safeUUID,
                             },
-                            body: JSON.stringify({
-                                employeeCode: savedEmp.id,
-                                firstName: details.firstName || savedEmp.name.split(' ')[0] || 'Employee',
-                                lastName: details.lastName || savedEmp.name.split(' ').slice(1).join(' ') || '-',
-                                workEmail: details.officialEmail || details.personalEmail || `${savedEmp.id.toLowerCase()}@nucleus.com`,
-                                designation: savedEmp.role || 'Associate',
-                                department: savedEmp.dept || 'General',
-                                location: savedEmp.location || 'Head Office',
-                                joiningDate: details.joiningDate || new Date().toISOString().split('T')[0],
-                                workerCategory: details.workerCategory || 'PERM',
-                                hasRestDays: details.hasRestDays ?? true,
-                                otEligibility: details.otEligibility || 'ALL_DAYS',
-                                salaryLocationScope: details.salaryLocationScope || 'PLANT',
-                                isTrainee: Boolean(details.isTrainee),
-                                traineeType: details.traineeType || undefined,
-                                assignedShift: details.assignedShift || 'GENERAL',
-                                panNumber: details.panNumber || details.pan || undefined,
-                                aadhaarLast4: details.aadhaarNumber || details.aadhaar ? (details.aadhaarNumber || details.aadhaar).slice(-4) : undefined,
-                                uan: details.uan || undefined,
-                                esicNumber: details.esicNumber || details.esic || undefined,
-                                bankAccountNo: details.accountToken || undefined,
-                                bankIfsc: details.ifsc || undefined,
-                                bankName: details.bankName || undefined,
-                                emergencyContactName: details.emergencyName || details.emergencyContactName || undefined,
-                                emergencyContactPhone: details.emergencyPhone || details.emergencyContactPhone || undefined,
-                                emergencyContactRelation: details.emergencyRelation || undefined,
-                                biometricEnrolId: details.biometricEnrolId || undefined,
-                                accessCardNo: details.accessCardNo || undefined,
-                                lockerNo: details.lockerNo || undefined,
-                            }),
+                            body: JSON.stringify(cleanPayload),
                         });
-                        showToast(wizardMode === 'edit' ? 'Employee Updated' : 'Database Synchronized', `Employee record persisted to database.`, 'success');
+
+                        if (!res.ok) {
+                            const errBody = await res.json().catch(() => ({}));
+                            console.warn('Individual employee database sync returned error status:', res.status, errBody);
+                            showToast('Employee Saved Locally', errBody?.error?.message || `Local record saved; database responded with status ${res.status}.`, 'warning');
+                        } else {
+                            const resData = await res.json();
+                            const createdRecord = resData?.data?.attributes || resData?.data;
+                            if (createdRecord) {
+                                setCustomEmployees(prev => {
+                                    const next = prev.map(p => p.id === savedEmp.id ? { ...p, details: { ...p.details, ...createdRecord } } : p);
+                                    if (typeof window !== 'undefined') {
+                                        try {
+                                            localStorage.setItem('nucleus_custom_employees', JSON.stringify(next));
+                                        } catch (_) {}
+                                    }
+                                    return next;
+                                });
+                            }
+                            showToast(wizardMode === 'edit' ? 'Employee Updated' : 'Database Synchronized', `Employee record persisted to database.`, 'success');
+                        }
                     } catch (e) {
-                        console.warn('Individual employee database sync:', e);
+                        console.warn('Individual employee database sync error:', e);
+                        showToast('Employee Saved Locally', 'Employee saved in local cache.', 'info');
                     }
                 }}
                 existingEmployees={directoryEmployees}

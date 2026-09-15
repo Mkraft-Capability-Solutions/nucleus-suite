@@ -352,7 +352,19 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
     sqlClient`insert into employees (id, tenant_id, person_id, employee_code, first_name, last_name, work_email, designation, department, location, joining_date, basic_salary_minor, metadata) values (${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${input.workEmail ?? null}, ${input.designation}, ${input.department}, ${input.location}, ${joining}, ${input.basicSalaryMinor ?? null}, ${JSON.stringify(metadata)}::jsonb)`,
     sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, ...metadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
   ]);
-  return { id: employeeId, personId, employeeCode: code };
+  return {
+    id: employeeId,
+    personId,
+    employeeCode: code,
+    firstName: input.firstName,
+    lastName: input.lastName,
+    workEmail: input.workEmail ?? null,
+    designation: input.designation,
+    department: input.department,
+    location: input.location,
+    status: "active",
+    joiningDate: joining,
+  };
 }
 
 export const createDepartmentSchema = z.object({

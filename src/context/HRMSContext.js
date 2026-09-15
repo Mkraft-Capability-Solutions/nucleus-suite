@@ -298,7 +298,78 @@ export const HRMSProvider = ({ children }) => {
     const applyLeave = (type,date,duration,reason) => applyLeaveWithWorkflow({employee:{id:leaveActor.employeeId,name:leaveActor.name},leaveTypeCode:type,startDateStr:date,endDateStr:date,numberOfDays:Number(duration),reason});
 
     // --- 4. PEOPLE CORE (Module 1) ---
-    const [employees, setEmployees] = useState(readData("context.HRMSContext", "employees_28"));
+    const [employees, setEmployees] = useState(() => {
+        const initial = readData("context.HRMSContext", "employees_28") || [];
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('nucleus_custom_employees');
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    const map = new Map();
+                    initial.forEach(e => map.set(e.id, e));
+                    parsed.forEach(e => map.set(e.id, { ...map.get(e.id), ...e }));
+                    return Array.from(map.values());
+                }
+            } catch (_) {}
+        }
+        return initial;
+    });
+
+    const addEmployee = (newEmp) => {
+        setEmployees(prev => {
+            const map = new Map();
+            prev.forEach(e => map.set(e.id, e));
+            map.set(newEmp.id, { ...map.get(newEmp.id), ...newEmp });
+            const updated = Array.from(map.values());
+            if (typeof window !== 'undefined') {
+                try {
+                    localStorage.setItem('nucleus_custom_employees', JSON.stringify(updated));
+                } catch (_) {}
+            }
+            return updated;
+        });
+    };
+
+    // Live Database Sync for Central HRMS Context
+    useEffect(() => {
+        let active = true;
+        async function syncWithDb() {
+            try {
+                const res = await fetch('/api/v1/people?pageSize=200');
+                if (!res.ok) return;
+                const json = await res.json();
+                if (active && Array.isArray(json.data) && json.data.length > 0) {
+                    const dbPeople = json.data.map(item => ({
+                        id: item.employeeCode || item.id,
+                        name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
+                        role: item.designation || 'Specialist',
+                        dept: item.department || 'Operations',
+                        manager: 'Rajesh Varma',
+                        location: item.location || 'Bangalore Plant',
+                        status: item.status || 'Active',
+                        band: item.category || 'Regular',
+                        details: item
+                    }));
+                    setEmployees(prev => {
+                        const map = new Map();
+                        prev.forEach(e => map.set(e.id, e));
+                        dbPeople.forEach(e => map.set(e.id, { ...map.get(e.id), ...e }));
+                        const updated = Array.from(map.values());
+                        if (typeof window !== 'undefined') {
+                            try {
+                                localStorage.setItem('nucleus_custom_employees', JSON.stringify(updated));
+                            } catch (_) {}
+                        }
+                        return updated;
+                    });
+                }
+            } catch (err) {
+                console.warn('HRMSContext employees live sync:', err);
+            }
+        }
+        syncWithDb();
+        return () => { active = false; };
+    }, []);
 
     // --- 4B. MY TEAM PODS (Module 1 / Pod Directory) ---
     const [teamMembers, setTeamMembers] = useState(readData("context.HRMSContext", "teamMembers_29"));
@@ -1089,7 +1160,7 @@ export const HRMSProvider = ({ children }) => {
             // Auto Leave Credit Engine (Demo Point #7)
             computeAutoLeaveAllocation, evaluateCOFFLapse, isSeniorManagement,
             validateLeaveRestrictions, getLeaveAllocationForEmployee,
-            employees, positions, documents, auditLogs,
+            employees, setEmployees, addEmployee, positions, documents, auditLogs,
             teamMembers, setTeamMembers,
             announcements, addAnnouncement, togglePinAnnouncement, deleteAnnouncement,
             triggerAutoAnnouncements,
