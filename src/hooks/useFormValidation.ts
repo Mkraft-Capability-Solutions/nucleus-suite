@@ -18,7 +18,7 @@ export type FieldRule = {
   required?: boolean;
   minLength?: number;
   maxLength?: number;
-  type?: 'email' | 'phone' | 'pan' | 'ifsc' | 'cin' | 'tan' | 'gstin' | 'date' | 'number' | 'text';
+  type?: 'email' | 'phone' | 'pan' | 'ifsc' | 'cin' | 'tan' | 'gstin' | 'aadhaar' | 'uan' | 'esiIp' | 'pin' | 'date' | 'number' | 'text';
   min?: number;
   max?: number;
   pattern?: { regex: RegExp; message: string };
@@ -29,13 +29,17 @@ export type FieldRule = {
 export type ValidationErrors = Record<string, string>;
 
 const FORMAT_PATTERNS: Record<string, { regex: RegExp; message: string }> = {
-  email:  { regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Enter a valid email address' },
-  phone:  { regex: /^[6-9]\d{9}$/, message: 'Enter a valid 10-digit Indian mobile number' },
-  pan:    { regex: /^[A-Z]{5}\d{4}[A-Z]$/, message: 'PAN must be in format AAAAA9999A' },
-  ifsc:   { regex: /^[A-Z]{4}0[A-Z0-9]{6}$/, message: 'IFSC must be in format AAAA0XXXXXX' },
-  cin:    { regex: /^[UL]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}$/, message: 'CIN/LLPIN format invalid (e.g. U72900KA2024PTC123456)' },
-  tan:    { regex: /^[A-Z]{4}\d{5}[A-Z]$/, message: 'TAN must be in format AAAA99999A' },
-  gstin:  { regex: /^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/, message: 'GSTIN format invalid (e.g. 29AAACN1234F1Z5)' },
+  email:   { regex: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Enter a valid email address (e.g. name@company.com)' },
+  phone:   { regex: /^[6-9]\d{9}$/, message: 'Enter a valid 10-digit Indian mobile number (e.g. 9876543210)' },
+  pan:     { regex: /^[A-Z]{5}\d{4}[A-Z]$/, message: 'PAN must be 10 characters in format AAAAA9999A (e.g. ABCDE1234F)' },
+  ifsc:    { regex: /^[A-Z]{4}0[A-Z0-9]{6}$/, message: 'IFSC must be 11 characters starting with 4 letters followed by 0 (e.g. HDFC0000123)' },
+  aadhaar: { regex: /^\d{12}$/, message: 'Aadhaar must be a 12-digit number (e.g. 123456789012)' },
+  uan:     { regex: /^\d{12}$/, message: 'UAN must be a 12-digit number (e.g. 100123456789)' },
+  esiIp:   { regex: /^\d{17}$/, message: 'ESI IP Number must be 17 digits' },
+  pin:     { regex: /^\d{6}$/, message: 'PIN Code must be a 6-digit number (e.g. 560001)' },
+  cin:     { regex: /^[UL]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}$/, message: 'CIN/LLPIN format invalid (e.g. U72900KA2024PTC123456)' },
+  tan:     { regex: /^[A-Z]{4}\d{5}[A-Z]$/, message: 'TAN must be in format AAAA99999A (e.g. BLRR12345C)' },
+  gstin:   { regex: /^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/, message: 'GSTIN format invalid (e.g. 29AAACN1234F1Z5)' },
 };
 
 export function validateFormFields(

@@ -11,7 +11,7 @@ import AnimatedNucleusLogo from '@/components/AnimatedNucleusLogo';
 import { useAuth } from '@/context/AuthContext';
 import styles from './VoiceNavigator.module.css';
 
-import { parseVoiceCommand, speakAloud, getTimeGreeting } from '@/utils/voiceCommandEngine';
+import { parseVoiceCommand, speakAloud, getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed } from '@/utils/voiceCommandEngine';
 
 export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectConsole, onOpenModal }) {
   const { user } = useAuth();
@@ -22,6 +22,12 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
   const [feedback, setFeedback] = useState('');
   const recognitionRef = useRef(null);
   const silenceTimerRef = useRef(null);
+  const isSpeakingRef = useRef(false);
+  const executeCommandRef = useRef(null);
+
+  useEffect(() => {
+    isSpeakingRef.current = isSpeaking;
+  }, [isSpeaking]);
 
   // Preload voices
   useEffect(() => {
@@ -89,6 +95,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     }, 650);
   }, [onClose, onNavigate, onSelectConsole, onOpenModal]);
 
+  useEffect(() => {
+    executeCommandRef.current = executeCommand;
+  }, [executeCommand]);
+
   const startListening = useCallback(() => {
     if (typeof window === 'undefined') return;
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -140,7 +150,9 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
           // Exactly 1.2 seconds pause triggers analysis and action execution
           silenceTimerRef.current = setTimeout(() => {
-            executeCommand(clean);
+            if (executeCommandRef.current) {
+              executeCommandRef.current(clean);
+            }
           }, 1200);
         }
       };
@@ -151,7 +163,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
       recognition.onend = () => {
         // Auto-restart listening if still open and not executing/speaking
-        if (recognitionRef.current && !isSpeaking) {
+        if (recognitionRef.current && !isSpeakingRef.current) {
           try {
             recognition.start();
           } catch {
@@ -179,7 +191,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     } catch (err) {
       setIsListening(false);
     }
-  }, [executeCommand, isSpeaking]);
+  }, []);
 
   const toggleListening = () => {
     if (isListening) {
@@ -196,7 +208,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     }
   };
 
-  // On modal open: Greet user personalized with local time and name
+  // On modal open: Greet user personalized with local time and name ONLY ONCE PER DAY
   useEffect(() => {
     if (!isOpen) {
       setIsListening(false);
@@ -213,12 +225,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
     const greeting = getTimeGreeting(user?.name);
     setFeedback(greeting);
-    setIsSpeaking(true);
 
-    // Speak greeting aloud
-    speakAloud(greeting, () => {
+    const userKey = user?.id || user?.email || 'user';
+    // Voice greeting plays strictly once per day. After that, only user actions are narrated.
+    if (!hasPlayedDailyGreeting(userKey)) {
+      markDailyGreetingPlayed(userKey);
+      setIsSpeaking(true);
+      speakAloud(greeting, () => {
+        setIsSpeaking(false);
+      });
+    } else {
       setIsSpeaking(false);
-    });
+    }
 
     // Start microphone listening
     const startMicTimer = setTimeout(() => {
@@ -232,7 +250,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
         try { recognitionRef.current.stop(); } catch {}
       }
     };
-  }, [isOpen, user?.name, startListening]);
+  }, [isOpen, user?.name, user?.id, user?.email, startListening]);
 
   if (!isOpen) return null;
 

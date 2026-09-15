@@ -21,6 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import styles from '@/app/page.module.css';
 import { useScrollableTables } from '@/hooks/useScrollableTables';
+import { getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed, speakAloud } from '@/utils/voiceCommandEngine';
 import Toast from '@/components/Clerio/Toast';
 import toastStyles from '@/components/Clerio/Toast.module.css';
 
@@ -132,6 +133,21 @@ const AppContent = () => {
       window.removeEventListener('nucleus:open_bulk_upload', handleBulkUpload);
     };
   }, []);
+
+  // Voice Greeting: Play strictly once per day when the user logs in and uses the app for the first time.
+  // After that, voice narration is exclusively triggered for user actions.
+  useEffect(() => {
+    if (!user) return;
+    const userKey = user.id || user.email || 'user';
+    if (!hasPlayedDailyGreeting(userKey)) {
+      markDailyGreetingPlayed(userKey);
+      const greeting = getTimeGreeting(user.name);
+      const timer = setTimeout(() => {
+        speakAloud(greeting);
+      }, 750);
+      return () => clearTimeout(timer);
+    }
+  }, [user]);
 
   const toggleDrawer = (drawerType) => {
     setActiveFloatingDrawer((prev) => (prev === drawerType ? null : drawerType));

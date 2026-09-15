@@ -208,6 +208,37 @@ export function getTimeGreeting(userName?: string): string {
   return `${greetingTime}, ${name}! How can I help you today?`;
 }
 
+const inMemoryDailyGreetingSet = new Set<string>();
+
+export function getTodayGreetingKey(userIdOrEmail?: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const safeId = (userIdOrEmail || 'user').replace(/[^a-zA-Z0-9_-]/g, '_');
+  return `nucleus:daily_voice_greeting_${safeId}_${today}`;
+}
+
+export function hasPlayedDailyGreeting(userIdOrEmail?: string): boolean {
+  const key = getTodayGreetingKey(userIdOrEmail);
+  if (inMemoryDailyGreetingSet.has(key)) return true;
+  if (typeof window !== 'undefined' && 'localStorage' in window) {
+    try {
+      return window.localStorage.getItem(key) === 'true';
+    } catch {
+      return false;
+    }
+  }
+  return false;
+}
+
+export function markDailyGreetingPlayed(userIdOrEmail?: string): void {
+  const key = getTodayGreetingKey(userIdOrEmail);
+  inMemoryDailyGreetingSet.add(key);
+  if (typeof window !== 'undefined' && 'localStorage' in window) {
+    try {
+      window.localStorage.setItem(key, 'true');
+    } catch {}
+  }
+}
+
 // Global speech synthesis runner (optimized for Chrome/Safari/Edge with natural voice fallback)
 export function speakAloud(text: string, onEnd?: () => void) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {

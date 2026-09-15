@@ -262,6 +262,12 @@ export const OPERATIONAL_MODULES: Record<string, OperationalModuleConfig> = {
     permission: "compliance.read",
     auditAction: "contractor.invoice_reconciliation",
   },
+  location_master: {
+    screenId: "SCR-002",
+    table: "locations",
+    permission: "employee.read",
+    auditAction: "platform.location_update",
+  },
 };
 
 export const createModuleRecordSchema = z.record(z.string(), z.unknown());
@@ -293,7 +299,7 @@ export async function listModuleRecords(
         and entity_type = ${config.table}
     `,
     sqlClient`
-      select id, entity_id, attributes, after, created_at
+      select id, entity_id, after, created_at
       from audit_events
       where tenant_id = ${access.tenantId}
         and entity_type = ${config.table}
@@ -303,9 +309,9 @@ export async function listModuleRecords(
   ]);
 
   const total = (countRows as Array<{ total: number }>)[0]?.total ?? 0;
-  const items = (rows as Array<{ id: string; entity_id: string; attributes: unknown; after: Record<string, unknown> | null; created_at: string }>).map((row) => ({
+  const items = (rows as Array<{ id: string; entity_id: string; after: Record<string, unknown> | null; created_at: string }>).map((row) => ({
     id: row.entity_id || row.id,
-    values: row.after || row.attributes || {},
+    values: row.after || {},
     createdAt: row.created_at,
   }));
 
@@ -348,7 +354,6 @@ export async function createModuleRecord(
         entity_id,
         reason,
         after,
-        attributes,
         request_id
       ) values (
         ${access.tenantId},
@@ -358,7 +363,6 @@ export async function createModuleRecord(
         ${config.table},
         ${id},
         ${`Form ${config.screenId} submission (${moduleId})`},
-        ${JSON.stringify(payload)}::jsonb,
         ${JSON.stringify(attributes)}::jsonb,
         ${uuidOrNull(requestId)}::uuid
       )
@@ -373,3 +377,4 @@ export async function createModuleRecord(
     createdAt: attributes.createdAt,
   };
 }
+

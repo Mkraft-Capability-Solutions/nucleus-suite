@@ -585,3 +585,129 @@
 }
 
 .calendarGrid{overflow-x:auto;grid-template-columns:repeat(7,minmax(64px,1fr));max-width:100%}
+
+.actionMenuPopover {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    box-shadow: var(--shadow-overlay);
+    z-index: 50;
+    min-width: 195px;
+    padding: 0.35rem 0;
+    display: flex;
+    flex-direction: column;
+    animation: fadeIn 0.15s ease-out;
+}
+
+.actionMenuPopover button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.85rem;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: var(--t-micro);
+    font-weight: 500;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: background 0.12s ease;
+}
+
+.actionMenuPopover button:hover {
+    background: var(--card-2);
+    color: var(--signal-ink);
+}
+
+.timelineWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    position: relative;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.timelineWrapper::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--line);
+}
+
+.timelineItem {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.timelineDot {
+    position: absolute;
+    left: -1.5rem;
+    top: 4px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--signal);
+    border: 2px solid var(--card);
+}
+
+.timelineDotTeal {
+    background: var(--status-ok);
+}
+
+.timelineDotAmber {
+    background: var(--pending);
+}
+
+.timelineDotBlue {
+    background: var(--info);
+}
+
+.timelineTime {
+    font-family: var(--f-num);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text);
+}
+
+.timelineDesc {
+    font-size: var(--t-small);
+    color: var(--text-2);
+}
+
+.fieldRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.fieldRow label {
+    font-size: var(--t-micro);
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.fieldRow input, .fieldRow select, .fieldRow textarea {
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    background: var(--card);
+    color: var(--text);
+    font-size: var(--t-small);
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.fieldRow input:focus, .fieldRow select:focus, .fieldRow textarea:focus {
+    border-color: var(--signal);
+}

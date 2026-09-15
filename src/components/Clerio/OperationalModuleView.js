@@ -64,7 +64,132 @@ function OperationalModuleContent({ module, onNavigate }) {
     const [values, setValues] = useState({});
     const [notice, setNotice] = useState('');
     const [formErrors, setFormErrors] = useState({});
-    const formFields = module.fields.map(field => ({ ...field, options: field.options?.length ? field.options.map(option => typeof option === 'string' ? {value:option,label:option} : option) : getWorkbookFieldOptions(field.key) }));
+    const [liveReferences, setLiveReferences] = useState({
+        employees: [],
+        locations: [],
+        departments: [],
+        shifts: []
+    });
+
+    useEffect(() => {
+        let active = true;
+        async function fetchReferences() {
+            try {
+                const [peopleRes, locRes, shiftRes] = await Promise.allSettled([
+                    fetch('/api/v1/people?pageSize=100').then(r => r.ok ? r.json() : null),
+                    fetch('/api/v1/ops/modules/location_master/records?pageSize=100').then(r => r.ok ? r.json() : null),
+                    fetch('/api/v1/ops/modules/shift_master/records?pageSize=100').then(r => r.ok ? r.json() : null),
+                ]);
+
+                if (!active) return;
+
+                const employees = [];
+                const locationSet = new Set();
+                const deptSet = new Set();
+                const shifts = [];
+
+                if (peopleRes.status === 'fulfilled' && peopleRes.value?.data) {
+                    const list = Array.isArray(peopleRes.value.data) ? peopleRes.value.data : [];
+                    list.forEach(p => {
+                        const name = [p.firstName, p.lastName].filter(Boolean).join(' ');
+                        const label = [p.employeeCode, name].filter(Boolean).join(' · ') + (p.department ? ` (${p.department})` : '');
+                        employees.push({ value: p.id, label });
+                        if (p.employeeCode && p.employeeCode !== p.id) {
+                            employees.push({ value: p.employeeCode, label });
+                        }
+                        if (p.location) locationSet.add(p.location);
+                        if (p.department) deptSet.add(p.department);
+                    });
+                }
+
+                if (locRes.status === 'fulfilled' && locRes.value?.data) {
+                    const list = Array.isArray(locRes.value.data) ? locRes.value.data : [];
+                    list.forEach(r => {
+                        const vals = r.attributes || r.values || {};
+                        const locName = vals.locationName || vals.name || vals.locationCode;
+                        if (locName) locationSet.add(locName);
+                    });
+                }
+
+                if (shiftRes.status === 'fulfilled' && shiftRes.value?.data) {
+                    const list = Array.isArray(shiftRes.value.data) ? shiftRes.value.data : [];
+                    list.forEach(r => {
+                        const vals = r.attributes || r.values || {};
+                        const code = vals.shiftCode || vals.code;
+                        const name = vals.shiftName || vals.name;
+                        if (code) {
+                            shifts.push({
+                                value: code,
+                                label: name ? `${code} · ${name}` : code
+                            });
+                        }
+                    });
+                }
+
+                if (shifts.length === 0) {
+                    shifts.push(
+                        { value: 'GEN', label: 'GEN · General Shift (09:00 - 18:00)' },
+                        { value: 'MORN', label: 'MORN · Morning Shift (06:00 - 14:30)' },
+                        { value: 'EVE', label: 'EVE · Evening Shift (14:00 - 22:30)' },
+                        { value: 'NIGHT', label: 'NIGHT · Night Shift (22:00 - 06:30)' }
+                    );
+                }
+                if (locationSet.size === 0) {
+                    ['Bangalore HQ', 'Hyderabad Tech Center', 'Mumbai Corporate Office', 'Pune Innovation Hub', 'Chennai Facility'].forEach(l => locationSet.add(l));
+                }
+                if (deptSet.size === 0) {
+                    ['Engineering', 'Product & Design', 'Human Resources', 'Finance & Accounts', 'Operations & Logistics'].forEach(d => deptSet.add(d));
+                }
+
+                setLiveReferences({
+                    employees,
+                    locations: Array.from(locationSet).map(loc => ({ value: loc, label: loc })),
+                    departments: Array.from(deptSet).map(dept => ({ value: dept, label: dept })),
+                    shifts
+                });
+            } catch (err) {
+                console.warn('Reference load error:', err);
+            }
+        }
+        fetchReferences();
+        return () => { active = false; };
+    }, []);
+
+    const formFields = useMemo(() => {
+        return module.fields.map(field => {
+            let options = field.options?.length
+                ? field.options.map(option => typeof option === 'string' ? { value: option, label: option } : option)
+                : getWorkbookFieldOptions(field.key);
+
+            const isSelectOrLookup = field.type === 'select' || (field.control && /select|lookup/i.test(field.control)) || (field.options && field.options.length > 0);
+            const key = (field.key || '').toLowerCase();
+            const isEmp = isSelectOrLookup && (['personid', 'employee', 'referrerpersonid', 'panel', 'assigneeid', 'allocatedto', 'manager', 'user', 'leaver'].includes(key) || key.includes('person') || (key.includes('employee') && key !== 'employeecode'));
+            const isLoc = isSelectOrLookup && (['locationid', 'location', 'site', 'worksite', 'locationcode'].includes(key) || key.includes('location') || key.includes('site'));
+            const isDept = isSelectOrLookup && (['orgunit', 'department', 'costcenter', 'section'].includes(key) || key.includes('department') || key.includes('orgunit'));
+            const isShift = isSelectOrLookup && (['shiftcode', 'shiftid', 'shift', 'defaultshift', 'appliedshift'].includes(key) || (key.includes('shift') && !key.includes('group') && !key.includes('hour') && !key.includes('night')));
+
+            if (isEmp && liveReferences.employees.length > 0) {
+                const existingVals = new Set(options.map(o => o.value));
+                const newOpts = liveReferences.employees.filter(o => !existingVals.has(o.value));
+                options = [...newOpts, ...options];
+            } else if (isLoc && liveReferences.locations.length > 0) {
+                const existingVals = new Set(options.map(o => o.value));
+                const newOpts = liveReferences.locations.filter(o => !existingVals.has(o.value));
+                options = [...newOpts, ...options];
+            } else if (isDept && liveReferences.departments.length > 0) {
+                const existingVals = new Set(options.map(o => o.value));
+                const newOpts = liveReferences.departments.filter(o => !existingVals.has(o.value));
+                options = [...newOpts, ...options];
+            } else if (isShift && liveReferences.shifts.length > 0) {
+                const existingVals = new Set(options.map(o => o.value));
+                const newOpts = liveReferences.shifts.filter(o => !existingVals.has(o.value));
+                options = [...newOpts, ...options];
+            }
+
+            return { ...field, options };
+        });
+    }, [module.fields, liveReferences]);
+
     const openCreate = () => { setValues(initialFormValues(formFields)); setFormErrors({}); setIsCreateOpen(true); };
     const updateField = (key, value) => { setValues(current => updateDerivedFields(formFields, current, key, value)); setFormErrors({}); };
 

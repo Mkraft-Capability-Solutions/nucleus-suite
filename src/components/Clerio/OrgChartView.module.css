@@ -1,2 +1,450 @@
-/* OrgChartView — minimal overrides; all main styles are inline for portability */
-.container { padding: 1.5rem; }
+.container {
+    padding: 1.75rem;
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.headerRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.titleBlock h2 {
+    font-size: var(--t-h2);
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 0 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    letter-spacing: -0.01em;
+}
+
+.titleBlock p {
+    color: var(--text-2);
+    font-size: var(--t-small);
+    margin: 0;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.searchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchBox svg {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-3);
+    pointer-events: none;
+}
+
+.searchInput {
+    padding-left: 2.25rem;
+    padding-right: 0.85rem;
+    height: 38px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    color: var(--text);
+    font-size: var(--t-small);
+    outline: none;
+    width: 220px;
+    transition: all 0.15s ease;
+}
+
+.searchInput:focus {
+    border-color: var(--signal);
+    box-shadow: 0 0 0 3px var(--signal-wash);
+}
+
+.selectFilter {
+    height: 38px;
+    padding: 0 0.85rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    color: var(--text);
+    font-size: var(--t-small);
+    outline: none;
+    cursor: pointer;
+}
+
+.viewToggle {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    overflow: hidden;
+    padding: 2px;
+}
+
+.toggleBtn {
+    padding: 0.4rem 0.85rem;
+    border: none;
+    background: transparent;
+    color: var(--text-2);
+    font-size: var(--t-micro);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--r-control);
+    transition: all 0.15s ease;
+}
+
+.toggleBtnActive {
+    background: var(--signal);
+    color: var(--on-signal);
+    box-shadow: var(--shadow-raise);
+}
+
+/* Department Summary Ribbon */
+.deptRibbon {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 0.85rem;
+}
+
+.deptCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    box-shadow: var(--shadow-raise);
+}
+
+.deptCard:hover {
+    transform: translateY(-2px);
+    border-color: var(--signal);
+}
+
+.deptCardActive {
+    border-color: var(--signal);
+    background: var(--signal-wash);
+}
+
+.deptCount {
+    font-family: var(--f-num);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--signal-ink);
+}
+
+.deptLabel {
+    font-size: var(--t-micro);
+    color: var(--text-2);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+/* Tree Chart Canvas */
+.treeCanvas {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 2rem 1.5rem;
+    overflow-x: auto;
+    min-height: 480px;
+    box-shadow: var(--shadow-raise);
+}
+
+.treeCanvasInner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 650px;
+    gap: 2rem;
+}
+
+.treeLevel {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    position: relative;
+    width: 100%;
+}
+
+/* Tree Node Card */
+.nodeWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.nodeCard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    padding: 1rem 1.15rem;
+    width: 270px;
+    box-shadow: var(--shadow-raise);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: default;
+}
+
+.nodeCard:hover {
+    transform: translateY(-3px);
+    border-color: var(--signal);
+    box-shadow: var(--shadow-overlay);
+}
+
+.nodeCardMatched {
+    border-color: var(--signal) !important;
+    background: var(--signal-wash) !important;
+    box-shadow: 0 0 0 2px var(--signal);
+}
+
+.nodeTop {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nodeAvatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border: 2px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.nodeMeta {
+    flex: 1;
+    min-width: 0;
+}
+
+.nodeName {
+    font-size: var(--t-small);
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nodeCode {
+    font-family: var(--f-num);
+    font-size: 0.7rem;
+    color: var(--text-3);
+    font-weight: 500;
+}
+
+.nodeRole {
+    font-size: var(--t-micro);
+    color: var(--signal-ink);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nodeDeptBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    background: var(--card-2);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-pill);
+    font-size: 0.7rem;
+    color: var(--text-2);
+    align-self: flex-start;
+}
+
+.nodeBottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line-soft);
+    padding-top: 0.5rem;
+    font-size: 0.75rem;
+}
+
+.reportsCount {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    color: var(--text-2);
+    font-weight: 600;
+}
+
+.nodeActions {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.actionBtn {
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    padding: 0.25rem 0.55rem;
+    font-size: 0.72rem;
+    color: var(--text-2);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+    background: var(--card-2);
+    color: var(--signal-ink);
+    border-color: var(--signal);
+}
+
+.expandBtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+}
+
+.expandBtn:hover {
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border-color: var(--signal);
+}
+
+/* Connectors */
+.connectorDown {
+    width: 2px;
+    height: 24px;
+    background: var(--line);
+}
+
+.childrenContainer {
+    display: flex;
+    justify-content: center;
+    gap: 1.75rem;
+    position: relative;
+    padding-top: 18px;
+}
+
+.childrenContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+    background: var(--line);
+}
+
+.connectorUp {
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 18px;
+    background: var(--line);
+}
+
+/* Department View */
+.deptViewGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.deptSection {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card);
+    overflow: hidden;
+    box-shadow: var(--shadow-raise);
+}
+
+.deptHeader {
+    padding: 0.9rem 1.25rem;
+    background: var(--card-2);
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.deptHeaderTitle {
+    font-size: var(--t-small);
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.deptCardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 0.85rem;
+    padding: 1rem;
+}
+
+.deptEmpCard {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--r-control);
+    transition: all 0.15s ease;
+}
+
+.deptEmpCard:hover {
+    border-color: var(--signal);
+    transform: translateY(-1px);
+    background: var(--card);
+}

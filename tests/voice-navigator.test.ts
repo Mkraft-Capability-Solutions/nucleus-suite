@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { parseVoiceCommand, speakAloud, getTimeGreeting } from '@/utils/voiceCommandEngine';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { parseVoiceCommand, speakAloud, getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed, getTodayGreetingKey } from '@/utils/voiceCommandEngine';
 
 describe('Nucleus Talk Voice Navigator Action & Parsing Engine', () => {
   it('should parse punch in action and set speech narration', () => {
@@ -101,5 +101,18 @@ describe('Nucleus Talk Voice Navigator Action & Parsing Engine', () => {
   it('should generate greeting with fallback name if undefined', () => {
     const greeting = getTimeGreeting(undefined);
     expect(greeting).toMatch(/(Good morning|Good afternoon|Good evening), Superadmin! How can I help you today\?/);
+  });
+
+  it('should track daily voice greeting once per day in localStorage', () => {
+    const userId = 'usr-test-123';
+    const key = getTodayGreetingKey(userId);
+    expect(key).toContain('usr-test-123');
+
+    // Before playing
+    expect(hasPlayedDailyGreeting(userId)).toBe(false);
+
+    // Mark as played
+    markDailyGreetingPlayed(userId);
+    expect(hasPlayedDailyGreeting(userId)).toBe(true);
   });
 });

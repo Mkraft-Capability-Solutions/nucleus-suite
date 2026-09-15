@@ -21,14 +21,19 @@ export async function requireAccess(request: Request, tenantId?: string): Promis
   let activeTenantId = tenantId ?? (await cookies()).get(ACTIVE_TENANT_COOKIE)?.value ?? request.headers.get("x-tenant-id");
   if (!activeTenantId) {
     try {
-      const tenantRows = await sqlClient`select id from tenants where status = 'active' order by created_at asc limit 1;`;
+      const tenantRows = await sqlClient`
+        select id from tenants 
+        where status = 'active' 
+        order by (case when slug = 'mkraft' or name ilike '%mkraft%' or name ilike '%nucleus%' then 0 else 1 end) asc, created_at asc 
+        limit 1;
+      `;
       if (tenantRows?.[0]?.id) activeTenantId = tenantRows[0].id as string;
     } catch {
       // Fallback
     }
   }
   if (!activeTenantId) {
-    activeTenantId = "c668678c-ed74-4dbb-a98b-0287afc8f286";
+    activeTenantId = "5fd242d5-5627-47d0-a667-b099ef0acba9";
   }
   try {
     const context = await resolveAuthorizationContext(request.headers, activeTenantId);

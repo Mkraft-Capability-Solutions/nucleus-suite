@@ -10,13 +10,14 @@ import React, { useMemo, useState, useEffect } from 'react';
 import {
     Users, Network, FileText, History, Layers, ShieldCheck,
     Search, Plus, Filter, Download, ArrowUpRight, CheckCircle2, AlertCircle,
-    Building2, MapPin, UploadCloud
+    Building2, MapPin, UploadCloud, Edit
 } from 'lucide-react';
 import styles from './PeopleCoreView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 import { getWorkbookRowsForModule, recordCellValue } from '@/lib/demo-workbook-adapter.mjs';
 import EmployeeCreationWizard from './EmployeeCreationWizard';
+import EmployeeDossierModal from './EmployeeDossierModal';
 import BulkOnboardingModal from './BulkOnboardingModal';
 import LegalEntityModal from './LegalEntityModal';
 import LocationMasterModal from './LocationMasterModal';
@@ -31,7 +32,11 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         recognitionAwards, grantRecognitionAward,
         sanctionedQuotas, calculateDepartmentCapacity,
     } = useHRMS();
-    const [activeSection, setActiveSection] = useState(readData("components.Clerio.PeopleCoreView", "initialState_1"));
+    const [activeSection, setActiveSection] = useState(() => {
+        if (activeSubFeature === 'person_record') return 'directory';
+        if (activeSubFeature === 'core_people' || activeSubFeature === 'people_core') return 'overview';
+        return readData("components.Clerio.PeopleCoreView", "initialState_1") || 'directory';
+    });
 
     useEffect(() => {
         if (!activeSubFeature) return;
@@ -45,7 +50,11 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             setActiveSection('documents');
         } else if (activeSubFeature === 'orgchart' || activeSubFeature === 'org_chart') {
             setActiveSection('orgchart');
-        } else if (activeSubFeature === 'person_record' || activeSubFeature === 'core_people' || activeSubFeature === 'directory' || activeSubFeature === 'assignment_admin') {
+        } else if (activeSubFeature === 'person_record') {
+            setActiveSection('directory'); // Dedicated Employee Record Screen
+        } else if (activeSubFeature === 'core_people' || activeSubFeature === 'people_core') {
+            setActiveSection('overview'); // People Core Organization Governance Hub
+        } else if (activeSubFeature === 'directory' || activeSubFeature === 'assignment_admin') {
             setActiveSection('directory');
         } else if (activeSubFeature === 'star_employees') {
             setActiveSection('star_employees');
@@ -58,12 +67,49 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
     // Modal Visibility States
     const [isWizardOpen, setIsWizardOpen] = useState(false);
+    const [wizardMode, setWizardMode] = useState('create');
+    const [editingEmployee, setEditingEmployee] = useState(null);
+    const [selectedDossierEmployee, setSelectedDossierEmployee] = useState(null);
     const [isBulkImportOpen, setIsBulkImportOpen] = useState(false);
     const [isEntityModalOpen, setIsEntityModalOpen] = useState(false);
     const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
     // Dynamic UI Master Datasets (Client-side state)
     const [customEmployees, setCustomEmployees] = useState([]);
+
+    // Live Database Ingestion for Nucleus
+    useEffect(() => {
+        let active = true;
+        async function fetchDbEmployees() {
+            try {
+                const res = await fetch('/api/v1/people?pageSize=100');
+                if (!res.ok) return;
+                const json = await res.json();
+                if (active && Array.isArray(json.data) && json.data.length > 0) {
+                    const dbPeople = json.data.map(item => ({
+                        id: item.employeeCode || item.id,
+                        name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
+                        role: item.designation || 'Specialist',
+                        dept: item.department || 'Operations',
+                        manager: 'Rajesh Varma',
+                        location: item.location || 'Bangalore Plant',
+                        status: item.status || 'Active',
+                        band: item.category || 'Regular',
+                        details: item
+                    }));
+                    setCustomEmployees(prev => {
+                        const existingIds = new Set(dbPeople.map(p => p.id));
+                        const filtered = prev.filter(p => !existingIds.has(p.id));
+                        return [...dbPeople, ...filtered];
+                    });
+                }
+            } catch (err) {
+                console.warn('People live fetch:', err);
+            }
+        }
+        fetchDbEmployees();
+        return () => { active = false; };
+    }, []);
     const [entitiesList, setEntitiesList] = useState([
         { entityCode: 'ENT-NUC', registeredName: 'Nucleus HR Solutions India Pvt Ltd', entityType: 'Private Limited', cinLlpin: 'U72900KA2024PTC123456', entityPan: 'AAACN1234F', tan: 'BLRN12345E', status: 'Active', effectiveFrom: '2024-04-01' },
         { entityCode: 'ENT-GLB', registeredName: 'Nucleus Global Holdings Inc', entityType: 'Public Limited', cinLlpin: 'U72900DL2022PLC998877', entityPan: 'BBBCN9988G', tan: 'DELN99887F', status: 'Active', effectiveFrom: '2022-01-15' }
@@ -152,9 +198,9 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.45rem',
-                                border: '1px solid rgba(79, 182, 245, 0.4)',
-                                background: 'rgba(79, 182, 245, 0.12)',
-                                color: '#4FB6F5',
+                                border: '1px solid var(--info)',
+                                background: 'var(--info-wash)',
+                                color: 'var(--info)',
                                 fontWeight: 700
                             }}
                             title={readData("components.Clerio.PeopleCoreView", "PeopleCoreView_title_3")}
@@ -176,10 +222,16 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {/* Sub-Navigation Tabs */}
             <div className={styles.tabNav}>
                 <button
+                    className={`${styles.tabBtn} ${activeSection === 'overview' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveSection('overview')}
+                >
+                    <ShieldCheck size={16} /> Governance Hub
+                </button>
+                <button
                     className={`${styles.tabBtn} ${activeSection === 'directory' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('directory')}
                 >
-                    <Users size={16} /> Directory
+                    <Users size={16} /> Employee Directory
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'entities' ? styles.activeTab : ''}`}
@@ -271,19 +323,156 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                 </div>
             </div>
 
+            {/* Section 0: People Core Governance Hub Overview */}
+            {activeSection === 'overview' && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{
+                        background: 'var(--card)',
+                        border: '1px solid var(--line)',
+                        borderRadius: 'var(--r-card)',
+                        padding: '1.5rem',
+                        boxShadow: 'var(--shadow-raise)'
+                    }}>
+                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.15rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Building2 size={20} style={{ color: 'var(--signal)' }} /> People Core & Enterprise Governance Overview
+                        </h3>
+                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
+                            Central organizational architecture, corporate legal entity registration, manufacturing plant work sites, position registries, and headcount quotas for Nucleus HR Solutions.
+                        </p>
+                    </div>
+
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                        gap: '1.25rem'
+                    }}>
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('directory')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--signal-wash)', color: 'var(--signal-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Users size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Employee Master Records</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Inspect active staff, open full 360 dossiers, edit placements, and configure statutory numbers.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('entities')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--info-wash)', color: 'var(--info)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Building2 size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Legal Entities (SCR-001)</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Registered corporate legal entities, CIN, PAN, TAN, and statutory enterprise registrations.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('locations')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--pending-wash)', color: 'var(--pending)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <MapPin size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Plants & Locations (SCR-002)</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Plant facilities, corporate offices, factory act time zones, and geo-scoped boundaries.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('orgchart')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--signal-wash)', color: 'var(--signal)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Network size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Organization Tree Chart (SCR-014)</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Smart, advanced hierarchical tree visualization with reporting chains and branch expansion.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('positions')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--surface-2)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Layers size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Position Register (SCR-012)</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Position slots, vacancy tracking, and replacement requisition against vacated position codes.
+                            </p>
+                        </div>
+
+                        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem', cursor: 'pointer' }} onClick={() => setActiveSection('manpower')}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                    <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--flag-wash)', color: 'var(--flag)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Users size={18} />
+                                    </div>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Approved Manpower (SCR-013)</h4>
+                                </div>
+                                <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
+                            </div>
+                            <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
+                                Department-wise sanctioned strength and manpower caps (Demo Point 25).
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Section 1: Employee Directory */}
             {activeSection === 'directory' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Users size={20} color="var(--info)" />{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_19")}</h3>
-                        <div className={styles.searchBar}>
-                            <Search size={16} color="var(--text-2)" />
-                            <input
-                                type="text"
-                                placeholder={readData("components.Clerio.PeopleCoreView", "PeopleCoreView_placeholder_20")}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+                        <div>
+                            <h3>Employee Master Directory (SCR-011)</h3>
+                            <p style={{ fontSize: '0.8rem', color: 'var(--text-2)', margin: '0.2rem 0 0 0' }}>
+                                Full employee records roster with 360 dossiers, position mapping, and profile editing
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.65rem' }}>
+                            <div className={styles.searchBox}>
+                                <Search size={16} color="var(--text-2)" />
+                                <input
+                                    type="text"
+                                    placeholder={readData("components.Clerio.PeopleCoreView", "PeopleCoreView_placeholder_20")}
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className={styles.searchInput}
+                                />
+                            </div>
+                            <button className={styles.btnSecondary} onClick={exportDirectoryCSV}>
+                                <Download size={15} /> Export CSV
+                            </button>
+                            <button
+                                className={styles.btnPrimary}
+                                onClick={() => {
+                                    setEditingEmployee(null);
+                                    setWizardMode('create');
+                                    setIsWizardOpen(true);
+                                }}
+                            >
+                                <Plus size={16} /> Add Employee
+                            </button>
                         </div>
                     </div>
 
@@ -297,15 +486,17 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_24")}</th>
                                     <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_25")}</th>
                                     <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_26")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_27")}</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredEmployees.map((emp) => (
                                     <tr key={emp.id}>
                                         <td>
-                                            <div className={styles.empRow}>
-                                                <NextImage unoptimized width={48} height={48}
+                                            <div className={styles.employeeCell}>
+                                                <NextImage
+                                                    width={32}
+                                                    height={32}
                                                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=2563ea&color=fff`}
                                                     className={styles.avatar}
                                                     alt={emp.name}
@@ -330,12 +521,12 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                         setSelectedNewManager(emp.manager || readData("components.Clerio.PeopleCoreView", "fallback_4"));
                                                     }}
                                                     style={{
-                                                        background: 'rgba(45, 212, 168, 0.1)',
-                                                        border: '1px solid rgba(45, 212, 168, 0.3)',
+                                                        background: 'var(--signal-wash)',
+                                                        border: '1px solid var(--signal)',
                                                         borderRadius: '4px',
                                                         padding: '0.15rem 0.45rem',
                                                         fontSize: '0.68rem',
-                                                        color: '#2DD4A8',
+                                                        color: 'var(--signal-ink)',
                                                         fontWeight: 700,
                                                         cursor: 'pointer'
                                                     }}
@@ -345,12 +536,29 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                         </td>
                                         <td>{emp.location}</td>
                                         <td><span className={`${styles.badge} ${styles.badgeActive}`}>{emp.status}</span></td>
-                                        <td>
-                                            <button
-                                                className={styles.btnSecondary}
-                                                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                                                onClick={() => showToast(translateText("components.Clerio.PeopleCoreView","text_1614058fbf"),translateText("components.Clerio.PeopleCoreView","text_69fc081ae6", {value1: String(emp.name)}), 'info')}
-                                            >{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_30")}</button>
+                                        <td style={{ whiteSpace: 'nowrap' }}>
+                                            <div style={{ display: 'flex', gap: '0.45rem' }}>
+                                                <button
+                                                    className={styles.btnSecondary}
+                                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+                                                    onClick={() => setSelectedDossierEmployee(emp)}
+                                                    title="View full 360-degree employee dossier"
+                                                >
+                                                    View Dossier
+                                                </button>
+                                                <button
+                                                    className={styles.btnSecondary}
+                                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+                                                    onClick={() => {
+                                                        setEditingEmployee(emp);
+                                                        setWizardMode('edit');
+                                                        setIsWizardOpen(true);
+                                                    }}
+                                                    title="Edit employee record"
+                                                >
+                                                    <Edit size={13} /> Edit
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -378,7 +586,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'positions' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Layers size={20} color="#2563eb" /> Position Register (SCR-012)</h3>
+                        <h3><Layers size={20} style={{ color: 'var(--info)' }} /> Position Register (SCR-012)</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportPositionsCSV}>
                                 <Download size={15} /> Export Positions CSV
@@ -521,7 +729,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'entities' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Building2 size={20} color="#38bdf8" /> Legal Entity Master (SCR-001)</h3>
+                        <h3><Building2 size={20} style={{ color: 'var(--info)' }} /> Legal Entity Master (SCR-001)</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportEntitiesCSV}>
                                 <Download size={15} /> Export Entities CSV
@@ -567,7 +775,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'locations' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><MapPin size={20} color="#38bdf8" /> Location / Work Site Master (SCR-002)</h3>
+                        <h3><MapPin size={20} style={{ color: 'var(--info)' }} /> Location / Work Site Master (SCR-002)</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportLocationsCSV}>
                                 <Download size={15} /> Export Locations CSV
@@ -675,11 +883,28 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {/* Modal Wizards & Dialogs */}
             <EmployeeCreationWizard
                 isOpen={isWizardOpen}
-                onClose={() => setIsWizardOpen(false)}
-                onSave={async (newEmp) => {
-                    setCustomEmployees(prev => [newEmp, ...prev]);
+                onClose={() => {
+                    setIsWizardOpen(false);
+                    setEditingEmployee(null);
+                    setWizardMode('create');
+                }}
+                onSave={async (savedEmp) => {
+                    if (wizardMode === 'edit') {
+                        setCustomEmployees(prev => {
+                            const idx = prev.findIndex(e => e.id === savedEmp.id);
+                            if (idx >= 0) {
+                                const next = [...prev];
+                                next[idx] = { ...next[idx], ...savedEmp };
+                                return next;
+                            }
+                            return [savedEmp, ...prev];
+                        });
+                        setManagerOverrides(prev => ({ ...prev, [savedEmp.id]: savedEmp.manager }));
+                    } else {
+                        setCustomEmployees(prev => [savedEmp, ...prev]);
+                    }
                     try {
-                        const details = newEmp.details || {};
+                        const details = savedEmp.details || {};
                         await fetch('/api/v1/people', {
                             method: 'POST',
                             headers: {
@@ -687,13 +912,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 'Idempotency-Key': crypto.randomUUID(),
                             },
                             body: JSON.stringify({
-                                employeeCode: newEmp.id,
-                                firstName: details.firstName || newEmp.name.split(' ')[0] || 'Employee',
-                                lastName: details.lastName || newEmp.name.split(' ').slice(1).join(' ') || '-',
-                                workEmail: details.officialEmail || details.personalEmail || `${newEmp.id.toLowerCase()}@nucleus.com`,
-                                designation: newEmp.role || 'Associate',
-                                department: newEmp.dept || 'General',
-                                location: newEmp.location || 'Head Office',
+                                employeeCode: savedEmp.id,
+                                firstName: details.firstName || savedEmp.name.split(' ')[0] || 'Employee',
+                                lastName: details.lastName || savedEmp.name.split(' ').slice(1).join(' ') || '-',
+                                workEmail: details.officialEmail || details.personalEmail || `${savedEmp.id.toLowerCase()}@nucleus.com`,
+                                designation: savedEmp.role || 'Associate',
+                                department: savedEmp.dept || 'General',
+                                location: savedEmp.location || 'Head Office',
                                 joiningDate: details.joiningDate || new Date().toISOString().split('T')[0],
                                 workerCategory: details.workerCategory || 'PERM',
                                 hasRestDays: details.hasRestDays ?? true,
@@ -702,27 +927,41 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 isTrainee: Boolean(details.isTrainee),
                                 traineeType: details.traineeType || undefined,
                                 assignedShift: details.assignedShift || 'GENERAL',
-                                panNumber: details.panNumber || undefined,
-                                aadhaarLast4: details.aadhaarNumber ? details.aadhaarNumber.slice(-4) : undefined,
+                                panNumber: details.panNumber || details.pan || undefined,
+                                aadhaarLast4: details.aadhaarNumber || details.aadhaar ? (details.aadhaarNumber || details.aadhaar).slice(-4) : undefined,
                                 uan: details.uan || undefined,
-                                esicNumber: details.esicNumber || undefined,
+                                esicNumber: details.esicNumber || details.esic || undefined,
                                 bankAccountNo: details.accountToken || undefined,
                                 bankIfsc: details.ifsc || undefined,
                                 bankName: details.bankName || undefined,
-                                emergencyContactName: details.emergencyName || undefined,
-                                emergencyContactPhone: details.emergencyPhone || undefined,
+                                emergencyContactName: details.emergencyName || details.emergencyContactName || undefined,
+                                emergencyContactPhone: details.emergencyPhone || details.emergencyContactPhone || undefined,
                                 emergencyContactRelation: details.emergencyRelation || undefined,
                                 biometricEnrolId: details.biometricEnrolId || undefined,
                                 accessCardNo: details.accessCardNo || undefined,
                                 lockerNo: details.lockerNo || undefined,
                             }),
                         });
-                        showToast('Database Synchronized', `Employee record persisted to Neon PostgreSQL.`, 'success');
+                        showToast(wizardMode === 'edit' ? 'Employee Updated' : 'Database Synchronized', `Employee record persisted to database.`, 'success');
                     } catch (e) {
                         console.warn('Individual employee database sync:', e);
                     }
                 }}
                 existingEmployees={directoryEmployees}
+                mode={wizardMode}
+                initialData={editingEmployee}
+            />
+
+            {/* Employee 360 Dossier Modal */}
+            <EmployeeDossierModal
+                employee={selectedDossierEmployee}
+                onClose={() => setSelectedDossierEmployee(null)}
+                onEdit={(emp) => {
+                    setSelectedDossierEmployee(null);
+                    setEditingEmployee(emp);
+                    setWizardMode('edit');
+                    setIsWizardOpen(true);
+                }}
             />
 
             <BulkOnboardingModal

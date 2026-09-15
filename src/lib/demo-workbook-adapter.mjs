@@ -108,10 +108,150 @@ const leaveTypeOptions = uniqueOptions(validRows('14_Leave_Types').map((row) => 
 const payrollRunOptions = uniqueOptions(validRows('26_Payroll_Runs').map((row) => option(row['Run ID'], `${row['Run ID']} · ${row.Period} · ${row['Run type']}`)));
 const payrollGroupOptions = uniqueOptions(validRows('03_Locations').map((row) => option(row['Payroll group'], `${row['Payroll group']} · ${row['Location name']}`)));
 
+const shiftGroupOptions = [
+  option('general_shift', 'General Shift (09:00 – 18:00)'),
+  option('morning_shift', 'Morning Shift (06:00 – 14:00)'),
+  option('afternoon_shift', 'Afternoon Shift (14:00 – 22:00)'),
+  option('night_shift', 'Night Shift (22:00 – 06:00)'),
+  option('plant_shift', 'General Plant Shift (08:00 – 17:00)'),
+  option('rotating_24x7', 'Rotating 24x7 Operations'),
+];
+
+const letterTemplateOptions = [
+  option('TPL-OFFER-STD', 'Standard Offer Letter'),
+  option('TPL-APPT-EXEC', 'Executive Appointment Letter'),
+  option('TPL-CONF-REG', 'Probation Confirmation Letter'),
+  option('TPL-REL-CERT', 'Relieving and Service Certificate'),
+  option('TPL-EXP-CERT', 'Experience Certificate'),
+];
+
+const helpdeskQueueOptions = [
+  option('Q-HR-OPS', 'HR Operations & People Services'),
+  option('Q-PAYROLL', 'Payroll & Statutory Support'),
+  option('Q-IT-ASSET', 'IT Assets & Workplace Services'),
+  option('Q-FACILITIES', 'Facilities & Plant Admin'),
+];
+
+const helpdeskSubCatOptions = [
+  option('it_hardware', 'Hardware / Laptop / Peripherals'),
+  option('salary_tax', 'Payslip / Tax / Form 16 Query'),
+  option('leave_attendance', 'Leave Balance / Biometric Punch Correction'),
+  option('access_card', 'ID Card / Building Access'),
+  option('statutory_pf', 'PF / UAN / ESI Support'),
+  option('policy_query', 'General HR Policy Clarification'),
+];
+
+const staffingAgencyOptions = [
+  option('AGY-ABC', 'ABC Staffing Pvt Ltd'),
+  option('AGY-TEAM', 'TeamLease Services Ltd'),
+  option('AGY-ADECCO', 'Adecco India'),
+  option('AGY-RAND', 'Randstad India'),
+];
+
+const recoveryPeriodOptions = [
+  option('current_month', 'Current Month Payroll'),
+  option('next_month', 'Next Month Payroll'),
+  option('spread_2_months', 'Spread across 2 Months'),
+  option('spread_3_months', 'Spread across 3 Months'),
+];
+
+const glAccountDebitOptions = [
+  option('710001', '710001 · Basic & Allowances Expense'),
+  option('710002', '710002 · Employer PF Contribution Expense'),
+  option('710003', '710003 · Employer ESI Contribution Expense'),
+  option('710004', '710004 · Bonus & Incentive Expense'),
+  option('710005', '710005 · Medical Reimbursement Expense'),
+];
+
+const glAccountCreditOptions = [
+  option('210001', '210001 · Salaries & Wages Payable'),
+  option('210002', '210002 · Provident Fund Payable'),
+  option('210003', '210003 · ESI Contribution Payable'),
+  option('210004', '210004 · TDS on Salaries Payable'),
+  option('210005', '210005 · Professional Tax Payable'),
+];
+
+const glDimensionOptions = [
+  option('COST_CENTER', 'Cost Center'),
+  option('LEGAL_ENTITY', 'Legal Entity'),
+  option('DEPARTMENT', 'Department / Function'),
+  option('LOCATION', 'Work Site / Plant Location'),
+  option('PROJECT', 'Client Project Code'),
+];
+
+const slabTableOptions = [
+  option('SLAB-IT-2026', 'Income Tax Slabs FY 2026-27 (New Regime)'),
+  option('SLAB-IT-OLD', 'Income Tax Slabs FY 2026-27 (Old Regime)'),
+  option('SLAB-PT-KA', 'Karnataka Professional Tax Table'),
+  option('SLAB-PT-MH', 'Maharashtra Professional Tax Table'),
+  option('SLAB-PT-TN', 'Tamil Nadu Professional Tax Table'),
+];
+
+const percentComponentOptions = [
+  option('basic_salary', 'Basic Salary'),
+  option('gross_salary', 'Monthly Gross Salary'),
+  option('ctc', 'Annual Cost to Company (CTC)'),
+];
+
+const recommendedBandOptions = [
+  option('Band 1', 'Band 1 · Trainee / Junior Associate'),
+  option('Band 2', 'Band 2 · Associate / Officer'),
+  option('Band 3', 'Band 3 · Senior / Lead Specialist'),
+  option('Band 4', 'Band 4 · Manager / Principal'),
+  option('Band 5', 'Band 5 · Associate Director / VP'),
+];
+
 const fieldOptionSets = {
-  employee: employeeOptions, employeeScope: employeeOptions, member: employeeOptions, referrer: employeeOptions, nominee: employeeOptions, manager: employeeOptions,
-  entity: entityOptions, location: locationOptions, orgUnit: orgUnitOptions, designation: designationOptions, position: positionOptions, workerClass: workerClassOptions, appliedShift: shiftOptions, leaveType: leaveTypeOptions,
+  // Employees & Person references
+  employee: employeeOptions, employeeScope: employeeOptions, member: employeeOptions,
+  referrer: employeeOptions, nominee: employeeOptions, manager: employeeOptions,
+  personId: employeeOptions, employeeId: employeeOptions,
+  referrerPersonId: employeeOptions, panel: employeeOptions, assigneeId: employeeOptions,
+
+  // Locations & Work sites
+  location: locationOptions, locationId: locationOptions, locationCode: locationOptions,
+  site: locationOptions, workSite: locationOptions, workLocation: locationOptions,
+
+  // Legal Entities
+  entity: entityOptions, entityId: entityOptions, entityCode: entityOptions,
+  legalEntity: entityOptions, company: entityOptions,
+
+  // Shifts & Shift groups
+  appliedShift: shiftOptions, shiftCode: shiftOptions, shift: shiftOptions,
+  shiftId: shiftOptions, defaultShift: shiftOptions,
+  shiftGroup: shiftGroupOptions,
+
+  // Org Units & Departments
+  orgUnit: orgUnitOptions, orgUnitId: orgUnitOptions, department: orgUnitOptions,
+  departmentId: orgUnitOptions, section: orgUnitOptions,
+
+  // Designations, Positions & Roles
+  designation: designationOptions, designationCode: designationOptions,
+  designationId: designationOptions, role: designationOptions, jobTitle: designationOptions,
+  designationCodeBandLocationId: designationOptions,
+  position: positionOptions, positionCode: positionOptions, positionId: positionOptions,
+  requisitionId: positionOptions,
+
+  // Worker Classes & Bands
+  workerClass: workerClassOptions, workerClassCode: workerClassOptions,
+  workerClassEmploymentType: workerClassOptions, recommendedBand: recommendedBandOptions,
+
+  // Leaves & Payroll
+  leaveType: leaveTypeOptions, leaveTypeId: leaveTypeOptions,
   payrollRun: payrollRunOptions, payRun: payrollRunOptions, payrollGroup: payrollGroupOptions,
+  taggedRunId: payrollRunOptions, disbursementRunIdRecoveryRunId: payrollRunOptions,
+  recoveryPeriod: recoveryPeriodOptions,
+
+  // Templates, Helpdesk, Staffing & Accounting
+  letterTemplateId: letterTemplateOptions,
+  queueIdAssigneeId: helpdeskQueueOptions,
+  subCategory: helpdeskSubCatOptions,
+  agencyId: staffingAgencyOptions,
+  percentOfComponent: percentComponentOptions,
+  slabTableRef: slabTableOptions,
+  glDebitAccount: glAccountDebitOptions,
+  glCreditAccount: glAccountCreditOptions,
+  glDimensions: glDimensionOptions,
 };
 
 const moduleSources = readData("lib.demo-workbook-adapter", "moduleSources_1");

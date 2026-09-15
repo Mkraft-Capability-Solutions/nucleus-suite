@@ -610,3 +610,126 @@
     gap: 1.25rem;
 }
 
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: var(--shadow-overlay, rgba(15, 23, 42, 0.6));
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modalContainer {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-card, 8px);
+    box-shadow: var(--shadow-raise);
+    width: 100%;
+    max-width: 640px;
+    max-height: 90vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.modalCloseBtn {
+    background: transparent;
+    border: none;
+    font-size: 1.25rem;
+    color: var(--text-2);
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--r-control, 4px);
+}
+
+.modalCloseBtn:hover {
+    color: var(--text);
+    background: var(--card-2);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+@media (max-width: 600px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.formFieldFull {
+    grid-column: 1 / -1;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.formGroup label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.formGroup input,
+.formGroup select {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control, 5px);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+    border-color: var(--signal);
+}
+
+.restDayBanner {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--r-control, 5px);
+    font-size: 0.8rem;
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    border: 1px solid var(--signal);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--line);
+    background: var(--card-2);
+}
+

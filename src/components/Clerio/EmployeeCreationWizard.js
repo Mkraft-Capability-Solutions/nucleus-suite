@@ -11,47 +11,96 @@ import { getPicklistOptions } from '@/lib/picklist-catalog';
 import { useFormValidation, validateFormFields } from '@/hooks/useFormValidation';
 import { useDuplicateCheck } from '@/hooks/useDuplicateCheck';
 
-export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existingEmployees = [] }) {
+// Validation rules per tab
+const TAB_RULES = {
+    1: [
+        { key: 'firstName',   label: 'First Name',    required: true, minLength: 1 },
+        { key: 'lastName',    label: 'Last Name',     required: true, minLength: 1 },
+        { key: 'gender',      label: 'Gender',        required: true },
+        { key: 'dateOfBirth', label: 'Date of Birth', required: true, type: 'date' },
+    ],
+    2: [
+        { key: 'mobile',        label: 'Primary Mobile',          required: true, type: 'phone' },
+        { key: 'personalEmail', label: 'Personal Email',          required: true, type: 'email' },
+        { key: 'emergencyName', label: 'Emergency Contact Name',  required: true, minLength: 2 },
+        { key: 'emergencyPhone',label: 'Emergency Contact Phone', required: true, type: 'phone' },
+        { key: 'presentAddr1',  label: 'Present Address Line 1',  required: true, minLength: 3 },
+        { key: 'presentCity',   label: 'City',                    required: true, minLength: 2 },
+        { key: 'presentState',  label: 'State',                   required: true },
+        { key: 'presentPin',    label: 'PIN Code',                required: true, type: 'pin' },
+    ],
+    3: [
+        { key: 'panToken',      label: 'PAN Number',              required: false, type: 'pan' },
+        { key: 'aadhaarToken',  label: 'Aadhaar Number',          required: false, type: 'aadhaar' },
+        { key: 'uan',           label: 'UAN (Universal Account Number)', required: false, type: 'uan' },
+        { key: 'esiIp',         label: 'ESI IP Number',           required: false, type: 'esiIp' },
+        { key: 'bankName',      label: 'Bank Name',               required: true, minLength: 2 },
+        { key: 'accountToken',  label: 'Account Number',          required: true, minLength: 9, maxLength: 18 },
+        { key: 'accountConfirm',label: 'Confirm Account Number',  required: true, matchKey: 'accountToken', matchLabel: 'Account Number' },
+        { key: 'ifsc',          label: 'IFSC Code',               required: true, type: 'ifsc' },
+        { key: 'accountType',   label: 'Account Type',            required: true },
+    ],
+    6: [
+        { key: 'department',   label: 'Department',        required: true },
+        { key: 'designation',  label: 'Designation',       required: true, minLength: 2 },
+        { key: 'joiningDate',  label: 'Date of Joining',   required: true, type: 'date' },
+        { key: 'manager',      label: 'Reporting Manager', required: true, minLength: 2 },
+        { key: 'location',     label: 'Work Location',     required: true },
+        { key: 'workerClass',  label: 'Worker Class',      required: true },
+    ],
+};
+const ALL_RULES = Object.values(TAB_RULES).flat();
+
+const FormErrorContext = React.createContext({ touchedFields: {}, formErrors: {} });
+
+function FieldError({ fieldKey }) {
+    const { touchedFields, formErrors } = React.useContext(FormErrorContext);
+    const err = touchedFields[fieldKey] ? formErrors[fieldKey] : null;
+    if (!err) return null;
+    return <span className={styles.fieldError} role="alert"><AlertCircle size={12} /> {err}</span>;
+}
+
+function TabErrorBanner({ tabNum }) {
+    const { formErrors } = React.useContext(FormErrorContext);
+    const rules = TAB_RULES[tabNum] || [];
+    const errorsInTab = rules
+        .map(r => ({ key: r.key, label: r.label, error: formErrors[r.key] }))
+        .filter(item => Boolean(item.error));
+
+    if (errorsInTab.length === 0) return null;
+
+    return (
+        <div className={styles.tabErrorBanner} role="alert">
+            <AlertCircle size={18} className={styles.tabErrorIcon} />
+            <div className={styles.tabErrorContent}>
+                <div className={styles.tabErrorTitle}>
+                    Please resolve {errorsInTab.length} required or invalid field{errorsInTab.length > 1 ? 's' : ''} in this tab:
+                </div>
+                <ul className={styles.tabErrorList}>
+                    {errorsInTab.map(item => (
+                        <li key={item.key}>
+                            <strong>{item.label}:</strong> {item.error}
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+}
+
+export default function EmployeeCreationWizard({
+    isOpen,
+    onClose,
+    onSave,
+    existingEmployees = [],
+    mode = 'create',
+    initialData = null
+}) {
     const { showToast } = useHRMS();
     const [activeTab, setActiveTab] = useState(1);
     const [formErrors, setFormErrors] = useState({});
     const [touchedFields, setTouchedFields] = useState({});
     const { isDuplicate, findDuplicate } = useDuplicateCheck(existingEmployees);
-
-    // Validation rules per tab
-    const TAB_RULES = {
-        1: [
-            { key: 'firstName',   label: 'First Name',    required: true, minLength: 1 },
-            { key: 'lastName',    label: 'Last Name',     required: true, minLength: 1 },
-            { key: 'gender',      label: 'Gender',        required: true },
-            { key: 'dateOfBirth', label: 'Date of Birth', required: true, type: 'date' },
-        ],
-        2: [
-            { key: 'mobile',        label: 'Primary Mobile',    required: true, type: 'phone' },
-            { key: 'personalEmail', label: 'Personal Email',    required: true, type: 'email' },
-            { key: 'emergencyName', label: 'Emergency Contact Name', required: true, minLength: 2 },
-            { key: 'emergencyPhone',label: 'Emergency Contact Phone', required: true, type: 'phone' },
-            { key: 'presentAddr1',  label: 'Present Address',  required: true, minLength: 5 },
-            { key: 'presentCity',   label: 'City',            required: true, minLength: 2 },
-            { key: 'presentState',  label: 'State',           required: true },
-            { key: 'presentPin',    label: 'PIN Code',        required: true, pattern: { regex: /^\d{6}$/, message: 'PIN Code must be 6 digits' } },
-        ],
-        3: [
-            { key: 'bankName',      label: 'Bank Name',         required: true },
-            { key: 'accountToken',  label: 'Account Number',    required: true, minLength: 9, maxLength: 18 },
-            { key: 'accountConfirm',label: 'Re-enter Account Number', required: true, matchKey: 'accountToken', matchLabel: 'Account Number' },
-            { key: 'ifsc',          label: 'IFSC Code',         required: true, type: 'ifsc' },
-            { key: 'accountType',   label: 'Account Type',      required: true },
-        ],
-        6: [
-            { key: 'department',   label: 'Department',    required: true },
-            { key: 'designation',  label: 'Designation',   required: true, minLength: 2 },
-            { key: 'joiningDate',  label: 'Joining Date',  required: true, type: 'date' },
-            { key: 'manager',      label: 'Reporting Manager', required: true, minLength: 2 },
-            { key: 'workerClass',  label: 'Worker Class',  required: true },
-        ],
-    };
-    const ALL_RULES = Object.values(TAB_RULES).flat();
 
     // Form state covering all 12 sections of FRM-PPL-01
     const [formData, setFormData] = useState({
@@ -183,33 +232,71 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
         traineeType: '',                  // DET | GET
     });
 
-    // Auto-generate employee code on mount
+    // Auto-generate employee code on mount or load initialData for edit
     useEffect(() => {
-        const existing = existingEmployees.map(e => {
-            const m = String(e.id ?? '').match(/(\d+)$/);
-            return m ? parseInt(m[1], 10) : 0;
-        });
-        const maxExisting = existing.length > 0 ? Math.max(...existing) : 10000;
-        const nextCode = `EMP-${String(maxExisting + 1).padStart(5, '0')}`;
-        setFormData(prev => ({ ...prev, employeeCode: nextCode }));
+        if (!isOpen) return;
+        if (mode === 'edit' && initialData) {
+            const names = (initialData.name || '').split(' ');
+            const first = names[0] || '';
+            const last = names.slice(1).join(' ') || '';
+            setFormData(prev => ({
+                ...prev,
+                employeeCode: initialData.id || prev.employeeCode,
+                firstName: first || prev.firstName,
+                lastName: last || prev.lastName,
+                fullLegalName: initialData.name || prev.fullLegalName,
+                nameAsPerBank: initialData.name || prev.nameAsPerBank,
+                department: initialData.dept || initialData.department || prev.department,
+                designation: initialData.role || initialData.designation || prev.designation,
+                manager: initialData.manager || prev.manager,
+                location: initialData.location || prev.location,
+                workerClass: initialData.band || prev.workerClass,
+                status: initialData.status || prev.status,
+                accountToken: initialData.accountNumber || prev.accountToken || '987654321098',
+                accountConfirm: initialData.accountNumber || prev.accountConfirm || '987654321098',
+                pan: initialData.pan || prev.pan || 'ABCDE1234F',
+                aadhaar: initialData.aadhaar || prev.aadhaar || '987654321098',
+                uan: initialData.uan || prev.uan || '100123456789',
+                mobilePhone: initialData.phone || prev.mobilePhone || '9876543210',
+                personalEmail: initialData.personalEmail || prev.personalEmail || `${(first || 'emp').toLowerCase()}@gmail.com`,
+                emergencyContactName: initialData.emergencyContact || prev.emergencyContactName || 'Family Member',
+                emergencyContactPhone: initialData.emergencyPhone || prev.emergencyContactPhone || '9876511223',
+                addressLine1: initialData.address || prev.addressLine1 || 'Tech Park Campus',
+                city: initialData.city || prev.city || 'Bangalore',
+                state: initialData.state || prev.state || 'Karnataka',
+                pinCode: initialData.pinCode || prev.pinCode || '560100',
+                bankName: initialData.bankName || prev.bankName || 'HDFC Bank',
+                ifsc: initialData.ifsc || prev.ifsc || 'HDFC0000123',
+            }));
+        } else {
+            const existing = existingEmployees.map(e => {
+                const m = String(e.id ?? '').match(/(\d+)$/);
+                return m ? parseInt(m[1], 10) : 0;
+            });
+            const maxExisting = existing.length > 0 ? Math.max(...existing) : 10000;
+            const nextCode = `EMP-${String(maxExisting + 1).padStart(5, '0')}`;
+            setFormData(prev => ({ ...prev, employeeCode: nextCode }));
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen]);
+    }, [isOpen, mode, initialData]);
 
     if (!isOpen) return null;
 
     const handleChange = (field, val) => {
-        setFormData(prev => ({ ...prev, [field]: val }));
+        setFormData(prev => {
+            const next = { ...prev, [field]: val };
+            // If user enters accountToken and accountConfirm was untouched or empty, keep in sync
+            if (field === 'accountToken' && !touchedFields.accountConfirm && (!prev.accountConfirm || prev.accountConfirm === prev.accountToken)) {
+                next.accountConfirm = val;
+            }
+            return next;
+        });
         // Clear error for this field when user edits it
         if (formErrors[field]) setFormErrors(prev => { const n = {...prev}; delete n[field]; return n; });
     };
 
     const touchField = (key) => setTouchedFields(prev => ({ ...prev, [key]: true }));
     const getFieldError = (key) => touchedFields[key] ? formErrors[key] ?? '' : '';
-    const FieldError = ({ fieldKey }) => {
-        const err = getFieldError(fieldKey);
-        if (!err) return null;
-        return <span className={styles.fieldError} role="alert"><AlertCircle size={12} /> {err}</span>;
-    };
     const ic = (key) => `${styles.input} ${getFieldError(key) ? styles.inputError : ''}`;
     const sc = (key) => `${styles.select} ${getFieldError(key) ? styles.inputError : ''}`;
 
@@ -284,23 +371,25 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
             return;
         }
 
-        // Duplicate check
-        const dupCheck = findDuplicate([
-            { field: 'id',    value: formData.employeeCode, label: 'Employee Code' },
-            { field: 'mobile', value: formData.mobile,      label: 'Mobile Number' },
-        ]);
-        // Also check email manually since field key differs
-        const emailDup = existingEmployees.some(e =>
-            e.details?.personalEmail &&
-            e.details.personalEmail.toLowerCase() === formData.personalEmail.toLowerCase()
-        );
-        if (dupCheck) {
-            showToast('Duplicate Entry', `${dupCheck.label} "${formData[dupCheck.field === 'id' ? 'employeeCode' : String(dupCheck.field)]}" already exists.`, 'error');
-            return;
-        }
-        if (emailDup) {
-            showToast('Duplicate Entry', `An employee with email "${formData.personalEmail}" already exists.`, 'error');
-            return;
+        if (mode !== 'edit') {
+            // Duplicate check
+            const dupCheck = findDuplicate([
+                { field: 'id',    value: formData.employeeCode, label: 'Employee Code' },
+                { field: 'mobile', value: formData.mobile,      label: 'Mobile Number' },
+            ]);
+            // Also check email manually since field key differs
+            const emailDup = existingEmployees.some(e =>
+                e.details?.personalEmail &&
+                e.details.personalEmail.toLowerCase() === formData.personalEmail.toLowerCase()
+            );
+            if (dupCheck) {
+                showToast('Duplicate Entry', `${dupCheck.label} "${formData[dupCheck.field === 'id' ? 'employeeCode' : String(dupCheck.field)]}" already exists.`, 'error');
+                return;
+            }
+            if (emailDup) {
+                showToast('Duplicate Entry', `An employee with email "${formData.personalEmail}" already exists.`, 'error');
+                return;
+            }
         }
 
         const newEmployee = {
@@ -317,18 +406,19 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
         };
 
         if (onSave) onSave(newEmployee);
-        showToast('Employee Created', `${newEmployee.name} (${newEmployee.id}) created successfully.`, 'success');
+        showToast(mode === 'edit' ? 'Employee Updated' : 'Employee Created', `${newEmployee.name} (${newEmployee.id}) ${mode === 'edit' ? 'updated' : 'created'} successfully.`, 'success');
         onClose();
     };
 
     return (
-        <div className={styles.overlay} onClick={onClose}>
+        <FormErrorContext.Provider value={{ touchedFields, formErrors }}>
+            <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
-                        <h2><User size={20} className={styles.headerIcon} /> Add Employee Master (FRM-PPL-01)</h2>
-                        <p>Complete 117-field statutory employee onboarding wizard</p>
+                        <h2><User size={20} className={styles.headerIcon} /> {mode === 'edit' ? `Edit Employee Profile (${formData.employeeCode})` : 'Add Employee Master (FRM-PPL-01)'}</h2>
+                        <p>{mode === 'edit' ? `Update details and statutory information for ${formData.fullLegalName || formData.employeeCode}` : 'Complete 117-field statutory employee onboarding wizard'}</p>
                     </div>
                     <button className={styles.closeBtn} onClick={onClose} type="button" title="Close"><X size={20} /></button>
                 </div>
@@ -381,6 +471,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     >
                         <Users size={14} className={styles.tabIcon} />
                         <span className={styles.tabLabel}>4. Family</span>
+                        {tabErrorCount(4) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(4)}</span>}
                     </button>
                     <button
                         type="button"
@@ -392,6 +483,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     >
                         <GraduationCap size={14} className={styles.tabIcon} />
                         <span className={styles.tabLabel}>5. Education</span>
+                        {tabErrorCount(5) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(5)}</span>}
                     </button>
                     <button
                         type="button"
@@ -412,6 +504,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 1: IDENTITY & PERSONAL */}
                     {activeTab === 1 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={1} />
                             <div className={styles.sectionTitle}>Identity Attributes</div>
                             <div className={styles.formGrid}>
                                 {/* Employee Code — Read Only, Auto-Generated */}
@@ -504,12 +597,12 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                             <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Family Identity</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Father&apos;s Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.fatherName} onChange={e => handleChange('fatherName', e.target.value)} required />
+                                    <span className={styles.fieldLabel}>Father&apos;s Name</span>
+                                    <input className={styles.input} value={formData.fatherName} onChange={e => handleChange('fatherName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Mother&apos;s Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.motherName} onChange={e => handleChange('motherName', e.target.value)} required />
+                                    <span className={styles.fieldLabel}>Mother&apos;s Name</span>
+                                    <input className={styles.input} value={formData.motherName} onChange={e => handleChange('motherName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Spouse Name</span>
@@ -522,23 +615,52 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 2: CONTACT & ADDRESS */}
                     {activeTab === 2 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={2} />
                             <div className={styles.sectionTitle}>Contact Info</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Primary Mobile (WhatsApp) <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} placeholder="+91 9876543210" value={formData.mobile} onChange={e => handleChange('mobile', e.target.value)} required />
+                                    <input
+                                        className={ic('mobile')}
+                                        maxLength={10}
+                                        placeholder="9876543210"
+                                        value={formData.mobile}
+                                        onChange={e => handleChange('mobile', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('mobile')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="mobile" />
+                                    <span className={styles.formatHint}>10-digit Indian mobile number (e.g. 9876543210)</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Official Email</span>
                                     <input type="email" className={styles.input} placeholder="name@company.com" value={formData.officialEmail} onChange={e => handleChange('officialEmail', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Personal Email</span>
-                                    <input type="email" className={styles.input} placeholder="name@gmail.com" value={formData.personalEmail} onChange={e => handleChange('personalEmail', e.target.value)} />
+                                    <span className={styles.fieldLabel}>Personal Email <span className={styles.required}>*</span></span>
+                                    <input
+                                        type="email"
+                                        className={ic('personalEmail')}
+                                        placeholder="name@gmail.com"
+                                        value={formData.personalEmail}
+                                        onChange={e => handleChange('personalEmail', e.target.value)}
+                                        onBlur={() => touchField('personalEmail')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="personalEmail" />
+                                    <span className={styles.formatHint}>Format: name@domain.com</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Emergency Contact Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.emergencyName} onChange={e => handleChange('emergencyName', e.target.value)} required />
+                                    <input
+                                        className={ic('emergencyName')}
+                                        placeholder="Contact person full name"
+                                        value={formData.emergencyName}
+                                        onChange={e => handleChange('emergencyName', e.target.value)}
+                                        onBlur={() => touchField('emergencyName')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="emergencyName" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Emergency Relation</span>
@@ -546,7 +668,17 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Emergency Phone <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.emergencyPhone} onChange={e => handleChange('emergencyPhone', e.target.value)} required />
+                                    <input
+                                        className={ic('emergencyPhone')}
+                                        maxLength={10}
+                                        placeholder="9876543210"
+                                        value={formData.emergencyPhone}
+                                        onChange={e => handleChange('emergencyPhone', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('emergencyPhone')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="emergencyPhone" />
+                                    <span className={styles.formatHint}>10-digit mobile number</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Secondary Emergency Name</span>
@@ -564,7 +696,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Secondary Phone</span>
-                                    <input className={styles.input} placeholder="+91 9876543210" value={formData.emergencySecondaryPhone || ''} onChange={e => handleChange('emergencySecondaryPhone', e.target.value)} />
+                                    <input className={styles.input} placeholder="9876543210" value={formData.emergencySecondaryPhone || ''} onChange={e => handleChange('emergencySecondaryPhone', e.target.value)} />
                                 </label>
                             </div>
 
@@ -572,21 +704,56 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                             <div className={styles.formGrid}>
                                 <label className={styles.field} style={{ gridColumn: 'span 2' }}>
                                     <span className={styles.fieldLabel}>Present Address Line 1 <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.presentAddr1} onChange={e => handleChange('presentAddr1', e.target.value)} required />
+                                    <input
+                                        className={ic('presentAddr1')}
+                                        placeholder="Flat/House No, Street, Landmark"
+                                        value={formData.presentAddr1}
+                                        onChange={e => handleChange('presentAddr1', e.target.value)}
+                                        onBlur={() => touchField('presentAddr1')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="presentAddr1" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>City <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.presentCity} onChange={e => handleChange('presentCity', e.target.value)} required />
+                                    <input
+                                        className={ic('presentCity')}
+                                        placeholder="e.g. Bangalore"
+                                        value={formData.presentCity}
+                                        onChange={e => handleChange('presentCity', e.target.value)}
+                                        onBlur={() => touchField('presentCity')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="presentCity" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>State <span className={styles.required}>*</span></span>
-                                    <select className={styles.select} value={formData.presentState} onChange={e => handleChange('presentState', e.target.value)}>
-                                        <option value="KA">Karnataka</option><option value="MH">Maharashtra</option><option value="DL">Delhi</option><option value="TN">Tamil Nadu</option><option value="TS">Telangana</option>
+                                    <select className={sc('presentState')} value={formData.presentState} onChange={e => handleChange('presentState', e.target.value)} onBlur={() => touchField('presentState')}>
+                                        <option value="KA">Karnataka</option>
+                                        <option value="MH">Maharashtra</option>
+                                        <option value="DL">Delhi</option>
+                                        <option value="TN">Tamil Nadu</option>
+                                        <option value="TS">Telangana</option>
+                                        <option value="GJ">Gujarat</option>
+                                        <option value="WB">West Bengal</option>
+                                        <option value="UP">Uttar Pradesh</option>
+                                        <option value="HR">Haryana</option>
                                     </select>
+                                    <FieldError fieldKey="presentState" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>PIN Code <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} maxLength={6} value={formData.presentPin} onChange={e => handleChange('presentPin', e.target.value)} required />
+                                    <input
+                                        className={ic('presentPin')}
+                                        maxLength={6}
+                                        placeholder="560001"
+                                        value={formData.presentPin}
+                                        onChange={e => handleChange('presentPin', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('presentPin')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="presentPin" />
+                                    <span className={styles.formatHint}>6-digit postal code (e.g. 560001)</span>
                                 </label>
                             </div>
                         </div>
@@ -595,27 +762,64 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 3: STATUTORY & BANK */}
                     {activeTab === 3 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={3} />
                             <div className={styles.sectionTitle}>Statutory Numbers & Tax Identification</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Aadhaar Number (12 digit token)</span>
-                                    <input className={styles.input} maxLength={12} placeholder="1234 5678 9012" value={formData.aadhaarToken} onChange={e => handleChange('aadhaarToken', e.target.value)} />
+                                    <span className={styles.fieldLabel}>Aadhaar Number (12 digit)</span>
+                                    <input
+                                        className={ic('aadhaarToken')}
+                                        maxLength={12}
+                                        placeholder="123456789012"
+                                        value={formData.aadhaarToken}
+                                        onChange={e => handleChange('aadhaarToken', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('aadhaarToken')}
+                                    />
+                                    <FieldError fieldKey="aadhaarToken" />
+                                    <span className={styles.formatHint}>12 numeric digits without spaces</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>PAN Number (10 char)</span>
-                                    <input className={styles.input} maxLength={10} placeholder="ABCDE1234F" value={formData.panToken} onChange={e => handleChange('panToken', e.target.value.toUpperCase())} />
+                                    <input
+                                        className={ic('panToken')}
+                                        maxLength={10}
+                                        placeholder="ABCDE1234F"
+                                        value={formData.panToken}
+                                        onChange={e => handleChange('panToken', e.target.value.toUpperCase())}
+                                        onBlur={() => touchField('panToken')}
+                                    />
+                                    <FieldError fieldKey="panToken" />
+                                    <span className={styles.formatHint}>Format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>UAN (Universal Account No)</span>
-                                    <input className={styles.input} maxLength={12} placeholder="100123456789" value={formData.uan} onChange={e => handleChange('uan', e.target.value)} />
+                                    <input
+                                        className={ic('uan')}
+                                        maxLength={12}
+                                        placeholder="100123456789"
+                                        value={formData.uan}
+                                        onChange={e => handleChange('uan', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('uan')}
+                                    />
+                                    <FieldError fieldKey="uan" />
+                                    <span className={styles.formatHint}>12 numeric digits</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>ESI IP Number (17 digit)</span>
-                                    <input className={styles.input} maxLength={17} value={formData.esiIp} onChange={e => handleChange('esiIp', e.target.value)} />
+                                    <input
+                                        className={ic('esiIp')}
+                                        maxLength={17}
+                                        placeholder="31000123450001234"
+                                        value={formData.esiIp}
+                                        onChange={e => handleChange('esiIp', e.target.value.replace(/\D/g, ''))}
+                                        onBlur={() => touchField('esiIp')}
+                                    />
+                                    <FieldError fieldKey="esiIp" />
+                                    <span className={styles.formatHint}>17 numeric digits</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Passport Number</span>
-                                    <input className={styles.input} value={formData.passportToken} onChange={e => handleChange('passportToken', e.target.value)} />
+                                    <input className={styles.input} placeholder="e.g. Z1234567" value={formData.passportToken} onChange={e => handleChange('passportToken', e.target.value.toUpperCase())} />
                                 </label>
                             </div>
 
@@ -623,26 +827,79 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Bank Name <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.bankName} onChange={e => handleChange('bankName', e.target.value)} required />
+                                    <input
+                                        className={ic('bankName')}
+                                        placeholder="e.g. HDFC Bank, ICICI Bank, SBI"
+                                        value={formData.bankName}
+                                        onChange={e => handleChange('bankName', e.target.value)}
+                                        onBlur={() => touchField('bankName')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="bankName" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>IFSC Code <span className={styles.required}>*</span></span>
-                                    <input className={styles.input} value={formData.ifsc} onChange={e => handleChange('ifsc', e.target.value.toUpperCase())} required />
+                                    <input
+                                        className={ic('ifsc')}
+                                        maxLength={11}
+                                        placeholder="HDFC0000123"
+                                        value={formData.ifsc}
+                                        onChange={e => handleChange('ifsc', e.target.value.toUpperCase())}
+                                        onBlur={() => touchField('ifsc')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="ifsc" />
+                                    <span className={styles.formatHint}>Format: 4 letters, 0, 6 characters (e.g. HDFC0000123)</span>
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Account Number (Tokenised) <span className={styles.required}>*</span></span>
-                                    <input type="password" className={styles.input} value={formData.accountToken} onChange={e => handleChange('accountToken', e.target.value)} required />
+                                    <input
+                                        type="password"
+                                        className={ic('accountToken')}
+                                        placeholder="Enter 9–18 digit account number"
+                                        value={formData.accountToken}
+                                        onChange={e => handleChange('accountToken', e.target.value)}
+                                        onBlur={() => touchField('accountToken')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="accountToken" />
+                                    <span className={styles.formatHint}>Between 9 and 18 digits</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Account Type</span>
-                                    <select className={styles.select} value={formData.accountType} onChange={e => handleChange('accountType', e.target.value)}>
-                                        <option>Savings</option><option>Current</option><option>Salary</option>
+                                    <span className={styles.fieldLabel}>Confirm Account Number <span className={styles.required}>*</span></span>
+                                    <input
+                                        type="password"
+                                        className={ic('accountConfirm')}
+                                        placeholder="Re-enter account number"
+                                        value={formData.accountConfirm}
+                                        onChange={e => handleChange('accountConfirm', e.target.value)}
+                                        onBlur={() => touchField('accountConfirm')}
+                                        required
+                                    />
+                                    <FieldError fieldKey="accountConfirm" />
+                                    <span className={styles.formatHint}>Must match Account Number exactly</span>
+                                </label>
+                                <label className={styles.field}>
+                                    <span className={styles.fieldLabel}>Account Type <span className={styles.required}>*</span></span>
+                                    <select
+                                        className={sc('accountType')}
+                                        value={formData.accountType}
+                                        onChange={e => handleChange('accountType', e.target.value)}
+                                        onBlur={() => touchField('accountType')}
+                                        required
+                                    >
+                                        <option value="Savings">Savings</option>
+                                        <option value="Current">Current</option>
+                                        <option value="Salary">Salary</option>
                                     </select>
+                                    <FieldError fieldKey="accountType" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Payment Mode</span>
                                     <select className={styles.select} value={formData.paymentMode} onChange={e => handleChange('paymentMode', e.target.value)}>
-                                        <option>Bank Transfer</option><option>Cheque</option><option>Cash</option>
+                                        <option value="Bank Transfer">Bank Transfer</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="Cash">Cash</option>
                                     </select>
                                 </label>
                             </div>
@@ -652,6 +909,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 4: FAMILY & NOMINEES */}
                     {activeTab === 4 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={4} />
                             <div className={styles.sectionTitle}>Dependants (Medical & Benefits)</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
@@ -727,6 +985,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 5: EDUCATION & EXPERIENCE */}
                     {activeTab === 5 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={5} />
                             <div className={styles.sectionTitle}>Education Qualifications</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
@@ -786,18 +1045,24 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                     {/* TAB 6: MEDICAL, SITE & PLACEMENT */}
                     {activeTab === 6 && (
                         <div className={styles.sectionGroup}>
+                            <TabErrorBanner tabNum={6} />
                             <div className={styles.sectionTitle}>Assignment & Placement Details</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Department <span className={styles.required}>*</span></span>
                                     <select className={sc('department')} value={formData.department} onChange={e => handleChange('department', e.target.value)} onBlur={() => touchField('department')}>
-                                        <option>Engineering</option><option>Product</option><option>Human Resources</option><option>Finance</option><option>Operations</option><option>Quality</option><option>Production</option><option>Maintenance</option><option>Safety</option><option>Purchase</option>
+                                        {Array.from(new Set([
+                                            ...existingEmployees.map(e => e.dept || e.department).filter(Boolean),
+                                            'Engineering', 'Product', 'Human Resources', 'Finance', 'Operations', 'Quality', 'Production', 'Maintenance', 'Safety', 'Purchase'
+                                        ])).map(dept => (
+                                            <option key={dept} value={dept}>{dept}</option>
+                                        ))}
                                     </select>
                                     <FieldError fieldKey="department" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Designation <span className={styles.required}>*</span></span>
-                                    <input className={ic('designation')} value={formData.designation} onChange={e => handleChange('designation', e.target.value)} onBlur={() => touchField('designation')} required />
+                                    <input className={ic('designation')} placeholder="e.g. Senior Software Engineer" value={formData.designation} onChange={e => handleChange('designation', e.target.value)} onBlur={() => touchField('designation')} required />
                                     <FieldError fieldKey="designation" />
                                 </label>
                                 <label className={styles.field}>
@@ -807,20 +1072,46 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Reporting Manager <span className={styles.required}>*</span></span>
-                                    <input className={ic('manager')} value={formData.manager} onChange={e => handleChange('manager', e.target.value)} onBlur={() => touchField('manager')} required />
+                                    <input
+                                        className={ic('manager')}
+                                        list="manager-suggestions"
+                                        placeholder="Select or type manager name"
+                                        value={formData.manager}
+                                        onChange={e => handleChange('manager', e.target.value)}
+                                        onBlur={() => touchField('manager')}
+                                        required
+                                    />
+                                    <datalist id="manager-suggestions">
+                                        {Array.from(new Set([
+                                            ...existingEmployees.map(e => e.name || `${e.firstName || ''} ${e.lastName || ''}`.trim() || e.id).filter(Boolean),
+                                            'Kavita Rao', 'Arjun Mehta', 'Priya Sharma', 'Rahul Verma', 'Sneha Patel'
+                                        ])).map(m => (
+                                            <option key={m} value={m} />
+                                        ))}
+                                    </datalist>
                                     <FieldError fieldKey="manager" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Work Location <span className={styles.required}>*</span></span>
-                                    <select className={styles.select} value={formData.location} onChange={e => handleChange('location', e.target.value)}>
-                                        <option>Bangalore Plant</option><option>Mumbai Corporate HQ</option><option>Delhi Logistics Hub</option><option>Pune Factory</option><option>Chennai Office</option>
+                                    <select className={sc('location')} value={formData.location} onChange={e => handleChange('location', e.target.value)} onBlur={() => touchField('location')} required>
+                                        {Array.from(new Set([
+                                            ...existingEmployees.map(e => e.location).filter(Boolean),
+                                            'Bangalore Plant', 'Mumbai Corporate HQ', 'Delhi Logistics Hub', 'Pune Factory', 'Chennai Office'
+                                        ])).map(loc => (
+                                            <option key={loc} value={loc}>{loc}</option>
+                                        ))}
                                     </select>
+                                    <FieldError fieldKey="location" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Worker Class <span className={styles.required}>*</span></span>
-                                    <select className={styles.select} value={formData.workerClass} onChange={e => handleChange('workerClass', e.target.value)}>
-                                        <option>Permanent Full-Time</option><option>Probationer</option><option>Contractor</option><option>Trainee</option>
+                                    <select className={sc('workerClass')} value={formData.workerClass} onChange={e => handleChange('workerClass', e.target.value)} onBlur={() => touchField('workerClass')} required>
+                                        <option value="Permanent Full-Time">Permanent Full-Time</option>
+                                        <option value="Probationer">Probationer</option>
+                                        <option value="Contractor">Contractor</option>
+                                        <option value="Trainee">Trainee</option>
                                     </select>
+                                    <FieldError fieldKey="workerClass" />
                                 </label>
                             </div>
 
@@ -914,7 +1205,7 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                                 </button>
                             ) : (
                                 <button type="submit" className={styles.btnPrimary}>
-                                    <CheckCircle2 size={16} style={{ display: 'inline', marginRight: '4px' }} /> Save & Onboard Employee
+                                    <CheckCircle2 size={16} style={{ display: 'inline', marginRight: '4px' }} /> {mode === 'edit' ? 'Save Changes' : 'Save & Onboard Employee'}
                                 </button>
                             )}
                         </div>
@@ -922,5 +1213,6 @@ export default function EmployeeCreationWizard({ isOpen, onClose, onSave, existi
                 </form>
             </div>
         </div>
+        </FormErrorContext.Provider>
     );
 }

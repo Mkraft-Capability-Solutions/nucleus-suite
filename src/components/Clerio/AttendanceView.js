@@ -7,7 +7,8 @@ import React, { useState, useEffect } from 'react';
 import {
     Clock, Calendar as CalIcon, MapPin, ChevronLeft, ChevronRight,
     FileText, CheckCircle, AlertCircle, TrendingUp, Sparkles, Smartphone, ShieldCheck,
-    RefreshCw, KeyRound, UserCheck, CheckCircle2, XCircle, Plus, Info, Building2, UploadCloud
+    RefreshCw, KeyRound, UserCheck, CheckCircle2, XCircle, Plus, Info, Building2, UploadCloud,
+    CheckSquare, Timer, History, Sliders, X
 } from 'lucide-react';
 import styles from './AttendanceView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -92,6 +93,72 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const [regClaimedIn, setRegClaimedIn] = useState('09:00 AM');
     const [regClaimedOut, setRegClaimedOut] = useState('06:00 PM');
     const [regFilterStatus, setRegFilterStatus] = useState('ALL');
+
+    // Interactive Actions State
+    const [actionMenuRowId, setActionMenuRowId] = useState(null);
+    const [ledgerRecords, setLedgerRecords] = useState(timeOfficeLedger || []);
+    const [otModalRecord, setOtModalRecord] = useState(null);
+    const [otHours, setOtHours] = useState('2.0');
+    const [otRateType, setOtRateType] = useState('1.5x');
+    const [otReason, setOtReason] = useState('Approved overtime deployment');
+    const [timelineModalRecord, setTimelineModalRecord] = useState(null);
+    const [shiftOverrideRecord, setShiftOverrideRecord] = useState(null);
+    const [overrideShiftCode, setOverrideShiftCode] = useState('GEN');
+    const [overrideReason, setOverrideReason] = useState('Shift swap approved by manager');
+
+    useEffect(() => {
+        if (timeOfficeLedger) setLedgerRecords(timeOfficeLedger);
+    }, [timeOfficeLedger]);
+
+    const handleOpenRegularize = (rec) => {
+        setRegDate(rec.attendance_date || new Date().toISOString().split('T')[0]);
+        setRegReason(`Regularization requested for ${rec.employee_name} (${rec.shift_id_inferred || 'Shift'})`);
+        setIsRegModalOpen(true);
+    };
+
+    const handleOpenOtTag = (rec) => {
+        setOtModalRecord(rec);
+        const hrs = rec.ot_minutes ? (rec.ot_minutes / 60).toFixed(1) : '2.0';
+        setOtHours(hrs);
+        setOtRateType(rec.worker_category_code === 'CONTRACT' ? '2.0x' : '1.5x');
+        setOtReason('Scheduled overtime deployment approved');
+    };
+
+    const handleSaveOt = (e) => {
+        e.preventDefault();
+        if (!otModalRecord) return;
+        const mins = Math.round(parseFloat(otHours || '2') * 60);
+        const formatted = `${Math.floor(mins / 60)}h ${mins % 60}m`;
+        setLedgerRecords(prev => prev.map(r => r.id === otModalRecord.id ? {
+            ...r,
+            ot_minutes: mins,
+            formatted_ot: formatted
+        } : r));
+        showToast('Overtime Tagged', `${otHours} hrs tagged at ${otRateType} for ${otModalRecord.employee_name}`, 'success');
+        setOtModalRecord(null);
+    };
+
+    const handleOpenPunchTimeline = (rec) => {
+        setTimelineModalRecord(rec);
+    };
+
+    const handleOpenShiftOverride = (rec) => {
+        setShiftOverrideRecord(rec);
+        setOverrideShiftCode(rec.shift_id_inferred || 'GEN');
+        setOverrideReason('Operational roster adjustment');
+    };
+
+    const handleSaveShiftOverride = (e) => {
+        e.preventDefault();
+        if (!shiftOverrideRecord) return;
+        setLedgerRecords(prev => prev.map(r => r.id === shiftOverrideRecord.id ? {
+            ...r,
+            shift_id_inferred: overrideShiftCode,
+            shift_inferred: true
+        } : r));
+        showToast('Shift Overridden', `Shift set to ${overrideShiftCode} for ${shiftOverrideRecord.employee_name}`, 'success');
+        setShiftOverrideRecord(null);
+    };
 
     const handleCreateRegularization = async (e) => {
         e.preventDefault();
@@ -516,7 +583,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {timeOfficeLedger.map(rec => (
+                                    {(ledgerRecords || timeOfficeLedger).map(rec => (
                                         <tr key={rec.id}>
                                             <td>
                                                 <strong>{rec.employee_name}</strong>
@@ -564,10 +631,34 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                     {rec.status_reason}
                                                 </div>
                                             </td>
-                                            <td>
-                                                <span className={`${styles.badge} ${styles.badgeBlue}`} style={{ fontSize: '0.7rem' }}>
-                                                    {rec.demo_point}
-                                                </span>
+                                            <td style={{ position: 'relative' }}>
+                                                <button
+                                                    type="button"
+                                                    className={styles.btnSecondary}
+                                                    style={{ padding: '0.3rem 0.65rem', fontSize: '0.75rem', gap: '0.25rem', whiteSpace: 'nowrap' }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setActionMenuRowId(actionMenuRowId === rec.id ? null : rec.id);
+                                                    }}
+                                                >
+                                                    Actions ▾
+                                                </button>
+                                                {actionMenuRowId === rec.id && (
+                                                    <div className={styles.actionMenuPopover} onClick={e => e.stopPropagation()}>
+                                                        <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenRegularize(rec); }}>
+                                                            <CheckSquare size={13} style={{ color: 'var(--signal)' }} /> Regularize Attendance
+                                                        </button>
+                                                        <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenOtTag(rec); }}>
+                                                            <Timer size={13} style={{ color: 'var(--status-ok)' }} /> Tag / Approve OT
+                                                        </button>
+                                                        <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenPunchTimeline(rec); }}>
+                                                            <History size={13} style={{ color: 'var(--info)' }} /> View Punch Timeline
+                                                        </button>
+                                                        <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenShiftOverride(rec); }}>
+                                                            <Sliders size={13} style={{ color: 'var(--pending)' }} /> Manual Shift Override
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -1154,6 +1245,197 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 Close
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Tag / Approve OT Modal */}
+            {otModalRecord && (
+                <div className={styles.modalOverlay} onClick={() => setOtModalRecord(null)}>
+                    <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Timer size={18} style={{ color: 'var(--status-ok)' }} />
+                                Tag / Approve Overtime
+                            </h4>
+                            <button
+                                type="button"
+                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}
+                                onClick={() => setOtModalRecord(null)}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text)' }}>{otModalRecord.employee_name} ({otModalRecord.worker_category_code})</div>
+                            <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
+                                Date: <strong>{otModalRecord.attendance_date}</strong> · Shift: <strong>{otModalRecord.shift_id_inferred || 'GEN'}</strong> · Net: <strong>{otModalRecord.formatted_net || `${otModalRecord.net_minutes}m`}</strong>
+                            </div>
+                        </div>
+                        <form onSubmit={handleSaveOt} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div className={styles.fieldRow}>
+                                <label>Overtime Hours (Hours)</label>
+                                <input
+                                    type="number"
+                                    step="0.5"
+                                    min="0.5"
+                                    max="12"
+                                    required
+                                    value={otHours}
+                                    onChange={e => setOtHours(e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.fieldRow}>
+                                <label>Overtime Policy & Rate Multiplier</label>
+                                <select value={otRateType} onChange={e => setOtRateType(e.target.value)}>
+                                    <option value="1.5x">Standard Shift Overtime (1.5x Base Rate)</option>
+                                    <option value="2.0x">Weekly Off / Rest Day Overtime (2.0x Double Rate)</option>
+                                    <option value="2.5x">National Holiday Emergency Overtime (2.5x Premium)</option>
+                                    <option value="1.25x">Shift Handover Buffer (1.25x)</option>
+                                </select>
+                            </div>
+                            <div className={styles.fieldRow}>
+                                <label>Approval Justification / Project Code</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Critical deployment / production ramp-up"
+                                    value={otReason}
+                                    onChange={e => setOtReason(e.target.value)}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                                <button type="button" className={styles.btnSecondary} onClick={() => setOtModalRecord(null)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className={styles.btnPrimary}>
+                                    Confirm & Tag OT
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Punch Timeline Modal */}
+            {timelineModalRecord && (
+                <div className={styles.modalOverlay} onClick={() => setTimelineModalRecord(null)}>
+                    <div className={styles.modalCard} style={{ maxWidth: '560px' }} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <History size={18} style={{ color: 'var(--info)' }} />
+                                Punch Timeline & Device Audit
+                            </h4>
+                            <button
+                                type="button"
+                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}
+                                onClick={() => setTimelineModalRecord(null)}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text)' }}>{timelineModalRecord.employee_name}</div>
+                            <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
+                                Attendance Date: <strong>{timelineModalRecord.attendance_date}</strong> · Assigned: <strong>{timelineModalRecord.shift_id_inferred}</strong>
+                            </div>
+                        </div>
+                        <div className={styles.timelineWrapper}>
+                            <div className={styles.timelineItem}>
+                                <span className={`${styles.timelineDot} ${styles.timelineDotTeal}`} />
+                                <span className={styles.timelineTime}>08:54 AM · INGRESS SWIPE</span>
+                                <span className={styles.timelineDesc}>Biometric Face Terminal #1 (Main Turnstile Gate) · Verified IP Subnet 10.20.1.x</span>
+                            </div>
+                            <div className={styles.timelineItem}>
+                                <span className={`${styles.timelineDot} ${styles.timelineDotBlue}`} />
+                                <span className={styles.timelineTime}>09:02 AM · GEOFENCE CONFIRM</span>
+                                <span className={styles.timelineDesc}>Nucleus WorkStation WiFi Beacon · Desk Check-in Validated</span>
+                            </div>
+                            <div className={styles.timelineItem}>
+                                <span className={`${styles.timelineDot} ${styles.timelineDotAmber}`} />
+                                <span className={styles.timelineTime}>13:05 PM - 13:48 PM · MEAL BREAK</span>
+                                <span className={styles.timelineDesc}>Canteen Turnstile Gate #3 · Duration: 43 mins (Deducted from gross span)</span>
+                            </div>
+                            <div className={styles.timelineItem}>
+                                <span className={`${styles.timelineDot} ${styles.timelineDotTeal}`} />
+                                <span className={styles.timelineTime}>18:34 PM · EGRESS SWIPE</span>
+                                <span className={styles.timelineDesc}>Biometric Exit Gate #2 · RFID Tap Confirmed · Shift Completed</span>
+                            </div>
+                        </div>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', background: 'var(--card-2)', padding: '0.75rem', borderRadius: 'var(--r-control)', textAlign: 'center' }}>
+                            <div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Gross Span</div>
+                                <div style={{ fontWeight: 600, color: 'var(--text)' }}>{Math.floor(timelineModalRecord.gross_minutes / 60)}h {timelineModalRecord.gross_minutes % 60}m</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Breaks/GP</div>
+                                <div style={{ fontWeight: 600, color: 'var(--flag)' }}>{timelineModalRecord.break_minutes + timelineModalRecord.gate_pass_minutes}m</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Net Working</div>
+                                <div style={{ fontWeight: 600, color: 'var(--signal)' }}>{timelineModalRecord.formatted_net || `${timelineModalRecord.net_minutes}m`}</div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
+                            <button type="button" className={styles.btnSecondary} onClick={() => setTimelineModalRecord(null)}>
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Manual Shift Override Modal */}
+            {shiftOverrideRecord && (
+                <div className={styles.modalOverlay} onClick={() => setShiftOverrideRecord(null)}>
+                    <div className={styles.modalCard} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <Sliders size={18} style={{ color: 'var(--pending)' }} />
+                                Manual Shift Override
+                            </h4>
+                            <button
+                                type="button"
+                                style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-2)' }}
+                                onClick={() => setShiftOverrideRecord(null)}
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
+                            <div style={{ fontWeight: 600, color: 'var(--text)' }}>{shiftOverrideRecord.employee_name}</div>
+                            <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
+                                Date: <strong>{shiftOverrideRecord.attendance_date}</strong> · Current Shift: <strong>{shiftOverrideRecord.shift_id_inferred}</strong>
+                            </div>
+                        </div>
+                        <form onSubmit={handleSaveShiftOverride} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div className={styles.fieldRow}>
+                                <label>Target Work Shift</label>
+                                <select value={overrideShiftCode} onChange={e => setOverrideShiftCode(e.target.value)}>
+                                    <option value="GEN">GEN · General Shift (09:00 - 18:00)</option>
+                                    <option value="MORN">MORN · Morning Shift (06:00 - 14:30)</option>
+                                    <option value="EVE">EVE · Evening Shift (14:00 - 22:30)</option>
+                                    <option value="NIGHT">NIGHT · Night Shift (22:00 - 06:30)</option>
+                                </select>
+                            </div>
+                            <div className={styles.fieldRow}>
+                                <label>Reason for Manual Override</label>
+                                <input
+                                    type="text"
+                                    required
+                                    placeholder="e.g. Approved shift swap with supervisor consent"
+                                    value={overrideReason}
+                                    onChange={e => setOverrideReason(e.target.value)}
+                                />
+                            </div>
+                            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                                <button type="button" className={styles.btnSecondary} onClick={() => setShiftOverrideRecord(null)}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className={styles.btnPrimary}>
+                                    Apply Shift Override
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}
