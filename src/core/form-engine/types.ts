@@ -40,6 +40,7 @@ export interface FormFieldSpec {
   max?: number;
   pattern?: string;
   helperText?: string;
+  accept?: string;
 }
 
 export interface FormSectionSpec {

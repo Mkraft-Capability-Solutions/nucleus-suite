@@ -1,21 +1,20 @@
-import { requireAccess, tenantTx, collection } from "@/server/platform/access";
-import { ok, fail } from "@/server/platform/http";
+import { requireAccess, tenantTx } from "@/server/platform/access";
 import { otRuns } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { db } from "@/lib/db";
 
 const createSchema = z.object({
   period: z.string().min(1),
-  attributes: z.record(z.any()).optional(),
+  attributes: z.record(z.string(), z.any()).optional(),
 });
 
 export async function GET(req: NextRequest) {
   const access = await requireAccess(req);
-  const [rows] = await tenantTx(access, (tx) =>
-    tx.select().from(otRuns).where(eq(otRuns.tenantId, access.tenantId))
-  );
-  return collection(rows);
+  const query = db.select().from(otRuns).where(eq(otRuns.tenantId, access.tenantId)).toSQL();
+  const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  return NextResponse.json({ data: rows });
 }
 
 export async function POST(req: NextRequest) {
@@ -23,16 +22,17 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   
   const parsed = createSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid payload", 400);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
 
-  const [inserted] = await tenantTx(access, (tx) =>
-    tx.insert(otRuns).values({
-      tenantId: access.tenantId,
-      period: parsed.data.period,
-      status: "pending",
-      attributes: parsed.data.attributes || {}
-    }).returning()
-  );
-
-  return ok(inserted);
+  const query = db.insert(otRuns).values({
+    tenantId: access.tenantId,
+    period: parsed.data.period,
+    attributes: parsed.data.attributes || {},
+    status: "draft"
+  }).returning().toSQL();
+  
+  const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  return NextResponse.json({ data: inserted });
 }

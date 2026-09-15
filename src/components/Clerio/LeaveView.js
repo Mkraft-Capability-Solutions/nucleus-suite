@@ -519,24 +519,29 @@ function LeaveCreditAllocationPanel({ user }) {
         setIsProcessing(true);
         try {
             if (isBatch) {
-                await fetch('/api/v1/leave-balances', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `accrual-${Date.now()}`
-                    },
-                    body: JSON.stringify({
-                        employeeId: selectedEmp.id,
-                        leaveType: 'EL',
-                        days: 1.5,
-                        note: `Monthly Accrual Batch Run for ${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}`
-                    })
-                }).catch(() => {});
+                await Promise.allSettled(employees.map(async (emp) => {
+                    const empAlloc = computeAutoLeaveAllocation ? computeAutoLeaveAllocation(emp, refDate) : { EL: 1.5 };
+                    if (empAlloc.EL <= 0) return;
+                    await fetch('/api/v1/leave-balances', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `accrual-${Date.now()}-${emp.id}`
+                        },
+                        body: JSON.stringify({
+                            employeeId: emp.id,
+                            leaveType: 'EL',
+                            days: empAlloc.EL,
+                            note: `Monthly Accrual Batch Run for ${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })}`
+                        })
+                    }).catch(() => {});
 
-                if (adjustLeaveAllocation) {
-                    adjustLeaveAllocation(selectedEmp.id, 'EL', 1.5);
-                }
-                setLastRunNotice(`Batch Accrual Executed: Credited 1.5 EL to ${employees.length} active employees.`);
+                    if (adjustLeaveAllocation) {
+                        adjustLeaveAllocation(emp.id, 'EL', empAlloc.EL);
+                    }
+                }));
+
+                setLastRunNotice(`Batch Accrual Executed: Credited EL to eligible active employees.`);
                 showToast('Accrual Run Completed', `Monthly accrual credited to active employees. Ledger updated.`, 'success');
             } else {
                 await fetch('/api/v1/leave-balances', {

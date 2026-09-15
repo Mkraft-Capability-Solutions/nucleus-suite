@@ -470,6 +470,7 @@ export default function EmployeeCreationWizard({
         <FormErrorContext.Provider value={{ touchedFields, formErrors }}>
             <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
+
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>

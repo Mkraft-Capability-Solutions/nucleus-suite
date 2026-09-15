@@ -59,6 +59,7 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const [loanPurpose, setLoanPurpose] = useState(readData("components.Clerio.PayrollView", "initialState_7"));
     const [loanGuarantor1, setLoanGuarantor1] = useState(readData("components.Clerio.PayrollView", "initialState_8"));
     const [loanGuarantor2, setLoanGuarantor2] = useState(readData("components.Clerio.PayrollView", "initialState_9"));
+    const [loanGuarantor3, setLoanGuarantor3] = useState('');
     const [isManagementOverride, setIsManagementOverride] = useState(false);
     const [overrideReason, setOverrideReason] = useState('');
 
@@ -188,7 +189,7 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             amount,
             tenureMonths: tenure,
             purpose: loanPurpose.trim(),
-            guarantorIds: [loanGuarantor1, loanGuarantor2].filter(Boolean),
+            guarantorIds: [loanGuarantor1, loanGuarantor2, loanGuarantor3].filter(Boolean),
             isManagementOverride,
             overrideReason: isManagementOverride ? overrideReason.trim() : ''
         });
@@ -204,7 +205,13 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
     // Currently selected applicant for loan modal calculation
     const selectedLoanApplicant = employees.find(e => e.id === loanApplicantId) || employees[0];
-    const applicantMaxCeiling = calculateMaxLoanEligibility(selectedLoanApplicant?.basicSalaryNumeric || readData("components.Clerio.PayrollView", "fallback_2"), 4);
+    let multiplier = 4;
+    if (selectedLoanApplicant?.joiningDate || selectedLoanApplicant?.doj) {
+        const doj = new Date(selectedLoanApplicant.joiningDate || selectedLoanApplicant.doj);
+        const years = (new Date() - doj) / (1000 * 60 * 60 * 24 * 365.25);
+        if (years > 5) multiplier = 6;
+    }
+    const applicantMaxCeiling = calculateMaxLoanEligibility(selectedLoanApplicant?.basicSalaryNumeric || readData("components.Clerio.PayrollView", "fallback_2"), multiplier);
 
     // Currently selected F&F record
     const currentFnF = fnfSettlements.find(s => s.settlementId === selectedFnFId) || fnfSettlements[0];
@@ -497,13 +504,13 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 <button
                                     className={styles.btnSecondary}
                                     style={{ borderColor: '#3b82f6', color: '#2563eb' }}
-                                    onClick={() => launchAction('offCycleOt')}
+                                    onClick={() => createOffCycleRun('OFF_CYCLE_OT')}
                                 >
                                     <Zap size={14} />{readData("components.Clerio.PayrollView", "PayrollView_text_68")}</button>
                                 <button
                                     className={styles.btnSecondary}
                                     style={{ borderColor: '#f59e0b', color: '#d97706' }}
-                                    onClick={() => launchAction('arrears')}
+                                    onClick={() => createOffCycleRun('ARREARS')}
                                 >
                                     <TrendingUp size={14} />{readData("components.Clerio.PayrollView", "PayrollView_text_69")}</button>
                             </div>
@@ -1109,7 +1116,7 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             {/* Dual Guarantors Selection with Live Lock Radar */}
                             <div style={{ background: 'var(--card-2)', padding: '1rem', borderRadius: 'var(--r-control, 8px)', border: '1px solid var(--line)' }}>
                                 <strong style={{ fontSize: '0.85rem', color: 'var(--text)', display: 'block', marginBottom: '0.5rem' }}>{readData("components.Clerio.PayrollView", "PayrollView_text_215")}</strong>
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
                                     <div className={styles.formGroup}>
                                         <label>{readData("components.Clerio.PayrollView", "PayrollView_text_216")}</label>
                                         <select
@@ -1138,6 +1145,24 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 return (
                                                     <option key={e.id} value={e.id} disabled={isLocked && !isManagementOverride}>
                                                         {isLocked ? readData("components.Clerio.PayrollView", "display_33") : ''}{e.name}{readData("components.Clerio.PayrollView", "PayrollView_text_220")}{e.id}{readData("components.Clerio.PayrollView", "PayrollView_text_221")}</option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label>Optional Director (3rd)</label>
+                                        <select
+                                            value={loanGuarantor3}
+                                            onChange={(e) => setLoanGuarantor3(e.target.value)}
+                                            className={styles.formInput}
+                                        >
+                                            <option value="">-- Optional --</option>
+                                            {employees.map(e => {
+                                                const isLocked = guarantorLockMap.has(e.id);
+                                                return (
+                                                    <option key={e.id} value={e.id} disabled={isLocked && !isManagementOverride}>
+                                                        {isLocked ? '🔒 ' : ''}{e.name} ({e.id})
+                                                    </option>
                                                 );
                                             })}
                                         </select>

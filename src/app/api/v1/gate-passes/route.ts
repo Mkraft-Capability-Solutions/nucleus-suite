@@ -1,44 +1,36 @@
-import { requireAccess, tenantTx, collection } from "@/server/platform/access";
-import { fail, ok, HttpError } from "@/server/platform/http";
+import { requireAccess, tenantTx } from "@/server/platform/access";
+import { NextResponse, NextRequest } from "next/server";
 import { gatePasses } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { NextRequest } from "next/server";
-import { z } from "zod";
-
-const createSchema = z.object({
-  employeeId: z.string().uuid(),
-  purpose: z.string().min(1),
-  outTime: z.string().datetime(),
-  expectedInTime: z.string().datetime().optional(),
-});
+import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const access = await requireAccess(req);
-  const [rows] = await tenantTx(access, (tx) =>
-    tx.select().from(gatePasses).where(eq(gatePasses.tenantId, access.tenantId))
-  );
-  return collection(rows);
+
+  const query = db.select().from(gatePasses).where(eq(gatePasses.tenantId, access.tenantId)).toSQL();
+  const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+
+  return NextResponse.json({ data: rows });
 }
 
 export async function POST(req: NextRequest) {
   const access = await requireAccess(req);
   const body = await req.json().catch(() => ({}));
-  
-  const parsed = createSchema.safeParse(body);
-  if (!parsed.success) {
-    return fail("Invalid payload", 400);
+
+  if (!body.employeeId || !body.passType) {
+    return NextResponse.json({ error: "employeeId and passType are required" }, { status: 400 });
   }
 
-  const [inserted] = await tenantTx(access, (tx) =>
-    tx.insert(gatePasses).values({
-      tenantId: access.tenantId,
-      employeeId: parsed.data.employeeId,
-      purpose: parsed.data.purpose,
-      outTime: new Date(parsed.data.outTime),
-      expectedInTime: parsed.data.expectedInTime ? new Date(parsed.data.expectedInTime) : null,
-      status: "issued"
-    }).returning()
-  );
+  const query = db.insert(gatePasses).values({
+    tenantId: access.tenantId,
+    employeeId: body.employeeId,
+    purpose: body.purpose || body.passType,
+    outTime: body.validFrom ? new Date(body.validFrom) : new Date(),
+    expectedInTime: body.validUntil ? new Date(body.validUntil) : null,
+    status: "active"
+  }).returning().toSQL();
+  
+  const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
 
-  return ok(inserted);
+  return NextResponse.json({ data: inserted });
 }

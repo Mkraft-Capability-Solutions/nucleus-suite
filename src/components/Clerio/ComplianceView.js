@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     ShieldCheck, Calendar, Calculator, CheckCircle2, AlertTriangle,
     Clock, ArrowUpRight, ArrowDownRight, FileText, Download,
@@ -45,6 +45,30 @@ const ComplianceView = () => {
     // Form 18 Accident reporting modal
     const [showAccidentModal, setShowAccidentModal] = useState(false);
     const [accidentForm, setAccidentForm] = useState(readData("components.Clerio.ComplianceView", "accidentForm_1"));
+
+    useEffect(() => {
+        const handleActionComplete = async (event) => {
+            const { action, values } = event.detail;
+            if (action === 'inspector') {
+                try {
+                    await fetch('/api/v1/ops/modules/statutory_register/records', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            formCode: 'Form 36 - Factory Inspection Book',
+                            jurisdiction: 'National',
+                            period: values?.dateOfInspection || new Date().toISOString().split('T')[0],
+                            acknowledgement: `Inspector: ${values?.inspectorName || 'N/A'}`
+                        })
+                    });
+                } catch (err) {
+                    console.error('Failed to submit inspector form', err);
+                }
+            }
+        };
+        window.addEventListener('nucleus:action-completed', handleActionComplete);
+        return () => window.removeEventListener('nucleus:action-completed', handleActionComplete);
+    }, []);
 
     // GL Journal Inspection Modal
     const [selectedGLBatch, setSelectedGLBatch] = useState(null);
@@ -1177,8 +1201,27 @@ const ComplianceView = () => {
                             <button className={styles.btnSecondary} onClick={() => setShowAccidentModal(false)}>{readData("components.Clerio.ComplianceView", "ComplianceView_text_305")}</button>
                         </div>
 
-                        <form onSubmit={(e) => {
+                        <form onSubmit={async (e) => {
                             e.preventDefault();
+                            try {
+                                await fetch('/api/v1/ops/modules/statutory_register/records', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        formCode: 'Form 18 - Accident Notice',
+                                        jurisdiction: 'National',
+                                        period: accidentForm.dateOfOccurrence || new Date().toISOString().split('T')[0],
+                                        acknowledgement: `Token ${accidentForm.tokenNo}`,
+                                        injuredPersonName: accidentForm.injuredPersonName,
+                                        occupation: accidentForm.occupation,
+                                        exactPlace: accidentForm.exactPlace,
+                                        lostWorkdays: accidentForm.lostWorkdays,
+                                        remedialActions: accidentForm.remedialActions
+                                    })
+                                });
+                            } catch (err) {
+                                console.error('Failed to submit form', err);
+                            }
                             reportFactoryAccidentForm18(accidentForm);
                             setShowAccidentModal(false);
                         }}>

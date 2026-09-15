@@ -564,6 +564,16 @@ function OperationalModuleContent({ module, onNavigate }) {
         if (!msg || msg.includes("components.Clerio.OperationalModuleView")) {
             msg = `${action} action is ready.`;
         }
+
+        if (actionLower === 'open compliance' || actionLower === 'open compliances') {
+            if (onNavigate) {
+                onNavigate('compliance');
+            } else {
+                window.dispatchEvent(new CustomEvent('nucleus:open-action', { detail: { action: 'compliance' } }));
+            }
+            return;
+        }
+
         setNotice(msg);
     };
 
@@ -612,9 +622,21 @@ function OperationalModuleContent({ module, onNavigate }) {
                 <span>
                     <ShieldCheck size={16} />
                     {readData("components.Clerio.OperationalModuleView", "content_text_8")}
-                    <strong>{module.states.join(' → ')}</strong>
                 </span>
-                <span>{readData("components.Clerio.OperationalModuleView", "content_text_9")}{records.length}{readData("components.Clerio.OperationalModuleView", "content_text_10")}</span>
+                <button 
+                    type="button" 
+                    className={styles.secondaryButton} 
+                    style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', background: 'var(--bg)', color: 'var(--text)', border: '1px solid var(--line)' }}
+                    onClick={() => {
+                        if (onNavigate) {
+                            onNavigate(module.primary);
+                        } else {
+                            window.dispatchEvent(new CustomEvent('nucleus:open-action', { detail: { action: module.primary } }));
+                        }
+                    }}
+                >
+                    {readData("components.Clerio.OperationalModuleView", "content_text_9")}{module.primary.replaceAll('_', ' ')}
+                </button>
             </div>
 
             <div className={styles.layout}>

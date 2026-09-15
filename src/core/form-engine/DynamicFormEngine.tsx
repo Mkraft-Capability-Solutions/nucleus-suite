@@ -79,7 +79,6 @@ export function DynamicFormEngine({
             fieldSchema = z.number();
             break;
           case 'switch':
-          case 'boolean':
           case 'checkbox':
             fieldSchema = z.boolean();
             break;
@@ -88,6 +87,9 @@ export function DynamicFormEngine({
             break;
           case 'email':
             fieldSchema = z.string().email();
+            break;
+          case 'file':
+            fieldSchema = z.any(); // Basic validation, actual file is handled in state
             break;
           default:
             fieldSchema = z.string();
@@ -108,7 +110,7 @@ export function DynamicFormEngine({
     const result = zodSchema.safeParse(formData);
 
     if (!result.success) {
-      result.error.errors.forEach(err => {
+      (result.error as z.ZodError).issues.forEach(err => {
         const key = err.path[0] as string;
         if (key) newErrors[key] = err.message;
       });
@@ -162,6 +164,46 @@ export function DynamicFormEngine({
           label={field.label}
           sx={{ gridColumn: `span ${field.colSpan || 1}` }}
         />
+      );
+    }
+
+    if (field.type === 'file') {
+      return (
+        <Box key={field.key} sx={{ gridColumn: `span ${field.colSpan || 1}` }}>
+          <Button
+            variant="outlined"
+            component="label"
+            fullWidth
+            disabled={field.disabled || isSubmitting}
+            sx={{
+              height: '40px',
+              justifyContent: 'flex-start',
+              textTransform: 'none',
+              color: isError ? 'error.main' : 'text.primary',
+              borderColor: isError ? 'error.main' : 'divider',
+              overflow: 'hidden'
+            }}
+          >
+            <Typography variant="body2" noWrap sx={{ width: '100%', textAlign: 'left' }}>
+              {value ? (value as File).name || 'File selected' : field.label || 'Upload File'}
+            </Typography>
+            <input
+              type="file"
+              hidden
+              accept={field.accept || '.pdf'}
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleChange(field.key, file);
+              }}
+              required={field.required && !value}
+            />
+          </Button>
+          {(errorText || field.helperText) && (
+            <Typography variant="caption" color={isError ? 'error' : 'text.secondary'} sx={{ ml: 1, mt: 0.5, display: 'block' }}>
+              {errorText || field.helperText}
+            </Typography>
+          )}
+        </Box>
       );
     }
 

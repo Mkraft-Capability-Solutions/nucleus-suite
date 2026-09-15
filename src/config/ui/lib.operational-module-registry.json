@@ -1712,6 +1712,13 @@
           "label": "Acknowledgement reference",
           "required": false,
           "type": "text"
+        },
+        {
+          "key": "documentUpload",
+          "label": "Upload Form Document (PDF)",
+          "required": false,
+          "type": "file",
+          "accept": ".pdf"
         }
       ],
       "description": "Manage statutory forms and registers with a scoped work queue, record history and controlled actions.",
@@ -1725,7 +1732,7 @@
       "actions": [
         "Generate form",
         "Record filing",
-        "Open Compliances"
+        "Open compliance"
       ],
       "columns": [
         "Form",

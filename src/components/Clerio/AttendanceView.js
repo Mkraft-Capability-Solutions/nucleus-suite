@@ -982,6 +982,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     onChange={e => setGpType(e.target.value)}
                                     style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                 >
+                                    <option value="">-- Select Type --</option>
                                     <option value="PERSONAL">{readData("components.Clerio.AttendanceView", "AttendanceView_text_122")}</option>
                                     <option value="OFFICIAL">{readData("components.Clerio.AttendanceView", "AttendanceView_text_123")}</option>
                                 </select>
@@ -994,6 +995,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     onChange={e => setGpDuration(Number(e.target.value))}
                                     style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                 >
+                                    <option value={0}>-- Select Duration --</option>
                                     <option value={30}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_125")}</option>
                                     <option value={45}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_126")}</option>
                                     <option value={60}>{readData("components.Clerio.AttendanceView", "AttendanceView_text_127")}</option>

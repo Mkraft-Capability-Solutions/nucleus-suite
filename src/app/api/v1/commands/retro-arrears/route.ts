@@ -1,9 +1,9 @@
-import { requireAccess, tenantTx, collection } from "@/server/platform/access";
-import { ok, fail } from "@/server/platform/http";
+import { requireAccess, tenantTx } from "@/server/platform/access";
 import { retroArrears } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { db } from "@/lib/db";
 
 const createSchema = z.object({
   employeeId: z.string().uuid(),
@@ -14,10 +14,9 @@ const createSchema = z.object({
 
 export async function GET(req: NextRequest) {
   const access = await requireAccess(req);
-  const [rows] = await tenantTx(access, (tx) =>
-    tx.select().from(retroArrears).where(eq(retroArrears.tenantId, access.tenantId))
-  );
-  return collection(rows);
+  const query = db.select().from(retroArrears).where(eq(retroArrears.tenantId, access.tenantId)).toSQL();
+  const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  return NextResponse.json({ data: rows });
 }
 
 export async function POST(req: NextRequest) {
@@ -25,18 +24,19 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   
   const parsed = createSchema.safeParse(body);
-  if (!parsed.success) return fail("Invalid payload", 400);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  }
 
-  const [inserted] = await tenantTx(access, (tx) =>
-    tx.insert(retroArrears).values({
-      tenantId: access.tenantId,
-      employeeId: parsed.data.employeeId,
-      amountMinor: parsed.data.amountMinor,
-      month: parsed.data.month,
-      reason: parsed.data.reason || null,
-      status: "pending"
-    }).returning()
-  );
-
-  return ok(inserted);
+  const query = db.insert(retroArrears).values({
+    tenantId: access.tenantId,
+    employeeId: parsed.data.employeeId,
+    amountMinor: parsed.data.amountMinor,
+    month: parsed.data.month,
+    reason: parsed.data.reason,
+    status: "pending"
+  }).returning().toSQL();
+  
+  const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  return NextResponse.json({ data: inserted });
 }

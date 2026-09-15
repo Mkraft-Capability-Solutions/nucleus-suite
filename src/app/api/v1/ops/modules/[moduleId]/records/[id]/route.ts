@@ -1,9 +1,9 @@
-import { requireAccess, tenantTx, collection } from "@/server/platform/access";
-import { ok, fail } from "@/server/platform/http";
+import { requireAccess, tenantTx } from "@/server/platform/access";
 import * as schema from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { buildZodSchemaForModule } from "@/lib/validations/universal";
+import { db } from "@/lib/db";
 
 // Helper to resolve moduleId to the corresponding Drizzle table
 function resolveTable(moduleId: string) {
@@ -13,53 +13,55 @@ function resolveTable(moduleId: string) {
   return table || null;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ moduleId: string, id: string }> }) {
+  const { moduleId, id } = await params;
   const access = await requireAccess(req);
-  const table = resolveTable(params.moduleId);
-  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
+  const table = resolveTable(moduleId);
+  if (!table) return NextResponse.json({ error: `Module ${moduleId} not found` }, { status: 404 });
 
-  const [rows] = await tenantTx(access, (tx) =>
-    tx.select().from(table).where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
-  );
-  if (!rows || rows.length === 0) return fail("Record not found", 404);
-  return ok(rows[0]);
+  const query = db.select().from(table).where(and(eq(table.tenantId, access.tenantId), eq(table.id, id))).toSQL();
+  const rows = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
+  if (!rows || rows.length === 0) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+  return NextResponse.json({ data: rows[0] });
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ moduleId: string, id: string }> }) {
+  const { moduleId, id } = await params;
   const access = await requireAccess(req);
-  const table = resolveTable(params.moduleId);
-  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
+  const table = resolveTable(moduleId);
+  if (!table) return NextResponse.json({ error: `Module ${moduleId} not found` }, { status: 404 });
 
   const body = await req.json().catch(() => ({}));
   
-  const zodSchema = buildZodSchemaForModule(params.moduleId);
+  const zodSchema = buildZodSchemaForModule(moduleId);
   const parseResult = zodSchema.safeParse(body);
   if (!parseResult.success) {
-    return fail(`Validation Failed: ${parseResult.error.errors.map(e => e.message).join(", ")}`, 400);
+    return NextResponse.json({ error: `Validation Failed: ${parseResult.error.issues.map(e => e.message).join(", ")}` }, { status: 400 });
   }
   
-  const [updated] = await tenantTx(access, (tx) =>
-    tx.update(table)
-      .set({ attributes: parseResult.data, updatedAt: new Date() })
-      .where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
-      .returning()
-  );
+  const query = db.update(table)
+    .set({ attributes: parseResult.data, updatedAt: new Date() })
+    .where(and(eq(table.tenantId, access.tenantId), eq(table.id, id)))
+    .returning().toSQL();
+    
+  const [updated] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
 
-  if (!updated) return fail("Record not found", 404);
-  return ok(updated);
+  if (!updated) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+  return NextResponse.json({ data: updated });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { moduleId: string, id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ moduleId: string, id: string }> }) {
+  const { moduleId, id } = await params;
   const access = await requireAccess(req);
-  const table = resolveTable(params.moduleId);
-  if (!table) return fail(`Module ${params.moduleId} not found`, 404);
+  const table = resolveTable(moduleId);
+  if (!table) return NextResponse.json({ error: `Module ${moduleId} not found` }, { status: 404 });
 
-  const [deleted] = await tenantTx(access, (tx) =>
-    tx.delete(table)
-      .where(and(eq(table.tenantId, access.tenantId), eq(table.id, params.id)))
-      .returning()
-  );
+  const query = db.delete(table)
+    .where(and(eq(table.tenantId, access.tenantId), eq(table.id, id)))
+    .returning().toSQL();
+    
+  const [deleted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
 
-  if (!deleted) return fail("Record not found", 404);
-  return ok(deleted);
+  if (!deleted) return NextResponse.json({ error: "Record not found" }, { status: 404 });
+  return NextResponse.json({ data: deleted });
 }

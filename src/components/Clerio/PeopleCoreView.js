@@ -953,6 +953,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {/* Modal Wizards & Dialogs */}
             <EmployeeCreationWizard
                 isOpen={isWizardOpen}
+                existingEmployees={directoryEmployees}
                 onClose={() => {
                     setIsWizardOpen(false);
                     setEditingEmployee(null);
@@ -1078,7 +1079,6 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         showToast('Database Error', 'Could not reach database service.', 'error');
                     }
                 }}
-                existingEmployees={directoryEmployees}
                 mode={wizardMode}
                 initialData={editingEmployee}
             />

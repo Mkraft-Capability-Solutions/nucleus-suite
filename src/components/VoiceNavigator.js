@@ -179,7 +179,18 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           // Normal silence, keep listening
         } else if (event.error === 'not-allowed') {
           setIsListening(false);
-          setFeedback('Microphone access blocked. Please click "Allow" on the microphone prompt in your browser address bar.');
+          if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+              .then((stream) => {
+                stream.getTracks().forEach(track => track.stop());
+                try { recognition.start(); setIsListening(true); } catch (e) {}
+              })
+              .catch(() => {
+                setFeedback('Microphone access blocked. Please click "Allow" on the microphone prompt in your browser address bar.');
+              });
+          } else {
+            setFeedback('Microphone access blocked. Please click "Allow" on the microphone prompt in your browser address bar.');
+          }
         } else {
           setIsListening(false);
         }

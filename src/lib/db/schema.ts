@@ -562,6 +562,37 @@ export const retroArrears = pgTable(
   ],
 );
 
+// Automatically generated Operational Module Tables
+const moduleTableConfig = {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: text("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+  employeeId: uuid("employee_id").references(() => employeesTable.id, { onDelete: "cascade" }),
+  status: text("status").default("active").notNull(),
+  attributes: jsonb("attributes").default({}).notNull(),
+  ...timestamps,
+};
+
+export const documentVault = pgTable("document_vault", moduleTableConfig);
+export const probationConfirmation = pgTable("probation_confirmation", moduleTableConfig);
+export const resignationExit = pgTable("resignation_exit", moduleTableConfig);
+export const attendanceDetail = pgTable("attendance_detail", moduleTableConfig);
+export const shiftMaster = pgTable("shift_master", moduleTableConfig);
+export const rosterSchedule = pgTable("roster_schedule", moduleTableConfig);
+export const leavePolicyAdmin = pgTable("leave_policy_admin", moduleTableConfig);
+export const compensatoryOff = pgTable("compensatory_off", moduleTableConfig);
+export const leaveEncashment = pgTable("leave_encashment", moduleTableConfig);
+export const taxDeclarations = pgTable("tax_declarations", moduleTableConfig);
+export const bankDisbursement = pgTable("bank_disbursement", moduleTableConfig);
+export const glMapping = pgTable("gl_mapping", moduleTableConfig);
+export const reconciliationTable = pgTable("reconciliation_table", moduleTableConfig);
+export const reimbursementClaim = pgTable("reimbursement_claim", moduleTableConfig);
+export const salaryAdvance = pgTable("salary_advance", moduleTableConfig);
+export const clearanceBoard = pgTable("clearance_board", moduleTableConfig);
+export const rulePackManager = pgTable("rule_pack_manager", moduleTableConfig);
+export const goldenCaseLibrary = pgTable("golden_case_library", moduleTableConfig);
+export const contractorInvoice = pgTable("contractor_invoice", moduleTableConfig);
+export const statutoryRegister = pgTable("statutory_register", moduleTableConfig);
+
 export const schema = {
   user,
   session,
@@ -605,34 +636,5 @@ export const schema = {
   rulePackManager,
   goldenCaseLibrary,
   contractorInvoice,
+  statutoryRegister,
 };
-
-// Automatically generated Operational Module Tables
-const moduleTableConfig = {
-  id: uuid("id").defaultRandom().primaryKey(),
-  tenantId: text("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
-  employeeId: uuid("employee_id").references(() => employeesTable.id, { onDelete: "cascade" }),
-  status: text("status").default("active").notNull(),
-  attributes: jsonb("attributes").default({}).notNull(),
-  ...timestamps,
-};
-
-export const documentVault = pgTable("document_vault", moduleTableConfig);
-export const probationConfirmation = pgTable("probation_confirmation", moduleTableConfig);
-export const resignationExit = pgTable("resignation_exit", moduleTableConfig);
-export const attendanceDetail = pgTable("attendance_detail", moduleTableConfig);
-export const shiftMaster = pgTable("shift_master", moduleTableConfig);
-export const rosterSchedule = pgTable("roster_schedule", moduleTableConfig);
-export const leavePolicyAdmin = pgTable("leave_policy_admin", moduleTableConfig);
-export const compensatoryOff = pgTable("compensatory_off", moduleTableConfig);
-export const leaveEncashment = pgTable("leave_encashment", moduleTableConfig);
-export const taxDeclarations = pgTable("tax_declarations", moduleTableConfig);
-export const bankDisbursement = pgTable("bank_disbursement", moduleTableConfig);
-export const glMapping = pgTable("gl_mapping", moduleTableConfig);
-export const reconciliationTable = pgTable("reconciliation", moduleTableConfig);
-export const reimbursementClaim = pgTable("reimbursement_claim", moduleTableConfig);
-export const salaryAdvance = pgTable("salary_advance", moduleTableConfig);
-export const clearanceBoard = pgTable("clearance_board", moduleTableConfig);
-export const rulePackManager = pgTable("rule_pack_manager", moduleTableConfig);
-export const goldenCaseLibrary = pgTable("golden_case_library", moduleTableConfig);
-export const contractorInvoice = pgTable("contractor_invoice", moduleTableConfig);
