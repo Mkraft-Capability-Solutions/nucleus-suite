@@ -367,6 +367,93 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
   };
 }
 
+export const updatePersonSchema = z.object({
+  firstName: z.string().trim().min(1).max(80).regex(/^[\p{L}][\p{L} .'-]*$/u, "Letters, spaces, dot, apostrophe and hyphen only.").optional(),
+  lastName: z.string().trim().min(1).max(80).optional(),
+  workEmail: z.string().email().optional(),
+  designation: z.string().trim().min(1).max(120).optional(),
+  department: z.string().trim().min(1).max(80).optional(),
+  location: z.string().trim().min(1).max(80).optional(),
+  status: z.string().trim().max(40).optional(),
+  joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+}).passthrough();
+
+/** Update existing employee in database. Enforced by employee.write, audited. */
+export async function updatePerson(access: Access, employeeIdOrCode: string, input: z.infer<typeof updatePersonSchema>, requestId: string) {
+  enforce(access.context, "employee.write", { tenantId: access.tenantId });
+  const [foundRows] = await tenantTx(access, [
+    sqlClient`select id, employee_code, first_name, last_name, work_email, designation, department, location, joining_date::text, status, basic_salary_minor, metadata from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
+  ]);
+  const current = (foundRows as Array<{
+    id: string;
+    employee_code: string;
+    first_name: string;
+    last_name: string;
+    work_email: string | null;
+    designation: string;
+    department: string;
+    location: string;
+    joining_date: string;
+    status: string;
+    basic_salary_minor: number | null;
+    metadata: Record<string, unknown> | null;
+  }>)[0];
+  if (!current) {
+    throw new HttpError({ status: 404, code: "NOT_FOUND", message: "Employee not found." });
+  }
+
+  const newFirstName = input.firstName ?? current.first_name;
+  const newLastName = input.lastName ?? current.last_name;
+  const newWorkEmail = input.workEmail !== undefined ? input.workEmail : current.work_email;
+  const newDesignation = input.designation ?? current.designation;
+  const newDepartment = input.department ?? current.department;
+  const newLocation = input.location ?? current.location;
+  const newJoiningDate = input.joiningDate ?? current.joining_date;
+  const newStatus = input.status ?? current.status;
+  const newSalary = input.basicSalaryMinor !== undefined ? input.basicSalaryMinor : current.basic_salary_minor;
+  
+  const existingMetadata = (typeof current.metadata === "object" && current.metadata) ? current.metadata : {};
+  const updatedMetadata = { ...existingMetadata, ...input, firstName: newFirstName, lastName: newLastName, fullName: `${newFirstName} ${newLastName}`.trim() };
+
+  await tenantTx(access, [
+    sqlClient`
+      update employees
+      set first_name = ${newFirstName},
+          last_name = ${newLastName},
+          work_email = ${newWorkEmail},
+          designation = ${newDesignation},
+          department = ${newDepartment},
+          location = ${newLocation},
+          joining_date = ${newJoiningDate},
+          status = ${newStatus},
+          basic_salary_minor = ${newSalary},
+          metadata = ${JSON.stringify(updatedMetadata)}::jsonb,
+          updated_at = clock_timestamp()
+      where tenant_id = ${access.tenantId} and id = ${current.id}
+    `,
+    sqlClient`
+      insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.update', 'employee', ${current.id}, 'Employee record updated', ${JSON.stringify({ employeeCode: current.employee_code, ...updatedMetadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)
+    `,
+  ]);
+
+  return {
+    id: current.id,
+    employeeCode: current.employee_code,
+    firstName: newFirstName,
+    lastName: newLastName,
+    workEmail: newWorkEmail,
+    designation: newDesignation,
+    department: newDepartment,
+    location: newLocation,
+    status: newStatus,
+    joiningDate: newJoiningDate,
+    basicSalaryMinor: newSalary,
+    metadata: updatedMetadata,
+  };
+}
+
 export const createDepartmentSchema = z.object({
   name: z.string().trim().min(1).max(120),
   code: z.string().trim().min(1).max(40).optional(),

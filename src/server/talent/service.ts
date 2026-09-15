@@ -161,15 +161,58 @@ async function assertEmployee(access: Access, employeeId: string): Promise<void>
 
 export const createRequisitionSchema = z.object({
   title: z.string().trim().min(1).max(200),
-  departmentName: z.string().trim().min(1).max(80).default("Weaving"),
-  positionCode: z.string().trim().min(1).max(40).default("SPN-OP-03"),
+  departmentName: z.string().trim().min(1).max(80).default("Operations"),
+  positionCode: z.string().trim().min(1).max(40).default("POS-01"),
   hiringManagerEmployeeId: z.string().uuid(),
   manpowerRef: z.string().trim().max(40).optional(),
 });
 
+export async function listRequisitions(access: Access) {
+  const [rows] = await tenantTx(access, [
+    sqlClient`
+      select r.id, r.department_id, r.hiring_manager_employee_id, r.position_id, r.attributes, r.created_at,
+             d.attributes->>'name' as department_name,
+             p.attributes->>'code' as position_code
+      from requisitions r
+      left join departments d on d.id = r.department_id
+      left join positions p on p.id = r.position_id
+      where r.tenant_id = ${access.tenantId}
+      order by r.created_at desc
+      limit 100
+    `,
+  ]);
+  return rows as Array<{
+    id: string;
+    department_id: string;
+    hiring_manager_employee_id: string;
+    position_id: string;
+    attributes: Record<string, unknown>;
+    created_at: string;
+    department_name: string | null;
+    position_code: string | null;
+  }>;
+}
+
 export async function createRequisition(access: Access, input: z.infer<typeof createRequisitionSchema>, requestId: string) {
   enforce(access.context, "employee.write", { tenantId: access.tenantId });
-  await assertEmployee(access, input.hiringManagerEmployeeId);
+  let hiringManagerId = input.hiringManagerEmployeeId;
+  if (hiringManagerId) {
+    const [empRows] = await tenantTx(access, [
+      sqlClient`select id from employees where tenant_id = ${access.tenantId} and (id::text = ${hiringManagerId} or employee_code = ${hiringManagerId}) limit 1`,
+    ]);
+    const emp = (empRows as Array<{ id: string }>)[0];
+    if (emp) hiringManagerId = emp.id;
+  }
+  if (!hiringManagerId) {
+    const [firstEmp] = await tenantTx(access, [
+      sqlClient`select id from employees where tenant_id = ${access.tenantId} and status = 'active' order by employee_code asc limit 1`,
+    ]);
+    hiringManagerId = (firstEmp as Array<{ id: string }>)[0]?.id;
+  }
+  if (!hiringManagerId) {
+    throw new HttpError({ status: 404, code: "NOT_FOUND", message: "A valid hiring manager employee record is required." });
+  }
+
   const departmentId = await ensureDepartment(access, input.departmentName);
   const positionId = await ensurePosition(access, input.positionCode);
   const [countRows] = await tenantTx(access, [
@@ -181,7 +224,7 @@ export async function createRequisition(access: Access, input: z.infer<typeof cr
   await tenantTx(access, [
     sqlClient`
       insert into requisitions (id, tenant_id, department_id, hiring_manager_employee_id, position_id, attributes)
-      values (${id}, ${access.tenantId}, ${departmentId}, ${input.hiringManagerEmployeeId}, ${positionId},
+      values (${id}, ${access.tenantId}, ${departmentId}, ${hiringManagerId}, ${positionId},
         ${JSON.stringify({ code, title: input.title, manpower_ref: input.manpowerRef ?? null, status: "draft" })}::jsonb)
     `,
     sqlClient`

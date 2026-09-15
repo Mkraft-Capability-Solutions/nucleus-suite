@@ -1724,7 +1724,8 @@
       ],
       "actions": [
         "Generate form",
-        "Record filing"
+        "Record filing",
+        "Open Compliances"
       ],
       "columns": [
         "Form",

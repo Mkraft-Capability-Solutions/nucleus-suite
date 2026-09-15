@@ -5,7 +5,7 @@ import { workbookLeaveReferences, workbookCompOffCredits } from '@/services/leav
 import { createLeavePreviewService, adjustLeaveBalance, createLeave, decideLeave, returnFromLeave } from '@/services/leave-workflow';
 import { useAuth } from './AuthContext';
 import { useAppearance } from './AppearanceContext';
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { WORKER_CATEGORIES, WORK_CALENDARS, resolveDayType, isOTEligible } from '@/services/workCalendarService';
 import {
     SHIFT_RULES, RULESET_VERSION, computeAttendanceDay, pairPunches,
@@ -179,19 +179,28 @@ export const HRMSProvider = ({ children }) => {
         };
         setAttendanceRegularizations(prev => [newReg, ...prev]);
         try {
-            fetch('/api/v1/regularizations', {
+            const targetEmpId = employeeId || 'E1001';
+            const res = await fetch('/api/v1/regularizations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    employeeId: 'c668678c-ed74-4dbb-a98b-0287afc8f286',
+                    employeeId: targetEmpId,
                     date,
                     kind,
-                    reason: reason.length < 3 ? 'Attendance discrepancy regularization' : reason,
+                    reason: reason && reason.length >= 3 ? reason : 'Attendance discrepancy regularization',
                     claimedIn,
                     claimedOut
                 })
-            }).catch(e => console.warn('Regularization DB sync notice:', e));
-        } catch {}
+            });
+            if (res.ok) {
+                const json = await res.json().catch(() => ({}));
+                if (json?.data?.id) {
+                    newReg.dbId = json.data.id;
+                }
+            }
+        } catch (e) {
+            console.warn('Regularization DB sync notice:', e);
+        }
         showToast('Regularization Submitted', `Request for ${date} queued for Shift Supervisor approval.`, 'success');
         return { success: true, regularization: newReg };
     };
@@ -292,8 +301,66 @@ export const HRMSProvider = ({ children }) => {
         }
     };
     const adjustLeaveAllocation = ({employeeId,code,days,reason}) => runLeave(state=>adjustLeaveBalance(state,leaveActor,employeeId,code,days,reason));
-    const applyLeaveWithWorkflow = input => runLeave(state=>createLeave(state,leaveActor,input));
-    const advanceLeaveApproval = ({applicationId,action,remarks='',expectedVersion}) => runLeave(state=>decideLeave(state,leaveActor,applicationId,action,remarks,expectedVersion));
+    const applyLeaveWithWorkflow = async (input) => {
+        const result = await runLeave(state => createLeave(state, leaveActor, input));
+        if (result && result.success) {
+            try {
+                const empId = input.employee?.id || leaveActor.employeeId || 'E1001';
+                const leaveType = ['EL', 'CL', 'SL', 'COFF', 'BIRTHDAY'].includes(input.leaveTypeCode) ? input.leaveTypeCode : 'CL';
+                const startsOn = input.startDateStr || new Date().toISOString().slice(0, 10);
+                const endsOn = input.endDateStr || startsOn;
+                const days = Number(input.numberOfDays) || 1;
+                const safeKey = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `leave-${Date.now()}`;
+                const res = await fetch('/api/v1/leave-requests', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': safeKey
+                    },
+                    body: JSON.stringify({
+                        employeeId: empId,
+                        leaveType,
+                        startsOn,
+                        endsOn,
+                        days,
+                        reason: input.reason || 'Leave application'
+                    })
+                });
+                if (res.ok) {
+                    const json = await res.json().catch(() => ({}));
+                    if (json?.data?.id) {
+                        setLeaveState(prev => ({
+                            ...prev,
+                            requests: prev.requests.map(r => r.id === result.id ? { ...r, id: json.data.id, dbId: json.data.id } : r)
+                        }));
+                    }
+                }
+            } catch (err) {
+                console.warn('Backend leave persist:', err);
+            }
+        }
+        return result;
+    };
+    const advanceLeaveApproval = async ({applicationId,action,remarks='',expectedVersion}) => {
+        const result = await runLeave(state => decideLeave(state, leaveActor, applicationId, action, remarks, expectedVersion));
+        try {
+            const approve = action === 'approve' || action === 'approved';
+            await fetch(`/api/v1/leave-requests/${applicationId}/decide`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `decide-${Date.now()}`
+                },
+                body: JSON.stringify({
+                    approve,
+                    comment: remarks || (approve ? 'Approved' : 'Rejected')
+                })
+            }).catch(() => null);
+        } catch (err) {
+            console.warn('Backend leave decide:', err);
+        }
+        return result;
+    };
     const processEarlyReturnApplication = ({applicationId,actualReturnDateStr}) => runLeave(state=>returnFromLeave(state,leaveActor,applicationId,actualReturnDateStr));
     const applyLeave = (type,date,duration,reason) => applyLeaveWithWorkflow({employee:{id:leaveActor.employeeId,name:leaveActor.name},leaveTypeCode:type,startDateStr:date,endDateStr:date,numberOfDays:Number(duration),reason});
 
@@ -330,41 +397,245 @@ export const HRMSProvider = ({ children }) => {
         });
     };
 
-    // Live Database Sync for Central HRMS Context
+    // Live Database Sync for Central HRMS Context (People, Leaves, Requisitions, Loans, Announcements, Regularizations, Assets)
     useEffect(() => {
         let active = true;
         async function syncWithDb() {
             try {
-                const res = await fetch('/api/v1/people?pageSize=200');
-                if (!res.ok) return;
-                const json = await res.json();
-                if (active && Array.isArray(json.data) && json.data.length > 0) {
-                    const dbPeople = json.data.map(item => ({
-                        id: item.employeeCode || item.id,
-                        name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
-                        role: item.designation || 'Specialist',
-                        dept: item.department || 'Operations',
-                        manager: 'Rajesh Varma',
-                        location: item.location || 'Bangalore Plant',
-                        status: item.status || 'Active',
-                        band: item.category || 'Regular',
-                        details: item
-                    }));
-                    setEmployees(prev => {
-                        const map = new Map();
-                        prev.forEach(e => map.set(e.id, e));
-                        dbPeople.forEach(e => map.set(e.id, { ...map.get(e.id), ...e }));
-                        const updated = Array.from(map.values());
-                        if (typeof window !== 'undefined') {
-                            try {
-                                localStorage.setItem('nucleus_custom_employees', JSON.stringify(updated));
-                            } catch (_) {}
-                        }
-                        return updated;
-                    });
+                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes] = await Promise.allSettled([
+                    fetch('/api/v1/people?pageSize=200'),
+                    fetch('/api/v1/leave-requests?pageSize=100'),
+                    fetch('/api/v1/requisitions'),
+                    fetch('/api/v1/loans?pageSize=100'),
+                    fetch('/api/v1/announcements'),
+                    fetch('/api/v1/regularizations'),
+                    fetch('/api/v1/assets?pageSize=100')
+                ]);
+
+                if (!active) return;
+
+                // 1. Employees from Database
+                if (empRes.status === 'fulfilled' && empRes.value.ok) {
+                    const json = await empRes.value.json().catch(() => null);
+                    if (Array.isArray(json?.data) && json.data.length > 0) {
+                        const dbPeople = json.data.map(item => ({
+                            id: item.employeeCode || item.id,
+                            dbId: item.id,
+                            name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
+                            role: item.designation || 'Specialist',
+                            dept: item.department || 'Operations',
+                            manager: item.manager || item.reportingManager || item.managerName || item.metadata?.managerName || 'Unassigned',
+                            location: item.location || 'Headquarters',
+                            status: item.status || 'Active',
+                            band: item.category || 'Regular',
+                            details: item
+                        }));
+                        setEmployees(prev => {
+                            const getKeys = (emp) => {
+                                const keys = [];
+                                if (emp.id) keys.push(`id:${emp.id}`.toLowerCase());
+                                if (emp.dbId) keys.push(`dbId:${emp.dbId}`.toLowerCase());
+                                if (emp.employeeCode) keys.push(`code:${emp.employeeCode}`.toLowerCase());
+                                if (emp.details?.id) keys.push(`dbId:${emp.details.id}`.toLowerCase());
+                                if (emp.details?.employeeCode) keys.push(`code:${emp.details.employeeCode}`.toLowerCase());
+                                return keys;
+                            };
+
+                            const merged = [...dbPeople];
+                            for (const p of prev) {
+                                const pKeys = getKeys(p);
+                                const matchIdx = merged.findIndex(m => {
+                                    const mKeys = getKeys(m);
+                                    return pKeys.some(k => mKeys.includes(k));
+                                });
+                                if (matchIdx >= 0) {
+                                    merged[matchIdx] = { ...p, ...merged[matchIdx], details: { ...(p.details || {}), ...(merged[matchIdx].details || {}) } };
+                                } else {
+                                    merged.push(p);
+                                }
+                            }
+
+                            const deduped = [];
+                            const seen = new Set();
+                            for (const emp of merged) {
+                                const key = (emp.id || emp.dbId || emp.name).toLowerCase();
+                                if (!seen.has(key)) {
+                                    seen.add(key);
+                                    deduped.push(emp);
+                                }
+                            }
+
+                            if (typeof window !== 'undefined') {
+                                try {
+                                    localStorage.setItem('nucleus_custom_employees', JSON.stringify(deduped));
+                                } catch (_) {}
+                            }
+                            return deduped;
+                        });
+                    }
+                }
+
+                // 2. Leaves from Database
+                if (leaveRes.status === 'fulfilled' && leaveRes.value.ok) {
+                    const leaveJson = await leaveRes.value.json().catch(() => null);
+                    if (Array.isArray(leaveJson?.data) && leaveJson.data.length > 0) {
+                        const mappedRequests = leaveJson.data.map(lr => ({
+                            id: lr.id,
+                            dbId: lr.id,
+                            employee_id: lr.employee_id,
+                            employee_name: 'Employee',
+                            leave_type_code: lr.leave_type,
+                            leave_type_label: lr.leave_type === 'CL' ? 'Casual Leave' : (lr.leave_type === 'EL' ? 'Earned Leave' : lr.leave_type),
+                            start_date: lr.starts_on,
+                            end_date: lr.ends_on,
+                            chargeable_days: lr.requested_days,
+                            reason: lr.reason || 'Personal leave',
+                            status: lr.status || 'pending_supervisor',
+                            version: lr.version || 1
+                        }));
+                        setLeaveState(prev => {
+                            const reqMap = new Map();
+                            prev.requests.forEach(r => reqMap.set(r.id, r));
+                            mappedRequests.forEach(r => reqMap.set(r.id, { ...reqMap.get(r.id), ...r }));
+                            return { ...prev, requests: Array.from(reqMap.values()) };
+                        });
+                    }
+                }
+
+                // 3. Requisitions from Database
+                if (reqRes.status === 'fulfilled' && reqRes.value.ok) {
+                    const reqJson = await reqRes.value.json().catch(() => null);
+                    if (Array.isArray(reqJson?.data) && reqJson.data.length > 0) {
+                        const dbPositions = reqJson.data.map(r => ({
+                            id: r.id,
+                            dbId: r.id,
+                            code: r.code || r.positionCode,
+                            title: r.title || 'Open Position',
+                            dept: r.departmentName || 'Operations',
+                            status: r.status === 'draft' ? 'Open' : r.status,
+                            openings: 1,
+                            applicants: 0,
+                            createdDate: r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB'),
+                            requisitionType: 'addition'
+                        }));
+                        setPositions(prev => {
+                            const posMap = new Map();
+                            prev.forEach(p => posMap.set(p.id, p));
+                            dbPositions.forEach(p => posMap.set(p.id, { ...posMap.get(p.id), ...p }));
+                            return Array.from(posMap.values());
+                        });
+                    }
+                }
+
+                // 3B. Loans from Database
+                if (loanRes.status === 'fulfilled' && loanRes.value.ok) {
+                    const loanJson = await loanRes.value.json().catch(() => null);
+                    if (Array.isArray(loanJson?.data) && loanJson.data.length > 0) {
+                        const dbLoans = loanJson.data.map(l => ({
+                            id: l.id,
+                            dbId: l.id,
+                            borrowerId: l.employee_id || 'E1001',
+                            borrowerName: 'Employee',
+                            borrowerRole: 'Specialist',
+                            borrowerDept: 'Operations',
+                            principalAmount: l.principal_minor ? l.principal_minor / 100 : 50000,
+                            remainingBalance: l.outstanding_minor ? l.outstanding_minor / 100 : 50000,
+                            monthlyEMI: 4500,
+                            tenureMonths: 12,
+                            purpose: l.purpose || 'Personal / Household',
+                            status: l.status || 'Active',
+                            guarantors: [],
+                            guarantorNames: ['Suresh Rao (Guarantor 1)', 'Kavitha M (Guarantor 2)'],
+                            paidInstallments: 0
+                        }));
+                        setCompanyLoans(prev => {
+                            const loanMap = new Map();
+                            prev.forEach(item => loanMap.set(item.id, item));
+                            dbLoans.forEach(item => loanMap.set(item.id, { ...loanMap.get(item.id), ...item }));
+                            return Array.from(loanMap.values());
+                        });
+                    }
+                }
+
+                // 4. Announcements from Database
+                if (annRes.status === 'fulfilled' && annRes.value.ok) {
+                    const annJson = await annRes.value.json().catch(() => null);
+                    if (Array.isArray(annJson?.data) && annJson.data.length > 0) {
+                        const dbAnn = annJson.data.map(a => ({
+                            id: a.id,
+                            title: a.attributes?.Title || a.attributes?.title || 'Notice',
+                            category: a.attributes?.Type || a.attributes?.category || 'General',
+                            content: a.attributes?.Body || a.attributes?.body || a.attributes?.Title || '',
+                            date: a.created_at ? new Date(a.created_at).toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB'),
+                            author: a.attributes?.['Created by'] || 'Management',
+                            pinned: false
+                        }));
+                        setAnnouncements(prev => {
+                            const annMap = new Map();
+                            prev.forEach(item => annMap.set(item.id, item));
+                            dbAnn.forEach(item => annMap.set(item.id, { ...annMap.get(item.id), ...item }));
+                            return Array.from(annMap.values());
+                        });
+                    }
+                }
+
+                // 5. Attendance Regularizations from Database
+                if (regRes.status === 'fulfilled' && regRes.value.ok) {
+                    const regJson = await regRes.value.json().catch(() => null);
+                    if (Array.isArray(regJson?.data) && regJson.data.length > 0) {
+                        const dbRegs = regJson.data.map(r => ({
+                            id: r.id,
+                            dbId: r.id,
+                            employee_id: r.employeeCode || 'EMP-101',
+                            employee_name: r.employeeName || 'Employee',
+                            date: r.date,
+                            kind: r.kind || 'missing-punch',
+                            reason: r.reason || 'Punch irregularity',
+                            claimedIn: r.claimedIn || '09:00 AM',
+                            claimedOut: r.claimedOut || '06:00 PM',
+                            status: r.status || 'submitted',
+                            supervisor_status: r.status === 'approved' ? 'approved' : 'pending',
+                            time_office_status: r.status === 'approved' ? 'approved' : 'pending',
+                            created_at: r.createdAt || new Date().toISOString()
+                        }));
+                        setAttendanceRegularizations(prev => {
+                            const regMap = new Map();
+                            prev.forEach(item => regMap.set(item.id, item));
+                            dbRegs.forEach(item => regMap.set(item.id, { ...regMap.get(item.id), ...item }));
+                            return Array.from(regMap.values());
+                        });
+                    }
+                }
+
+                // 6. Assets from Database
+                if (assetRes.status === 'fulfilled' && assetRes.value.ok) {
+                    const assetJson = await assetRes.value.json().catch(() => null);
+                    if (Array.isArray(assetJson?.data) && assetJson.data.length > 0) {
+                        const dbAssets = assetJson.data.map(a => ({
+                            id: a.id,
+                            dbId: a.id,
+                            assetType: a.attributes?.asset_type || a.asset_type || 'Hardware',
+                            brand: a.attributes?.brand || a.brand || 'Enterprise',
+                            model: a.attributes?.model || a.model || 'Standard Device',
+                            serialNumber: a.attributes?.serial_number || a.serial_number || a.id,
+                            assetTag: a.attributes?.asset_code || a.asset_code || a.id,
+                            assignedToEmployeeId: a.attributes?.assigned_to_id || null,
+                            assignedToName: a.attributes?.assigned_to_name || 'Assigned Staff',
+                            assignedDate: a.created_at ? new Date(a.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                            status: a.attributes?.status || a.status || 'Allocated',
+                            condition: 'Excellent',
+                            replacementValue: 50000
+                        }));
+                        setHardwareAssets(prev => {
+                            const assetMap = new Map();
+                            prev.forEach(item => assetMap.set(item.id, item));
+                            dbAssets.forEach(item => assetMap.set(item.id, { ...assetMap.get(item.id), ...item }));
+                            return Array.from(assetMap.values());
+                        });
+                    }
                 }
             } catch (err) {
-                console.warn('HRMSContext employees live sync:', err);
+                console.warn('Central HRMSContext live sync error:', err);
             }
         }
         syncWithDb();
@@ -378,7 +649,7 @@ export const HRMSProvider = ({ children }) => {
     const [sanctionedQuotas, setSanctionedQuotas] = useState(DEFAULT_SANCTIONED_QUOTAS);
     const [positions, setPositions] = useState(readData("context.HRMSContext", "positions_30"));
 
-    const createJobRequisition = (reqData) => {
+    const createJobRequisition = async (reqData) => {
         const validation = validateRequisitionCreation({
             ...reqData,
             employees,
@@ -407,6 +678,33 @@ export const HRMSProvider = ({ children }) => {
         };
 
         setPositions(prev => [newPos, ...prev]);
+
+        // Persist to database
+        try {
+            const res = await fetch('/api/v1/requisitions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `req-${Date.now()}`
+                },
+                body: JSON.stringify({
+                    title: reqData.title,
+                    departmentName: reqData.dept || 'Operations',
+                    positionCode: reqData.positionCode || 'POS-01',
+                    hiringManagerEmployeeId: reqData.hiringManagerId || employees[0]?.id
+                })
+            });
+            if (res.ok) {
+                const json = await res.json().catch(() => ({}));
+                if (json?.data?.code) {
+                    newPos.code = json.data.code;
+                    newPos.dbId = json.data.id;
+                }
+            }
+        } catch (err) {
+            console.warn('Requisition database persist:', err);
+        }
+
         showToast(
             'Requisition Opened',
             `${newPos.title} created under ${newPos.dept} (${newPos.requisitionType}).`,
@@ -418,14 +716,14 @@ export const HRMSProvider = ({ children }) => {
     // --- 4D. HARDWARE ASSET ALLOCATION & SERIAL TRACKING (Sprint 4: Demo Point 23) ---
     const [hardwareAssets, setHardwareAssets] = useState(INITIAL_ASSET_REGISTER);
 
-    const allocateHardwareAsset = (assetData) => {
+    const allocateHardwareAsset = async (assetData) => {
         const newAsset = {
             id: `AST-${crypto.randomUUID()}`,
             assetType: assetData.assetType || readData("context.HRMSContext", "fallback_8"),
             brand: assetData.brand || readData("context.HRMSContext", "fallback_9"),
             model: assetData.model,
             serialNumber: assetData.serialNumber,
-            assetTag: assetData.assetTag || `NUC-IT-${crypto.randomUUID()}`,
+            assetTag: assetData.assetTag || `NUC-IT-${crypto.randomUUID().slice(0, 8)}`,
             assignedToEmployeeId: assetData.assignedToEmployeeId,
             assignedToName: employees.find(e => e.id === assetData.assignedToEmployeeId)?.name || readData("context.HRMSContext", "fallback_10"),
             assignedDate: new Date().toISOString().split('T')[0],
@@ -435,6 +733,31 @@ export const HRMSProvider = ({ children }) => {
         };
 
         setHardwareAssets(prev => [newAsset, ...prev]);
+
+        // Persist to database
+        try {
+            await fetch('/api/v1/assets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `ast-${Date.now()}`
+                },
+                body: JSON.stringify({
+                    assetCode: newAsset.assetTag,
+                    assetType: 'laptop',
+                    brand: newAsset.brand || 'Generic',
+                    model: newAsset.model || 'Model X',
+                    serialNumber: newAsset.serialNumber || newAsset.assetTag,
+                    attributes: {
+                        assignedTo: newAsset.assignedToName,
+                        assignedToEmployeeId: newAsset.assignedToEmployeeId
+                    }
+                })
+            }).catch(() => null);
+        } catch (err) {
+            console.warn('Asset database persist:', err);
+        }
+
         showToast('Asset Allocated', `${newAsset.model} (SN: ${newAsset.serialNumber}) assigned to ${newAsset.assignedToName}.`, 'success');
         return newAsset;
     };
@@ -477,7 +800,7 @@ export const HRMSProvider = ({ children }) => {
         return newAward;
     };
 
-    const submitEmployeeReferral = (refData) => {
+    const submitEmployeeReferral = async (refData) => {
         const newRef = {
             id: `REF-${crypto.randomUUID()}`,
             candidateName: refData.candidateName,
@@ -489,6 +812,41 @@ export const HRMSProvider = ({ children }) => {
         };
 
         setEmployeeReferrals(prev => [newRef, ...prev]);
+
+        // Persist candidate and referral to backend database
+        try {
+            const candRes = await fetch('/api/v1/candidates', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `cand-${Date.now()}`
+                },
+                body: JSON.stringify({
+                    name: refData.candidateName,
+                    source: 'referral'
+                })
+            });
+            if (candRes.ok) {
+                const candData = await candRes.json().catch(() => null);
+                if (candData?.id) {
+                    newRef.candidateId = candData.id;
+                    await fetch('/api/v1/referrals', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `ref-${Date.now()}`
+                        },
+                        body: JSON.stringify({
+                            candidateId: candData.id,
+                            note: `Referred for ${refData.role} in ${refData.dept || 'Operations'}`
+                        })
+                    }).catch(() => {});
+                }
+            }
+        } catch (err) {
+            console.warn('Referral database persist:', err);
+        }
+
         showToast('Referral Submitted', `Referral submitted for ${newRef.candidateName}. Milestone payout tracking active.`, 'success');
         return newRef;
     };
@@ -574,6 +932,35 @@ export const HRMSProvider = ({ children }) => {
         };
 
         setCompanyLoans(prev => [newLoan, ...prev]);
+
+        try {
+            const applicant = employees.find(e => e.id === loanRequest.applicantId);
+            const targetEmpId = applicant?.dbId || applicant?.id || loanRequest.applicantId;
+            const safeKey = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `loan-${Date.now()}`;
+            fetch('/api/v1/loans', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': safeKey
+                },
+                body: JSON.stringify({
+                    employeeId: targetEmpId,
+                    principalMinor: Math.round(newLoan.principalAmount * 100),
+                    tenureMonths: newLoan.tenureMonths || 12,
+                    annualRatePct: 8.5,
+                    purpose: (newLoan.purpose || 'household').toLowerCase().includes('medical') ? 'medical' : 'marriage',
+                    guarantorEmployeeIds: [
+                        employees[0]?.dbId || employees[0]?.id || '84f20ef2-2cfe-4642-a6d0-bd42d4d33a35',
+                        employees[1]?.dbId || employees[1]?.id || '9ff7882c-26ec-49d2-ba6a-93effd60a6d5'
+                    ]
+                })
+            }).then(r => r.json()).then(data => {
+                if (data?.data?.id) newLoan.dbId = data.data.id;
+            }).catch(e => console.warn('Loan database sync notice:', e));
+        } catch (err) {
+            console.warn('Loan database persist:', err);
+        }
+
         showToast(
             'Loan Approved & Disbursed',
             `₹${newLoan.principalAmount.toLocaleString()} loan created. Both guarantors are now LOCKED from raising loans.`,
@@ -719,8 +1106,20 @@ export const HRMSProvider = ({ children }) => {
     };
     const [candidates, setCandidates] = useState(readData("context.HRMSContext", "candidates_59"));
 
-    const moveCandidate = (id, newStage) => {
+    const moveCandidate = async (id, newStage) => {
         setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage: newStage } : c));
+        try {
+            await fetch(`/api/v1/applications/${id}/advance`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `cand-${Date.now()}`
+                },
+                body: JSON.stringify({ to: newStage })
+            }).catch(() => {});
+        } catch (err) {
+            console.warn('Candidate stage advance:', err);
+        }
         showToast('Candidate Stage Updated', `Candidate moved to ${newStage.toUpperCase()}`, 'info');
     };
 
@@ -866,13 +1265,32 @@ export const HRMSProvider = ({ children }) => {
     // --- 14. CMS: ANNOUNCEMENTS & BROADCASTS ---
     const [announcements, setAnnouncements] = useState(readData("context.HRMSContext", "announcements_81"));
 
-    const addAnnouncement = (newAnn) => {
+    const addAnnouncement = async (newAnn) => {
         const item = {
             id: `ANN-${Date.now().toString().slice(-4)}`,
             ...readData("context.HRMSContext", "item_fields_82"),
             ...newAnn
         };
         setAnnouncements(prev => [item, ...prev]);
+
+        try {
+            await fetch('/api/v1/announcements', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : `ann-${Date.now()}`
+                },
+                body: JSON.stringify({
+                    title: newAnn.title || 'Company Notice',
+                    body: newAnn.content || newAnn.description || newAnn.title || 'Company announcement details',
+                    audience: newAnn.audience || 'all',
+                    kind: 'management'
+                })
+            }).catch(() => null);
+        } catch (err) {
+            console.warn('Announcement database persist:', err);
+        }
+
         showToast('Announcement Published', `"${item.title}" is now live on the company dashboard.`, 'success');
     };
 

@@ -46,7 +46,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     const departmentsList = Object.keys(sanctionedQuotas || readData("components.Clerio.RecruitmentView", "departmentsList_2"));
 
     // Handle create requisition
-    const handleRequisitionSubmit = (e) => {
+    const handleRequisitionSubmit = async (e) => {
         e.preventDefault();
         const errors = [];
         if (!reqTitle.trim() || reqTitle.trim().length < 3)
@@ -79,7 +79,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             return;
         }
 
-        const res = createJobRequisition({
+        const res = await createJobRequisition({
             title: reqTitle,
             dept: reqDept,
             requisitionType: reqType,
@@ -99,7 +99,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     };
 
     // Handle referral submit
-    const handleReferralSubmit = (e) => {
+    const handleReferralSubmit = async (e) => {
         e.preventDefault();
         const errors = [];
         if (!refCandidateName.trim() || refCandidateName.trim().length < 2)
@@ -123,7 +123,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             return;
         }
 
-        submitEmployeeReferral({
+        await submitEmployeeReferral({
             candidateName: refCandidateName,
             role: refRole,
             dept: refDept

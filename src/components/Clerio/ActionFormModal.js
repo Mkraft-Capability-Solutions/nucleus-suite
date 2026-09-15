@@ -65,7 +65,7 @@ function ActionFormContent({ request, onClose, onComplete }) {
                         <label className={`${styles.field} ${type === 'textarea' ? styles.wide : ''}`} key={key}>
                             <span>{label}{required && <b>{readData("components.Clerio.ActionFormModal", "content_text_4")}</b>}</span>
                             {type === 'textarea' ? <textarea aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} rows="3" />
-                                : type === 'select' ? <select aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)}><option value="">{readData("components.Clerio.ActionFormModal", "content_text_5")}</option>{options.map(option => <option key={option}>{option}</option>)}</select>
+                                : type === 'select' ? <select aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)}><option value="">{readData("components.Clerio.ActionFormModal", "content_text_5")}</option>{Array.from(new Set(options)).map(option => <option key={option}>{option}</option>)}</select>
                                     : type === 'file' ? <input type="file" required={required} onChange={(event) => update(key, event.target.files?.[0]?.name || '')} />
                                         : <input type={type} {...constraints} aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} />}
                         </label>

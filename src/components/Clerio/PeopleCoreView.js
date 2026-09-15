@@ -23,6 +23,7 @@ import LegalEntityModal from './LegalEntityModal';
 import LocationMasterModal from './LocationMasterModal';
 import OrgChartView from './OrgChartView';
 import { downloadCSV } from '@/utils/exportUtils';
+import TablePagination from '../Common/TablePagination';
 
 const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
@@ -148,7 +149,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         band: record.source['Worker class'] || readData("components.Clerio.PeopleCoreView", "fallback_2"),
     })), []);
 
-    // Deduplicate workbook entries against custom/database employees so zero duplicates exist
+    // Deduplicate workbook entries against custom/database employees and sort alphabetically by name
     const directoryEmployees = useMemo(() => {
         const customIds = new Set(customEmployees.map(e => e.id));
         const workbookUnique = workbookEmployees
@@ -157,14 +158,39 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                 ...employee,
                 manager: managerOverrides[employee.id] || employee.manager
             }));
-        return [...customEmployees, ...workbookUnique];
+        const combined = [...customEmployees, ...workbookUnique];
+        return combined.sort((a, b) => (a.name || '').localeCompare(b.name || '', undefined, { sensitivity: 'base' }));
     }, [customEmployees, workbookEmployees, managerOverrides]);
 
-    const filteredEmployees = directoryEmployees.filter(emp =>
-        emp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.dept.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        emp.role.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const [directoryPage, setDirectoryPage] = useState(1);
+    const [directoryPageSize, setDirectoryPageSize] = useState(15);
+    const [sortColumn, setSortColumn] = useState('name');
+    const [sortAsc, setSortAsc] = useState(true);
+
+    const filteredEmployees = useMemo(() => {
+        const q = searchQuery.toLowerCase().trim();
+        return directoryEmployees.filter(emp =>
+            !q ||
+            (emp.name && emp.name.toLowerCase().includes(q)) ||
+            (emp.dept && emp.dept.toLowerCase().includes(q)) ||
+            (emp.role && emp.role.toLowerCase().includes(q)) ||
+            (emp.id && String(emp.id).toLowerCase().includes(q)) ||
+            (emp.location && emp.location.toLowerCase().includes(q))
+        );
+    }, [directoryEmployees, searchQuery]);
+
+    const sortedEmployees = useMemo(() => {
+        return [...filteredEmployees].sort((a, b) => {
+            const valA = String(a[sortColumn] || '').toLowerCase();
+            const valB = String(b[sortColumn] || '').toLowerCase();
+            return sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        });
+    }, [filteredEmployees, sortColumn, sortAsc]);
+
+    const paginatedEmployees = useMemo(() => {
+        const start = (directoryPage - 1) * directoryPageSize;
+        return sortedEmployees.slice(start, start + directoryPageSize);
+    }, [sortedEmployees, directoryPage, directoryPageSize]);
 
     // Export Handlers
     const exportDirectoryCSV = () => {
@@ -504,21 +530,34 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_21")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_22")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_23")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_24")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_25")}</th>
-                                    <th>{readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_26")}</th>
+                                    <th onClick={() => { if (sortColumn === 'name') setSortAsc(!sortAsc); else { setSortColumn('name'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_21")} {sortColumn === 'name' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
+                                    <th onClick={() => { if (sortColumn === 'id') setSortAsc(!sortAsc); else { setSortColumn('id'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_22")} {sortColumn === 'id' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
+                                    <th onClick={() => { if (sortColumn === 'dept') setSortAsc(!sortAsc); else { setSortColumn('dept'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_23")} {sortColumn === 'dept' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
+                                    <th onClick={() => { if (sortColumn === 'manager') setSortAsc(!sortAsc); else { setSortColumn('manager'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_24")} {sortColumn === 'manager' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
+                                    <th onClick={() => { if (sortColumn === 'location') setSortAsc(!sortAsc); else { setSortColumn('location'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_25")} {sortColumn === 'location' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
+                                    <th onClick={() => { if (sortColumn === 'status') setSortAsc(!sortAsc); else { setSortColumn('status'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
+                                        {readData("components.Clerio.PeopleCoreView", "PeopleCoreView_text_26")} {sortColumn === 'status' ? (sortAsc ? '▲' : '▼') : '↕'}
+                                    </th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredEmployees.map((emp) => (
+                                {paginatedEmployees.map((emp) => (
                                     <tr key={emp.id}>
                                         <td>
                                             <div className={styles.employeeCell}>
                                                 <NextImage
+                                                    unoptimized
                                                     width={32}
                                                     height={32}
                                                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(emp.name)}&background=2563ea&color=fff`}
@@ -564,7 +603,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                             <div style={{ display: 'flex', gap: '0.45rem' }}>
                                                 <button
                                                     className={styles.btnSecondary}
-                                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
+                                                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                                                     onClick={() => setSelectedDossierEmployee(emp)}
                                                     title="View full 360-degree employee dossier"
                                                 >
@@ -588,6 +627,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 ))}
                             </tbody>
                         </table>
+                        <TablePagination
+                            currentPage={directoryPage}
+                            totalItems={sortedEmployees.length}
+                            pageSize={directoryPageSize}
+                            onPageChange={setDirectoryPage}
+                            onPageSizeChange={setDirectoryPageSize}
+                        />
                     </div>
                 </div>
             )}
@@ -994,8 +1040,12 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             }
                         }
 
-                        const res = await fetch('/api/v1/people', {
-                            method: 'POST',
+                        const isEdit = wizardMode === 'edit';
+                        const url = isEdit ? `/api/v1/people/${encodeURIComponent(savedEmp.id)}` : '/api/v1/people';
+                        const method = isEdit ? 'PATCH' : 'POST';
+
+                        const res = await fetch(url, {
+                            method,
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Idempotency-Key': safeUUID,
@@ -1006,13 +1056,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         if (!res.ok) {
                             const errBody = await res.json().catch(() => ({}));
                             console.warn('Individual employee database sync returned error status:', res.status, errBody);
-                            showToast('Employee Saved Locally', errBody?.error?.message || `Local record saved; database responded with status ${res.status}.`, 'warning');
+                            showToast('Database Sync Issue', errBody?.error?.message || `Database returned status ${res.status}.`, 'warning');
                         } else {
                             const resData = await res.json();
-                            const createdRecord = resData?.data?.attributes || resData?.data;
-                            if (createdRecord) {
+                            const persistedRecord = resData?.data?.attributes || resData?.data;
+                            if (persistedRecord) {
                                 setCustomEmployees(prev => {
-                                    const next = prev.map(p => p.id === savedEmp.id ? { ...p, details: { ...p.details, ...createdRecord } } : p);
+                                    const next = prev.map(p => p.id === savedEmp.id ? { ...p, ...persistedRecord, details: { ...p.details, ...persistedRecord } } : p);
                                     if (typeof window !== 'undefined') {
                                         try {
                                             localStorage.setItem('nucleus_custom_employees', JSON.stringify(next));
@@ -1021,11 +1071,11 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     return next;
                                 });
                             }
-                            showToast(wizardMode === 'edit' ? 'Employee Updated' : 'Database Synchronized', `Employee record persisted to database.`, 'success');
+                            showToast(isEdit ? 'Employee Updated' : 'Database Synchronized', `Employee record successfully saved to database.`, 'success');
                         }
                     } catch (e) {
                         console.warn('Individual employee database sync error:', e);
-                        showToast('Employee Saved Locally', 'Employee saved in local cache.', 'info');
+                        showToast('Database Error', 'Could not reach database service.', 'error');
                     }
                 }}
                 existingEmployees={directoryEmployees}
@@ -1148,53 +1198,70 @@ function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitio
     );
 }
 
-// ── Approved Manpower Panel (Demo Point #25) ────────────────────────────────
-function ApprovedManpowerPanel({ employees, positions, sanctionedQuotas, calculateDepartmentCapacity }) {
-    const depts = [...new Set([
-        ...(employees || []).map(e => e.dept),
-        ...Object.keys(sanctionedQuotas || {}),
-    ])].filter(Boolean);
+// ── Approved Manpower Panel (SCR-013 / Demo Point #25) ─────────────────────────
+function ApprovedManpowerPanel({ employees = [], positions = [], sanctionedQuotas = {}, calculateDepartmentCapacity }) {
+    const empList = Array.isArray(employees) ? employees : [];
+    const posList = Array.isArray(positions) ? positions : [];
+    const quotas = (sanctionedQuotas && typeof sanctionedQuotas === 'object') ? sanctionedQuotas : {};
+
+    const depts = Array.from(new Set([
+        ...empList.map(e => e.dept).filter(Boolean),
+        ...Object.keys(quotas),
+        'Engineering', 'Product', 'Design', 'Manufacturing', 'Supply Chain', 'Human Resources', 'Quality Assurance', 'Infrastructure'
+    ])).filter(Boolean).sort();
 
     return (
-        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem' }}>
-            <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem' }}>
-                <span>👥</span> Approved Manpower vs Actual Headcount
-            </h3>
-            <p style={{ color: 'var(--text-2)', fontSize: '0.8rem', margin: '0 0 1rem' }}>
-                Sanctioned quotas define approved headcount per department. Variance shows open/excess positions.
-            </p>
-            <div style={{ overflowX: 'auto' }}>
+        <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 'var(--r-card)', padding: '1.25rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                <div>
+                    <h3 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem', fontWeight: 600 }}>
+                        <Users size={18} style={{ color: 'var(--signal)' }} /> Approved Manpower vs Actual Headcount (SCR-013)
+                    </h3>
+                    <p style={{ color: 'var(--text-2)', fontSize: '0.8rem', margin: '0.3rem 0 0' }}>
+                        Department-wise sanctioned strength and headcount caps with real-time variance and open requisition tracking.
+                    </p>
+                </div>
+            </div>
+            <div style={{ overflowX: 'auto', marginTop: '1rem' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
                     <thead>
-                        <tr style={{ background: 'var(--surface)' }}>
-                            {['Department', 'Sanctioned', 'Actual', 'Open Positions', 'Variance', 'Status'].map(h => (
-                                <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: 'var(--text-2)', fontWeight: 600, borderBottom: '1px solid var(--line)' }}>{h}</th>
+                        <tr style={{ background: 'var(--surface)', borderBottom: '1px solid var(--line)' }}>
+                            {['Department', 'Sanctioned Quota', 'Actual Headcount', 'Open Positions', 'Variance', 'Status'].map(h => (
+                                <th key={h} style={{ padding: '10px 14px', textAlign: 'left', color: 'var(--text-2)', fontWeight: 600 }}>{h}</th>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
                         {depts.map(dept => {
-                            const sanctioned = (sanctionedQuotas && sanctionedQuotas[dept]) ? sanctionedQuotas[dept] : 10;
-                            const actual = (employees || []).filter(e => e.dept === dept && e.status !== 'Inactive').length;
-                            const openPositions = (positions || []).filter(p => p.dept === dept && p.status === 'Open').length;
+                            const quotaVal = quotas[dept];
+                            const sanctioned = typeof quotaVal === 'object' && quotaVal !== null
+                                ? (Number(quotaVal.sanctioned) || 10)
+                                : (typeof quotaVal === 'number' ? quotaVal : 10);
+
+                            const actual = empList.filter(e => e.dept === dept && String(e.status).toLowerCase() !== 'inactive').length;
+                            const openPositions = posList.filter(p => p.dept === dept && String(p.status).toLowerCase() === 'open').length;
                             const variance = actual - sanctioned;
-                            const capacity = calculateDepartmentCapacity ? calculateDepartmentCapacity(dept, actual, sanctioned) : {};
                             const isOver = variance > 0;
                             const isUnder = actual < sanctioned * 0.8;
+
                             return (
                                 <tr key={dept} style={{ borderBottom: '1px solid var(--line-soft)' }}>
-                                    <td style={{ padding: '10px 12px', fontWeight: 600, color: 'var(--text)' }}>{dept}</td>
-                                    <td style={{ padding: '10px 12px', color: 'var(--text)' }}>{sanctioned}</td>
-                                    <td style={{ padding: '10px 12px', color: 'var(--text)' }}>{actual}</td>
-                                    <td style={{ padding: '10px 12px', color: '#6366f1' }}>{openPositions}</td>
-                                    <td style={{ padding: '10px 12px', color: isOver ? '#dc2626' : isUnder ? '#d97706' : '#059669', fontWeight: 700 }}>
+                                    <td style={{ padding: '10px 14px', fontWeight: 600, color: 'var(--text)' }}>{dept}</td>
+                                    <td style={{ padding: '10px 14px', color: 'var(--text)' }}>{sanctioned}</td>
+                                    <td style={{ padding: '10px 14px', color: 'var(--text)' }}>{actual}</td>
+                                    <td style={{ padding: '10px 14px', color: 'var(--signal)', fontWeight: 600 }}>{openPositions}</td>
+                                    <td style={{ padding: '10px 14px', color: isOver ? '#ef4444' : isUnder ? '#f59e0b' : '#10b981', fontWeight: 700 }}>
                                         {variance > 0 ? `+${variance}` : variance}
                                     </td>
-                                    <td style={{ padding: '10px 12px' }}>
+                                    <td style={{ padding: '10px 14px' }}>
                                         <span style={{
-                                            background: isOver ? 'rgba(220,38,38,0.12)' : isUnder ? 'rgba(217,119,6,0.12)' : 'rgba(5,150,105,0.12)',
-                                            color: isOver ? '#dc2626' : isUnder ? '#d97706' : '#059669',
-                                            borderRadius: 99, padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700
+                                            background: isOver ? 'rgba(239, 68, 68, 0.12)' : isUnder ? 'rgba(245, 158, 11, 0.12)' : 'rgba(16, 185, 129, 0.12)',
+                                            color: isOver ? '#ef4444' : isUnder ? '#f59e0b' : '#10b981',
+                                            borderRadius: 'var(--r-pill)',
+                                            padding: '3px 10px',
+                                            fontSize: '0.74rem',
+                                            fontWeight: 600,
+                                            display: 'inline-block'
                                         }}>
                                             {isOver ? 'Over-strength' : isUnder ? 'Under-staffed' : 'On Target'}
                                         </span>

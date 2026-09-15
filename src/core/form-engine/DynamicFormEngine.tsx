@@ -106,6 +106,9 @@ export function DynamicFormEngine({
       );
     }
 
+    // Deduplicate options by unique value to fix dropdown duplication bugs
+    fieldOptions = Array.from(new Map(fieldOptions.map(opt => [opt.value, opt])).values());
+
     if (field.type === 'switch') {
       return (
         <FormControlLabel

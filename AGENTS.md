@@ -3,7 +3,7 @@
 # Nucleus HRMS — AI Agent Engineering Instructions
 
 > **Repository:** Private HRMS SaaS
-> **Current phase:** Local JSON UI validation / prototype phase
+> **Current phase:** Enterprise Production Readiness / Active Development
 > **Primary framework:** Next.js
 > **UI:** MUI v7 + TypeScript
 > **Status:** Active development
@@ -28,7 +28,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 These instructions apply to **all AI-assisted development work in this repository**.
 
-Strict Git Rule Followed: No code committed or pushed. All changes remain local for testing.
+### MANDATORY GIT COMMIT & PUSH POLICY (STRICT)
+- **DO NOT commit or push code unless the user explicitly and specifically asks to commit or push in their current prompt.**
+- Never autonomously run `git commit` or `git push` upon completing a task or fixing an issue.
+- All modifications must remain local for developer testing and manual review unless an explicit commit instruction is given.
 
 The agent must follow this priority order:
 
@@ -48,51 +51,22 @@ Identify the conflict and select the safest implementation that preserves existi
 
 # 2. Current Development Phase
 
-This repository is currently in a:
+This repository is currently in the:
 
-**LOCAL JSON UI VALIDATION PHASE**
+**ENTERPRISE PRODUCTION READINESS PHASE**
 
-The current objective is to validate:
+The objective is to build a production-grade enterprise HRMS application (on par with Workday, Lighthouse HRMS, etc.).
+No more dummy, JSON-based templates, or mock validations are allowed. The application must perform real processes.
 
-* Information architecture
-* Navigation
-* User journeys
-* UI/UX
-* Forms
-* Field behavior
-* Validation
-* Role-based experiences
-* Dashboards
-* Workflows
-* Responsive behavior
-* Accessibility
-* Interaction design
-* Animations
-* Prototype data flows
-* Requirements coverage
+### MANDATES:
+* Full database persistence using PostgreSQL (Neon DB).
+* Proper ORM migrations and Drizzle schema enforcement.
+* Real authentication and role-based authorization infrastructure.
+* Strict API payload validation using Zod.
+* End-to-end CRUD operations over dedicated backend service layers.
+* Atomic SQL transactions for business logic (e.g., payroll, leave balances).
 
-Unless explicitly authorized by the user, do **not** activate production infrastructure.
-
-### Do NOT implement or execute:
-
-* Production database provisioning
-* ORM migrations
-* Production schema changes
-* Production authentication changes
-* Production authorization infrastructure
-* Payment execution
-* Live payment processing
-* Production integrations
-* Email/SMS/WhatsApp delivery
-* External API execution
-* Production deployment
-* Cloud infrastructure provisioning
-* Production secrets configuration
-* Destructive database operations
-
-Existing backend code does **not** constitute authorization to activate these systems.
-
-If a backend implementation already exists, treat it as reference or dormant infrastructure unless the current task explicitly authorizes its use.
+All UI forms and data grids MUST submit and fetch data dynamically through the real `/api/v1/` REST endpoints. Local JSON mocks are strictly deprecated.
 
 ---
 

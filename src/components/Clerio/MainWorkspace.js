@@ -1008,10 +1008,10 @@ const MainWorkspace = ({
                                 title={`Domain: ${currentDomainLabel}`}
                             >
                                 <Layers size={14} />
-                                <span>{currentDomainLabel}</span>
+                                <span>{translateText(currentDomainLabel)}</span>
                             </button>
                             <span className={styles.breadcrumbSep}>{readData("components.Clerio.MainWorkspace", "MainWorkspace_text_122")}</span>
-                            <span className={styles.breadcrumbCurrent}>{formatTabName(activeTab)}</span>
+                            <span className={styles.breadcrumbCurrent}>{translateText(formatTabName(activeTab))}</span>
                         </div>
                     )}
 

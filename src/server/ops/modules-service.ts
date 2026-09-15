@@ -293,16 +293,22 @@ export async function listModuleRecords(
   // Query PostgreSQL for module records
   const [countRows, rows] = await tenantTx(access, [
     sqlClient`
-      select count(*)::int as total
+      select count(distinct entity_id)::int as total
       from audit_events
       where tenant_id = ${access.tenantId}
         and entity_type = ${config.table}
     `,
     sqlClient`
+      with ranked as (
+        select id, entity_id, after, created_at,
+               row_number() over (partition by entity_id order by created_at desc) as rn
+        from audit_events
+        where tenant_id = ${access.tenantId}
+          and entity_type = ${config.table}
+      )
       select id, entity_id, after, created_at
-      from audit_events
-      where tenant_id = ${access.tenantId}
-        and entity_type = ${config.table}
+      from ranked
+      where rn = 1
       order by created_at desc
       limit ${args.pageSize} offset ${offset}
     `,
@@ -377,4 +383,126 @@ export async function createModuleRecord(
     createdAt: attributes.createdAt,
   };
 }
+
+export async function updateModuleRecord(
+  access: Access,
+  moduleId: string,
+  recordId: string,
+  payload: Record<string, unknown>,
+  requestId: string
+) {
+  const config = OPERATIONAL_MODULES[moduleId];
+  if (!config) {
+    throw new HttpError({
+      status: 404,
+      code: "MODULE_NOT_FOUND",
+      message: `Operational module '${moduleId}' is not recognized.`,
+    });
+  }
+
+  enforce(access.context, config.permission, { tenantId: access.tenantId });
+
+  // Query prior state
+  const priorRows = await tenantTx(access, [
+    sqlClient`
+      select after
+      from audit_events
+      where tenant_id = ${access.tenantId}
+        and entity_type = ${config.table}
+        and entity_id = ${recordId}
+      order by created_at desc
+      limit 1
+    `,
+  ]);
+
+  const prior = (priorRows[0] as Array<{ after: Record<string, unknown> | null }>)[0]?.after || {};
+  const attributes = {
+    ...prior,
+    ...payload,
+    moduleId,
+    screenId: config.screenId,
+    updatedAt: new Date().toISOString(),
+  };
+
+  await tenantTx(access, [
+    sqlClient`
+      insert into audit_events (
+        tenant_id,
+        actor_user_id,
+        membership_id,
+        action,
+        entity_type,
+        entity_id,
+        reason,
+        before,
+        after,
+        request_id
+      ) values (
+        ${access.tenantId},
+        ${access.context.actorUserId},
+        ${access.context.membershipId},
+        ${`${config.auditAction}.update`},
+        ${config.table},
+        ${recordId},
+        ${`Form ${config.screenId} update (${moduleId})`},
+        ${JSON.stringify(prior)}::jsonb,
+        ${JSON.stringify(attributes)}::jsonb,
+        ${uuidOrNull(requestId)}::uuid
+      )
+    `,
+  ]);
+
+  return {
+    id: recordId,
+    moduleId,
+    screenId: config.screenId,
+    attributes,
+    updatedAt: attributes.updatedAt,
+  };
+}
+
+export async function getModuleRecord(
+  access: Access,
+  moduleId: string,
+  recordId: string
+) {
+  const config = OPERATIONAL_MODULES[moduleId];
+  if (!config) {
+    throw new HttpError({
+      status: 404,
+      code: "MODULE_NOT_FOUND",
+      message: `Operational module '${moduleId}' is not recognized.`,
+    });
+  }
+
+  enforce(access.context, config.permission, { tenantId: access.tenantId });
+
+  const rows = await tenantTx(access, [
+    sqlClient`
+      select id, entity_id, after, created_at
+      from audit_events
+      where tenant_id = ${access.tenantId}
+        and entity_type = ${config.table}
+        and entity_id = ${recordId}
+      order by created_at desc
+      limit 1
+    `,
+  ]);
+
+  const row = (rows[0] as Array<{ id: string; entity_id: string; after: Record<string, unknown> | null; created_at: string }>)[0];
+  if (!row) {
+    throw new HttpError({
+      status: 404,
+      code: "RECORD_NOT_FOUND",
+      message: `Record '${recordId}' in operational module '${moduleId}' not found.`,
+    });
+  }
+
+  return {
+    id: row.entity_id || row.id,
+    values: row.after || {},
+    createdAt: row.created_at,
+  };
+}
+
 

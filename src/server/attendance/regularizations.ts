@@ -37,7 +37,7 @@ async function ensureEntry(access: Access, employeeId: string, date: string): Pr
 }
 
 export const requestRegularizationSchema = z.object({
-  employeeId: z.string().uuid(),
+  employeeId: z.string().min(1),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   kind: z.enum(["missing-punch", "shift-correct", "break-correct"]),
   reason: z.string().trim().min(1).max(500),
@@ -45,16 +45,48 @@ export const requestRegularizationSchema = z.object({
   claimedOut: z.string().trim().max(20).optional(),
 });
 
+export async function listRegularizations(access: Access) {
+  enforce(access.context, "attendance.read", { tenantId: access.tenantId });
+  const [rows] = await tenantTx(access, [
+    sqlClient`
+      select ar.id, ar.attendance_entry_id, ar.attributes, ar.created_at,
+             e.first_name, e.last_name, e.employee_code
+      from attendance_regularizations ar
+      left join attendance_entries ae on ae.id = ar.attendance_entry_id
+      left join employees e on e.id = ae.employee_id
+      where ar.tenant_id = ${access.tenantId}
+      order by ar.created_at desc
+      limit 100
+    `,
+  ]);
+  return rows as Array<{
+    id: string;
+    attendance_entry_id: string;
+    attributes: Record<string, unknown>;
+    created_at: string;
+    first_name: string | null;
+    last_name: string | null;
+    employee_code: string | null;
+  }>;
+}
+
 export async function requestRegularization(access: Access, input: z.infer<typeof requestRegularizationSchema>, requestId: string) {
   enforce(access.context, "attendance.write", { tenantId: access.tenantId });
-  await assertAttendanceEmployeeVisible(access, input.employeeId);
-  const entryId = await ensureEntry(access, input.employeeId, input.date);
+  let targetEmployeeId = input.employeeId;
+  const [empRows] = await tenantTx(access, [
+    sqlClient`select id from employees where tenant_id = ${access.tenantId} and (id::text = ${targetEmployeeId} or employee_code = ${targetEmployeeId}) limit 1`,
+  ]);
+  const emp = (empRows as Array<{ id: string }>)[0];
+  if (emp) targetEmployeeId = emp.id;
+
+  await assertAttendanceEmployeeVisible(access, targetEmployeeId);
+  const entryId = await ensureEntry(access, targetEmployeeId, input.date);
   const id = crypto.randomUUID();
   await tenantTx(access, [
     sqlClient`
       insert into attendance_regularizations (id, tenant_id, attendance_entry_id, attributes)
       values (${id}, ${access.tenantId}, ${entryId},
-        ${JSON.stringify({ employee_id: input.employeeId, date: input.date, kind: input.kind, reason: input.reason, claimed_in: input.claimedIn ?? null, claimed_out: input.claimedOut ?? null, status: "submitted" })}::jsonb)
+        ${JSON.stringify({ employee_id: targetEmployeeId, date: input.date, kind: input.kind, reason: input.reason, claimed_in: input.claimedIn ?? null, claimed_out: input.claimedOut ?? null, status: "submitted" })}::jsonb)
     `,
     sqlClient`
       insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, request_id)

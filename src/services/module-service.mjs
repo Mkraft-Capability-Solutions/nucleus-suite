@@ -16,6 +16,7 @@ export async function listModuleRecords(moduleId) {
                         id: item.id,
                         _cells: item.attributes || {},
                         values: item.attributes || {},
+                        attributes: item.attributes || {},
                         createdAt: item.createdAt || new Date().toISOString()
                     }));
                     return [...serverRows, ...workbookRows];
@@ -28,3 +29,21 @@ export async function listModuleRecords(moduleId) {
 
     return workbookRows;
 }
+
+export async function updateModuleRecord(moduleId, recordId, payload) {
+    if (typeof window !== 'undefined') {
+        const res = await fetch(`/api/v1/ops/modules/${moduleId}/records/${recordId}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        if (res.ok) {
+            const data = await res.json().catch(() => null);
+            return data?.data || data;
+        }
+    }
+    return null;
+}
+

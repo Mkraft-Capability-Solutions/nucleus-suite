@@ -33,9 +33,9 @@ export async function ensureLeaveType(access: Access, code: string): Promise<str
   return id;
 }
 
-async function employeeProfile(access: Access, employeeId: string) {
+async function employeeProfile(access: Access, employeeIdOrCode: string) {
   const [rows] = await tenantTx(access, [
-    sqlClient`select id, designation_level, joining_date::text as joining_date from employees where tenant_id = ${access.tenantId} and id = ${employeeId} limit 1`,
+    sqlClient`select id, designation_level, joining_date::text as joining_date from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
   ]);
   const row = (rows as Array<{ id: string; designation_level: number; joining_date: string }>)[0];
   if (!row) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The requested record was not found." });
@@ -44,7 +44,7 @@ async function employeeProfile(access: Access, employeeId: string) {
 
 async function requesterUserId(access: Access, employeeId: string): Promise<string | null> {
   const [rows] = await tenantTx(access, [
-    sqlClient`select user_id from memberships where tenant_id = ${access.tenantId} and employee_id = ${employeeId} and status = 'active' limit 1`,
+    sqlClient`select user_id from memberships where tenant_id = ${access.tenantId} and (employee_id = ${employeeId} or employee_id in (select id from employees where employee_code = ${employeeId} and tenant_id = ${access.tenantId})) and status = 'active' limit 1`,
   ]);
   return (rows as Array<{ user_id: string }>)[0]?.user_id ?? null;
 }
@@ -65,7 +65,7 @@ async function monthUsage(access: Access, employeeId: string, monthPrefix: strin
 }
 
 export const requestLeaveSchema = z.object({
-  employeeId: z.string().uuid(),
+  employeeId: z.string().min(1),
   leaveType: z.enum(["EL", "CL", "SL", "COFF", "BIRTHDAY"]),
   startsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   endsOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
@@ -78,9 +78,10 @@ export async function requestLeave(access: Access, input: z.infer<typeof request
   if (input.endsOn < input.startsOn) {
     throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "The leave period ends before it starts." });
   }
-  await employeeProfile(access, input.employeeId);
+  const emp = await employeeProfile(access, input.employeeId);
+  const targetEmployeeId = emp.id;
   const typeId = await ensureLeaveType(access, input.leaveType);
-  const usage = await monthUsage(access, input.employeeId, input.startsOn.slice(0, 7));
+  const usage = await monthUsage(access, targetEmployeeId, input.startsOn.slice(0, 7));
   const clDays = (usage.CL ?? 0) + (input.leaveType === "CL" ? input.days : 0);
   const elDays = (usage.EL ?? 0) + (input.leaveType === "EL" ? input.days : 0);
   const validation = validateLeaveRequest({ requestedTypes: [input.leaveType], clDaysThisMonth: clDays, elDaysThisMonth: elDays });
@@ -92,7 +93,7 @@ export async function requestLeave(access: Access, input: z.infer<typeof request
   await tenantTx(access, [
     sqlClient`
       insert into leave_requests (id, tenant_id, employee_id, leave_type, starts_on, ends_on, requested_days, status, reason, leave_type_id)
-      values (${id}, ${access.tenantId}, ${input.employeeId}, ${input.leaveType}, ${input.startsOn}, ${input.endsOn}, ${input.days}, 'pending_supervisor', ${input.reason ?? null}, ${typeId})
+      values (${id}, ${access.tenantId}, ${targetEmployeeId}, ${input.leaveType}, ${input.startsOn}, ${input.endsOn}, ${input.days}, 'pending_supervisor', ${input.reason ?? null}, ${typeId})
     `,
     sqlClient`
       insert into leave_approvals (id, tenant_id, leave_request_id, level, status)
@@ -100,7 +101,7 @@ export async function requestLeave(access: Access, input: z.infer<typeof request
     `,
     sqlClient`
       insert into leave_ledger_entries (tenant_id, employee_id, leave_request_id, leave_type_id, attributes)
-      values (${access.tenantId}, ${input.employeeId}, ${id}, ${typeId},
+      values (${access.tenantId}, ${targetEmployeeId}, ${id}, ${typeId},
         ${JSON.stringify({ kind: "reserve", days: input.days, leave_type: input.leaveType, note: "Reserved on submit" })}::jsonb)
     `,
     sqlClient`
@@ -112,7 +113,7 @@ export async function requestLeave(access: Access, input: z.infer<typeof request
     sqlClient`
       insert into transactional_outbox (tenant_id, event_type, aggregate_type, aggregate_id, payload)
       values (${access.tenantId}, 'leave.requested', 'leave_request', ${id},
-        ${JSON.stringify({ employeeId: input.employeeId, leaveType: input.leaveType, days: input.days, startsOn: input.startsOn })}::jsonb)
+        ${JSON.stringify({ employeeId: targetEmployeeId, leaveType: input.leaveType, days: input.days, startsOn: input.startsOn })}::jsonb)
     `,
   ]);
   return { id, status: "pending_supervisor" };
@@ -359,4 +360,31 @@ export async function listLeaveRequests(access: Access, args: { employeeId?: str
     `,
   ]);
   return { items: rows, total: ((countRows as Array<{ total: number }>)[0]?.total ?? 0) };
+}
+
+export const accrualCreditSchema = z.object({
+  employeeId: z.string().uuid().optional(),
+  leaveType: z.enum(["EL", "CL", "SL", "BL", "COFF"]).default("EL"),
+  days: z.number().positive().max(30),
+  note: z.string().trim().max(300).optional(),
+});
+
+export async function recordAccrualCredit(access: Access, input: z.infer<typeof accrualCreditSchema>, requestId: string) {
+  enforce(access.context, "leave.read", { tenantId: access.tenantId });
+  const typeId = await ensureLeaveType(access, input.leaveType);
+  const employeeId = input.employeeId || access.context.actorUserId;
+  const id = crypto.randomUUID();
+  await tenantTx(access, [
+    sqlClient`
+      insert into leave_ledger_entries (tenant_id, employee_id, leave_type_id, attributes)
+      values (${access.tenantId}, ${employeeId}, ${typeId},
+        ${JSON.stringify({ kind: "credit", days: input.days, leave_type: input.leaveType, note: input.note ?? "Monthly Leave Accrual Credit Run" })}::jsonb)
+    `,
+    sqlClient`
+      insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, request_id)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
+        'leave.accrual_credit', 'leave_ledger', ${id}, 'Accrual credited', ${uuidOrNull(requestId)}::uuid)
+    `,
+  ]);
+  return { id, employeeId, leaveType: input.leaveType, days: input.days, status: "credited" };
 }

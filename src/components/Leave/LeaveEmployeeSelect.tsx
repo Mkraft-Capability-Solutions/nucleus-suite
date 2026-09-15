@@ -31,7 +31,7 @@ export default function LeaveEmployeeSelect({
         )
       }
       renderInput={(params) => (
-        <TextField {...params} label={label} required={required} />
+        <TextField {...params} label={label} placeholder="Select Employee" required={required} />
       )}
     />
   );

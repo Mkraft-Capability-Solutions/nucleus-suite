@@ -1,21 +1,21 @@
 import { requireAccess, tenantTx, collection } from "@/server/platform/access";
-import { fail, ok, HttpError } from "@/server/platform/http";
-import { gatePasses } from "@/lib/db/schema";
-import { eq, and } from "drizzle-orm";
+import { ok, fail } from "@/server/platform/http";
+import { retroArrears } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
 const createSchema = z.object({
   employeeId: z.string().uuid(),
-  purpose: z.string().min(1),
-  outTime: z.string().datetime(),
-  expectedInTime: z.string().datetime().optional(),
+  amountMinor: z.number().int(),
+  month: z.string().min(1),
+  reason: z.string().optional(),
 });
 
 export async function GET(req: NextRequest) {
   const access = await requireAccess(req);
   const [rows] = await tenantTx(access, (tx) =>
-    tx.select().from(gatePasses).where(eq(gatePasses.tenantId, access.tenantId))
+    tx.select().from(retroArrears).where(eq(retroArrears.tenantId, access.tenantId))
   );
   return collection(rows);
 }
@@ -25,18 +25,16 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   
   const parsed = createSchema.safeParse(body);
-  if (!parsed.success) {
-    return fail("Invalid payload", 400);
-  }
+  if (!parsed.success) return fail("Invalid payload", 400);
 
   const [inserted] = await tenantTx(access, (tx) =>
-    tx.insert(gatePasses).values({
+    tx.insert(retroArrears).values({
       tenantId: access.tenantId,
       employeeId: parsed.data.employeeId,
-      purpose: parsed.data.purpose,
-      outTime: new Date(parsed.data.outTime),
-      expectedInTime: parsed.data.expectedInTime ? new Date(parsed.data.expectedInTime) : null,
-      status: "issued"
+      amountMinor: parsed.data.amountMinor,
+      month: parsed.data.month,
+      reason: parsed.data.reason || null,
+      status: "pending"
     }).returning()
   );
 

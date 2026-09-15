@@ -7,6 +7,7 @@ import X from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
 import TrendingUp from '@mui/icons-material/TrendingUp';
 import { useAuth } from '@/context/AuthContext';
+import { useTranslation } from '@/context/I18nContext';
 import { canViewNavigationItem } from '@/lib/navigation-access';
 import styles from './RightSubNav.module.css';
 
@@ -19,6 +20,7 @@ const RightSubNav = ({
     isOpen = true,
     onClose
 }) => {
+    const { t: translateText } = useTranslation();
     const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
     const [collapsedGroups, setCollapsedGroups] = React.useState({});
     const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
@@ -100,8 +102,8 @@ const RightSubNav = ({
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.headerTitleWrap}>
-                    <h3>{currentConfig.title}</h3>
-                    {currentConfig.subtitle && <p className={styles.subTitle}>{currentConfig.subtitle}</p>}
+                    <h3>{translateText(currentConfig.title)}</h3>
+                    {currentConfig.subtitle && <p className={styles.subTitle}>{translateText(currentConfig.subtitle)}</p>}
                 </div>
                 <div className={styles.headerActions}>
                     {currentConfig.groups.length > 1 && (
@@ -146,19 +148,19 @@ const RightSubNav = ({
                                 className={styles.groupHeadingBtn}
                                 onClick={() => toggleGroup(group.heading)}
                                 aria-expanded={!isCollapsed}
-                                title={isCollapsed ? `Expand ${group.heading}` : `Collapse ${group.heading}`}
+                                title={isCollapsed ? `Expand ${translateText(group.heading)}` : `Collapse ${translateText(group.heading)}`}
                             >
-                                <span className={styles.groupHeadingText}>{group.heading}</span>
+                                <span className={styles.groupHeadingText}>{translateText(group.heading)}</span>
                                 <div className={styles.groupHeadingMeta}>
                                     {isCollapsed && (
                                         <span className={styles.groupCountBadge}>{group.items.length}</span>
                                     )}
                                     <ChevronRight
                                         sx={{
-                                            fontSize: 14,
-                                            transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
-                                            transition: 'transform 0.18s ease',
-                                            color: 'var(--text-3)'
+                                             fontSize: 14,
+                                             transform: isCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                                             transition: 'transform 0.18s ease',
+                                             color: 'var(--text-3)'
                                         }}
                                     />
                                 </div>
@@ -182,7 +184,7 @@ const RightSubNav = ({
                                                 <div className={styles.itemIcon}>
                                                     <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Clerio.RightSubNav", "display_1") : readData("components.Clerio.RightSubNav", "display_2")} />
                                                 </div>
-                                                <span className={styles.itemLabel} title={item.label}>{item.label}</span>
+                                                <span className={styles.itemLabel} title={translateText(item.label)}>{translateText(item.label)}</span>
                                                 {item.tag && (
                                                     <span
                                                         style={{

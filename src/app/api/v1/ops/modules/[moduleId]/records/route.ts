@@ -1,92 +1,48 @@
-import { createHash } from "node:crypto";
-import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
-import { collection, fail, HttpError, ok, parsePagination, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
-import { createModuleRecord, createModuleRecordSchema, listModuleRecords } from "@/server/ops/modules-service";
+import { requireAccess, tenantTx, collection } from "@/server/platform/access";
+import { ok, fail } from "@/server/platform/http";
+import * as schema from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
 
-export const dynamic = "force-dynamic";
-
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ moduleId: string }> }
-) {
-  const requestId = requestIdFrom(request.headers);
-  try {
-    const access = await requireAccess(request);
-    const { moduleId } = await params;
-    const urlParams = new URL(request.url).searchParams;
-    const { page, pageSize } = parsePagination(urlParams);
-
-    const { items, total } = await listModuleRecords(access, moduleId, {
-      page,
-      pageSize,
-    });
-
-    return collection({
-      type: "operational-module-record",
-      items: items.map((item) => ({
-        id: item.id,
-        version: 1,
-        attributes: item.values,
-        createdAt: item.createdAt,
-      })),
-      requestId,
-      self: `/api/v1/ops/modules/${moduleId}/records`,
-      nextCursor: page * pageSize < total ? Buffer.from(JSON.stringify({ page: page + 1 }), "utf8").toString("base64url") : null,
-    });
-  } catch (error) {
-    return fail(error, requestId);
-  }
+// Helper to resolve moduleId to the corresponding Drizzle table
+function resolveTable(moduleId: string) {
+  // Convert snake_case (e.g. document_vault) to camelCase (e.g. documentVault)
+  const camelCase = moduleId.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+  // Handle special cases manually if needed
+  if (camelCase === 'reconciliation') return schema.reconciliationTable;
+  
+  const table = (schema as any)[camelCase];
+  return table || null;
 }
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ moduleId: string }> }
-) {
-  const requestId = requestIdFrom(request.headers);
-  try {
-    const access = await requireAccess(request);
-    const { moduleId } = await params;
-    const key = requireIdempotencyKey(request.headers);
+export async function GET(req: NextRequest, { params }: { params: { moduleId: string } }) {
+  const access = await requireAccess(req);
+  const table = resolveTable(params.moduleId);
+  
+  if (!table) return fail(`Module ${params.moduleId} not found or no DB schema mapped`, 404);
 
-    const raw = await request.json().catch(() => null);
-    const parsed = createModuleRecordSchema.safeParse(raw);
-    if (!parsed.success) {
-      throw new HttpError({
-        status: 400,
-        code: "BAD_REQUEST",
-        message: "The form payload is invalid.",
-        details: parsed.error.issues.map((issue) => ({
-          field: issue.path.join("."),
-          issue: issue.message,
-        })),
-      });
-    }
+  const [rows] = await tenantTx(access, (tx) =>
+    tx.select().from(table).where(eq(table.tenantId, access.tenantId))
+  );
+  return collection(rows);
+}
 
-    const fingerprint = createHash("sha256")
-      .update(JSON.stringify({ moduleId, data: parsed.data }))
-      .digest("hex");
+export async function POST(req: NextRequest, { params }: { params: { moduleId: string } }) {
+  const access = await requireAccess(req);
+  const table = resolveTable(params.moduleId);
 
-    const prior = await checkIdempotency(access, `ops.module.${moduleId}`, key, fingerprint);
-    if (prior.outcome === "conflict") {
-      throw new HttpError({
-        status: 409,
-        code: "IDEMPOTENCY_KEY_REUSED",
-        message: "This Idempotency-Key was already used with a different payload.",
-      });
-    }
+  if (!table) return fail(`Module ${params.moduleId} not found or no DB schema mapped`, 404);
 
-    const result = await createModuleRecord(access, moduleId, parsed.data, requestId);
-    await storeIdempotency(access, `ops.module.${moduleId}`, key, fingerprint, 201, result.id);
+  const body = await req.json().catch(() => ({}));
 
-    return ok({
-      type: "operational-module-record",
-      id: result.id,
-      version: 1,
-      attributes: result.attributes,
-      requestId,
-      self: `/api/v1/ops/modules/${moduleId}/records/${result.id}`,
-    });
-  } catch (error) {
-    return fail(error, requestId);
-  }
+  const [inserted] = await tenantTx(access, (tx) =>
+    tx.insert(table).values({
+      tenantId: access.tenantId,
+      employeeId: body.employeeId || null,
+      attributes: body,
+      status: "active"
+    }).returning()
+  );
+
+  return ok(inserted);
 }

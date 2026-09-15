@@ -117,6 +117,17 @@ export function translate(
       Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
     );
   }
+  if (publicTranslations[activeLocale]) {
+    const dict = publicTranslations[activeLocale];
+    const ql = query.toLowerCase();
+    for (const [k, v] of Object.entries(dict)) {
+      if (k.toLowerCase() === ql) {
+        return v.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
+          Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
+        );
+      }
+    }
+  }
 
   // 3b. Check in publicContent or any namespace
   if (messages.publicContent?.[query]) {

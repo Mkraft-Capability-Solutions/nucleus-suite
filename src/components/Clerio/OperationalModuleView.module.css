@@ -58,6 +58,26 @@
 }
 
 .formGrid textarea { width: 100%; min-height: 90px; padding: .65rem; border: 1px solid var(--line); border-radius: var(--r-control, 7px); background: var(--card-2); color: var(--text); font: inherit; resize: vertical; }
+
+.rowActionBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-control, 6px);
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.rowActionBtn:hover {
+  background: var(--card-2);
+  color: var(--signal);
+  border-color: var(--signal);
+}
+
 .formDialog { max-height: calc(100dvh - 32px); }
 
 .stepControl { display: flex; align-items: center; gap: 4px; min-width: 0; }

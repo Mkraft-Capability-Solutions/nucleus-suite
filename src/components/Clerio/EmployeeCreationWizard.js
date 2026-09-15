@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Dialog from '@mui/material/Dialog';
 import {
     X, User, Phone, Shield, Users, GraduationCap, Briefcase,
@@ -106,22 +106,22 @@ export default function EmployeeCreationWizard({
     const [formData, setFormData] = useState({
         // Section 1: Identity
         employeeCode: '',  // auto-generated on mount
-        salutation: 'Mr',
+        salutation: '',
         firstName: '',
         middleName: '',
         lastName: '',
         fullLegalName: '',
         nameAsPerBank: '',
         formerName: '',
-        gender: 'Male',
+        gender: '',
         dateOfBirth: '',
-        bloodGroup: 'O+',
-        maritalStatus: 'Single',
+        bloodGroup: '',
+        maritalStatus: '',
         marriageDate: '',
         nationality: 'Indian',
         placeOfBirth: '',
         motherTongue: 'Hindi',
-        socialCategory: 'General',
+        socialCategory: '',
         religion: '',
         isDifferentlyAbled: false,
         disabilityType: '',
@@ -139,10 +139,10 @@ export default function EmployeeCreationWizard({
         personalEmail: '',
         officialEmail: '',
         emergencyName: '',
-        emergencyRelation: 'Spouse',
+        emergencyRelation: '',
         emergencyPhone: '',
         emergencySecondaryName: '',
-        emergencySecondaryRelation: 'Parent',
+        emergencySecondaryRelation: '',
         emergencySecondaryPhone: '',
 
         // Section 4: Address
@@ -150,7 +150,7 @@ export default function EmployeeCreationWizard({
         presentAddr2: '',
         presentCity: '',
         presentDistrict: '',
-        presentState: 'KA',
+        presentState: '',
         presentPin: '',
         presentCountry: 'India',
         permanentSameAsPresent: true,
@@ -182,15 +182,15 @@ export default function EmployeeCreationWizard({
 
         // Section 7: Family & Nominees (Repeating Arrays)
         dependants: [
-            { name: '', relation: 'Spouse', dob: '', gender: 'Female', insured: true }
+            { name: '', relation: '', dob: '', gender: '', insured: true }
         ],
         nominees: [
-            { name: '', relation: 'Spouse', dob: '', sharePercent: 100, scheme: 'PF', guardianName: '', address: '' }
+            { name: '', relation: '', dob: '', sharePercent: 100, scheme: 'PF', guardianName: '', address: '' }
         ],
 
         // Section 8: Education (Repeating)
         education: [
-            { level: 'B.Tech / B.E.', degree: 'Computer Science', institute: 'VTU University', passingYear: '2020', score: '8.5 CGPA' }
+            { level: '', degree: 'Computer Science', institute: 'VTU University', passingYear: '2020', score: '8.5 CGPA' }
         ],
 
         // Section 9: Experience (Repeating)
@@ -212,12 +212,12 @@ export default function EmployeeCreationWizard({
         lockerNo: '',
 
         // Section 12: Control & Placement
-        department: 'Engineering',
-        designation: 'Software Engineer',
+        department: '',
+        designation: '',
         joiningDate: new Date().toISOString().split('T')[0],
-        manager: 'Ananya Roy',
-        location: 'Bangalore Plant',
-        workerClass: 'Permanent Full-Time',
+        manager: '',
+        location: '',
+        workerClass: '',
         status: 'Active',
         effectiveFrom: new Date().toISOString().split('T')[0],
         changeReason: 'New hire onboarding',
@@ -236,37 +236,39 @@ export default function EmployeeCreationWizard({
     useEffect(() => {
         if (!isOpen) return;
         if (mode === 'edit' && initialData) {
-            const names = (initialData.name || '').split(' ');
-            const first = names[0] || '';
-            const last = names.slice(1).join(' ') || '';
+            const d = initialData.details || {};
+            const names = (initialData.name || d.fullLegalName || `${d.firstName || ''} ${d.lastName || ''}`).trim().split(/\s+/);
+            const first = d.firstName || names[0] || '';
+            const last = d.lastName || names.slice(1).join(' ') || '';
             setFormData(prev => ({
                 ...prev,
-                employeeCode: initialData.id || prev.employeeCode,
+                ...d,
+                employeeCode: initialData.id || d.employeeCode || prev.employeeCode,
                 firstName: first || prev.firstName,
                 lastName: last || prev.lastName,
-                fullLegalName: initialData.name || prev.fullLegalName,
-                nameAsPerBank: initialData.name || prev.nameAsPerBank,
-                department: initialData.dept || initialData.department || prev.department,
-                designation: initialData.role || initialData.designation || prev.designation,
-                manager: initialData.manager || prev.manager,
-                location: initialData.location || prev.location,
-                workerClass: initialData.band || prev.workerClass,
-                status: initialData.status || prev.status,
-                accountToken: initialData.accountNumber || prev.accountToken || '987654321098',
-                accountConfirm: initialData.accountNumber || prev.accountConfirm || '987654321098',
-                pan: initialData.pan || prev.pan || 'ABCDE1234F',
-                aadhaar: initialData.aadhaar || prev.aadhaar || '987654321098',
-                uan: initialData.uan || prev.uan || '100123456789',
-                mobilePhone: initialData.phone || prev.mobilePhone || '9876543210',
-                personalEmail: initialData.personalEmail || prev.personalEmail || `${(first || 'emp').toLowerCase()}@gmail.com`,
-                emergencyContactName: initialData.emergencyContact || prev.emergencyContactName || 'Family Member',
-                emergencyContactPhone: initialData.emergencyPhone || prev.emergencyContactPhone || '9876511223',
-                addressLine1: initialData.address || prev.addressLine1 || 'Tech Park Campus',
-                city: initialData.city || prev.city || 'Bangalore',
-                state: initialData.state || prev.state || 'Karnataka',
-                pinCode: initialData.pinCode || prev.pinCode || '560100',
-                bankName: initialData.bankName || prev.bankName || 'HDFC Bank',
-                ifsc: initialData.ifsc || prev.ifsc || 'HDFC0000123',
+                fullLegalName: initialData.name || d.fullLegalName || `${first} ${last}`.trim() || prev.fullLegalName,
+                nameAsPerBank: initialData.name || d.nameAsPerBank || `${first} ${last}`.trim() || prev.nameAsPerBank,
+                department: initialData.dept || initialData.department || d.department || prev.department,
+                designation: initialData.role || initialData.designation || d.designation || prev.designation,
+                manager: initialData.manager || d.manager || prev.manager,
+                location: initialData.location || d.location || prev.location,
+                workerClass: initialData.band || d.workerClass || d.workerCategory || prev.workerClass,
+                status: initialData.status || d.status || prev.status,
+                accountToken: d.accountToken || d.accountNumber || initialData.accountNumber || prev.accountToken || '987654321098',
+                accountConfirm: d.accountConfirm || d.accountToken || initialData.accountNumber || prev.accountConfirm || '987654321098',
+                pan: d.pan || d.panToken || initialData.pan || prev.pan || 'ABCDE1234F',
+                aadhaar: d.aadhaar || d.aadhaarToken || initialData.aadhaar || prev.aadhaar || '987654321098',
+                uan: d.uan || initialData.uan || prev.uan || '100123456789',
+                mobile: d.mobile || d.mobilePhone || initialData.phone || prev.mobile || '9876543210',
+                personalEmail: d.personalEmail || initialData.personalEmail || prev.personalEmail || `${(first || 'emp').toLowerCase()}@gmail.com`,
+                emergencyName: d.emergencyName || d.emergencyContactName || initialData.emergencyContact || prev.emergencyName || 'Family Member',
+                emergencyPhone: d.emergencyPhone || d.emergencyContactPhone || initialData.emergencyPhone || prev.emergencyPhone || '9876511223',
+                presentAddr1: d.presentAddr1 || d.addressLine1 || initialData.address || prev.presentAddr1 || 'Tech Park Campus',
+                presentCity: d.presentCity || d.city || initialData.city || prev.presentCity || 'Bangalore',
+                presentState: d.presentState || d.state || initialData.state || prev.presentState || 'KA',
+                presentPin: d.presentPin || d.pinCode || initialData.pinCode || prev.presentPin || '560100',
+                bankName: d.bankName || initialData.bankName || prev.bankName || 'HDFC Bank',
+                ifsc: d.ifsc || initialData.ifsc || prev.ifsc || 'HDFC0000123',
             }));
         } else {
             const existing = existingEmployees.map(e => {
@@ -279,8 +281,6 @@ export default function EmployeeCreationWizard({
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, mode, initialData]);
-
-    if (!isOpen) return null;
 
     const handleChange = (field, val) => {
         setFormData(prev => {
@@ -295,6 +295,9 @@ export default function EmployeeCreationWizard({
         if (formErrors[field]) setFormErrors(prev => { const n = {...prev}; delete n[field]; return n; });
     };
 
+    const [isCustomManager, setIsCustomManager] = useState(false);
+    const [customManagerText, setCustomManagerText] = useState('');
+
     const touchField = (key) => setTouchedFields(prev => ({ ...prev, [key]: true }));
     const getFieldError = (key) => touchedFields[key] ? formErrors[key] ?? '' : '';
     const ic = (key) => `${styles.input} ${getFieldError(key) ? styles.inputError : ''}`;
@@ -302,8 +305,59 @@ export default function EmployeeCreationWizard({
 
     const tabErrorCount = (tabNum) => {
         const rules = TAB_RULES[tabNum] || [];
-        return rules.filter(r => !!formErrors[r.key]).length;
+        return rules.filter(r => Boolean(formErrors[r.key])).length;
     };
+
+    const isTabComplete = (tabNum) => {
+        const rules = TAB_RULES[tabNum] || [];
+        return rules.every(r => {
+            const val = formData[r.key];
+            if (!r.required) return true;
+            if (val === undefined || val === null || val === '') return false;
+            return true;
+        }) && tabErrorCount(tabNum) === 0;
+    };
+
+    const managerOptions = useMemo(() => {
+        const list = [];
+        const seen = new Set();
+
+        // Contextual filtering (Active users only, exclude self)
+        const scopedEmployees = (existingEmployees || []).filter(emp => {
+            // Self-exclusion
+            if (formData.employeeCode && (emp.id === formData.employeeCode || emp.employeeCode === formData.employeeCode)) {
+                return false;
+            }
+            // Status filter: strictly active
+            const status = String(emp.status || '').toLowerCase();
+            if (status.includes('inactive') || status.includes('resigned') || status.includes('terminated')) {
+                return false;
+            }
+            return true;
+        });
+
+        scopedEmployees.forEach(emp => {
+            const name = emp.name || `${emp.firstName || ''} ${emp.lastName || ''}`.trim();
+            if (name && !seen.has(name)) {
+                seen.add(name);
+                const roleDesc = emp.role || emp.designation || emp.dept || 'Staff';
+                const codeDesc = emp.id || emp.employeeCode ? ` (${emp.id || emp.employeeCode})` : '';
+                list.push({
+                    value: name,
+                    code: emp.id || emp.employeeCode,
+                    label: `${name} — ${roleDesc}${codeDesc}`
+                });
+            }
+        });
+
+        list.sort((a, b) => (a.label || a.value).localeCompare(b.label || b.value));
+
+        if (formData.manager && !seen.has(formData.manager)) {
+            list.unshift({ value: formData.manager, label: `${formData.manager} (Assigned)` });
+        }
+
+        return list;
+    }, [existingEmployees, formData.manager, formData.employeeCode]);
 
     // Helper to compute full name
     const updateFirstName = (val) => {
@@ -409,6 +463,8 @@ export default function EmployeeCreationWizard({
         showToast(mode === 'edit' ? 'Employee Updated' : 'Employee Created', `${newEmployee.name} (${newEmployee.id}) ${mode === 'edit' ? 'updated' : 'created'} successfully.`, 'success');
         onClose();
     };
+
+    if (!isOpen) return null;
 
     return (
         <FormErrorContext.Provider value={{ touchedFields, formErrors }}>
@@ -521,6 +577,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Salutation</span>
                                     <select className={styles.select} value={formData.salutation} onChange={e => handleChange('salutation', e.target.value)}>
+                                        <option value="">Select Salutation</option>
                                         {(getPicklistOptions('PL_SALUTATION').length > 0 ? getPicklistOptions('PL_SALUTATION') : [{value: 'Mr', label: 'Mr'}, {value: 'Ms', label: 'Ms'}, {value: 'Mrs', label: 'Mrs'}, {value: 'Dr', label: 'Dr'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -547,6 +604,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Gender <span className={styles.required}>*</span></span>
                                     <select className={sc('gender')} value={formData.gender} onChange={e => handleChange('gender', e.target.value)} onBlur={() => touchField('gender')}>
+                                        <option value="">Select Gender</option>
                                         {(getPicklistOptions('PL_GENDER').length > 0 ? getPicklistOptions('PL_GENDER') : [{value: 'Male', label: 'Male'}, {value: 'Female', label: 'Female'}, {value: 'Other', label: 'Other'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -561,6 +619,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Blood Group</span>
                                     <select className={styles.select} value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
+                                        <option value="">Select Blood Group</option>
                                         {(getPicklistOptions('PL_BLOOD_GROUP').length > 0 ? getPicklistOptions('PL_BLOOD_GROUP') : [{value: 'A+', label: 'A+'}, {value: 'A-', label: 'A-'}, {value: 'B+', label: 'B+'}, {value: 'B-', label: 'B-'}, {value: 'O+', label: 'O+'}, {value: 'O-', label: 'O-'}, {value: 'AB+', label: 'AB+'}, {value: 'AB-', label: 'AB-'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -569,6 +628,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Marital Status</span>
                                     <select className={styles.select} value={formData.maritalStatus} onChange={e => handleChange('maritalStatus', e.target.value)}>
+                                        <option value="">Select Marital Status</option>
                                         {(getPicklistOptions('PL_MARITAL_STATUS').length > 0 ? getPicklistOptions('PL_MARITAL_STATUS') : [{value: 'Single', label: 'Single'}, {value: 'Married', label: 'Married'}, {value: 'Divorced', label: 'Divorced'}, {value: 'Widowed', label: 'Widowed'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -587,6 +647,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Social Category</span>
                                     <select className={styles.select} value={formData.socialCategory} onChange={e => handleChange('socialCategory', e.target.value)}>
+                                        <option value="">Select Social Category</option>
                                         {(getPicklistOptions('PL_SOCIAL_CAT').length > 0 ? getPicklistOptions('PL_SOCIAL_CAT') : [{value: 'General', label: 'General'}, {value: 'OBC', label: 'OBC'}, {value: 'SC', label: 'SC'}, {value: 'ST', label: 'ST'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -729,6 +790,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>State <span className={styles.required}>*</span></span>
                                     <select className={sc('presentState')} value={formData.presentState} onChange={e => handleChange('presentState', e.target.value)} onBlur={() => touchField('presentState')}>
+                                        <option value="">Select State</option>
                                         <option value="KA">Karnataka</option>
                                         <option value="MH">Maharashtra</option>
                                         <option value="DL">Delhi</option>
@@ -1051,6 +1113,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Department <span className={styles.required}>*</span></span>
                                     <select className={sc('department')} value={formData.department} onChange={e => handleChange('department', e.target.value)} onBlur={() => touchField('department')}>
+                                        <option value="">Select Department</option>
                                         {Array.from(new Set([
                                             ...existingEmployees.map(e => e.dept || e.department).filter(Boolean),
                                             'Engineering', 'Product', 'Human Resources', 'Finance', 'Operations', 'Quality', 'Production', 'Maintenance', 'Safety', 'Purchase'
@@ -1072,28 +1135,61 @@ export default function EmployeeCreationWizard({
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Reporting Manager <span className={styles.required}>*</span></span>
-                                    <input
-                                        className={ic('manager')}
-                                        list="manager-suggestions"
-                                        placeholder="Select or type manager name"
-                                        value={formData.manager}
-                                        onChange={e => handleChange('manager', e.target.value)}
+                                    <select
+                                        className={sc('manager')}
+                                        value={isCustomManager ? '__CUSTOM__' : (formData.manager || '')}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (val === '__CUSTOM__') {
+                                                setIsCustomManager(true);
+                                            } else {
+                                                setIsCustomManager(false);
+                                                handleChange('manager', val);
+                                            }
+                                        }}
                                         onBlur={() => touchField('manager')}
                                         required
-                                    />
-                                    <datalist id="manager-suggestions">
-                                        {Array.from(new Set([
-                                            ...existingEmployees.map(e => e.name || `${e.firstName || ''} ${e.lastName || ''}`.trim() || e.id).filter(Boolean),
-                                            'Kavita Rao', 'Arjun Mehta', 'Priya Sharma', 'Rahul Verma', 'Sneha Patel'
-                                        ])).map(m => (
-                                            <option key={m} value={m} />
+                                    >
+                                        <option value="">Select Reporting Manager</option>
+                                        {managerOptions.map(m => (
+                                            <option key={m.value} value={m.value}>
+                                                {m.label}
+                                            </option>
                                         ))}
-                                    </datalist>
+                                        <option value="__CUSTOM__">+ Add Other / Custom Manager...</option>
+                                    </select>
+                                    {isCustomManager && (
+                                        <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
+                                            <input
+                                                className={styles.input}
+                                                placeholder="Enter Manager Name or Employee Code"
+                                                value={customManagerText}
+                                                onChange={e => {
+                                                    const text = e.target.value;
+                                                    setCustomManagerText(text);
+                                                    handleChange('manager', text);
+                                                }}
+                                                autoFocus
+                                            />
+                                            <button
+                                                type="button"
+                                                className={styles.btnSecondary}
+                                                style={{ whiteSpace: 'nowrap' }}
+                                                onClick={() => {
+                                                    setIsCustomManager(false);
+                                                    handleChange('manager', '');
+                                                }}
+                                            >
+                                                From List
+                                            </button>
+                                        </div>
+                                    )}
                                     <FieldError fieldKey="manager" />
                                 </label>
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Work Location <span className={styles.required}>*</span></span>
                                     <select className={sc('location')} value={formData.location} onChange={e => handleChange('location', e.target.value)} onBlur={() => touchField('location')} required>
+                                        <option value="">Select Work Location</option>
                                         {Array.from(new Set([
                                             ...existingEmployees.map(e => e.location).filter(Boolean),
                                             'Bangalore Plant', 'Mumbai Corporate HQ', 'Delhi Logistics Hub', 'Pune Factory', 'Chennai Office'
@@ -1106,6 +1202,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Worker Class <span className={styles.required}>*</span></span>
                                     <select className={sc('workerClass')} value={formData.workerClass} onChange={e => handleChange('workerClass', e.target.value)} onBlur={() => touchField('workerClass')} required>
+                                        <option value="">Select Worker Class</option>
                                         <option value="Permanent Full-Time">Permanent Full-Time</option>
                                         <option value="Probationer">Probationer</option>
                                         <option value="Contractor">Contractor</option>
@@ -1129,6 +1226,7 @@ export default function EmployeeCreationWizard({
                                         if (cat === 'TRAINEE_DET' || cat === 'TRAINEE_GET') { handleChange('isTrainee', true); handleChange('traineeType', cat === 'TRAINEE_DET' ? 'DET' : 'GET'); }
                                         else { handleChange('isTrainee', false); handleChange('traineeType', ''); }
                                     }}>
+                                        <option value="">Select Worker Category</option>
                                         <option value="PERM">Permanent Employee</option>
                                         <option value="CONTRACT">Contractual (Daily Wage — No Rest Day)</option>
                                         <option value="THIRD_PARTY_EMP">3rd Party Employee (With Rest Days)</option>
@@ -1147,6 +1245,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>OT Eligibility</span>
                                     <select className={styles.select} value={formData.otEligibility} onChange={e => handleChange('otEligibility', e.target.value)}>
+                                        <option value="">Select OT Eligibility</option>
                                         <option value="ALL_DAYS">All Days (Regular + Rest Days)</option>
                                         <option value="REST_HOLIDAYS_ONLY">Rest Days &amp; Holidays Only</option>
                                         <option value="NONE">Not Eligible for OT</option>
@@ -1155,6 +1254,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Salary Location Scope</span>
                                     <select className={styles.select} value={formData.salaryLocationScope} onChange={e => handleChange('salaryLocationScope', e.target.value)}>
+                                        <option value="">Select Salary Location Scope</option>
                                         <option value="PLANT">Plant (Attendance + Salary at Plant)</option>
                                         <option value="HO">Head Office (Attendance at Plant, Salary at HO)</option>
                                     </select>
@@ -1162,6 +1262,7 @@ export default function EmployeeCreationWizard({
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>Default Assigned Shift</span>
                                     <select className={styles.select} value={formData.assignedShift} onChange={e => handleChange('assignedShift', e.target.value)}>
+                                        <option value="">Select Assigned Shift</option>
                                         <option value="A">A Shift (08:00 AM – 08:00 PM, 12 Hrs)</option>
                                         <option value="B">B Shift (08:00 PM – 08:00 AM, 12 Hrs)</option>
                                         <option value="GENERAL">General Shift (09:00 AM – 06:00 PM, 9 Hrs)</option>
@@ -1191,9 +1292,13 @@ export default function EmployeeCreationWizard({
                     {/* Footer buttons */}
                     <div className={styles.footer}>
                         <div>
-                            {activeTab > 1 && (
+                            {activeTab > 1 ? (
                                 <button type="button" className={styles.btnSecondary} onClick={() => setActiveTab(prev => prev - 1)}>
-                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} /> Previous
+                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} /> Back
+                                </button>
+                            ) : (
+                                <button type="button" className={styles.btnSecondary} onClick={onClose}>
+                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} /> Back to Directory
                                 </button>
                             )}
                         </div>

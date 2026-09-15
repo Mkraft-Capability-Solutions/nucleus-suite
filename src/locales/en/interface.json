@@ -221,6 +221,10 @@
     "text_4241b54bbc": "API Key copied to clipboard."
   },
   "components.Clerio.OperationalModuleView": {
+    "text_ready_action": "{value1} action is ready.",
+    "text_created_success": "{value1} record created successfully in the database.",
+    "text_updated_success": "{value1} record updated successfully in the database.",
+    "text_no_records_to_edit": "No records available to edit. Please create a record first.",
     "text_1f94abc47d": "{value1} record created in the workspace. Connect this module's create action to its API command when the relevant backend write contract is enabled.",
     "text_942fc1b03f": "State updated to {value1}. The audit entry is visible in this record detail.",
     "text_247374fc3d": "{value1} records",

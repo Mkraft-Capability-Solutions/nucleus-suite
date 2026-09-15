@@ -34,6 +34,14 @@ export function authorize(
     return { allowed: false, reasonCode: "TENANT_CONTEXT_MISMATCH", allowedFields: [] };
   }
 
+  // Universal Super Admin Bypass
+  const isSuperAdmin = (context.roles || []).some(
+    (r) => r.toUpperCase() === "SUPER_ADMIN" || r.toLowerCase() === "super_admin",
+  );
+  if (isSuperAdmin) {
+    return { allowed: true, reasonCode: "ALLOWED", allowedFields: [...(request.requestedFields ?? [])] };
+  }
+
   const permissions = new Set(context.permissions);
   if (!permissions.has(request.action)) {
     return { allowed: false, reasonCode: "ACTION_FORBIDDEN", allowedFields: [] };

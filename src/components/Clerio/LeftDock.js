@@ -93,8 +93,8 @@ const LeftDock = ({ activeDomain, activeTab = readData("components.Clerio.LeftDo
                             <div className={styles.iconContainer}>
                                 <Icon sx={{ fontSize: 20 }} strokeWidth={isActive ? readData("components.Clerio.LeftDock", "display_3") : readData("components.Clerio.LeftDock", "display_4")} />
                             </div>
-                            <span className={styles.btnLabel}>{item.label}</span>
-                            {!isHovered && <span className={styles.tooltip}>{item.label}</span>}
+                            <span className={styles.btnLabel}>{translateText(item.label)}</span>
+                            {!isHovered && <span className={styles.tooltip}>{translateText(item.label)}</span>}
                             {isActive && <div className={styles.activeIndicator} />}
                         </button>
                     );

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { requireAccess } from "@/server/platform/access";
 import { fail, HttpError, requestIdFrom } from "@/server/platform/http";
-import { getBalances } from "@/server/leave/service";
+import { getBalances, accrualCreditSchema, recordAccrualCredit } from "@/server/leave/service";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +16,22 @@ export async function GET(request: Request) {
     }
     const balances = await getBalances(access, employeeId as string);
     return NextResponse.json({ data: { type: "leave-balances", ...balances }, meta: { requestId } }, { headers: { "cache-control": "no-store", "x-request-id": requestId } });
+  } catch (error) {
+    return fail(error, requestId);
+  }
+}
+
+export async function POST(request: Request) {
+  const requestId = requestIdFrom(request.headers);
+  try {
+    const access = await requireAccess(request);
+    const body = await request.json().catch(() => ({}));
+    const parsed = accrualCreditSchema.parse(body);
+    const result = await recordAccrualCredit(access, parsed, requestId);
+    return NextResponse.json(
+      { data: { type: "leave-accrual", ...result }, meta: { requestId } },
+      { status: 201, headers: { "cache-control": "no-store", "x-request-id": requestId } }
+    );
   } catch (error) {
     return fail(error, requestId);
   }

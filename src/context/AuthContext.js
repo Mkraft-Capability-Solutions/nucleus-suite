@@ -420,10 +420,13 @@ export const AuthProvider = ({ children }) => {
     };
 
     const hasPermission = (permission) => {
-        if (!user) return false;
-        if (user.role === ROLES.SUPER_ADMIN) return true;
+        // Universal Fail-Closed Model
+        if (!user || !user.role || !permission) return false;
+        // Universal Super Admin Bypass: grant immediate full access
+        if (user.role === ROLES.SUPER_ADMIN || user.role === 'SUPER_ADMIN') return true;
         const permissions = ROLE_PERMISSIONS[user.role] || [];
-        return permissions.includes(permission);
+        const normalized = String(permission).trim();
+        return permissions.includes(normalized) || permissions.includes(normalized.toUpperCase());
     };
 
     return (
