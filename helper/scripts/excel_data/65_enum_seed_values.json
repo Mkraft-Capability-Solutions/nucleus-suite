@@ -1,0 +1,236 @@
+[
+  {
+    "Enum code": "EN_EMPLOYMENT_CATEGORY",
+    "Enum name": "Employment category",
+    "Module": "EMP",
+    "System or Config": "Config",
+    "Complete value set": "Permanent · Probation · Contractual · Third party · Trainee · Retainer",
+    "Default in this tenant": "Permanent",
+    "Requirement": "R-03, R-04"
+  },
+  {
+    "Enum code": "EN_EMPLOYMENT_SUBCATEGORY",
+    "Enum name": "Employment sub-category",
+    "Module": "EMP",
+    "System or Config": "Config",
+    "Complete value set": "Employee · Helper · Supervisor · Skilled · Semi-skilled · Unskilled",
+    "Default in this tenant": null,
+    "Requirement": "R-04"
+  },
+  {
+    "Enum code": "EN_WAGE_BASIS",
+    "Enum name": "Wage basis",
+    "Module": "EMP",
+    "System or Config": "System",
+    "Complete value set": "Monthly · Daily · Hourly · Piece rate",
+    "Default in this tenant": "Monthly",
+    "Requirement": "R-03"
+  },
+  {
+    "Enum code": "EN_OT_ELIGIBILITY_BASIS",
+    "Enum name": "OT eligibility basis",
+    "Module": "EMP",
+    "System or Config": "Config",
+    "Complete value set": "All days · Rest days and holidays only · Holidays only · Not eligible",
+    "Default in this tenant": "All days",
+    "Requirement": "R-05"
+  },
+  {
+    "Enum code": "EN_TRAINEE_TYPE",
+    "Enum name": "Trainee type",
+    "Module": "EMP",
+    "System or Config": "Config",
+    "Complete value set": "DET · GET · Apprentice · Intern",
+    "Default in this tenant": null,
+    "Requirement": "R-08"
+  },
+  {
+    "Enum code": "EN_DAY_STATUS",
+    "Enum name": "Day status",
+    "Module": "ATT",
+    "System or Config": "System",
+    "Complete value set": "Present · Half day · Absent · Weekly off · Holiday · On leave · On gate pass · Not processed",
+    "Default in this tenant": null,
+    "Requirement": "R-13"
+  },
+  {
+    "Enum code": "EN_DAY_TYPE",
+    "Enum name": "Day type",
+    "Module": "ATT",
+    "System or Config": "System",
+    "Complete value set": "Working day · Rest day · Holiday · National holiday",
+    "Default in this tenant": "Working day",
+    "Requirement": "R-05"
+  },
+  {
+    "Enum code": "EN_BREAK_TYPE",
+    "Enum name": "Break type",
+    "Module": "ATT",
+    "System or Config": "Config",
+    "Complete value set": "Meal · Personal · Gate pass · Shift break · Unclassified",
+    "Default in this tenant": "Unclassified",
+    "Requirement": "R-01"
+  },
+  {
+    "Enum code": "EN_LATE_CONSEQUENCE",
+    "Enum name": "Late mark consequence",
+    "Module": "ATT",
+    "System or Config": "Config",
+    "Complete value set": "Half day · Leave deduction · Warning only · No action",
+    "Default in this tenant": "Half day",
+    "Requirement": "R-13"
+  },
+  {
+    "Enum code": "EN_COUNTER_RESET",
+    "Enum name": "Counter reset basis",
+    "Module": "ATT",
+    "System or Config": "Config",
+    "Complete value set": "Calendar month · Payroll month · Quarter · Year",
+    "Default in this tenant": "Calendar month",
+    "Requirement": "R-13"
+  },
+  {
+    "Enum code": "EN_LEAVE_APPROVAL_LEVEL",
+    "Enum name": "Leave approval level",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Supervisor · HOD · HR Head · Director",
+    "Default in this tenant": "Supervisor",
+    "Requirement": "R-06"
+  },
+  {
+    "Enum code": "EN_ACCRUAL_FREQUENCY",
+    "Enum name": "Accrual frequency",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Annual · Half yearly · Quarterly · Monthly · On earning",
+    "Default in this tenant": "Annual",
+    "Requirement": "R-08"
+  },
+  {
+    "Enum code": "EN_YEAR_END_TREATMENT",
+    "Enum name": "Year end treatment",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Encash · Carry forward · Lapse · Carry forward with cap",
+    "Default in this tenant": null,
+    "Requirement": "R-08"
+  },
+  {
+    "Enum code": "EN_LEAVE_DISPLAY_UNIT",
+    "Enum name": "Leave display unit",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Days · Months",
+    "Default in this tenant": "Days",
+    "Requirement": "R-08"
+  },
+  {
+    "Enum code": "EN_COFF_STATUS",
+    "Enum name": "COFF status",
+    "Module": "LVE",
+    "System or Config": "System",
+    "Complete value set": "Available · Availed · Lapsed · Encashed",
+    "Default in this tenant": "Available",
+    "Requirement": "R-07"
+  },
+  {
+    "Enum code": "EN_EARLY_RETURN_ACTION",
+    "Enum name": "Early return attendance action",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Mark present · Leave unchanged · Mark as on duty",
+    "Default in this tenant": "Mark present",
+    "Requirement": "R-06"
+  },
+  {
+    "Enum code": "EN_RUN_MODE",
+    "Enum name": "Processing run mode",
+    "Module": "LVE",
+    "System or Config": "Config",
+    "Complete value set": "Preview · Commit · Rollback",
+    "Default in this tenant": "Preview",
+    "Requirement": "R-08"
+  },
+  {
+    "Enum code": "EN_GATEPASS_TYPE",
+    "Enum name": "Gate pass type",
+    "Module": "GPS",
+    "System or Config": "Config",
+    "Complete value set": "Personal · Official · Medical · Emergency",
+    "Default in this tenant": "Personal",
+    "Requirement": "R-12"
+  },
+  {
+    "Enum code": "EN_GUARANTEE_STATUS",
+    "Enum name": "Guarantee status",
+    "Module": "LON",
+    "System or Config": "System",
+    "Complete value set": "Active · Released",
+    "Default in this tenant": "Active",
+    "Requirement": "R-10"
+  },
+  {
+    "Enum code": "EN_NO_DUES_STATUS",
+    "Enum name": "No dues status",
+    "Module": "FNF",
+    "System or Config": "Config",
+    "Complete value set": "Pending · Cleared · Waived",
+    "Default in this tenant": "Pending",
+    "Requirement": "R-17"
+  },
+  {
+    "Enum code": "EN_STATE_VARIANT",
+    "Enum name": "Statutory state variant",
+    "Module": "STA",
+    "System or Config": "Config",
+    "Complete value set": "A jurisdiction pack per state, not a fixed list. Karnataka and Tamil Nadu are both seeded in this tenant.",
+    "Default in this tenant": null,
+    "Requirement": "R-18, R-27"
+  },
+  {
+    "Enum code": "EN_SCOPE_DIMENSION",
+    "Enum name": "Data scope dimension",
+    "Module": "SEC",
+    "System or Config": "Config",
+    "Complete value set": "Attendance location · Payroll processing location · Department · Legal entity",
+    "Default in this tenant": "Attendance location",
+    "Requirement": "R-09"
+  },
+  {
+    "Enum code": "EN_MASTER_OWNER",
+    "Enum name": "Master owning system",
+    "Module": "INT",
+    "System or Config": "Config",
+    "Complete value set": "ERP · Nucleus · Both with field-level ownership",
+    "Default in this tenant": "ERP",
+    "Requirement": "R-15"
+  },
+  {
+    "Enum code": "EN_SYNC_STATUS",
+    "Enum name": "Sync status",
+    "Module": "INT",
+    "System or Config": "System",
+    "Complete value set": "Success · Failed · Pending · Skipped",
+    "Default in this tenant": null,
+    "Requirement": "R-15"
+  },
+  {
+    "Enum code": "EN_REQUISITION_REASON",
+    "Enum name": "Requisition reason",
+    "Module": "REC",
+    "System or Config": "Config",
+    "Complete value set": "Replacement · New position · Temporary cover · Project",
+    "Default in this tenant": "Replacement",
+    "Requirement": "R-25"
+  },
+  {
+    "Enum code": "ADDED v1.1. These are the 25 value sets from sheet 06 of the build workbook, seeded so the demo tenant can be built without going back to the specification. Config sets are tenant-editable and System sets are not, and the difference is worth showing once: add a value to EN_BREAK_TYPE live and watch it appear on the break register, then try the same on EN_DAY_STATUS and find it refused.",
+    "Enum name": null,
+    "Module": null,
+    "System or Config": null,
+    "Complete value set": null,
+    "Default in this tenant": null,
+    "Requirement": null
+  }
+]

@@ -1,0 +1,200 @@
+[
+  {
+    "Report": "RP-01",
+    "Name": "Break register",
+    "Module": "ATT",
+    "Requirement": "R-01",
+    "Build action": "New",
+    "Sheets that feed it": "49_Break_Register, 20_Punch_Events",
+    "Filters to set in the demo": "E1018, 08 September",
+    "What to point out": "The 45-minute dinner break as its own row, and gate-to-gate hours unchanged at 19h20m",
+    "Demo point": "Point 1"
+  },
+  {
+    "Report": "RP-02",
+    "Name": "Team attendance history",
+    "Module": "ATT",
+    "Requirement": "R-02",
+    "Build action": "New",
+    "Sheets that feed it": "21_Expected_Attendance, 44_Demo_Users",
+    "Filters to set in the demo": "Signed in as E1017, 01 to 15 September, all reportees",
+    "What to point out": "A range that crosses a month boundary, and a non-reportee that cannot be selected",
+    "Demo point": "Point 1"
+  },
+  {
+    "Report": "RP-03",
+    "Name": "Daily attendance register",
+    "Module": "ATT",
+    "Requirement": "R-01, R-13",
+    "Build action": "Edit existing",
+    "Sheets that feed it": "21_Expected_Attendance, 52_Shift_Roster",
+    "Filters to set in the demo": "LOC-PLA, 01 to 15 September",
+    "What to point out": "Detected shift shown beside rostered shift on E1020's 04 September row",
+    "Demo point": "Point 13"
+  },
+  {
+    "Report": "RP-04",
+    "Name": "Overtime statement",
+    "Module": "OTM",
+    "Requirement": "R-01, R-05, R-11",
+    "Build action": "Edit existing",
+    "Sheets that feed it": "23_Overtime_Register, 55_Payroll_Register",
+    "Filters to set in the demo": "September OT period, LOC-PLA",
+    "What to point out": "E1034's two rows — the same 12-hour span, one on a working day paying nothing and one on a rest day paying in full",
+    "Demo point": "Points 4, 10"
+  },
+  {
+    "Report": "RP-05",
+    "Name": "Leave balance and ledger",
+    "Module": "LVE",
+    "Requirement": "R-06, R-07, R-08",
+    "Build action": "Edit existing",
+    "Sheets that feed it": "53_Leave_Balance_AsOn, 17_Leave_Ledger",
+    "Filters to set in the demo": "As on 15 September, all employees",
+    "What to point out": "Drill any closing balance to the movements behind it",
+    "Demo point": "Points 5, 6, 7"
+  },
+  {
+    "Report": "RP-06",
+    "Name": "COFF expiry forecast",
+    "Module": "LVE",
+    "Requirement": "R-07",
+    "Build action": "New",
+    "Sheets that feed it": "19_CompOff_Ledger, 17_Leave_Ledger",
+    "Filters to set in the demo": "Expiring within 60 days",
+    "What to point out": "E1028 holds two credits nine weeks apart. E1044's lapsed credit is the complaint this report prevents.",
+    "Demo point": "Point 6"
+  },
+  {
+    "Report": "RP-07",
+    "Name": "Leave accrual audit",
+    "Module": "LVE",
+    "Requirement": "R-08",
+    "Build action": "New",
+    "Sheets that feed it": "15_Leave_Accrual_Policy, 16_Leave_Proration, 17_Leave_Ledger",
+    "Filters to set in the demo": "January to September 2026, all schemes",
+    "What to point out": "Which rule credited what to whom. Walk E1069 and E1067 — same rule, six months apart.",
+    "Demo point": "Point 7"
+  },
+  {
+    "Report": "RP-08",
+    "Name": "Year end encashment and lapse statement",
+    "Module": "LVE",
+    "Requirement": "R-08",
+    "Build action": "New",
+    "Sheets that feed it": "54_Year_End_Leave_Preview",
+    "Filters to set in the demo": "2026, run mode Preview",
+    "What to point out": "Run Preview twice and show nothing changed",
+    "Demo point": "Point 7"
+  },
+  {
+    "Report": "RP-09",
+    "Name": "Gate pass utilisation",
+    "Module": "GPS",
+    "Requirement": "R-12",
+    "Build action": "New",
+    "Sheets that feed it": "22_Gate_Pass",
+    "Filters to set in the demo": "September, LOC-PLA",
+    "What to point out": "E1023 at 240 minutes and two instances, with the third request refused",
+    "Demo point": "Point 11"
+  },
+  {
+    "Report": "RP-10",
+    "Name": "Loan and guarantor exposure",
+    "Module": "LON",
+    "Requirement": "R-10",
+    "Build action": "New",
+    "Sheets that feed it": "24_Loans, 25_Loan_Guarantors",
+    "Filters to set in the demo": "As on 15 September",
+    "What to point out": "Who guarantees whom, and who is therefore blocked. The interlock is invisible without this.",
+    "Demo point": "Point 9"
+  },
+  {
+    "Report": "RP-11",
+    "Name": "No dues status",
+    "Module": "FNF",
+    "Requirement": "R-17",
+    "Build action": "New",
+    "Sheets that feed it": "27_Exit_Clearance, 58_FnF_Settlement",
+    "Filters to set in the demo": "Last working day within September",
+    "What to point out": "E1042 held at two lines, with the 12,500 recovery already priced",
+    "Demo point": "Point 16"
+  },
+  {
+    "Report": "RP-12",
+    "Name": "Statutory registers and returns",
+    "Module": "STA",
+    "Requirement": "R-18",
+    "Build action": "Edit existing",
+    "Sheets that feed it": "29_Statutory_Forms, 28_Statutory_Calendar",
+    "Filters to set in the demo": "September, LOC-PLA and then LOC-CHN",
+    "What to point out": "The Karnataka and Tamil Nadu register sets are different",
+    "Demo point": "Point 17"
+  },
+  {
+    "Report": "RP-13",
+    "Name": "Form F register",
+    "Module": "STA",
+    "Requirement": "R-27",
+    "Build action": "New",
+    "Sheets that feed it": "29_Statutory_Forms, 61_Preboarding_Chain",
+    "Filters to set in the demo": "LOC-PLA, joining dates in 2026",
+    "What to point out": "A gapless serial per establishment",
+    "Demo point": "Point 26"
+  },
+  {
+    "Report": "RP-14",
+    "Name": "Salary register",
+    "Module": "PAY",
+    "Requirement": "R-09",
+    "Build action": "Edit existing",
+    "Sheets that feed it": "55_Payroll_Register, 43_Roles_and_Data_Scope",
+    "Filters to set in the demo": "September, run as U-001 and then as U-002",
+    "What to point out": "The same register, two sign-ins, and E1056 missing from one of them",
+    "Demo point": "Point 8"
+  },
+  {
+    "Report": "RP-15",
+    "Name": "Payroll posting log",
+    "Module": "INT",
+    "Requirement": "R-16",
+    "Build action": "New",
+    "Sheets that feed it": "56_GL_Journal, 35_GL_Mapping",
+    "Filters to set in the demo": "August 2026, all posting statuses",
+    "What to point out": "The blocked run with GL-023 unmapped, then the balanced journal, then the re-run that creates no second posting",
+    "Demo point": "Point 15"
+  },
+  {
+    "Report": "RP-16",
+    "Name": "Contractor reconciliation",
+    "Module": "CTG",
+    "Requirement": "R-03, R-04",
+    "Build action": "New — added v1.1",
+    "Sheets that feed it": "46_Contractor_Invoices, 21_Expected_Attendance",
+    "Filters to set in the demo": "VN-01, September",
+    "What to point out": "Three claimed days with no attendance behind them, held rather than paid",
+    "Demo point": "Point 3"
+  },
+  {
+    "Report": "RP-17",
+    "Name": "Attendance exception queue",
+    "Module": "ATT",
+    "Requirement": "R-01, R-13",
+    "Build action": "New — added v1.1",
+    "Sheets that feed it": "51_Attendance_Exceptions",
+    "Filters to set in the demo": "Open exceptions, all severities",
+    "What to point out": "Three block payroll, one blocks a vendor payment, two resolve themselves. Run it before the payroll run.",
+    "Demo point": "Point 12"
+  },
+  {
+    "Report": "ADDED v1.1, expanding sheet 08 of the build workbook and naming the demo sheet behind each report. Fifteen reports come from the build sheet; RP-16 and RP-17 are added here because v1.1 introduced the data for them. Column F is the one to check before the demo: if a report has no sheet feeding it, there is nothing to show.",
+    "Name": null,
+    "Module": null,
+    "Requirement": null,
+    "Build action": null,
+    "Sheets that feed it": null,
+    "Filters to set in the demo": null,
+    "What to point out": null,
+    "Demo point": null
+  }
+]

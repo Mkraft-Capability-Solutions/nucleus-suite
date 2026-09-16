@@ -1,6 +1,6 @@
 "use client";
 import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
-import { getLeaveEmployees } from "@/services/leave-reference";
+import { getLeaveEmployees } from "@/app/actions/leaveActions";
 import { useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -19,8 +19,8 @@ import {
 import { useHRMS } from "@/context/HRMSContext";
 import { useTranslation } from "@/context/I18nContext";
 import { readData } from "@/services/workspace-data.mjs";
-import { LEAVE_TYPES, evaluateCompOffValidity } from "@/services/leaveEngine";
-import type { LeaveRequest } from "@/services/leave-workflow";
+import { LEAVE_TYPES, evaluateCompOffValidity } from "@/app/actions/leaveActions";
+import type { LeaveRequest } from "@/app/actions/leaveActions";
 const keys: Record<string, string> = {
   privilege: "PRIVILEGE",
   sick: "SICK",
@@ -185,7 +185,7 @@ export default function LeaveBalancePanel() {
                 onChange={(e) => setCode(e.target.value)}
               >
                 {(
-                  Object.values(LEAVE_TYPES) as Array<{
+                  Object.values(LEAVE_TYPES) as unknown as Array<{
                     code: string;
                     label: string;
                     requestable?: boolean;

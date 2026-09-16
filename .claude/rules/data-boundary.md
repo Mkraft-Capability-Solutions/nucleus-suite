@@ -50,7 +50,8 @@ For interactive mutations (not just reads), use service adapters:
 import employees from '../../../data/ui/employees.json';
 
 // ❌ Never construct API calls from components (production phase only)
-const res = await fetch('/api/v1/employees');
+import { fetchEmployees } from '@/app/actions/peopleActions';
+const res = await fetchEmployees();
 
 // ❌ Never embed large data objects inline in components
 const HARDCODED_DATA = [{ id: 1, name: "Alice" }, ...];

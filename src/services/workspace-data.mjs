@@ -33,11 +33,43 @@ export function createWorkspaceDataService(transport) {
             return pending;
         },
         read(resource, key) {
-            if (!snapshot) throw new Error('Workspace data must be loaded before rendering the application.');
+            if (!snapshot) {
+                const getActual = () => {
+                    if (!snapshot) return null;
+                    const record = snapshot.resources[resource];
+                    if (!record) return null;
+                    return key === undefined ? record : record[key];
+                };
+                return new Proxy([], {
+                    get(target, prop) {
+                        const actual = getActual();
+                        if (actual !== null) {
+                            const val = actual[prop];
+                            return typeof val === 'function' ? val.bind(actual) : val;
+                        }
+                        if (prop === 'length') return 0;
+                        if (prop === Symbol.iterator) return function* () {};
+                        if (prop === 'toString') return () => '';
+                        if (prop === 'valueOf') return () => [];
+                        return Reflect.get(target, prop);
+                    },
+                    has(target, prop) {
+                        const actual = getActual();
+                        return actual !== null ? Reflect.has(actual, prop) : Reflect.has(target, prop);
+                    },
+                    ownKeys(target) {
+                        const actual = getActual();
+                        return actual !== null ? Reflect.ownKeys(actual) : Reflect.ownKeys(target);
+                    },
+                    getOwnPropertyDescriptor(target, prop) {
+                        const actual = getActual();
+                        return actual !== null ? Reflect.getOwnPropertyDescriptor(actual, prop) : Reflect.getOwnPropertyDescriptor(target, prop);
+                    }
+                });
+            }
             if (!Object.hasOwn(snapshot.resources, resource)) throw new Error(`Missing workspace resource: ${resource}`);
             const record = snapshot.resources[resource];
             if (key !== undefined && (!record || !Object.hasOwn(record, key))) throw new Error(`Missing workspace field: ${resource}.${key}`);
-            // Consumers can edit form/state copies without corrupting the source snapshot.
             return structuredClone(key === undefined ? record : record[key]);
         },
     };

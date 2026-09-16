@@ -1,0 +1,44 @@
+[
+  {
+    "Policy code": "GP-01",
+    "Applies to": "All locations, all shift groups",
+    "Grace minutes on arrival": 15,
+    "Grace minutes on departure": 15,
+    "Lates allowed per month": 3,
+    "Consequence beyond the allowance": "Half day",
+    "Counter reset basis": "Calendar month",
+    "Exempt from grade rank": 50,
+    "Exempt designations": "DES-01 to DES-07 and DES-20 — Assistant Manager and above",
+    "Effective from": "2026-04-01",
+    "Demo record": "E1019 Sneha Nair — lates on 01, 03, 07 Sep within allowance; 10 and 14 Sep become half days",
+    "Demo point": "Point 12"
+  },
+  {
+    "Policy code": "GP-01-EX",
+    "Applies to": "Grade rank 50 and above",
+    "Grace minutes on arrival": 15,
+    "Grace minutes on departure": 15,
+    "Lates allowed per month": 3,
+    "Consequence beyond the allowance": "No action",
+    "Counter reset basis": "Calendar month",
+    "Exempt from grade rank": 50,
+    "Exempt designations": "Same list — the exemption is the same rank, expressed as a separate row so it is visible",
+    "Effective from": "2026-04-01",
+    "Demo record": "E1021 Rekha Deshpande — five lates in September, every day still Present",
+    "Demo point": "Point 12"
+  },
+  {
+    "Policy code": "ADDED v1.1 for form F-ATT-06. Four numbers the client stated as policy — 15, 15, 3 and half day — now sit in a configuration row rather than in the attendance engine. The counter reset basis is the subject of open question Q-12: calendar month and payroll month give different answers whenever the payroll cycle is not the calendar month, and this client runs 01 to end of month, so today they agree. Say so on screen rather than leaving it to be discovered later.",
+    "Applies to": null,
+    "Grace minutes on arrival": null,
+    "Grace minutes on departure": null,
+    "Lates allowed per month": null,
+    "Consequence beyond the allowance": null,
+    "Counter reset basis": null,
+    "Exempt from grade rank": null,
+    "Exempt designations": null,
+    "Effective from": null,
+    "Demo record": null,
+    "Demo point": null
+  }
+]

@@ -639,3 +639,11 @@ export const schema = {
   contractorInvoice,
   statutoryRegister,
 };
+
+export const onboardingInstances = pgTable("onboarding_instances", moduleTableConfig);
+export const jobRequisitions = pgTable("job_requisitions", moduleTableConfig);
+export const performanceReviews = pgTable("performance_reviews", moduleTableConfig);
+export const learningPaths = pgTable("learning_paths", moduleTableConfig);
+export const contractorWorkforce = pgTable("contractor_workforce", moduleTableConfig);
+export const projectWorkforce = pgTable("project_workforce", moduleTableConfig);
+export const helpdeskTickets = pgTable("helpdesk_tickets", moduleTableConfig);

@@ -1,0 +1,157 @@
+@startuml
+title MKraft HRMS - Engagement, analytics & AI\nPROPOSED: 48 owned tables / 140 outgoing FK constraints
+!include includes/style.iuml
+package "Engagement, analytics & AI" {
+!include includes/09-engagement-analytics-ai-tables.iuml
+}
+package "External reference keys" {
+entity "access_scopes" as access_scopes <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "applications" as applications <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "audit_events" as audit_events <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "background_jobs" as background_jobs <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "candidate_documents" as candidate_documents <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * candidate_id : uuid
+  * document_id : uuid
+  * purpose : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, candidate_id, document_id, purpose)
+}
+
+entity "compensation_plans" as compensation_plans <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "courses" as courses <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "document_versions" as document_versions <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * document_id : uuid
+  * version_number : integer
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, document_id, version_number)
+}
+
+entity "documents" as documents <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "employees" as employees <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * employee_number : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, employee_number)
+}
+
+entity "integration_connections" as integration_connections <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "integration_jobs" as integration_jobs <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "job_postings" as job_postings <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "legal_entities" as legal_entities <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "organization_units" as organization_units <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "skills" as skills <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "tenants" as tenants <<external>> {
+  * id : uuid <<PK>>
+  * code : text
+  --
+  UK (code)
+}
+
+entity "users" as users <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * email : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, email)
+}
+}
+!include includes/09-engagement-analytics-ai-relations.iuml
+!include includes/legend.iuml
+@enduml

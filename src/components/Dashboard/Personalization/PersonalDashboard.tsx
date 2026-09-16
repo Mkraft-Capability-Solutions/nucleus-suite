@@ -33,7 +33,7 @@ import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import { useAuth } from '@/context/AuthContext';
 import { readData } from '@/services/workspace-data.mjs';
-import { loadDashboardPreferences, saveDashboardPreferences } from '@/services/dashboard-preferences';
+import { loadDashboardPreferences, saveDashboardPreferences } from '@/lib/static-dictionary';
 import { makeLayout, parseLayoutImport, permittedWidgets, sanitizeLayout, sanitizePreferences, type DashboardLayout, type DashboardPreferences, type WidgetDefinition, type WidgetInstance } from '@/lib/dashboard-layout';
 import WidgetContent, { type WidgetRow } from './WidgetContent';
 import styles from './PersonalDashboard.module.css';

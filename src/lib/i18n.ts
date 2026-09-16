@@ -88,7 +88,7 @@ export function translate(
       namespace = parts[0];
       key = parts[1];
     } else {
-      // Deep nested key like components.Clerio.LeftDock.text_0ab6910b45
+      // Deep nested key like components.Workspace.LeftDock.text_0ab6910b45
       const lastPart = parts.pop()!;
       namespace = parts.join('.');
       key = lastPart;

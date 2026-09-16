@@ -1,0 +1,72 @@
+[
+  {
+    "File": "BF-2026-08-0412",
+    "Run": "PR-2026-08-01",
+    "Entity": "LE-01",
+    "Bank": "HDFC Bank",
+    "Format": "Corporate bulk payment, fixed width",
+    "Value date": "2026-08-31",
+    "Records": 412,
+    "Total amount (INR)": 24118000,
+    "Status": "Released and acknowledged",
+    "Reconciles to": "Salary payable credit on journal JV-2026-08-0441, line 10",
+    "Variance": 0,
+    "Demo point": "Point 15"
+  },
+  {
+    "File": "BF-2026-08-0188",
+    "Run": "PR-2026-08-11",
+    "Entity": "LE-02",
+    "Bank": "ICICI Bank",
+    "Format": "Corporate bulk payment, fixed width",
+    "Value date": "2026-08-31",
+    "Records": 188,
+    "Total amount (INR)": 9506000,
+    "Status": "Released and acknowledged",
+    "Reconciles to": "Salary payable credit on the LE-02 August journal",
+    "Variance": 0,
+    "Demo point": null
+  },
+  {
+    "File": "BF-2026-10-0096",
+    "Run": "PR-2026-09-02",
+    "Entity": "LE-01",
+    "Bank": "HDFC Bank",
+    "Format": "Corporate bulk payment, fixed width",
+    "Value date": "2026-10-07",
+    "Records": 96,
+    "Total amount (INR)": 384190,
+    "Status": "Not generated — run is in DRAFT",
+    "Reconciles to": "Salary payable credit on journal JV-2026-10-0007, line 3",
+    "Variance": 0,
+    "Demo point": "Point 10 — a second file, a second value date, a week after the salary file"
+  },
+  {
+    "File": "BF-2026-09-0002",
+    "Run": "PR-2026-09-03",
+    "Entity": "LE-01",
+    "Bank": "HDFC Bank",
+    "Format": "Corporate bulk payment, fixed width",
+    "Value date": "2026-09-30",
+    "Records": 1,
+    "Total amount (INR)": 251219,
+    "Status": "Held — one of the two settlements is not cleared",
+    "Reconciles to": "Full and final settlement for E1068; E1042 is excluded until his clearance closes",
+    "Variance": 0,
+    "Demo point": "Point 16 — the no-dues gate reaches the bank file, not just the screen"
+  },
+  {
+    "File": "ADDED v1.1 for form FRM-PAY-07. The last row is the one worth dwelling on: E1042's settlement is held at the clearance checklist and therefore never reaches the payment file at all. A no-dues process that only greys out a button on a screen is not a control; one that keeps the amount out of the bank file is.",
+    "Run": null,
+    "Entity": null,
+    "Bank": null,
+    "Format": null,
+    "Value date": null,
+    "Records": null,
+    "Total amount (INR)": null,
+    "Status": null,
+    "Reconciles to": null,
+    "Variance": null,
+    "Demo point": null
+  }
+]

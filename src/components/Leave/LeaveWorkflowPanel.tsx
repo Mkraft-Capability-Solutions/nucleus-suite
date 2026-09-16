@@ -20,7 +20,7 @@ import {
 import Add from "@mui/icons-material/Add";
 import { useHRMS } from "@/context/HRMSContext";
 import { useTranslation } from "@/context/I18nContext";
-import { canReviewLeave, type LeaveRequest } from "@/services/leave-workflow";
+import { canReviewLeave, type LeaveRequest } from "@/app/actions/leaveActions";
 import LeaveBalancePanel from "./LeaveBalancePanel";
 import LeaveCalendar from "./LeaveCalendar";
 import { csvRows } from "@/utils/csv";

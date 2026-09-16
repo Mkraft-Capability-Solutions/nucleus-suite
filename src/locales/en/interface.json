@@ -126,7 +126,7 @@
     "text_942087cc2d": "Retry",
     "text_e177bbb93e": "Loading workspace data…"
   },
-  "components.Clerio.ProcessGuide": {
+  "components.Workspace.ProcessGuide": {
     "text_588da41053": " · ",
     "text_4f5a2ada11": " (",
     "text_ba5ec51d07": ")",
@@ -135,7 +135,7 @@
     "text_3b9667ee73": "04_Process_Steps!A",
     "text_3b2e8119b6": " — "
   },
-  "components.Clerio.MainWorkspace": {
+  "components.Workspace.MainWorkspace": {
     "text_e53d7af293": "Return to my dashboard",
     "text_4a7cecb37b": "Filters Reset",
     "text_82b997f867": "Restored global organization telemetry scope.",
@@ -156,7 +156,7 @@
     "text_52edd19697": "Window set to: {value1} to {value2}",
     "text_4aa0a8bf87": "{value1}..{value2}"
   },
-  "components.Clerio.LeftDock": {
+  "components.Workspace.LeftDock": {
     "text_0ab6910b45": "Nucleus home"
   },
   "components.Dashboard.Views.HROpsConsole": {
@@ -193,26 +193,26 @@
     "text_87a01de2af": "Re-route target is compulsory. Please select a designated approver from the list.",
     "text_ce36031d79": "Re-route handover remark is compulsory. Please provide context for the new approver."
   },
-  "components.Clerio.LearningView": {
+  "components.Workspace.LearningView": {
     "text_c608981d8d": "Marketplace",
     "text_37e8f75dea": "Opening Coursera & LinkedIn Learning portal...",
     "text_19ff47baa3": "Launching Lesson",
     "text_933253e7ee": "Opening player for {value1}..."
   },
-  "components.Clerio.TeamView": {
+  "components.Workspace.TeamView": {
     "text_836ed69b38": "Instant Chat",
     "text_1d0b1b8233": "Opening Slack / Teams DM with {value1}...",
     "text_a756b7b111": "Email Dispatch",
     "text_b5d07b5c53": "Preparing mail draft to {value1}...",
     "text_f112abedd7": "Status: {value1}"
   },
-  "components.Clerio.LeaveView": {
+  "components.Workspace.LeaveView": {
     "text_bae613c912": "Policy Handbook",
     "text_55c7940b6f": "Opening 2026 Statutory Leave Policy Document...",
     "text_d2978f1fd6": "Engine Status",
     "text_ea91b4c61d": "All 3 Leave Demo Points passing deterministic assertions."
   },
-  "components.Clerio.IntegrationsView": {
+  "components.Workspace.IntegrationsView": {
     "text_9d5e294999": "Docs Opened",
     "text_9cd953818a": "Swagger/OpenAPI 3.0 specification opened.",
     "text_169dcd164f": "Sync Triggered",
@@ -220,7 +220,7 @@
     "text_8d525e5f15": "Copied",
     "text_4241b54bbc": "API Key copied to clipboard."
   },
-  "components.Clerio.OperationalModuleView": {
+  "components.Workspace.OperationalModuleView": {
     "text_ready_action": "{value1} action is ready.",
     "text_created_success": "{value1} record created successfully in the database.",
     "text_updated_success": "{value1} record updated successfully in the database.",
@@ -230,13 +230,13 @@
     "text_247374fc3d": "{value1} records",
     "text_de86a6588b": "{value1} records in the current scope"
   },
-  "components.Clerio.OnboardingView": {
+  "components.Workspace.OnboardingView": {
     "text_e589d3921c": "Letter Printed",
     "text_2435b5cb6d": "Sent formatted letter to system print spooler.",
     "text_f2d1f36de1": "Letter Exported",
     "text_5e9be7e2b6": "{value1} saved as encrypted PDF."
   },
-  "components.Clerio.CMSModal": {
+  "components.Workspace.CMSModal": {
     "text_757df777f4": "Missing Fields",
     "text_c6c2c302a8": "Please enter a title and description for the notice.",
     "text_8583d21cc2": "Title Required",
@@ -248,7 +248,7 @@
     "text_a968d28cf0": "Downloading Handbook",
     "text_0e540827a4": "Downloading {value1}..."
   },
-  "components.Clerio.MisReportingHub": {
+  "components.Workspace.MisReportingHub": {
     "text_18fd32e12f": "Dataset validated",
     "text_1bbe48e4fd": "{value1} accepted and {value2} rejected rows are ready for review.",
     "text_25c5b213ae": "Import could not be read",
@@ -262,22 +262,22 @@
     "text_5f4daa5c37": "{value1} rows checked against required fields, reference keys, type and business rules.",
     "text_9eab8d21e8": "{value1} · model/run metadata must be completed by the source integration."
   },
-  "components.Clerio.DataImportModal": {
+  "components.Workspace.DataImportModal": {
     "text_7742f74fef": "Mapping Error",
     "text_30bad5d803": "Please map at least one column to Employee ID so records can synchronize.",
     "text_f3fac34f42": "File Attached",
     "text_8160746ae1": "Pre-loaded {value1} with {value2} rows."
   },
-  "components.Clerio.SettingsView": {
+  "components.Workspace.SettingsView": {
     "text_03673c17ae": "Preferences Reset",
     "text_ce3e59d613": "Restored previous saved configuration.",
     "text_21b2faaceb": "Sessions Terminated",
     "text_3e0d5618e9": "All other active device tokens have been revoked."
   },
-  "components.Clerio.RecruitmentView": {
+  "components.Workspace.RecruitmentView": {
     "text_ac513560df": "{value1} Vacancies"
   },
-  "components.Clerio.PayrollView": {
+  "components.Workspace.PayrollView": {
     "text_b32605e3ca": "Tally XML Exported",
     "text_f2892a1a8c": "Salary_Journal_Feb2026_Tally.xml ready to import directly into Tally Prime.",
     "text_12359ffbc2": "Bank NEFT File Exported",
@@ -292,23 +292,23 @@
     "text_292097ff69": "⛔ {value1}",
     "text_35cd59d276": "₹ {value1}"
   },
-  "components.Clerio.TopNav": {
+  "components.Workspace.TopNav": {
     "text_25941aea4c": "Signed Out",
     "text_4d158fa9e7": "You have been logged out of Nucleus HRMS.",
     "text_f0ea68918d": "Filtered by RBAC policy for {value1}",
     "text_8290d65752": "Console Switched",
     "text_a00b1786e3": "Loaded {value1} ({value2})."
   },
-  "components.Clerio.ChatPanel": {
+  "components.Workspace.ChatPanel": {
     "text_d869d3fc0f": "Message {value1}..."
   },
-  "components.Clerio.CompensationView": {
+  "components.Workspace.CompensationView": {
     "text_b4cf1c716d": "Flex Benefit Updated",
     "text_709991b8bf": "Selection updated for upcoming policy cycle.",
     "text_b5b9434a68": "Compensation Letter",
     "text_48269108c6": "Annual CTC breakdown letter downloaded."
   },
-  "components.Clerio.PeopleCoreView": {
+  "components.Workspace.PeopleCoreView": {
     "text_dfc8f0d02f": "Export Initialized",
     "text_b64285281e": "Exporting People Core records to CSV...",
     "text_1614058fbf": "Profile Opened",
@@ -318,7 +318,7 @@
     "text_353f98aa9a": "Reporting manager updated",
     "text_2703bfa588": "{value1} now reports to {value2}."
   },
-  "components.Clerio.ComplianceView": {
+  "components.Workspace.ComplianceView": {
     "text_bab9d39e28": "Includes +₹{value1} add-back excess",
     "text_70966a5717": "+ ₹ {value1}/mo",
     "text_dc58967752": "+ ₹ {value1} to PF",
@@ -326,11 +326,11 @@
     "text_70b427bc30": "Day {value1}: {value2} ({value3}h regular, {value4}h OT)",
     "text_74ca1223f9": "rule_pack: IN-CENTRAL-WAGES v2026.04.01\njurisdiction: IN\neffective_from: 2026-04-01\nsupersedes: v2025.11.21\nrules:\n  - id: wage_base_definition\n    formula: \"MAX(BASIC + DA + RA, TOTAL_REMUNERATION * 0.50)\"\n    test_cases: 120\n  - id: overtime_multiplier\n    formula: \"HOURLY_WAGE_BASE * 2.0\"\n    statutory_ceiling: \"125 hours per quarter\"\n  - id: bonus_eligibility_ceiling\n    threshold: 21000\n    formula: \"MIN(WAGE_BASE, 7000) * 0.0833\"\nchangelog: \"Central Rules notified; overtime allowance confirmed within 50% wage floor computation per MoLE FAQ 16-Mar-2026\""
   },
-  "components.Clerio.WorkflowBuilderModal": {
+  "components.Workspace.WorkflowBuilderModal": {
     "text_3c9b888d55": "Simulation Completed",
     "text_09ac4f4b73": "\"{value1}\" executed all {value2} pipeline nodes with 0 errors."
   },
-  "components.Clerio.AccessControlView": {
+  "components.Workspace.AccessControlView": {
     "text_818a30c487": "Updated \"{value1}\" for {value2}.",
     "text_473e9fc737": "Updated Cockpit \"{value1}\" for {value2}.",
     "text_bd0744876d": "Override Cleared",
@@ -352,13 +352,13 @@
     "text_a9c1581438": "Role Baseline Updated",
     "text_30fefaac97": "Toggled {value1} for {value2}."
   },
-  "components.Clerio.ExperienceView": {
+  "components.Workspace.ExperienceView": {
     "text_95e02cd741": "Kudos Shared",
     "text_9778b2c25d": "Your recognition was posted to the company feed with +50 points!",
     "text_737e78b17e": "Rewards Store",
     "text_95d6d0a015": "Opening points redemption catalog (AirPods, Wellness passes, Books)..."
   },
-  "components.Clerio.AttendanceView": {
+  "components.Workspace.AttendanceView": {
     "text_bf34462856": "Attendance Export",
     "text_0bf6412031": "Monthly ledger exported with break reports.",
     "text_e1bbe08261": "Ruleset Verified",

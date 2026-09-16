@@ -2,13 +2,12 @@
 import { readData } from '../services/workspace-data.mjs';
 import { getOperationalModule } from './operational-module-registry';
 
-const itemModuleKeys = readData("lib.navigation-access", "itemModuleKeys_1");
-
-const domainModuleKeys = readData("lib.navigation-access", "domainModuleKeys_2");
+const getItemModuleKeys = () => readData("lib.navigation-access", "itemModuleKeys_1");
+const getDomainModuleKeys = () => readData("lib.navigation-access", "domainModuleKeys_2");
 
 export function navigationModuleKey(itemId, targetTab) {
     const operational = getOperationalModule(itemId);
-    return operational?.primary || itemModuleKeys[itemId] || itemModuleKeys[targetTab] || targetTab || null;
+    return operational?.primary || getItemModuleKeys()[itemId] || getItemModuleKeys()[targetTab] || targetTab || null;
 }
 
 export function canViewNavigationItem({ id, targetTab }, isModuleAllowed, user) {
@@ -21,6 +20,6 @@ export function canViewNavigationDomain(domainId, isModuleAllowed, user) {
     // Every signed-in role has at least its self-service console; console-level rules
     // determine which dashboard options appear inside this domain.
     if (domainId === 'dashboard') return true;
-    const keys = domainModuleKeys[domainId] || [];
+    const keys = getDomainModuleKeys()[domainId] || [];
     return keys.length === 0 || keys.some((moduleKey) => isModuleAllowed(moduleKey, user?.role, user?.id || user?.email));
 }

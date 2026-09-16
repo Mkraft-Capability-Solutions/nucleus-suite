@@ -1,29 +1,29 @@
 "use client";
 import { readData } from '@/services/workspace-data.mjs';
 
-import { navigationDomains } from '@/lib/workspace-navigation';
+import { getNavigationDomains } from '@/lib/workspace-navigation';
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
 import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, MessageSquare } from 'lucide-react';
-import LeftDock from '@/components/Clerio/LeftDock';
-import TopNav from '@/components/Clerio/TopNav';
-import RightSubNav from '@/components/Clerio/RightSubNav';
-import MainWorkspace from '@/components/Clerio/MainWorkspace';
-import AIPanel from '@/components/Clerio/AIPanel';
-import ChatPanel from '@/components/Clerio/ChatPanel';
-import LoginView from '@/components/Clerio/LoginView';
+import LeftDock from '@/components/Workspace/LeftDock';
+import TopNav from '@/components/Workspace/TopNav';
+import RightSubNav from '@/components/Workspace/RightSubNav';
+import MainWorkspace from '@/components/Workspace/MainWorkspace';
+import AIPanel from '@/components/Workspace/AIPanel';
+import ChatPanel from '@/components/Workspace/ChatPanel';
+import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
 import VoiceNavigator from '@/components/VoiceNavigator';
 import CtcExceptionModal from '@/components/Dashboard/Modals/CtcExceptionModal';
-import DataImportModal from '@/components/Clerio/DataImportModal';
+import DataImportModal from '@/components/Workspace/DataImportModal';
 import { HRMSProvider, useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import styles from '@/app/page.module.css';
 import { useScrollableTables } from '@/hooks/useScrollableTables';
 import { getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed, speakAloud } from '@/utils/voiceCommandEngine';
-import Toast from '@/components/Clerio/Toast';
-import toastStyles from '@/components/Clerio/Toast.module.css';
+import Toast from '@/components/Workspace/Toast';
+import toastStyles from '@/components/Workspace/Toast.module.css';
 
 const NAV_STATE_KEY = 'nucleus_nav_state';
 
@@ -339,7 +339,7 @@ const AppContent = () => {
       return;
     }
 
-    const item = navigationDomains.flatMap(domain => domain.groups.flatMap(group => group.items)).find(item => item.id === subFeatureId);
+    const item = getNavigationDomains().flatMap(domain => domain.groups.flatMap(group => group.items)).find(item => item.id === subFeatureId);
     if (item?.targetTab) { setActiveTab(item.targetTab); return; }
 
     setActiveTab(subFeatureId);

@@ -1,0 +1,12 @@
+{
+  "roles": [
+    { "name": "SUPER_ADMIN", "permissions": ["*"] },
+    { "name": "HR_MANAGER", "permissions": ["users:read", "users:write", "leave:approve"] },
+    { "name": "EMPLOYEE", "permissions": ["users:read"] }
+  ],
+  "departments": [
+    { "name": "Engineering", "code": "ENG" },
+    { "name": "Human Resources", "code": "HR" },
+    { "name": "Finance", "code": "FIN" }
+  ]
+}

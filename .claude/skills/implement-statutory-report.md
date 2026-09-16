@@ -25,7 +25,7 @@ This skill guides you through generating factory statutory compliance reports un
    ```
 
 ### Step 3: Implement Formatter & Export Endpoint
-1. In `src/app/api/v1/exports/route.ts`, support CSV, PDF, and Excel formatting:
+1. In `src/app/actions/complianceActions.ts`, support CSV, PDF, and Excel formatting via Server Actions:
    - CSV: UTF-8 encoded with RFC 4180 escaping.
    - Headers: `Content-Disposition: attachment; filename="Form_28_Muster_Roll.csv"`.
 

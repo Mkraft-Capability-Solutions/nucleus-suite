@@ -2,8 +2,8 @@
 import { readData } from '../services/workspace-data.mjs';
 const workbook = readData('workbook');
 
-const sheets = workbook.sheets;
-const rows = (name) => sheets[name] || [];
+const getSheets = () => workbook.sheets || {};
+const rows = (name) => getSheets()[name] || [];
 const sourceRowFilters = {
   '01_Scenario_Map': (row) => /^\d+$/.test(String(row['Demo point'] || '')),
   '02_Legal_Entities': (row) => /^LE-\d+$/.test(String(row['Entity code'] || '')),
@@ -40,10 +40,10 @@ const sourceRowFilters = {
   '37_Requisitions': (row) => /^REQ-/.test(String(row.Requisition || '')),
 };
 const validRows = (name) => rows(name).filter(sourceRowFilters[name] || (() => true));
-const employeeRows = validRows('12_Employees');
-const locations = new Map(validRows('03_Locations').map((row) => [row['Location code'], row['Location name']]));
-const orgUnits = new Map(validRows('04_Org_Units').map((row) => [row['Org unit code'], row['Org unit name']]));
-const designations = new Map(validRows('05_Designations').map((row) => [row['Designation code'], row.Title]));
+const getEmployeeRows = () => validRows('12_Employees');
+const getLocations = () => new Map(validRows('03_Locations').map((row) => [row['Location code'], row['Location name']]));
+const getOrgUnits = () => new Map(validRows('04_Org_Units').map((row) => [row['Org unit code'], row['Org unit name']]));
+const getDesignations = () => new Map(validRows('05_Designations').map((row) => [row['Designation code'], row.Title]));
 
 const option = (value, label) => ({ value: String(value), label: String(label) });
 const uniqueOptions = (values) => Array.from(new Map(values.filter((value) => value?.value && value?.label).map((value) => [value.value, value])).values());
@@ -96,17 +96,17 @@ const fieldToPicklistKeyMap = {
   country: 'PL_COUNTRY',
 };
 
-const employeeOptions = uniqueOptions(employeeRows.map((row) => option(row['Employee code'], `${row['Employee code']} · ${row['Full name']}`)));
-const entityOptions = uniqueOptions(validRows('02_Legal_Entities').map((row) => option(row['Entity code'], `${row['Entity code']} · ${row['Registered name']}`)));
-const locationOptions = uniqueOptions(validRows('03_Locations').map((row) => option(row['Location code'], `${row['Location code']} · ${row['Location name']}`)));
-const orgUnitOptions = uniqueOptions(validRows('04_Org_Units').map((row) => option(row['Org unit code'], `${row['Org unit code']} · ${row['Org unit name']}`)));
-const designationOptions = uniqueOptions(validRows('05_Designations').map((row) => option(row['Designation code'], `${row['Designation code']} · ${row.Title}`)));
-const positionOptions = uniqueOptions(validRows('11_Positions').map((row) => option(row['Position code'], `${row['Position code']} · ${row.Title}`)));
-const workerClassOptions = uniqueOptions(validRows('06_Worker_Classes').map((row) => option(row['Class code'], `${row['Class code']} · ${row.Label}`)));
-const shiftOptions = uniqueOptions(validRows('07_Shifts').map((row) => option(row['Shift code'], `${row['Shift code']} · ${row['Shift name']}`)));
-const leaveTypeOptions = uniqueOptions(validRows('14_Leave_Types').map((row) => option(row['Leave type'], `${row['Leave type']} · ${row.Name}`)));
-const payrollRunOptions = uniqueOptions(validRows('26_Payroll_Runs').map((row) => option(row['Run ID'], `${row['Run ID']} · ${row.Period} · ${row['Run type']}`)));
-const payrollGroupOptions = uniqueOptions(validRows('03_Locations').map((row) => option(row['Payroll group'], `${row['Payroll group']} · ${row['Location name']}`)));
+const getEmployeeOptions = () => uniqueOptions(getEmployeeRows().map((row) => option(row['Employee code'], `${row['Employee code']} · ${row['Full name']}`)));
+const getEntityOptions = () => uniqueOptions(validRows('02_Legal_Entities').map((row) => option(row['Entity code'], `${row['Entity code']} · ${row['Registered name']}`)));
+const getLocationOptions = () => uniqueOptions(validRows('03_Locations').map((row) => option(row['Location code'], `${row['Location code']} · ${row['Location name']}`)));
+const getOrgUnitOptions = () => uniqueOptions(validRows('04_Org_Units').map((row) => option(row['Org unit code'], `${row['Org unit code']} · ${row['Org unit name']}`)));
+const getDesignationOptions = () => uniqueOptions(validRows('05_Designations').map((row) => option(row['Designation code'], `${row['Designation code']} · ${row.Title}`)));
+const getPositionOptions = () => uniqueOptions(validRows('11_Positions').map((row) => option(row['Position code'], `${row['Position code']} · ${row.Title}`)));
+const getWorkerClassOptions = () => uniqueOptions(validRows('06_Worker_Classes').map((row) => option(row['Class code'], `${row['Class code']} · ${row.Label}`)));
+const getShiftOptions = () => uniqueOptions(validRows('07_Shifts').map((row) => option(row['Shift code'], `${row['Shift code']} · ${row['Shift name']}`)));
+const getLeaveTypeOptions = () => uniqueOptions(validRows('14_Leave_Types').map((row) => option(row['Leave type'], `${row['Leave type']} · ${row.Name}`)));
+const getPayrollRunOptions = () => uniqueOptions(validRows('26_Payroll_Runs').map((row) => option(row['Run ID'], `${row['Run ID']} · ${row.Period} · ${row['Run type']}`)));
+const getPayrollGroupOptions = () => uniqueOptions(validRows('03_Locations').map((row) => option(row['Payroll group'], `${row['Payroll group']} · ${row['Location name']}`)));
 
 const shiftGroupOptions = [
   option('general_shift', 'General Shift (09:00 – 18:00)'),
@@ -201,45 +201,45 @@ const recommendedBandOptions = [
   option('Band 5', 'Band 5 · Associate Director / VP'),
 ];
 
-const fieldOptionSets = {
+const getFieldOptionSets = () => ({
   // Employees & Person references
-  employee: employeeOptions, employeeScope: employeeOptions, member: employeeOptions,
-  referrer: employeeOptions, nominee: employeeOptions, manager: employeeOptions,
-  personId: employeeOptions, employeeId: employeeOptions,
-  referrerPersonId: employeeOptions, panel: employeeOptions, assigneeId: employeeOptions,
+  employee: getEmployeeOptions(), employeeScope: getEmployeeOptions(), member: getEmployeeOptions(),
+  referrer: getEmployeeOptions(), nominee: getEmployeeOptions(), manager: getEmployeeOptions(),
+  personId: getEmployeeOptions(), employeeId: getEmployeeOptions(),
+  referrerPersonId: getEmployeeOptions(), panel: getEmployeeOptions(), assigneeId: getEmployeeOptions(),
 
   // Locations & Work sites
-  location: locationOptions, locationId: locationOptions, locationCode: locationOptions,
-  site: locationOptions, workSite: locationOptions, workLocation: locationOptions,
+  location: getLocationOptions(), locationId: getLocationOptions(), locationCode: getLocationOptions(),
+  site: getLocationOptions(), workSite: getLocationOptions(), workLocation: getLocationOptions(),
 
   // Legal Entities
-  entity: entityOptions, entityId: entityOptions, entityCode: entityOptions,
-  legalEntity: entityOptions, company: entityOptions,
+  entity: getEntityOptions(), entityId: getEntityOptions(), entityCode: getEntityOptions(),
+  legalEntity: getEntityOptions(), company: getEntityOptions(),
 
   // Shifts & Shift groups
-  appliedShift: shiftOptions, shiftCode: shiftOptions, shift: shiftOptions,
-  shiftId: shiftOptions, defaultShift: shiftOptions,
+  appliedShift: getShiftOptions(), shiftCode: getShiftOptions(), shift: getShiftOptions(),
+  shiftId: getShiftOptions(), defaultShift: getShiftOptions(),
   shiftGroup: shiftGroupOptions,
 
   // Org Units & Departments
-  orgUnit: orgUnitOptions, orgUnitId: orgUnitOptions, department: orgUnitOptions,
-  departmentId: orgUnitOptions, section: orgUnitOptions,
+  orgUnit: getOrgUnitOptions(), orgUnitId: getOrgUnitOptions(), department: getOrgUnitOptions(),
+  departmentId: getOrgUnitOptions(), section: getOrgUnitOptions(),
 
   // Designations, Positions & Roles
-  designation: designationOptions, designationCode: designationOptions,
-  designationId: designationOptions, role: designationOptions, jobTitle: designationOptions,
-  designationCodeBandLocationId: designationOptions,
-  position: positionOptions, positionCode: positionOptions, positionId: positionOptions,
-  requisitionId: positionOptions,
+  designation: getDesignationOptions(), designationCode: getDesignationOptions(),
+  designationId: getDesignationOptions(), role: getDesignationOptions(), jobTitle: getDesignationOptions(),
+  designationCodeBandLocationId: getDesignationOptions(),
+  position: getPositionOptions(), positionCode: getPositionOptions(), positionId: getPositionOptions(),
+  requisitionId: getPositionOptions(),
 
   // Worker Classes & Bands
-  workerClass: workerClassOptions, workerClassCode: workerClassOptions,
-  workerClassEmploymentType: workerClassOptions, recommendedBand: recommendedBandOptions,
+  workerClass: getWorkerClassOptions(), workerClassCode: getWorkerClassOptions(),
+  workerClassEmploymentType: getWorkerClassOptions(), recommendedBand: recommendedBandOptions,
 
   // Leaves & Payroll
-  leaveType: leaveTypeOptions, leaveTypeId: leaveTypeOptions,
-  payrollRun: payrollRunOptions, payRun: payrollRunOptions, payrollGroup: payrollGroupOptions,
-  taggedRunId: payrollRunOptions, disbursementRunIdRecoveryRunId: payrollRunOptions,
+  leaveType: getLeaveTypeOptions(), leaveTypeId: getLeaveTypeOptions(),
+  payrollRun: getPayrollRunOptions(), payRun: getPayrollRunOptions(), payrollGroup: getPayrollGroupOptions(),
+  taggedRunId: getPayrollRunOptions(), disbursementRunIdRecoveryRunId: getPayrollRunOptions(),
   recoveryPeriod: recoveryPeriodOptions,
 
   // Templates, Helpdesk, Staffing & Accounting
@@ -252,7 +252,7 @@ const fieldOptionSets = {
   glDebitAccount: glAccountDebitOptions,
   glCreditAccount: glAccountCreditOptions,
   glDimensions: glDimensionOptions,
-};
+});
 
 const moduleSources = readData("lib.demo-workbook-adapter", "moduleSources_1");
 
@@ -262,9 +262,12 @@ function asText(value) {
 
 function employeeCells(row) {
   const code = row['Employee code'];
-  const location = locations.get(row.Location) || row.Location;
-  const organisation = orgUnits.get(row['Org unit']) || row['Org unit'];
-  const designation = designations.get(row.Designation) || row.Designation;
+  const locs = getLocations();
+  const orgs = getOrgUnits();
+  const desigs = getDesignations();
+  const location = locs.get(row.Location) || row.Location;
+  const organisation = orgs.get(row['Org unit']) || row['Org unit'];
+  const designation = desigs.get(row.Designation) || row.Designation;
   return {
     Employee: `${code} · ${row['Full name']}`,
     Department: organisation,
@@ -297,8 +300,10 @@ function attendanceCells(row) {
 function sourceCells(moduleId, row) {
   if (moduleId === 'person_record' || moduleId === 'assignment_admin' || moduleId === 'employee_home') return employeeCells(row);
   if (readData("lib.demo-workbook-adapter", "content_2").includes(moduleId)) return attendanceCells(row);
-  if (moduleId === 'position_register') return { Position: `${row['Position code']} · ${row.Title}`, Incumbent: row['Current incumbent'] || 'Vacant', Vacancy: row.Status, Status: row.Status, Reference: row['Position code'], Owner: orgUnits.get(row['Org unit']) || row['Org unit'], Location: locations.get(row.Location) || row.Location };
-  if (moduleId === 'sanctioned_strength') return { Organisation: orgUnits.get(row['Org unit']) || row['Org unit'], Sanctioned: row.Sanctioned, Filled: row.Filled, Open: row['Open requisitions'], Status: Number(row.Filled) >= Number(row.Sanctioned) ? 'At limit' : 'Within headroom', Reference: row.Record, Owner: row['Approved by'] };
+  const locs = getLocations();
+  const orgs = getOrgUnits();
+  if (moduleId === 'position_register') return { Position: `${row['Position code']} · ${row.Title}`, Incumbent: row['Current incumbent'] || 'Vacant', Vacancy: row.Status, Status: row.Status, Reference: row['Position code'], Owner: orgs.get(row['Org unit']) || row['Org unit'], Location: locs.get(row.Location) || row.Location };
+  if (moduleId === 'sanctioned_strength') return { Organisation: orgs.get(row['Org unit']) || row['Org unit'], Sanctioned: row.Sanctioned, Filled: row.Filled, Open: row['Open requisitions'], Status: Number(row.Filled) >= Number(row.Sanctioned) ? 'At limit' : 'Within headroom', Reference: row.Record, Owner: row['Approved by'] };
   if (moduleId === 'overtime_register') return { Employee: `${row['Employee code']} · ${row.Name}`, Date: row.Date, Overtime: row['OT hours'], Run: row['Pay in run'] || 'Not tagged', Status: row['Approved by'] === 'Not raised' ? 'Pending approval' : row['Pay in run'] ? 'Tagged to run' : 'Approved', Reference: row['OT record'], Owner: row['Approved by'] };
   if (moduleId === 'gate_passes') return { Employee: `${row['Employee code']} · ${row.Name}`, Date: row.Date, Minutes: row.Minutes, Status: row.Status, Reference: row['Gate pass ID'], Owner: row.Approver };
   if (moduleId === 'leave_requests') return { Employee: `${row['Employee code']} · ${row.Name}`, 'Leave type': row['Leave type'], Dates: `${row.From} to ${row.To}`, Status: row.Status, Reference: row['Request ID'], Owner: row['Step 1 — Supervisor'] || 'Not routed' };
@@ -326,7 +331,7 @@ function sourceCells(moduleId, row) {
 export function getWorkbookRowsForModule(moduleId) {
   const source = moduleSources[moduleId];
   if (!source) return [];
-  const sourceRows = source === '12_Employees' ? employeeRows : validRows(source);
+  const sourceRows = source === '12_Employees' ? getEmployeeRows() : validRows(source);
   return sourceRows.map((row, index) => {
     const cells = sourceCells(moduleId, row);
     return {
@@ -347,7 +352,8 @@ export function recordCellValue(record, column) {
 }
 
 export function getWorkbookFieldOptions(fieldKey) {
-  if (fieldOptionSets[fieldKey]) return fieldOptionSets[fieldKey];
+  const sets = getFieldOptionSets();
+  if (sets[fieldKey]) return sets[fieldKey];
   const mappedPicklistKey = fieldToPicklistKeyMap[fieldKey];
   if (mappedPicklistKey && picklistOptionsMap.has(mappedPicklistKey)) {
     return picklistOptionsMap.get(mappedPicklistKey);

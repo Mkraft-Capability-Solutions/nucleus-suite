@@ -61,7 +61,7 @@ export const workspaceContract = {
     "axisName_fields_33",
     "nucleusLightTheme_34"
   ],
-  "components.Clerio.AIPanel": [
+  "components.Workspace.AIPanel": [
     "messages_fields_1",
     "time_2",
     "scrollToBottom_3",
@@ -99,7 +99,7 @@ export const workspaceContract = {
     "initialState_1",
     "fallback_1"
   ],
-  "components.Clerio.AccessControlView": [
+  "components.Workspace.AccessControlView": [
     "MODULE_REGISTRY_1",
     "COCKPIT_REGISTRY_2",
     "DATA_SCOPES_3",
@@ -212,7 +212,7 @@ export const workspaceContract = {
     "fallback_2",
     "fallback_3"
   ],
-  "components.Clerio.ActionFormModal": [
+  "components.Workspace.ActionFormModal": [
     "common_1",
     "content_text_2",
     "content_aria-label_3",
@@ -221,10 +221,10 @@ export const workspaceContract = {
     "content_text_6",
     "content_text_7"
   ],
-  "components.Clerio.AdminOverview": [
+  "components.Workspace.AdminOverview": [
     "content"
   ],
-  "components.Clerio.AttendanceFAB": [
+  "components.Workspace.AttendanceFAB": [
     "AttendanceFAB_text_1",
     "AttendanceFAB_2",
     "AttendanceFAB_text_3",
@@ -239,7 +239,7 @@ export const workspaceContract = {
     "fallback_1",
     "fallback_2"
   ],
-  "components.Clerio.AttendanceView": [
+  "components.Workspace.AttendanceView": [
     "res_fields_1",
     "res_fields_2",
     "days_3",
@@ -398,7 +398,7 @@ export const workspaceContract = {
     "fallback_7",
     "fallback_8"
   ],
-  "components.Clerio.CMSModal": [
+  "components.Workspace.CMSModal": [
     "handlePublishAnnouncement_fields_1",
     "CMSModal_text_2",
     "CMSModal_text_3",
@@ -475,7 +475,7 @@ export const workspaceContract = {
     "fallback_1",
     "fallback_2"
   ],
-  "components.Clerio.CatalogGridView": [
+  "components.Workspace.CatalogGridView": [
     "catalogCards_fields_1",
     "catalogCards_fields_2",
     "catalogCards_fields_3",
@@ -567,7 +567,7 @@ export const workspaceContract = {
     "CatalogGridView_text_89",
     "initialState_1"
   ],
-  "components.Clerio.ChatPanel": [
+  "components.Workspace.ChatPanel": [
     "initialConversations_1",
     "scrollToBottom_2",
     "newMsg_fields_3",
@@ -583,7 +583,7 @@ export const workspaceContract = {
     "ChatPanel_aria-label_13",
     "initialState_1"
   ],
-  "components.Clerio.CompensationView": [
+  "components.Workspace.CompensationView": [
     "CompensationView_text_1",
     "CompensationView_text_2",
     "CompensationView_text_3",
@@ -606,7 +606,7 @@ export const workspaceContract = {
     "display_1",
     "display_2"
   ],
-  "components.Clerio.ComplianceView": [
+  "components.Workspace.ComplianceView": [
     "accidentForm_1",
     "obligations_2",
     "stateMatrix_3",
@@ -999,7 +999,7 @@ export const workspaceContract = {
     "display_18",
     "unavailableAction"
   ],
-  "components.Clerio.ContractWorkforceView": [
+  "components.Workspace.ContractWorkforceView": [
     "reconciliationList_1",
     "workers_2",
     "vendors_3",
@@ -1071,7 +1071,7 @@ export const workspaceContract = {
     "initialState_1",
     "unavailableAction"
   ],
-  "components.Clerio.DataImportModal": [
+  "components.Workspace.DataImportModal": [
     "SYSTEM_FIELDS_1",
     "PRESET_DATASETS_2",
     "DataImportModal_text_3",
@@ -1127,7 +1127,7 @@ export const workspaceContract = {
     "fallback_1",
     "fallback_2"
   ],
-  "components.Clerio.ExperienceView": [
+  "components.Workspace.ExperienceView": [
     "ExperienceView_text_1",
     "ExperienceView_text_2",
     "ExperienceView_text_3",
@@ -1174,7 +1174,7 @@ export const workspaceContract = {
     "ExperienceView_text_44",
     "initialState_1"
   ],
-  "components.Clerio.HelpdeskView": [
+  "components.Workspace.HelpdeskView": [
     "groundedResult_1",
     "tickets_2",
     "sampleQueries_3",
@@ -1238,7 +1238,7 @@ export const workspaceContract = {
     "initialState_3",
     "unavailableAction"
   ],
-  "components.Clerio.IntegrationsView": [
+  "components.Workspace.IntegrationsView": [
     "IntegrationsView_text_1",
     "IntegrationsView_text_2",
     "IntegrationsView_text_3",
@@ -1272,7 +1272,7 @@ export const workspaceContract = {
     "IntegrationsView_text_31",
     "initialState_1"
   ],
-  "components.Clerio.LearningView": [
+  "components.Workspace.LearningView": [
     "LearningView_text_1",
     "LearningView_text_2",
     "LearningView_title_3",
@@ -1291,7 +1291,7 @@ export const workspaceContract = {
     "display_1",
     "display_2"
   ],
-  "components.Clerio.LeaveView": [
+  "components.Workspace.LeaveView": [
     "LeaveApplicationModal_text_1",
     "LeaveApplicationModal_text_2",
     "LeaveApplicationModal_text_3",
@@ -1489,7 +1489,7 @@ export const workspaceContract = {
     "fallback_2",
     "fallback_3"
   ],
-  "components.Clerio.LeftDock": [
+  "components.Workspace.LeftDock": [
     "dockItems_fields_1",
     "dockItems_fields_2",
     "dockItems_fields_3",
@@ -1520,7 +1520,7 @@ export const workspaceContract = {
     "display_6",
     "display_7"
   ],
-  "components.Clerio.LoginView": [
+  "components.Workspace.LoginView": [
     "handleBiometricLogin_fields_1",
     "LoginView_text_2",
     "LoginView_text_3",
@@ -1538,7 +1538,7 @@ export const workspaceContract = {
     "loginError",
     "demoNotice"
   ],
-  "components.Clerio.MainWorkspace": [
+  "components.Workspace.MainWorkspace": [
     "ROLE_FALLBACKS_1",
     "ROLE_PERMITTED_CONSOLES_2",
     "permittedConsoleIds_3",
@@ -1680,7 +1680,7 @@ export const workspaceContract = {
     "demoActionComplete",
     "unavailableAction"
   ],
-  "components.Clerio.MisReportingHub": [
+  "components.Workspace.MisReportingHub": [
     "DEFAULT_CONTEXT_1",
     "RISK_STATES_2",
     "sourceRuns_fields_3",
@@ -1812,7 +1812,7 @@ export const workspaceContract = {
     "exportRetry",
     "viewRecord"
   ],
-  "components.Clerio.OnboardingView": [
+  "components.Workspace.OnboardingView": [
     "letterCustomFields_1",
     "triggerChains_2",
     "OnboardingView_text_3",
@@ -1976,7 +1976,7 @@ export const workspaceContract = {
     "fallback_1",
     "fallback_2"
   ],
-  "components.Clerio.OperationalModuleView": [
+  "components.Workspace.OperationalModuleView": [
     "content_1",
     "lookup_2",
     "newRecord_fields_3",
@@ -2012,7 +2012,7 @@ export const workspaceContract = {
     "decreaseDays",
     "increaseDays"
   ],
-  "components.Clerio.PayrollView": [
+  "components.Workspace.PayrollView": [
     "blob_1",
     "blob_2",
     "currentFnFEmp_fields_3",
@@ -2328,7 +2328,7 @@ export const workspaceContract = {
     "fallback_6",
     "fallback_7"
   ],
-  "components.Clerio.PeopleCoreView": [
+  "components.Workspace.PeopleCoreView": [
     "PeopleCoreView_text_1",
     "PeopleCoreView_text_2",
     "PeopleCoreView_title_3",
@@ -2420,7 +2420,7 @@ export const workspaceContract = {
     "fallback_3",
     "fallback_4"
   ],
-  "components.Clerio.PerformanceView": [
+  "components.Workspace.PerformanceView": [
     "PerformanceView_text_1",
     "PerformanceView_text_2",
     "PerformanceView_title_3",
@@ -2468,7 +2468,7 @@ export const workspaceContract = {
     "PerformanceView_text_45",
     "initialState_1"
   ],
-  "components.Clerio.ProjectView": [
+  "components.Workspace.ProjectView": [
     "newProjMembers_1",
     "isAdminOrHR_2",
     "columnOrder_3",
@@ -2592,7 +2592,7 @@ export const workspaceContract = {
     "fallback_10",
     "fallback_11"
   ],
-  "components.Clerio.RecruitmentView": [
+  "components.Workspace.RecruitmentView": [
     "stages_1",
     "departmentsList_2",
     "RecruitmentView_text_3",
@@ -2733,7 +2733,7 @@ export const workspaceContract = {
     "display_13",
     "fallback_1"
   ],
-  "components.Clerio.RightSubNav": [
+  "components.Workspace.RightSubNav": [
     "ROLE_PERMITTED_CONSOLES_1",
     "dashboard_fields_2",
     "groups_fields_3",
@@ -2870,7 +2870,7 @@ export const workspaceContract = {
     "display_2",
     "fallback_1"
   ],
-  "components.Clerio.SettingsView": [
+  "components.Workspace.SettingsView": [
     "formData_fields_1",
     "formData_fields_2",
     "formData_fields_3",
@@ -3010,7 +3010,7 @@ export const workspaceContract = {
     "fallback_5",
     "fallback_6"
   ],
-  "components.Clerio.SideNav": [
+  "components.Workspace.SideNav": [
     "PRIMARY_PILLARS_1",
     "navSections_fields_2",
     "items_fields_3",
@@ -3073,7 +3073,7 @@ export const workspaceContract = {
     "display_11",
     "fallback_1"
   ],
-  "components.Clerio.TeamView": [
+  "components.Workspace.TeamView": [
     "pods_1",
     "TeamView_text_2",
     "TeamView_text_3",
@@ -3095,11 +3095,11 @@ export const workspaceContract = {
     "fallback_1",
     "fallback_2"
   ],
-  "components.Clerio.Toast": [
+  "components.Workspace.Toast": [
     "defaultValue_1",
     "dismissLabel"
   ],
-  "components.Clerio.TopNav": [
+  "components.Workspace.TopNav": [
     "ROLE_TO_DEFAULT_CONSOLE_1",
     "ROLE_PERMITTED_CONSOLES_2",
     "ALL_CONSOLES_3",
@@ -3163,7 +3163,7 @@ export const workspaceContract = {
     "fallback_9",
     "fallback_10"
   ],
-  "components.Clerio.WorkflowBuilderModal": [
+  "components.Workspace.WorkflowBuilderModal": [
     "trigger_fields_1",
     "trigger_fields_2",
     "condition_fields_3",

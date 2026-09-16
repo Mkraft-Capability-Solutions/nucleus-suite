@@ -1,0 +1,142 @@
+@startuml
+title MKraft HRMS - Talent, onboarding & lifecycle\nPROPOSED: 40 owned tables / 125 outgoing FK constraints
+!include includes/style.iuml
+package "Talent, onboarding & lifecycle" {
+!include includes/06-talent-onboarding-tables.iuml
+}
+package "External reference keys" {
+entity "approval_requests" as approval_requests <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "documents" as documents <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "employees" as employees <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * employee_number : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, employee_number)
+}
+
+entity "employment_assignments" as employment_assignments <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "grades" as grades <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "job_profiles" as job_profiles <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "jurisdictions" as jurisdictions <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "legal_entities" as legal_entities <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "locations" as locations <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "pay_components" as pay_components <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "persons" as persons <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "positions" as positions <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "roles" as roles <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "tenants" as tenants <<external>> {
+  * id : uuid <<PK>>
+  * code : text
+  --
+  UK (code)
+}
+
+entity "users" as users <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * email : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, email)
+}
+
+entity "work_items" as work_items <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+}
+!include includes/06-talent-onboarding-relations.iuml
+!include includes/legend.iuml
+@enduml

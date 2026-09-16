@@ -22,6 +22,6 @@ export default defineConfig({
         url: 'http://127.0.0.1:3100',
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
-        env: { APP_DATA_MODE: 'json', DEMO_AUTH_ENABLED: 'true', BETTER_AUTH_URL: 'http://127.0.0.1:3100' },
+        env: { APP_DATA_MODE: 'database', DEMO_AUTH_ENABLED: 'true', BETTER_AUTH_URL: 'http://127.0.0.1:3100' },
     },
 });

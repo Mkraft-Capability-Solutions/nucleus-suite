@@ -3,7 +3,7 @@ import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
 import {
   getLeaveEmployees,
   leaveCalendarPolicy,
-} from "@/services/leave-reference";
+} from "@/app/actions/leaveActions";
 import { useMemo, useRef, useState } from "react";
 import {
   Alert,
@@ -24,7 +24,7 @@ import { useHRMS } from "@/context/HRMSContext";
 import { useTranslation } from "@/context/I18nContext";
 import { readData } from "@/services/workspace-data.mjs";
 import { inclusiveDays } from "@/lib/form-validation";
-import { LEAVE_TYPES, calculateLeaveSpan } from "@/services/leaveEngine";
+import { LEAVE_TYPES, calculateLeaveSpan } from "@/app/actions/leaveActions";
 import { getPicklistOptions } from "@/lib/picklist-catalog";
 
 export default function LeaveApplicationDialog({
@@ -178,7 +178,7 @@ function LeaveApplicationForm({
               <em>Select Leave Type</em>
             </MenuItem>
             {(
-              Object.values(LEAVE_TYPES) as Array<{
+              Object.values(LEAVE_TYPES) as unknown as Array<{
                 code: string;
                 label: string;
                 requestable?: boolean;

@@ -1,0 +1,93 @@
+[
+  {
+    "Credit ID": "CO-2026-0231",
+    "Employee code": "E1028",
+    "Name": "Yashoda Rani",
+    "Earned on": "2026-07-12",
+    "Reason": "Rest-day working, Assembly line changeover",
+    "Days": 1,
+    "Expires on": "2026-09-10",
+    "Status": "Consumed",
+    "Consumed on": "2026-09-09",
+    "Days remaining": 0,
+    "Demo point": "Point 6"
+  },
+  {
+    "Credit ID": "CO-2026-0288",
+    "Employee code": "E1028",
+    "Name": "Yashoda Rani",
+    "Earned on": "2026-09-06",
+    "Reason": "Rest-day working, month-end despatch",
+    "Days": 1,
+    "Expires on": "2026-11-05",
+    "Status": "Open",
+    "Consumed on": null,
+    "Days remaining": 1,
+    "Demo point": "Point 6"
+  },
+  {
+    "Credit ID": "CO-2026-0244",
+    "Employee code": "E1050",
+    "Name": "Suresh Pillai",
+    "Earned on": "2026-06-29",
+    "Reason": "Holiday working, stock count",
+    "Days": 1,
+    "Expires on": "2026-08-28",
+    "Status": "Consumed",
+    "Consumed on": "2026-08-28",
+    "Days remaining": 0,
+    "Demo point": "Point 6"
+  },
+  {
+    "Credit ID": "CO-2026-0266",
+    "Employee code": "E1050",
+    "Name": "Suresh Pillai",
+    "Earned on": "2026-08-09",
+    "Reason": "Rest-day working, inbound clearance",
+    "Days": 1,
+    "Expires on": "2026-10-08",
+    "Status": "Open",
+    "Consumed on": null,
+    "Days remaining": 1,
+    "Demo point": "Point 6"
+  },
+  {
+    "Credit ID": "CO-2026-0301",
+    "Employee code": "E1041",
+    "Name": "Mahesh Shinde",
+    "Earned on": "2026-09-13",
+    "Reason": "Rest-day working, preventive maintenance",
+    "Days": 1,
+    "Expires on": "2026-11-12",
+    "Status": "Open",
+    "Consumed on": null,
+    "Days remaining": 1,
+    "Demo point": "Point 6"
+  },
+  {
+    "Credit ID": "CO-2026-0198",
+    "Employee code": "E1044",
+    "Name": "Rahul Gaikwad",
+    "Earned on": "2026-05-31",
+    "Reason": "Rest-day working",
+    "Days": 1,
+    "Expires on": "2026-07-30",
+    "Status": "Lapsed",
+    "Consumed on": null,
+    "Days remaining": 0,
+    "Demo point": "Point 6 — show a credit that expired unconsumed"
+  },
+  {
+    "Credit ID": "Each credit carries its own 60-day clock. Yashoda Rani holds two credits expiring nine weeks apart; Rahul Gaikwad has one that lapsed unused. This is the clearest single demonstration of why the leave model has to be a ledger.",
+    "Employee code": null,
+    "Name": null,
+    "Earned on": null,
+    "Reason": null,
+    "Days": null,
+    "Expires on": null,
+    "Status": null,
+    "Consumed on": null,
+    "Days remaining": null,
+    "Demo point": null
+  }
+]

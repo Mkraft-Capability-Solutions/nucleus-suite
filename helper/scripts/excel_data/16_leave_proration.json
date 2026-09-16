@@ -1,0 +1,82 @@
+[
+  {
+    "Rule code": "PR-01",
+    "Joining month from": "January",
+    "Joining month to": "January",
+    "CL days": 6,
+    "SL days": 6,
+    "Example employee": "E1069 Meera Prabhu — joined 12 Jan 2026 (WC-PERM, leave eligible)",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "Verified — worker class is leave eligible"
+  },
+  {
+    "Rule code": "PR-02",
+    "Joining month from": "February",
+    "Joining month to": "March",
+    "CL days": 5,
+    "SL days": 5,
+    "Example employee": "E1067 Ankita Bhargava — joined 16 Mar 2026 (WC-PERM, leave eligible)",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "Verified — worker class is leave eligible"
+  },
+  {
+    "Rule code": "PR-03",
+    "Joining month from": "April",
+    "Joining month to": "May",
+    "CL days": 4,
+    "SL days": 4,
+    "Example employee": "E1060 Jayanthi Elangovan — joined 06 Apr 2026 (WC-PERM, leave eligible)",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "Verified — worker class is leave eligible"
+  },
+  {
+    "Rule code": "PR-04",
+    "Joining month from": "June",
+    "Joining month to": "July",
+    "CL days": 3,
+    "SL days": 3,
+    "Example employee": "E1030 Chetan Bhandary — joined 01 Jul 2026 (WC-TRN, CL only)",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "Verified — trainee scheme, CL only"
+  },
+  {
+    "Rule code": "PR-05",
+    "Joining month from": "August",
+    "Joining month to": "September",
+    "CL days": 2,
+    "SL days": 2,
+    "Example employee": "E1065 Ishita Chatterjee — joined 17 Aug 2026 (WC-PERM, leave eligible)",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "Verified — worker class is leave eligible"
+  },
+  {
+    "Rule code": "PR-06",
+    "Joining month from": "October",
+    "Joining month to": "4 December",
+    "CL days": 1,
+    "SL days": 1,
+    "Example employee": "No current employee — see 61_Preboarding_Chain, C-2026-0071 joins 05 Oct 2026",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "No record yet"
+  },
+  {
+    "Rule code": "PR-07",
+    "Joining month from": "5 December",
+    "Joining month to": "31 December",
+    "CL days": 0,
+    "SL days": 0,
+    "Example employee": "No current employee — depends on the answer to open question Q-02",
+    "Demo point": "Point 7",
+    "Leave-eligible check": "No record yet"
+  },
+  {
+    "Rule code": "CORRECTED v1.1. In v1.0 the PR-01 and PR-02 examples named E1038 Parvathi Bai and E1046 Dattatray More, who are a third-party helper and a contractual daily-wage worker — neither is leave eligible, so neither could carry a proration credit. PR-01 now points at E1069, added in v1.1 for exactly this rung; PR-02 points at E1067, who was already the worked example in sheet 15. Every named example is now a worker whose class actually accrues leave.",
+    "Joining month from": null,
+    "Joining month to": null,
+    "CL days": null,
+    "SL days": null,
+    "Example employee": null,
+    "Demo point": null,
+    "Leave-eligible check": null
+  }
+]

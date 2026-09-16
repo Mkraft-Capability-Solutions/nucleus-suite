@@ -1,17 +1,17 @@
 # Skill: Wire an Operational Form (SCR-001 to SCR-050) to Neon Database
 
-This skill guides you through connecting any of the 50 operational forms from `Nucleus_Forms_and_Fields_Complete_MKraft.xlsx` to an API route and Neon PostgreSQL database table.
+This skill guides you through connecting any of the 50 operational forms from `Nucleus_Forms_and_Fields_Complete_MKraft.xlsx` to a Next.js Server Action and Neon PostgreSQL database table.
 
 ---
 
 ## Workflow Steps
 
 ### Step 1: Locate the Form Specification
-1. Inspect `src/lib/operational-module-registry.js` or `data/ui/lib.operational-module-registry.json` for the screen ID (e.g. `SCR-023` Gate Pass).
-2. Note the field names, required validation constraints, and target endpoint (e.g. `/api/v1/gate-passes`).
+1. Inspect `src/config/ui/lib.operational-module-registry.json` for the screen ID (e.g. `SCR-023` Gate Pass).
+2. Note the field names and required validation constraints.
 
 ### Step 2: Ensure Server Domain Service Exists
-1. Navigate to `src/server/[domain]/` (e.g. `src/server/attendance/`).
+1. Navigate to `src/server/[domain]/application/` (e.g. `src/server/attendance/application/attendanceService.ts`).
 2. Verify or implement the domain service function with `tenantTx()` transaction scoping:
    ```typescript
    export async function submitFormRecord(access: Access, data: FormData) {
@@ -21,34 +21,38 @@ This skill guides you through connecting any of the 50 operational forms from `N
    }
    ```
 
-### Step 3: Implement API Route
-1. In `src/app/api/v1/[endpoint]/route.ts`:
+### Step 3: Implement Server Action
+1. In `src/app/actions/[domain]Actions.ts` (e.g., `src/app/actions/attendanceActions.ts`):
    ```typescript
-   import "server-only";
+   "use server";
    import { requireAccess } from "@/server/platform/access";
-   import { httpOk, httpError } from "@/server/platform/http";
+   import { submitFormRecord } from "@/server/[domain]/application/[domain]Service";
 
-   export async function POST(req: Request) {
-     const access = await requireAccess(req);
-     const body = await req.json();
-     const result = await submitFormRecord(access, body);
-     return httpOk(result);
+   export async function submitAction(data: any) {
+     const access = await requireAccess();
+     try {
+       const result = await submitFormRecord(access, data);
+       return { success: true, data: result };
+     } catch (error) {
+       console.error("Action Failed:", error);
+       return { success: false, error: error.message };
+     }
    }
    ```
 
 ### Step 4: Wire Client Form Submission
 1. In the client component (`src/components/Clerio/...`):
    ```javascript
-   const res = await fetch('/api/v1/[endpoint]', {
-     method: 'POST',
-     headers: {
-       'Content-Type': 'application/json',
-       'Idempotency-Key': crypto.randomUUID()
-     },
-     body: JSON.stringify(formData)
-   });
-   if (!res.ok) throw new Error('Submission failed');
-   showToast('Success', 'Record successfully saved', 'success');
+   import { submitAction } from '@/app/actions/[domain]Actions';
+   
+   // Inside form handler
+   try {
+     const res = await submitAction(formData);
+     if (!res.success) throw new Error(res.error);
+     showToast('Success', 'Record successfully saved', 'success');
+   } catch (e) {
+     showToast('Error', e.message, 'error');
+   }
    ```
 
 ### Step 5: Verification

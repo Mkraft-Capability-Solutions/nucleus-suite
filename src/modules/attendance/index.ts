@@ -3,5 +3,5 @@
  * Shift Master (FRM-ATT-01), Regularization (FRM-ATT-02), Overtime (FRM-ATT-03), Gate Passes (FRM-ATT-05)
  */
 
-export { default as AttendanceView } from '@/components/Clerio/AttendanceView';
-export { default as AttendanceFAB } from '@/components/Clerio/AttendanceFAB';
+export { default as AttendanceView } from '@/components/Workspace/AttendanceView';
+export { default as AttendanceFAB } from '@/components/Workspace/AttendanceFAB';

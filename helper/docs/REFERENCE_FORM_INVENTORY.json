@@ -1,0 +1,4142 @@
+{
+  "reference": "../NucleusUI",
+  "note": "Read-only source inventory. An endpoint or field-name match does not certify feature parity or equivalent behavior.",
+  "commonForms": {
+    "employee": {
+      "title": "Add employee",
+      "submit": "Create employee",
+      "fields": [
+        [
+          "firstName",
+          "First name",
+          "text",
+          true
+        ],
+        [
+          "lastName",
+          "Last name",
+          "text",
+          true
+        ],
+        [
+          "workEmail",
+          "Work email",
+          "email",
+          true
+        ],
+        [
+          "department",
+          "Department",
+          "select",
+          true,
+          [
+            "Engineering",
+            "Product",
+            "Human Resources",
+            "Finance"
+          ]
+        ],
+        [
+          "designation",
+          "Designation",
+          "text",
+          true
+        ],
+        [
+          "joiningDate",
+          "Joining date",
+          "date",
+          true
+        ],
+        [
+          "manager",
+          "Reporting manager",
+          "text"
+        ]
+      ]
+    },
+    "position": {
+      "title": "Create position slot",
+      "submit": "Create slot",
+      "fields": [
+        [
+          "title",
+          "Position title",
+          "text",
+          true
+        ],
+        [
+          "department",
+          "Department",
+          "select",
+          true,
+          [
+            "Engineering",
+            "Product",
+            "Human Resources",
+            "Finance"
+          ]
+        ],
+        [
+          "location",
+          "Location",
+          "text",
+          true
+        ],
+        [
+          "grade",
+          "Grade or band",
+          "text",
+          true
+        ],
+        [
+          "headcount",
+          "Approved headcount",
+          "number",
+          true
+        ],
+        [
+          "effectiveDate",
+          "Effective date",
+          "date",
+          true
+        ]
+      ]
+    },
+    "document": {
+      "title": "Upload employee document",
+      "submit": "Upload document",
+      "fields": [
+        [
+          "employee",
+          "Employee",
+          "text",
+          true
+        ],
+        [
+          "documentType",
+          "Document category",
+          "select",
+          true,
+          [
+            "Identity document",
+            "Employment letter",
+            "Certification",
+            "Policy acknowledgement"
+          ]
+        ],
+        [
+          "title",
+          "Document title",
+          "text",
+          true
+        ],
+        [
+          "file",
+          "File",
+          "file",
+          true
+        ],
+        [
+          "expiryDate",
+          "Expiry date",
+          "date"
+        ]
+      ]
+    },
+    "invite": {
+      "title": "Invite teammate",
+      "submit": "Send invitation",
+      "fields": [
+        [
+          "name",
+          "Full name",
+          "text",
+          true
+        ],
+        [
+          "email",
+          "Work email",
+          "email",
+          true
+        ],
+        [
+          "role",
+          "Role",
+          "select",
+          true,
+          [
+            "Employee",
+            "Team lead",
+            "HR manager",
+            "Finance manager"
+          ]
+        ],
+        [
+          "team",
+          "Team or department",
+          "text",
+          true
+        ],
+        [
+          "message",
+          "Invitation message",
+          "textarea"
+        ]
+      ]
+    },
+    "oneOnOne": {
+      "title": "Schedule a 1 on 1",
+      "submit": "Schedule 1 on 1",
+      "fields": [
+        [
+          "participant",
+          "Participant",
+          "text",
+          true
+        ],
+        [
+          "date",
+          "Date",
+          "date",
+          true
+        ],
+        [
+          "time",
+          "Time",
+          "time",
+          true
+        ],
+        [
+          "duration",
+          "Duration",
+          "select",
+          true,
+          [
+            "30 minutes",
+            "45 minutes",
+            "60 minutes"
+          ]
+        ],
+        [
+          "agenda",
+          "Agenda",
+          "textarea"
+        ],
+        [
+          "recurrence",
+          "Repeat",
+          "select",
+          false,
+          [
+            "Does not repeat",
+            "Weekly",
+            "Monthly"
+          ]
+        ]
+      ]
+    },
+    "feedback360": {
+      "title": "Request 360 feedback",
+      "submit": "Request feedback",
+      "fields": [
+        [
+          "employee",
+          "Employee under review",
+          "text",
+          true
+        ],
+        [
+          "reviewers",
+          "Reviewers",
+          "textarea",
+          true
+        ],
+        [
+          "cycle",
+          "Review cycle",
+          "text",
+          true
+        ],
+        [
+          "dueDate",
+          "Response due date",
+          "date",
+          true
+        ],
+        [
+          "message",
+          "Message to reviewers",
+          "textarea"
+        ]
+      ]
+    },
+    "okr": {
+      "title": "Create OKR goal",
+      "submit": "Create goal",
+      "fields": [
+        [
+          "objective",
+          "Objective",
+          "text",
+          true
+        ],
+        [
+          "owner",
+          "Owner",
+          "text",
+          true
+        ],
+        [
+          "cycle",
+          "Cycle",
+          "select",
+          true,
+          [
+            "Q1",
+            "Q2",
+            "Q3",
+            "Q4",
+            "Annual"
+          ]
+        ],
+        [
+          "weight",
+          "Weight percent",
+          "number",
+          true
+        ],
+        [
+          "keyResults",
+          "Key results",
+          "textarea",
+          true
+        ],
+        [
+          "dueDate",
+          "Due date",
+          "date"
+        ]
+      ]
+    },
+    "wellbeing": {
+      "title": "Create wellbeing plan",
+      "submit": "Create plan",
+      "fields": [
+        [
+          "affectedGroup",
+          "Employee or cohort",
+          "text",
+          true
+        ],
+        [
+          "action",
+          "Proposed action",
+          "textarea",
+          true
+        ],
+        [
+          "owner",
+          "Plan owner",
+          "text",
+          true
+        ],
+        [
+          "reviewDate",
+          "Review date",
+          "date",
+          true
+        ]
+      ]
+    },
+    "compCycle": {
+      "title": "Create annual review cycle",
+      "submit": "Save review cycle",
+      "fields": [
+        [
+          "name",
+          "Cycle name",
+          "text",
+          true
+        ],
+        [
+          "effectiveDate",
+          "Effective date",
+          "date",
+          true
+        ],
+        [
+          "budget",
+          "Budget allocation",
+          "number",
+          true
+        ],
+        [
+          "eligiblePopulation",
+          "Eligible employees",
+          "textarea",
+          true
+        ],
+        [
+          "approvalRoute",
+          "Approval route",
+          "text",
+          true
+        ]
+      ]
+    },
+    "offCycleOt": {
+      "title": "Create off cycle OT run",
+      "submit": "Create OT run",
+      "fields": [
+        [
+          "period",
+          "OT period",
+          "text",
+          true
+        ],
+        [
+          "paymentDate",
+          "Payment date",
+          "date",
+          true
+        ],
+        [
+          "employeeScope",
+          "Employee scope",
+          "textarea",
+          true
+        ],
+        [
+          "approvalReference",
+          "Approved OT reference",
+          "text",
+          true
+        ]
+      ]
+    },
+    "arrears": {
+      "title": "Create retro arrears run",
+      "submit": "Create arrears run",
+      "fields": [
+        [
+          "originalPeriod",
+          "Original pay period",
+          "text",
+          true
+        ],
+        [
+          "paymentDate",
+          "Payment date",
+          "date",
+          true
+        ],
+        [
+          "employeeScope",
+          "Affected employees",
+          "textarea",
+          true
+        ],
+        [
+          "reason",
+          "Correction reason",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "contractor": {
+      "title": "Register contract worker",
+      "submit": "Register worker",
+      "fields": [
+        [
+          "name",
+          "Worker name",
+          "text",
+          true
+        ],
+        [
+          "agency",
+          "Agency",
+          "text",
+          true
+        ],
+        [
+          "contract",
+          "Contract reference",
+          "text",
+          true
+        ],
+        [
+          "worksite",
+          "Worksite",
+          "text",
+          true
+        ],
+        [
+          "startDate",
+          "Assignment start",
+          "date",
+          true
+        ],
+        [
+          "endDate",
+          "Assignment end",
+          "date"
+        ]
+      ]
+    },
+    "debitNote": {
+      "title": "Issue debit note",
+      "submit": "Create debit note",
+      "fields": [
+        [
+          "vendor",
+          "Vendor",
+          "text",
+          true
+        ],
+        [
+          "invoice",
+          "Invoice reference",
+          "text",
+          true
+        ],
+        [
+          "amount",
+          "Amount",
+          "number",
+          true
+        ],
+        [
+          "reason",
+          "Reason",
+          "textarea",
+          true
+        ],
+        [
+          "evidence",
+          "Supporting file",
+          "file"
+        ]
+      ]
+    },
+    "filing": {
+      "title": "Review and file obligation",
+      "submit": "Record filing",
+      "fields": [
+        [
+          "entity",
+          "Legal entity",
+          "text",
+          true
+        ],
+        [
+          "obligation",
+          "Obligation",
+          "text",
+          true
+        ],
+        [
+          "period",
+          "Filing period",
+          "text",
+          true
+        ],
+        [
+          "submissionDate",
+          "Submission date",
+          "date",
+          true
+        ],
+        [
+          "receipt",
+          "Receipt or evidence",
+          "file"
+        ],
+        [
+          "notes",
+          "Review notes",
+          "textarea"
+        ]
+      ]
+    },
+    "inspector": {
+      "title": "Record inspector entry",
+      "submit": "Record visit",
+      "fields": [
+        [
+          "inspector",
+          "Inspector name",
+          "text",
+          true
+        ],
+        [
+          "authority",
+          "Authority",
+          "text",
+          true
+        ],
+        [
+          "visitDate",
+          "Visit date",
+          "date",
+          true
+        ],
+        [
+          "purpose",
+          "Visit purpose",
+          "textarea",
+          true
+        ],
+        [
+          "observations",
+          "Observations",
+          "textarea"
+        ]
+      ]
+    },
+    "apiKey": {
+      "title": "Generate API key",
+      "submit": "Generate key",
+      "fields": [
+        [
+          "name",
+          "Key name",
+          "text",
+          true
+        ],
+        [
+          "environment",
+          "Environment",
+          "select",
+          true,
+          [
+            "Sandbox",
+            "Production"
+          ]
+        ],
+        [
+          "scopes",
+          "Scopes",
+          "textarea",
+          true
+        ],
+        [
+          "expiry",
+          "Expiry date",
+          "date"
+        ]
+      ]
+    },
+    "connector": {
+      "title": "Configure connector",
+      "submit": "Save connector",
+      "fields": [
+        [
+          "provider",
+          "Provider",
+          "text",
+          true
+        ],
+        [
+          "connectionUrl",
+          "Connection URL",
+          "url",
+          true
+        ],
+        [
+          "authentication",
+          "Authentication method",
+          "select",
+          true,
+          [
+            "OAuth 2.0",
+            "API key",
+            "Service account"
+          ]
+        ],
+        [
+          "syncSchedule",
+          "Sync schedule",
+          "select",
+          true,
+          [
+            "Manual",
+            "Hourly",
+            "Daily"
+          ]
+        ],
+        [
+          "mappingNotes",
+          "Field mapping notes",
+          "textarea"
+        ]
+      ]
+    },
+    "learningPath": {
+      "title": "Create learning path",
+      "submit": "Create learning path",
+      "fields": [
+        [
+          "learner",
+          "Learner",
+          "text",
+          true
+        ],
+        [
+          "skillGoals",
+          "Skill goals",
+          "textarea",
+          true
+        ],
+        [
+          "timeframe",
+          "Target timeframe",
+          "select",
+          true,
+          [
+            "30 days",
+            "60 days",
+            "90 days"
+          ]
+        ],
+        [
+          "courses",
+          "Recommended courses",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "focusBlock": {
+      "title": "Schedule focus block",
+      "submit": "Schedule block",
+      "fields": [
+        [
+          "date",
+          "Date",
+          "date",
+          true
+        ],
+        [
+          "startTime",
+          "Start time",
+          "time",
+          true
+        ],
+        [
+          "duration",
+          "Duration",
+          "select",
+          true,
+          [
+            "30 minutes",
+            "60 minutes",
+            "90 minutes",
+            "120 minutes"
+          ]
+        ],
+        [
+          "calendar",
+          "Calendar",
+          "select",
+          true,
+          [
+            "Work calendar",
+            "Personal calendar"
+          ]
+        ],
+        [
+          "recurrence",
+          "Repeat",
+          "select",
+          false,
+          [
+            "Does not repeat",
+            "Weekdays",
+            "Weekly"
+          ]
+        ]
+      ]
+    },
+    "photo": {
+      "title": "Change profile photo",
+      "submit": "Save photo",
+      "fields": [
+        [
+          "photo",
+          "Photo file",
+          "file",
+          true
+        ]
+      ]
+    },
+    "biometric": {
+      "title": "Set up biometric sign in",
+      "submit": "Start secure setup",
+      "fields": [
+        [
+          "method",
+          "Method",
+          "select",
+          true,
+          [
+            "Voice ID",
+            "Face Match"
+          ]
+        ],
+        [
+          "deviceName",
+          "Device name",
+          "text",
+          true
+        ],
+        [
+          "recoveryEmail",
+          "Recovery email",
+          "email",
+          true
+        ]
+      ]
+    },
+    "returnPlan": {
+      "title": "Plan employee return",
+      "submit": "Save return plan",
+      "fields": [
+        [
+          "employee",
+          "Employee",
+          "text",
+          true
+        ],
+        [
+          "returnDate",
+          "Return date",
+          "date",
+          true
+        ],
+        [
+          "checklist",
+          "Return checklist",
+          "textarea",
+          true
+        ],
+        [
+          "owner",
+          "Plan owner",
+          "text",
+          true
+        ],
+        [
+          "notes",
+          "Accommodations or notes",
+          "textarea"
+        ]
+      ]
+    },
+    "kudos": {
+      "title": "Send recognition note",
+      "submit": "Send note",
+      "fields": [
+        [
+          "recipient",
+          "Recipient",
+          "text",
+          true
+        ],
+        [
+          "message",
+          "Recognition message",
+          "textarea",
+          true
+        ],
+        [
+          "channel",
+          "Delivery channel",
+          "select",
+          true,
+          [
+            "Nucleus feed",
+            "Email",
+            "Slack or Teams"
+          ]
+        ]
+      ]
+    },
+    "probation": {
+      "title": "Prepare probation confirmation",
+      "submit": "Prepare letter",
+      "fields": [
+        [
+          "employee",
+          "Employee",
+          "text",
+          true
+        ],
+        [
+          "decision",
+          "Decision",
+          "select",
+          true,
+          [
+            "Confirm employment",
+            "Extend probation",
+            "Do not confirm"
+          ]
+        ],
+        [
+          "effectiveDate",
+          "Effective date",
+          "date",
+          true
+        ],
+        [
+          "notes",
+          "Decision notes",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "widget": {
+      "title": "Save analysis widget",
+      "submit": "Save widget",
+      "fields": [
+        [
+          "name",
+          "Widget name",
+          "text",
+          true
+        ],
+        [
+          "dashboard",
+          "Dashboard",
+          "select",
+          true,
+          [
+            "People Command Centre",
+            "Manager Cockpit",
+            "Nucleus Intelligence"
+          ]
+        ],
+        [
+          "refresh",
+          "Refresh frequency",
+          "select",
+          true,
+          [
+            "Manual",
+            "Daily",
+            "Weekly"
+          ]
+        ],
+        [
+          "visibility",
+          "Visibility",
+          "select",
+          true,
+          [
+            "Private",
+            "Leadership",
+            "HR team"
+          ]
+        ]
+      ]
+    },
+    "twoFactor": {
+      "title": "Set up two factor authentication",
+      "submit": "Continue to verification",
+      "fields": [
+        [
+          "method",
+          "Authentication method",
+          "select",
+          true,
+          [
+            "Authenticator app",
+            "SMS"
+          ]
+        ],
+        [
+          "phone",
+          "Recovery phone",
+          "tel",
+          true
+        ],
+        [
+          "verificationCode",
+          "Verification code",
+          "text",
+          true
+        ]
+      ]
+    },
+    "passwordReset": {
+      "title": "Reset password",
+      "submit": "Send reset link",
+      "fields": [
+        [
+          "email",
+          "Work email",
+          "email",
+          true
+        ]
+      ]
+    },
+    "growthAction": {
+      "title": "Assign growth action",
+      "submit": "Assign action",
+      "fields": [
+        [
+          "employee",
+          "Employee",
+          "text",
+          true
+        ],
+        [
+          "action",
+          "Growth action",
+          "textarea",
+          true
+        ],
+        [
+          "owner",
+          "Owner",
+          "text",
+          true
+        ],
+        [
+          "dueDate",
+          "Follow up date",
+          "date",
+          true
+        ]
+      ]
+    },
+    "ticket": {
+      "title": "Raise support ticket",
+      "submit": "Submit ticket",
+      "fields": [
+        [
+          "category",
+          "Category",
+          "select",
+          true,
+          [
+            "Payroll and taxes",
+            "Leaves and attendance",
+            "Medical and benefits",
+            "IT and hardware",
+            "Workplace grievance"
+          ]
+        ],
+        [
+          "priority",
+          "Priority",
+          "select",
+          true,
+          [
+            "Low",
+            "Medium",
+            "High",
+            "Critical"
+          ]
+        ],
+        [
+          "subject",
+          "Subject",
+          "text",
+          true
+        ],
+        [
+          "description",
+          "Description",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "reply": {
+      "title": "Reply to support ticket",
+      "submit": "Send reply",
+      "fields": [
+        [
+          "message",
+          "Reply or resolution notes",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "settings": {
+      "title": "Save profile and workspace settings",
+      "submit": "Save changes",
+      "fields": [
+        [
+          "name",
+          "Full name",
+          "text",
+          true
+        ],
+        [
+          "email",
+          "Work email",
+          "email",
+          true
+        ],
+        [
+          "location",
+          "Work location",
+          "text"
+        ],
+        [
+          "timezone",
+          "Time zone",
+          "text"
+        ]
+      ]
+    },
+    "password": {
+      "title": "Update password",
+      "submit": "Update password",
+      "fields": [
+        [
+          "currentPassword",
+          "Current password",
+          "password",
+          true
+        ],
+        [
+          "newPassword",
+          "New password",
+          "password",
+          true
+        ],
+        [
+          "confirmPassword",
+          "Confirm new password",
+          "password",
+          true
+        ]
+      ]
+    },
+    "assetReturn": {
+      "title": "Record asset return",
+      "submit": "Record return",
+      "fields": [
+        [
+          "asset",
+          "Asset",
+          "text",
+          true
+        ],
+        [
+          "condition",
+          "Return condition",
+          "select",
+          true,
+          [
+            "Good",
+            "Minor wear",
+            "Damaged"
+          ]
+        ],
+        [
+          "returnDate",
+          "Return date",
+          "date",
+          true
+        ],
+        [
+          "remarks",
+          "Inspection remarks",
+          "textarea"
+        ]
+      ]
+    },
+    "clearance": {
+      "title": "Record department clearance",
+      "submit": "Save clearance",
+      "fields": [
+        [
+          "department",
+          "Department",
+          "text",
+          true
+        ],
+        [
+          "status",
+          "Clearance status",
+          "select",
+          true,
+          [
+            "Cleared",
+            "Hold pending"
+          ]
+        ],
+        [
+          "remarks",
+          "Remarks",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "roster": {
+      "title": "Review roster proposal",
+      "submit": "Apply roster proposal",
+      "fields": [
+        [
+          "site",
+          "Site",
+          "text",
+          true
+        ],
+        [
+          "assignments",
+          "Assignment notes",
+          "textarea",
+          true
+        ],
+        [
+          "effectiveDate",
+          "Effective date",
+          "date",
+          true
+        ]
+      ]
+    },
+    "leaveDecision": {
+      "title": "Decide leave request",
+      "submit": "Record decision",
+      "fields": [
+        [
+          "employee",
+          "Employee",
+          "text",
+          true
+        ],
+        [
+          "decision",
+          "Decision",
+          "select",
+          true,
+          [
+            "Approve",
+            "Reject"
+          ]
+        ],
+        [
+          "remarks",
+          "Decision remarks",
+          "textarea",
+          true
+        ]
+      ]
+    },
+    "benefitLock": {
+      "title": "Lock benefit selections",
+      "submit": "Lock selections",
+      "fields": [
+        [
+          "benefits",
+          "Selected benefits",
+          "textarea",
+          true
+        ],
+        [
+          "enrollmentYear",
+          "Enrollment year",
+          "number",
+          true
+        ],
+        [
+          "confirmation",
+          "Confirm selection",
+          "select",
+          true,
+          [
+            "I confirm these selections are final"
+          ]
+        ]
+      ]
+    },
+    "payrollPreview": {
+      "title": "Preview payroll register",
+      "submit": "Generate preview",
+      "fields": [
+        [
+          "period",
+          "Payroll period",
+          "text",
+          true
+        ],
+        [
+          "format",
+          "Preview format",
+          "select",
+          true,
+          [
+            "Payroll register PDF",
+            "Bank advice summary",
+            "Exception register"
+          ]
+        ],
+        [
+          "audience",
+          "Access scope",
+          "select",
+          true,
+          [
+            "Payroll team",
+            "Finance approver",
+            "HR leadership"
+          ]
+        ]
+      ]
+    },
+    "payrollRelease": {
+      "title": "Authorize payroll release",
+      "submit": "Authorize release",
+      "fields": [
+        [
+          "period",
+          "Payroll period",
+          "text",
+          true
+        ],
+        [
+          "exceptionSummary",
+          "Exception review summary",
+          "textarea",
+          true
+        ],
+        [
+          "bankGateway",
+          "Bank gateway",
+          "select",
+          true,
+          [
+            "HDFC",
+            "ICICI"
+          ]
+        ],
+        [
+          "authorization",
+          "Authorization reference",
+          "text",
+          true
+        ]
+      ]
+    },
+    "actionReversal": {
+      "title": "Reverse AI action",
+      "submit": "Record reversal",
+      "fields": [
+        [
+          "actionId",
+          "Action ID",
+          "text",
+          true
+        ],
+        [
+          "reason",
+          "Reason for reversal",
+          "textarea",
+          true
+        ],
+        [
+          "confirmation",
+          "Confirmation",
+          "select",
+          true,
+          [
+            "I confirm this action should be reversed"
+          ]
+        ]
+      ]
+    },
+    "anomalyReview": {
+      "title": "Review attendance anomaly",
+      "submit": "Save review",
+      "fields": [
+        [
+          "signal",
+          "Signal",
+          "text",
+          true
+        ],
+        [
+          "affectedEmployees",
+          "Affected employees or cohort",
+          "textarea",
+          true
+        ],
+        [
+          "outcome",
+          "Review outcome",
+          "select",
+          true,
+          [
+            "No action required",
+            "Request clarification",
+            "Open investigation"
+          ]
+        ],
+        [
+          "notes",
+          "Review notes",
+          "textarea",
+          true
+        ]
+      ]
+    }
+  },
+  "operationalModules": [
+    {
+      "id": "access_scope",
+      "screenId": "SCR-005",
+      "title": "Access scope administration",
+      "group": "people_core",
+      "endpoint": "/api/v1/identity/memberships",
+      "fields": [
+        {
+          "key": "principal",
+          "label": "Principal",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "role",
+          "label": "Role template",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location scope",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Active",
+          "Scheduled",
+          "Revoked"
+        ],
+        "actions": [
+          "Grant scope",
+          "Revoke scope"
+        ],
+        "columns": [
+          "Principal",
+          "Scope",
+          "Status",
+          "Effective from"
+        ]
+      }
+    },
+    {
+      "id": "person_record",
+      "screenId": "SCR-010",
+      "title": "Employee record",
+      "group": "people_core",
+      "endpoint": "/api/v1/people",
+      "fields": [
+        {
+          "key": "employeeCode",
+          "label": "Employee code",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "fullName",
+          "label": "Full name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "gender",
+          "label": "Gender",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "dateOfBirth",
+          "label": "Date of birth",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "mobile",
+          "label": "Mobile",
+          "required": true,
+          "type": "tel"
+        },
+        {
+          "key": "personalEmail",
+          "label": "Personal email",
+          "required": false,
+          "type": "email"
+        },
+        {
+          "key": "address",
+          "label": "Present address",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "emergencyContact",
+          "label": "Emergency contact",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "ifsc",
+          "label": "IFSC",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Active",
+          "On leave",
+          "Separated",
+          "Archived"
+        ],
+        "actions": [
+          "Create employee",
+          "Request edit"
+        ],
+        "columns": [
+          "Employee",
+          "Department",
+          "Assignment",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "assignment_admin",
+      "screenId": "SCR-011",
+      "title": "Assignment and policy attributes",
+      "group": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "designation",
+          "label": "Designation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollGroup",
+          "label": "Payroll group",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "manager",
+          "label": "Reporting manager",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "workerClass",
+          "label": "Worker class",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "changeReason",
+          "label": "Change reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Effective",
+          "Scheduled",
+          "Superseded"
+        ],
+        "actions": [
+          "Add assignment",
+          "Schedule change"
+        ],
+        "columns": [
+          "Employee",
+          "Position",
+          "Location",
+          "Effective from"
+        ]
+      }
+    },
+    {
+      "id": "position_register",
+      "screenId": "SCR-012",
+      "title": "Position register",
+      "group": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "positionCode",
+          "label": "Position code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "title",
+          "label": "Position title",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "headcount",
+          "label": "Approved headcount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Open",
+          "Filled",
+          "Frozen",
+          "Abolished"
+        ],
+        "actions": [
+          "Create position",
+          "Freeze position"
+        ],
+        "columns": [
+          "Position",
+          "Incumbent",
+          "Vacancy",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "sanctioned_strength",
+      "screenId": "SCR-013",
+      "title": "Sanctioned strength board",
+      "group": "people_core",
+      "endpoint": "/api/v1/organization/tree",
+      "fields": [
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "designation",
+          "label": "Designation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "sanctioned",
+          "label": "Sanctioned strength",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Approval reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Within headroom",
+          "At limit",
+          "Over plan"
+        ],
+        "actions": [
+          "Set sanctioned strength",
+          "Review headroom"
+        ],
+        "columns": [
+          "Organisation",
+          "Sanctioned",
+          "Filled",
+          "Open"
+        ]
+      }
+    },
+    {
+      "id": "document_vault",
+      "screenId": "SCR-014",
+      "title": "Document vault",
+      "group": "people_core",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "documentType",
+          "label": "Document type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "issuedOn",
+          "label": "Issued on",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "key": "expiresOn",
+          "label": "Expires on",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "key": "classification",
+          "label": "Access classification",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "file",
+          "label": "File",
+          "required": true,
+          "type": "file"
+        }
+      ],
+      "options": {
+        "states": [
+          "Pending verification",
+          "Verified",
+          "Expired",
+          "Replaced"
+        ],
+        "actions": [
+          "Upload document",
+          "Verify document"
+        ],
+        "columns": [
+          "Document",
+          "Employee",
+          "Expiry",
+          "Verification"
+        ]
+      }
+    },
+    {
+      "id": "attendance_detail",
+      "screenId": "SCR-022",
+      "title": "Attendance day detail",
+      "group": "attendance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "appliedShift",
+          "label": "Applied shift",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Override or recompute reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Computed",
+          "Exception",
+          "Locked"
+        ],
+        "actions": [
+          "Regularise day",
+          "Recompute day"
+        ],
+        "columns": [
+          "Employee",
+          "Date",
+          "Net hours",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "overtime_register",
+      "screenId": "SCR-024",
+      "title": "Overtime register",
+      "group": "attendance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "minutes",
+          "label": "Approved overtime minutes",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "multiplier",
+          "label": "Multiplier",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payRun",
+          "label": "Payroll run",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Pending approval",
+          "Approved",
+          "Tagged to run",
+          "Paid"
+        ],
+        "actions": [
+          "Approve overtime",
+          "Tag payroll run"
+        ],
+        "columns": [
+          "Employee",
+          "Date",
+          "Overtime",
+          "Run"
+        ]
+      }
+    },
+    {
+      "id": "attendance_exceptions",
+      "screenId": "SCR-025",
+      "title": "Attendance exception queue",
+      "group": "attendance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "attendanceDate",
+          "label": "Attendance date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "exceptionType",
+          "label": "Exception type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Open",
+          "Proposed",
+          "Resolved",
+          "Rejected"
+        ],
+        "actions": [
+          "Accept proposal",
+          "Resolve exception"
+        ],
+        "columns": [
+          "Exception",
+          "Employee",
+          "Age",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "recompute_monitor",
+      "screenId": "SCR-026",
+      "title": "Attendance recompute monitor",
+      "group": "attendance",
+      "endpoint": "/api/v1/ops/scheduled-tasks",
+      "fields": [
+        {
+          "key": "employeeScope",
+          "label": "Employee or scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Recompute reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Queued",
+          "Running",
+          "Completed",
+          "Blocked"
+        ],
+        "actions": [
+          "Queue recompute",
+          "Inspect delta"
+        ],
+        "columns": [
+          "Job",
+          "Scope",
+          "Delta",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "team_history",
+      "screenId": "SCR-027",
+      "title": "Team history",
+      "group": "attendance",
+      "endpoint": "/api/v1/reports/team-history",
+      "fields": [
+        {
+          "key": "team",
+          "label": "Team",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "member",
+          "label": "Team member",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Ready",
+          "Scheduled",
+          "Expired"
+        ],
+        "actions": [
+          "Run report",
+          "Export history"
+        ],
+        "columns": [
+          "Team member",
+          "Attendance",
+          "Leave",
+          "Overtime"
+        ]
+      }
+    },
+    {
+      "id": "leave_policy_admin",
+      "screenId": "SCR-032",
+      "title": "Leave policy configuration",
+      "group": "leaves",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "accrualPolicy",
+          "label": "Accrual policy",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "carryForward",
+          "label": "Carry-forward cap",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "changeReason",
+          "label": "Change reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Simulated",
+          "Effective",
+          "Superseded"
+        ],
+        "actions": [
+          "Create policy",
+          "Simulate policy"
+        ],
+        "columns": [
+          "Policy",
+          "Leave type",
+          "Effective from",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "tax_declarations",
+      "screenId": "SCR-054",
+      "title": "Tax declaration and projection",
+      "group": "payroll",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "financialYear",
+          "label": "Financial year",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "taxRegime",
+          "label": "Tax regime",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "declarationType",
+          "label": "Declaration type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "amount",
+          "label": "Declared amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "proof",
+          "label": "Proof document",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Submitted",
+          "Verified",
+          "Rejected"
+        ],
+        "actions": [
+          "Add declaration",
+          "Review proof"
+        ],
+        "columns": [
+          "Employee",
+          "Regime",
+          "Projected TDS",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "bank_disbursement",
+      "screenId": "SCR-055",
+      "title": "Bank disbursement control",
+      "group": "payroll",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "bankGateway",
+          "label": "Bank gateway",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "checksum",
+          "label": "File checksum",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "makerReference",
+          "label": "Maker reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "checkerReference",
+          "label": "Checker reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Prepared",
+          "Verified",
+          "Released",
+          "Failed"
+        ],
+        "actions": [
+          "Generate bank file",
+          "Verify and release"
+        ],
+        "columns": [
+          "Run",
+          "Bank file",
+          "Total",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "policy_acknowledgements",
+      "screenId": "SCR-062",
+      "title": "Policy acknowledgements",
+      "group": "onboarding",
+      "endpoint": "/api/v1/announcements",
+      "fields": [
+        {
+          "key": "policy",
+          "label": "Policy version",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "audience",
+          "label": "Audience rule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "acknowledgedOn",
+          "label": "Acknowledged on",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "comment",
+          "label": "Employee comment",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Published",
+          "Pending acknowledgement",
+          "Acknowledged",
+          "Overdue"
+        ],
+        "actions": [
+          "Publish acknowledgement",
+          "Record acknowledgement"
+        ],
+        "columns": [
+          "Policy",
+          "Audience",
+          "Acknowledged",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "rule_pack_manager",
+      "screenId": "SCR-070",
+      "title": "Rule-pack manager",
+      "group": "compliance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "packName",
+          "label": "Rule-pack name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "jurisdiction",
+          "label": "Jurisdiction",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "version",
+          "label": "Version",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "changeSummary",
+          "label": "Change summary",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Tested",
+          "Reviewed",
+          "Published",
+          "Effective",
+          "Superseded"
+        ],
+        "actions": [
+          "Draft rule pack",
+          "Run test suite"
+        ],
+        "columns": [
+          "Pack",
+          "Jurisdiction",
+          "Version",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "golden_case_library",
+      "screenId": "SCR-071",
+      "title": "Golden-case library",
+      "group": "compliance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "caseName",
+          "label": "Case name",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "domain",
+          "label": "Domain",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "sourceData",
+          "label": "Input fixture",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "expectedResult",
+          "label": "Expected result",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "statuteReference",
+          "label": "Statute reference",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Passing",
+          "Mismatch",
+          "Retired"
+        ],
+        "actions": [
+          "Add golden case",
+          "Run comparison"
+        ],
+        "columns": [
+          "Case",
+          "Domain",
+          "Last run",
+          "Outcome"
+        ]
+      }
+    },
+    {
+      "id": "sync_monitor",
+      "screenId": "SCR-101",
+      "title": "Integration sync monitor",
+      "group": "integrations",
+      "endpoint": "/api/v1/webhooks/deliveries",
+      "fields": [
+        {
+          "key": "connection",
+          "label": "Connection",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "externalCode",
+          "label": "External record code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "conflictField",
+          "label": "Conflict field",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Applied",
+          "Conflict",
+          "Held",
+          "Replayed"
+        ],
+        "actions": [
+          "Resolve conflict",
+          "Replay delivery"
+        ],
+        "columns": [
+          "Batch",
+          "Connection",
+          "Rows",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "gl_mapping",
+      "screenId": "SCR-102",
+      "title": "GL mapping and journal",
+      "group": "payroll",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "payComponent",
+          "label": "Pay component",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "ledgerAccount",
+          "label": "GL account",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "costCentreSource",
+          "label": "Cost-centre source",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "drCr",
+          "label": "Debit or credit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Validated",
+          "Posted",
+          "Superseded"
+        ],
+        "actions": [
+          "Add mapping",
+          "Validate journal"
+        ],
+        "columns": [
+          "Component",
+          "GL account",
+          "Dimension",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "reconciliation",
+      "screenId": "SCR-103",
+      "title": "Payroll reconciliation",
+      "group": "payroll",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reconciliationType",
+          "label": "Reconciliation type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "variance",
+          "label": "Variance amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Open",
+          "Explained",
+          "Reconciled",
+          "Escalated"
+        ],
+        "actions": [
+          "Run reconciliation",
+          "Resolve variance"
+        ],
+        "columns": [
+          "Control",
+          "Expected",
+          "Actual",
+          "Variance"
+        ]
+      }
+    },
+    {
+      "id": "approval_inbox",
+      "screenId": "SCR-040",
+      "title": "Unified approval inbox",
+      "group": "team",
+      "endpoint": "/api/v1/notifications",
+      "fields": [
+        {
+          "key": "requestType",
+          "label": "Request type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "decision",
+          "label": "Decision",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Decision reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Pending",
+          "Delegated",
+          "Approved",
+          "Rejected",
+          "Returned"
+        ],
+        "actions": [
+          "Review item",
+          "Delegate item"
+        ],
+        "columns": [
+          "Request",
+          "Requester",
+          "Due",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "joining_chain",
+      "screenId": "SCR-060",
+      "title": "Joining chain console",
+      "group": "onboarding",
+      "endpoint": "/api/v1/onboarding/instances",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "joiningDate",
+          "label": "Joining date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "blocker",
+          "label": "Blocker notes",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Not started",
+          "In progress",
+          "Blocked",
+          "Ready"
+        ],
+        "actions": [
+          "Create joining chain",
+          "Reassign step"
+        ],
+        "columns": [
+          "Joiner",
+          "Readiness",
+          "Owner",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "clearance_board",
+      "screenId": "SCR-061",
+      "title": "Clearance board",
+      "group": "onboarding",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Leaver",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "department",
+          "label": "Department owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "blocking",
+          "label": "Blocking item",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "recoveryAmount",
+          "label": "Recovery amount",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "waiverReason",
+          "label": "Waiver reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Open",
+          "Cleared",
+          "Waived",
+          "Held"
+        ],
+        "actions": [
+          "Clear item",
+          "Waive item"
+        ],
+        "columns": [
+          "Leaver",
+          "Owner",
+          "Blocking",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "asset_register",
+      "screenId": "SCR-064",
+      "title": "Asset register",
+      "group": "onboarding",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "assetTag",
+          "label": "Asset tag",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "assetType",
+          "label": "Asset type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "employee",
+          "label": "Allocated employee",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "condition",
+          "label": "Condition",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "returnedOn",
+          "label": "Returned on",
+          "required": false,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Available",
+          "Allocated",
+          "Returned",
+          "Written off"
+        ],
+        "actions": [
+          "Allocate asset",
+          "Record return"
+        ],
+        "columns": [
+          "Asset",
+          "Holder",
+          "Condition",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "recognition_register",
+      "screenId": "SCR-065",
+      "title": "Recognition register",
+      "group": "experience",
+      "endpoint": "/api/v1/recognition-events",
+      "fields": [
+        {
+          "key": "nominee",
+          "label": "Nominee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "programme",
+          "label": "Programme",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "citation",
+          "label": "Citation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "awardValue",
+          "label": "Award value",
+          "required": false,
+          "type": "number"
+        }
+      ],
+      "options": {
+        "states": [
+          "Nominated",
+          "Approved",
+          "Published",
+          "Paid"
+        ],
+        "actions": [
+          "Nominate employee",
+          "Approve award"
+        ],
+        "columns": [
+          "Nominee",
+          "Programme",
+          "Award",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "letters_register",
+      "screenId": "SCR-067",
+      "title": "Letters and issue register",
+      "group": "onboarding",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "template",
+          "label": "Template",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "effectiveDate",
+          "label": "Effective date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "approver",
+          "label": "Approver",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Pending approval",
+          "Issued",
+          "Reissued"
+        ],
+        "actions": [
+          "Draft letter",
+          "Issue letter"
+        ],
+        "columns": [
+          "Letter",
+          "Employee",
+          "Version",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "statutory_register",
+      "screenId": "SCR-073",
+      "title": "Statutory forms and registers",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/forms",
+      "fields": [
+        {
+          "key": "formCode",
+          "label": "Form code",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "jurisdiction",
+          "label": "Jurisdiction",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "acknowledgement",
+          "label": "Acknowledgement reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Generated",
+          "Prepared",
+          "Filed",
+          "Accepted"
+        ],
+        "actions": [
+          "Generate form",
+          "Record filing"
+        ],
+        "columns": [
+          "Form",
+          "Period",
+          "Jurisdiction",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "loans_advances",
+      "screenId": "SCR-080",
+      "title": "Loans and advances",
+      "group": "payroll",
+      "endpoint": "/api/v1/loans",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "purpose",
+          "label": "Purpose",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "principal",
+          "label": "Principal amount",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "tenureMonths",
+          "label": "Tenure in months",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "guarantorOne",
+          "label": "Guarantor one",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "guarantorTwo",
+          "label": "Guarantor two",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Applied",
+          "Guarantors pending",
+          "Sanction pending",
+          "Active",
+          "Closed"
+        ],
+        "actions": [
+          "Apply for loan",
+          "Review sanction"
+        ],
+        "columns": [
+          "Employee",
+          "Principal",
+          "Outstanding",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "requisitions",
+      "screenId": "SCR-090",
+      "title": "Recruitment requisitions",
+      "group": "recruitment",
+      "endpoint": "/api/v1/requisitions",
+      "fields": [
+        {
+          "key": "type",
+          "label": "Replacement or addition",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "orgUnit",
+          "label": "Organisation unit",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "location",
+          "label": "Location",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "overrideReason",
+          "label": "Override reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Blocked",
+          "Submitted",
+          "Approved",
+          "Filled"
+        ],
+        "actions": [
+          "Raise requisition",
+          "Approve requisition"
+        ],
+        "columns": [
+          "Requisition",
+          "Position",
+          "Headroom",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "referrals",
+      "screenId": "SCR-091",
+      "title": "Referral tracking",
+      "group": "recruitment",
+      "endpoint": "/api/v1/referrals",
+      "fields": [
+        {
+          "key": "candidate",
+          "label": "Candidate",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "referrer",
+          "label": "Referrer",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "position",
+          "label": "Position",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "relationship",
+          "label": "Relationship",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Referred",
+          "Screening",
+          "Interviewing",
+          "Hired",
+          "Awarded"
+        ],
+        "actions": [
+          "Refer candidate",
+          "Award referral"
+        ],
+        "columns": [
+          "Candidate",
+          "Referrer",
+          "Stage",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "contractor_reconciliation",
+      "screenId": "SCR-095",
+      "title": "Contractor engagement and invoice",
+      "group": "contract_workforce",
+      "endpoint": "/api/v1/contractors/invoices",
+      "fields": [
+        {
+          "key": "agency",
+          "label": "Agency",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "contract",
+          "label": "Contract reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "invoice",
+          "label": "Invoice reference",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "variance",
+          "label": "Attendance variance",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution notes",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Submitted",
+          "Variance held",
+          "Approved",
+          "Paid"
+        ],
+        "actions": [
+          "Reconcile invoice",
+          "Approve invoice"
+        ],
+        "columns": [
+          "Agency",
+          "Invoice",
+          "Variance",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "integration_config",
+      "screenId": "SCR-100",
+      "title": "Integration configuration",
+      "group": "integrations",
+      "endpoint": "/api/v1/integrations/connections",
+      "fields": [
+        {
+          "key": "connection",
+          "label": "Connection",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "masterDataMode",
+          "label": "Master-data mode",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fieldOwner",
+          "label": "Field ownership",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "syncSchedule",
+          "label": "Sync schedule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "secretReference",
+          "label": "Secret reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Validated",
+          "Connected",
+          "Paused"
+        ],
+        "actions": [
+          "Configure connection",
+          "Validate connection"
+        ],
+        "columns": [
+          "Connection",
+          "Mode",
+          "Last sync",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "agent_ledger",
+      "screenId": "SCR-110",
+      "title": "Agent console and action ledger",
+      "group": "analytics",
+      "endpoint": "/api/v1/ai/actions",
+      "fields": [
+        {
+          "key": "agent",
+          "label": "Agent",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "tool",
+          "label": "Tool",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "label": "Permitted scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "approvalThreshold",
+          "label": "Approval threshold",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "reversalReason",
+          "label": "Reversal reason",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Planned",
+          "Gated",
+          "Simulated",
+          "Awaiting approval",
+          "Executed",
+          "Reversed"
+        ],
+        "actions": [
+          "Review action diff",
+          "Reverse action"
+        ],
+        "columns": [
+          "Agent",
+          "Action",
+          "Approver",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "operational_reports",
+      "screenId": "SCR-111",
+      "title": "Operational reports",
+      "group": "analytics",
+      "endpoint": "/api/v1/analytics/metrics",
+      "fields": [
+        {
+          "key": "report",
+          "label": "Report type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "scope",
+          "label": "Scope",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "schedule",
+          "label": "Schedule",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Ready",
+          "Queued",
+          "Scheduled",
+          "Expired"
+        ],
+        "actions": [
+          "Run report",
+          "Schedule report"
+        ],
+        "columns": [
+          "Report",
+          "Scope",
+          "Generated",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "check_in_out",
+      "screenId": "SCR-020",
+      "title": "Check in and check out",
+      "group": "attendance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "punchType",
+          "label": "Punch type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "punchedAt",
+          "label": "Timestamp",
+          "required": true,
+          "type": "datetime-local"
+        },
+        {
+          "key": "source",
+          "label": "Source",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "locationEvidence",
+          "label": "Location evidence",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Queued offline",
+          "Ingested",
+          "Computed",
+          "Rejected"
+        ],
+        "actions": [
+          "Record punch",
+          "Retry queued punch"
+        ],
+        "columns": [
+          "Employee",
+          "Punch",
+          "Source",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "my_attendance",
+      "screenId": "SCR-021",
+      "title": "My attendance history",
+      "group": "attendance",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Computed",
+          "Exception",
+          "Locked"
+        ],
+        "actions": [
+          "View history",
+          "Raise regularisation"
+        ],
+        "columns": [
+          "Date",
+          "Net hours",
+          "Overtime",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "gate_passes",
+      "screenId": "SCR-023",
+      "title": "Gate pass register",
+      "group": "attendance",
+      "endpoint": "/api/v1/gate-passes",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "date",
+          "label": "Date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "fromTime",
+          "label": "From time",
+          "required": true,
+          "type": "time"
+        },
+        {
+          "key": "toTime",
+          "label": "To time",
+          "required": true,
+          "type": "time"
+        },
+        {
+          "key": "type",
+          "label": "Pass type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Pending approval",
+          "Approved",
+          "Rejected",
+          "Credited"
+        ],
+        "actions": [
+          "Request gate pass",
+          "Review gate pass"
+        ],
+        "columns": [
+          "Employee",
+          "Date",
+          "Minutes",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "leave_requests",
+      "screenId": "SCR-030",
+      "title": "Leave requests",
+      "group": "leaves",
+      "endpoint": "/api/v1/leave-requests",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "fromDate",
+          "label": "From date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "toDate",
+          "label": "To date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "reason",
+          "label": "Reason",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "contact",
+          "label": "Contact during leave",
+          "required": false,
+          "type": "tel"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Validated",
+          "Pending approval",
+          "Approved",
+          "Availed",
+          "Closed"
+        ],
+        "actions": [
+          "Apply for leave",
+          "Record early return"
+        ],
+        "columns": [
+          "Employee",
+          "Leave type",
+          "Dates",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "leave_ledger",
+      "screenId": "SCR-031",
+      "title": "Leave balance and ledger",
+      "group": "leaves",
+      "endpoint": "/api/v1/leave-balances",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "asAtDate",
+          "label": "Balance as at",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "leaveType",
+          "label": "Leave type",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Projected",
+          "Expired",
+          "Encashed",
+          "Reversed"
+        ],
+        "actions": [
+          "View ledger",
+          "Export ledger"
+        ],
+        "columns": [
+          "Leave type",
+          "Credit",
+          "Debit",
+          "Balance"
+        ]
+      }
+    },
+    {
+      "id": "payroll_runs",
+      "screenId": "SCR-050",
+      "title": "Payroll run cockpit",
+      "group": "payroll",
+      "endpoint": "/api/v1/payroll-runs",
+      "fields": [
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Payroll period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollGroup",
+          "label": "Payroll group",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "runType",
+          "label": "Run type",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payDate",
+          "label": "Pay date",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Inputs locked",
+          "Pre-audit",
+          "Calculated",
+          "Review",
+          "Approved",
+          "Disbursed",
+          "Closed"
+        ],
+        "actions": [
+          "Create payroll run",
+          "Advance run"
+        ],
+        "columns": [
+          "Period",
+          "Run type",
+          "Population",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "pre_payroll_audit",
+      "screenId": "SCR-051",
+      "title": "Pre-payroll audit",
+      "group": "payroll",
+      "endpoint": "/api/v1/payroll-anomalies",
+      "fields": [
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "severity",
+          "label": "Severity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "owner",
+          "label": "Resolution owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "resolution",
+          "label": "Resolution or waiver reason",
+          "required": true,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Open",
+          "Assigned",
+          "Resolved",
+          "Waived"
+        ],
+        "actions": [
+          "Log audit finding",
+          "Resolve finding"
+        ],
+        "columns": [
+          "Finding",
+          "Severity",
+          "Owner",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "salary_simulator",
+      "screenId": "SCR-052",
+      "title": "Salary structure simulator",
+      "group": "compensation",
+      "endpoint": "/api/v1/wage-simulations",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "basic",
+          "label": "Basic pay",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "hra",
+          "label": "HRA",
+          "required": true,
+          "type": "number"
+        },
+        {
+          "key": "specialAllowance",
+          "label": "Special allowance",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "effectiveFrom",
+          "label": "Effective from",
+          "required": true,
+          "type": "date"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Simulated",
+          "Submitted",
+          "Adopted"
+        ],
+        "actions": [
+          "Run simulation",
+          "Submit structure"
+        ],
+        "columns": [
+          "Employee",
+          "Gross",
+          "Take home",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "payslips",
+      "screenId": "SCR-053",
+      "title": "Payslips",
+      "group": "payroll",
+      "endpoint": "/api/v1/payslips",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "period",
+          "label": "Pay period",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "payrollRun",
+          "label": "Payroll run",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Generated",
+          "Published",
+          "Viewed",
+          "Archived"
+        ],
+        "actions": [
+          "Open payslip",
+          "Explain line item"
+        ],
+        "columns": [
+          "Employee",
+          "Period",
+          "Net pay",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "full_and_final",
+      "screenId": "SCR-056",
+      "title": "Full and final settlement",
+      "group": "payroll",
+      "endpoint": "null",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Leaver",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "lastWorkingDay",
+          "label": "Last working day",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "payrollRun",
+          "label": "Settlement run",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "recoveryAmount",
+          "label": "Recovery amount",
+          "required": false,
+          "type": "number"
+        },
+        {
+          "key": "approvalReference",
+          "label": "Approval reference",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Held",
+          "Ready",
+          "Approved",
+          "Settled"
+        ],
+        "actions": [
+          "Compute settlement",
+          "Settle F&F"
+        ],
+        "columns": [
+          "Leaver",
+          "Blocking items",
+          "Net settlement",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "assistant_helpdesk",
+      "screenId": "SCR-041",
+      "title": "Assistant and helpdesk",
+      "group": "helpdesk",
+      "endpoint": "/api/v1/ai/knowledge",
+      "fields": [
+        {
+          "key": "question",
+          "label": "Question",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "actionRequest",
+          "label": "Requested action",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "ticketSubject",
+          "label": "Ticket subject",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "ticketDescription",
+          "label": "Ticket description",
+          "required": false,
+          "type": "text"
+        }
+      ],
+      "options": {
+        "states": [
+          "Answered",
+          "Action pending",
+          "Ticket raised",
+          "Resolved"
+        ],
+        "actions": [
+          "Ask assistant",
+          "Raise ticket"
+        ],
+        "columns": [
+          "Request",
+          "Channel",
+          "Owner",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "employee_home",
+      "screenId": "SCR-042",
+      "title": "Employee home actions",
+      "group": "people_core",
+      "endpoint": "/api/v1/home",
+      "fields": [
+        {
+          "key": "action",
+          "label": "Action",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "context",
+          "label": "Context",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "requestedAt",
+          "label": "Requested at",
+          "required": true,
+          "type": "datetime-local"
+        }
+      ],
+      "options": {
+        "states": [
+          "Available",
+          "Queued offline",
+          "Completed",
+          "Needs attention"
+        ],
+        "actions": [
+          "Start employee action",
+          "Review pending action"
+        ],
+        "columns": [
+          "Action",
+          "Context",
+          "Updated",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "learning_paths",
+      "screenId": "SCR-063",
+      "title": "My learning",
+      "group": "learning",
+      "endpoint": "/api/v1/enrollments",
+      "fields": [
+        {
+          "key": "employee",
+          "label": "Employee",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "learningPath",
+          "label": "Learning path",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "course",
+          "label": "Course",
+          "required": false,
+          "type": "text"
+        },
+        {
+          "key": "evidence",
+          "label": "Completion evidence",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "options": {
+        "states": [
+          "Assigned",
+          "In progress",
+          "Completed",
+          "Verified",
+          "Certified"
+        ],
+        "actions": [
+          "Assign learning",
+          "Record completion"
+        ],
+        "columns": [
+          "Learning path",
+          "Due date",
+          "Progress",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "announcement_management",
+      "screenId": "SCR-066",
+      "title": "Announcements",
+      "group": "experience",
+      "endpoint": "/api/v1/announcements",
+      "fields": [
+        {
+          "key": "title",
+          "label": "Announcement title",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "audience",
+          "label": "Audience rule",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "channel",
+          "label": "Delivery channel",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "publishAt",
+          "label": "Publish at",
+          "required": true,
+          "type": "datetime-local"
+        }
+      ],
+      "options": {
+        "states": [
+          "Draft",
+          "Scheduled",
+          "Published",
+          "Archived"
+        ],
+        "actions": [
+          "Create announcement",
+          "Publish announcement"
+        ],
+        "columns": [
+          "Announcement",
+          "Audience",
+          "Channel",
+          "Status"
+        ]
+      }
+    },
+    {
+      "id": "obligation_calendar",
+      "screenId": "SCR-072",
+      "title": "Obligation calendar",
+      "group": "compliance",
+      "endpoint": "/api/v1/compliance/obligations",
+      "fields": [
+        {
+          "key": "obligation",
+          "label": "Obligation",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "entity",
+          "label": "Legal entity",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "state",
+          "label": "State",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "dueDate",
+          "label": "Due date",
+          "required": true,
+          "type": "date"
+        },
+        {
+          "key": "owner",
+          "label": "Owner",
+          "required": true,
+          "type": "text"
+        },
+        {
+          "key": "evidence",
+          "label": "Evidence",
+          "required": false,
+          "type": "file"
+        }
+      ],
+      "options": {
+        "states": [
+          "Upcoming",
+          "In preparation",
+          "Filed",
+          "Overdue",
+          "Closed"
+        ],
+        "actions": [
+          "Create obligation",
+          "Record filing"
+        ],
+        "columns": [
+          "Obligation",
+          "Due date",
+          "Owner",
+          "Status"
+        ]
+      }
+    }
+  ]
+}

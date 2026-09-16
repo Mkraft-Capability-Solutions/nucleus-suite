@@ -4,42 +4,42 @@ import workbook from "../../../scripts/seeds/workbook.json";
 import resource0 from "@/config/ui/components.AppWorkspace.json";
 import resource1 from "@/config/ui/components.Charts.NucleusChart.json";
 import resource2 from "@/config/ui/components.Charts.theme.json";
-import resource3 from "@/config/ui/components.Clerio.AIPanel.json";
-import resource4 from "@/config/ui/components.Clerio.AccessControlView.json";
-import resource5 from "@/config/ui/components.Clerio.ActionFormModal.json";
-import resource6 from "@/config/ui/components.Clerio.AdminOverview.json";
-import resource7 from "@/config/ui/components.Clerio.AttendanceFAB.json";
-import resource8 from "@/config/ui/components.Clerio.AttendanceView.json";
-import resource9 from "@/config/ui/components.Clerio.CMSModal.json";
-import resource10 from "@/config/ui/components.Clerio.CatalogGridView.json";
-import resource11 from "@/config/ui/components.Clerio.ChatPanel.json";
-import resource12 from "@/config/ui/components.Clerio.CompensationView.json";
-import resource13 from "@/config/ui/components.Clerio.ComplianceView.json";
-import resource14 from "@/config/ui/components.Clerio.ContractWorkforceView.json";
-import resource15 from "@/config/ui/components.Clerio.DataImportModal.json";
-import resource16 from "@/config/ui/components.Clerio.ExperienceView.json";
-import resource17 from "@/config/ui/components.Clerio.HelpdeskView.json";
-import resource18 from "@/config/ui/components.Clerio.IntegrationsView.json";
-import resource19 from "@/config/ui/components.Clerio.LearningView.json";
-import resource20 from "@/config/ui/components.Clerio.LeaveView.json";
-import resource21 from "@/config/ui/components.Clerio.LeftDock.json";
-import resource22 from "@/config/ui/components.Clerio.LoginView.json";
-import resource23 from "@/config/ui/components.Clerio.MainWorkspace.json";
-import resource24 from "@/config/ui/components.Clerio.MisReportingHub.json";
-import resource25 from "@/config/ui/components.Clerio.OnboardingView.json";
-import resource26 from "@/config/ui/components.Clerio.OperationalModuleView.json";
-import resource27 from "@/config/ui/components.Clerio.PayrollView.json";
-import resource28 from "@/config/ui/components.Clerio.PeopleCoreView.json";
-import resource29 from "@/config/ui/components.Clerio.PerformanceView.json";
-import resource30 from "@/config/ui/components.Clerio.ProjectView.json";
-import resource31 from "@/config/ui/components.Clerio.RecruitmentView.json";
-import resource32 from "@/config/ui/components.Clerio.RightSubNav.json";
-import resource33 from "@/config/ui/components.Clerio.SettingsView.json";
-import resource34 from "@/config/ui/components.Clerio.SideNav.json";
-import resource35 from "@/config/ui/components.Clerio.TeamView.json";
-import resource36 from "@/config/ui/components.Clerio.Toast.json";
-import resource37 from "@/config/ui/components.Clerio.TopNav.json";
-import resource38 from "@/config/ui/components.Clerio.WorkflowBuilderModal.json";
+import resource3 from "@/config/ui/components.Workspace.AIPanel.json";
+import resource4 from "@/config/ui/components.Workspace.AccessControlView.json";
+import resource5 from "@/config/ui/components.Workspace.ActionFormModal.json";
+import resource6 from "@/config/ui/components.Workspace.AdminOverview.json";
+import resource7 from "@/config/ui/components.Workspace.AttendanceFAB.json";
+import resource8 from "@/config/ui/components.Workspace.AttendanceView.json";
+import resource9 from "@/config/ui/components.Workspace.CMSModal.json";
+import resource10 from "@/config/ui/components.Workspace.CatalogGridView.json";
+import resource11 from "@/config/ui/components.Workspace.ChatPanel.json";
+import resource12 from "@/config/ui/components.Workspace.CompensationView.json";
+import resource13 from "@/config/ui/components.Workspace.ComplianceView.json";
+import resource14 from "@/config/ui/components.Workspace.ContractWorkforceView.json";
+import resource15 from "@/config/ui/components.Workspace.DataImportModal.json";
+import resource16 from "@/config/ui/components.Workspace.ExperienceView.json";
+import resource17 from "@/config/ui/components.Workspace.HelpdeskView.json";
+import resource18 from "@/config/ui/components.Workspace.IntegrationsView.json";
+import resource19 from "@/config/ui/components.Workspace.LearningView.json";
+import resource20 from "@/config/ui/components.Workspace.LeaveView.json";
+import resource21 from "@/config/ui/components.Workspace.LeftDock.json";
+import resource22 from "@/config/ui/components.Workspace.LoginView.json";
+import resource23 from "@/config/ui/components.Workspace.MainWorkspace.json";
+import resource24 from "@/config/ui/components.Workspace.MisReportingHub.json";
+import resource25 from "@/config/ui/components.Workspace.OnboardingView.json";
+import resource26 from "@/config/ui/components.Workspace.OperationalModuleView.json";
+import resource27 from "@/config/ui/components.Workspace.PayrollView.json";
+import resource28 from "@/config/ui/components.Workspace.PeopleCoreView.json";
+import resource29 from "@/config/ui/components.Workspace.PerformanceView.json";
+import resource30 from "@/config/ui/components.Workspace.ProjectView.json";
+import resource31 from "@/config/ui/components.Workspace.RecruitmentView.json";
+import resource32 from "@/config/ui/components.Workspace.RightSubNav.json";
+import resource33 from "@/config/ui/components.Workspace.SettingsView.json";
+import resource34 from "@/config/ui/components.Workspace.SideNav.json";
+import resource35 from "@/config/ui/components.Workspace.TeamView.json";
+import resource36 from "@/config/ui/components.Workspace.Toast.json";
+import resource37 from "@/config/ui/components.Workspace.TopNav.json";
+import resource38 from "@/config/ui/components.Workspace.WorkflowBuilderModal.json";
 import resource39 from "@/config/ui/components.Dashboard.AttendanceWidget.json";
 import resource40 from "@/config/ui/components.Dashboard.Header.json";
 import resource41 from "@/config/ui/components.Dashboard.HeroSection.json";
@@ -83,42 +83,42 @@ export const workspaceResources = {
     "components.AppWorkspace": resource0,
     "components.Charts.NucleusChart": resource1,
     "components.Charts.theme": resource2,
-    "components.Clerio.AIPanel": resource3,
-    "components.Clerio.AccessControlView": resource4,
-    "components.Clerio.ActionFormModal": resource5,
-    "components.Clerio.AdminOverview": resource6,
-    "components.Clerio.AttendanceFAB": resource7,
-    "components.Clerio.AttendanceView": resource8,
-    "components.Clerio.CMSModal": resource9,
-    "components.Clerio.CatalogGridView": resource10,
-    "components.Clerio.ChatPanel": resource11,
-    "components.Clerio.CompensationView": resource12,
-    "components.Clerio.ComplianceView": resource13,
-    "components.Clerio.ContractWorkforceView": resource14,
-    "components.Clerio.DataImportModal": resource15,
-    "components.Clerio.ExperienceView": resource16,
-    "components.Clerio.HelpdeskView": resource17,
-    "components.Clerio.IntegrationsView": resource18,
-    "components.Clerio.LearningView": resource19,
-    "components.Clerio.LeaveView": resource20,
-    "components.Clerio.LeftDock": resource21,
-    "components.Clerio.LoginView": resource22,
-    "components.Clerio.MainWorkspace": resource23,
-    "components.Clerio.MisReportingHub": resource24,
-    "components.Clerio.OnboardingView": resource25,
-    "components.Clerio.OperationalModuleView": resource26,
-    "components.Clerio.PayrollView": resource27,
-    "components.Clerio.PeopleCoreView": resource28,
-    "components.Clerio.PerformanceView": resource29,
-    "components.Clerio.ProjectView": resource30,
-    "components.Clerio.RecruitmentView": resource31,
-    "components.Clerio.RightSubNav": resource32,
-    "components.Clerio.SettingsView": resource33,
-    "components.Clerio.SideNav": resource34,
-    "components.Clerio.TeamView": resource35,
-    "components.Clerio.Toast": resource36,
-    "components.Clerio.TopNav": resource37,
-    "components.Clerio.WorkflowBuilderModal": resource38,
+    "components.Workspace.AIPanel": resource3,
+    "components.Workspace.AccessControlView": resource4,
+    "components.Workspace.ActionFormModal": resource5,
+    "components.Workspace.AdminOverview": resource6,
+    "components.Workspace.AttendanceFAB": resource7,
+    "components.Workspace.AttendanceView": resource8,
+    "components.Workspace.CMSModal": resource9,
+    "components.Workspace.CatalogGridView": resource10,
+    "components.Workspace.ChatPanel": resource11,
+    "components.Workspace.CompensationView": resource12,
+    "components.Workspace.ComplianceView": resource13,
+    "components.Workspace.ContractWorkforceView": resource14,
+    "components.Workspace.DataImportModal": resource15,
+    "components.Workspace.ExperienceView": resource16,
+    "components.Workspace.HelpdeskView": resource17,
+    "components.Workspace.IntegrationsView": resource18,
+    "components.Workspace.LearningView": resource19,
+    "components.Workspace.LeaveView": resource20,
+    "components.Workspace.LeftDock": resource21,
+    "components.Workspace.LoginView": resource22,
+    "components.Workspace.MainWorkspace": resource23,
+    "components.Workspace.MisReportingHub": resource24,
+    "components.Workspace.OnboardingView": resource25,
+    "components.Workspace.OperationalModuleView": resource26,
+    "components.Workspace.PayrollView": resource27,
+    "components.Workspace.PeopleCoreView": resource28,
+    "components.Workspace.PerformanceView": resource29,
+    "components.Workspace.ProjectView": resource30,
+    "components.Workspace.RecruitmentView": resource31,
+    "components.Workspace.RightSubNav": resource32,
+    "components.Workspace.SettingsView": resource33,
+    "components.Workspace.SideNav": resource34,
+    "components.Workspace.TeamView": resource35,
+    "components.Workspace.Toast": resource36,
+    "components.Workspace.TopNav": resource37,
+    "components.Workspace.WorkflowBuilderModal": resource38,
     "components.Dashboard.AttendanceWidget": resource39,
     "components.Dashboard.Header": resource40,
     "components.Dashboard.HeroSection": resource41,

@@ -1,0 +1,128 @@
+[
+  {
+    "Type": "Defect",
+    "Sheet or area": "16_Leave_Proration",
+    "What was wrong or missing in v1.0": "The January and February to March examples named E1038 and E1046 — a third-party helper and a contractual daily-wage worker, neither of whom is leave eligible and neither of whom could carry a proration credit.",
+    "What v1.1 does about it": "Examples corrected. E1069 added as a leave-eligible January joiner, and a leave-eligibility check column added so the same mistake is visible next time.",
+    "Demo point affected": "Point 7"
+  },
+  {
+    "Type": "Defect",
+    "Sheet or area": "17_Leave_Ledger",
+    "What was wrong or missing in v1.0": "Sheet 19 held six comp-off credits; the ledger carried three of them, none of the consumptions and not the lapse. A balance built from the ledger disagreed with the comp-off register for four of five workers.",
+    "What v1.1 does about it": "Five movements added and the two sheets reconciled. 53_Leave_Balance_AsOn is derived from the ledger alone.",
+    "Demo point affected": "Point 6"
+  },
+  {
+    "Type": "Defect",
+    "Sheet or area": "17_Leave_Ledger",
+    "What was wrong or missing in v1.0": "LL-0029 was a two-day casual leave debit whose own narration said no leave was applied and LOP was raised instead — two days silently removed from a balance.",
+    "What v1.1 does about it": "Changed to a zero-day no-movement row so the rejected application stays visible without touching the balance.",
+    "Demo point affected": "Point 12"
+  },
+  {
+    "Type": "Defect",
+    "Sheet or area": "35_GL_Mapping",
+    "What was wrong or missing in v1.0": "GL-009 and GL-010 debit the gratuity and leave-encashment provisions with no credit account anywhere in the map, so any journal containing them was short by 700,000 and could not balance. LE-02 had no professional tax credit account at all.",
+    "What v1.1 does about it": "Four mappings added: GL-024, GL-025, GL-026 and GL-027.",
+    "Demo point affected": "Points 15, 17"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "21_Expected_Attendance and 20_Punch_Events",
+    "What was wrong or missing in v1.0": "E1021 Rekha Deshpande is named in the demo script as the grade-exempt case for demo point 12 and had no punches and no attendance, so half of that point could not be shown.",
+    "What v1.1 does about it": "26 punch events and 15 attendance days added — five lates beyond grace in one month, every day still Present.",
+    "Demo point affected": "Point 12"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "12_Employees",
+    "What was wrong or missing in v1.0": "The record carried 21 columns and none of the attributes the WIP requirements are about: rest-day applicability, OT eligibility basis, leave scheme, COFF lapse, payroll versus attendance location, continuous service or gate-pass entitlement.",
+    "What v1.1 does about it": "22 policy columns added, every value derived from the category, designation and worker class masters so the resolution order can be shown rather than asserted.",
+    "Demo point affected": "R-03 to R-12"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "05_Designations",
+    "What was wrong or missing in v1.0": "A band letter but no numeric grade rank, so every \"and above\" rule had nothing to compare against and would have had to match a designation name.",
+    "What v1.1 does about it": "Grade rank and default leave scheme added. AGM and above is rank 70; Assistant Manager and above is rank 50.",
+    "Demo point affected": "Points 7, 12"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Roles and users",
+    "What was wrong or missing in v1.0": "No roles, no users, no data scope anywhere in the dataset — demo point 8 is about who is signed in, and it could not be run at all.",
+    "What v1.1 does about it": "43_Roles_and_Data_Scope and 44_Demo_Users added, ten sign-ins each tied to a point in the script.",
+    "Demo point affected": "Point 8"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Vendors",
+    "What was wrong or missing in v1.0": "VN-01 to VN-05 were referenced on the employee record and in the contract-labour register but never defined.",
+    "What v1.1 does about it": "45_Vendors_Contractors and 46_Contractor_Invoices added.",
+    "Demo point affected": "Points 3, 4, 17"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Break register",
+    "What was wrong or missing in v1.0": "Demo point 1 asks for the dinner break to be reported separately and there was no break-level data.",
+    "What v1.1 does about it": "49_Break_Register added, distinguishing punched breaks from the scheduled shift break.",
+    "Demo point affected": "Point 1"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Payroll outputs",
+    "What was wrong or missing in v1.0": "Runs existed at header level only — no employee lines, no journal, no bank file — so demo points 10 and 15 could be described but not shown.",
+    "What v1.1 does about it": "55_Payroll_Register, 56_GL_Journal and 57_Bank_File added. Both journals balance and reconcile to the bank files.",
+    "Demo point affected": "Points 8, 10, 15"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Full and final",
+    "What was wrong or missing in v1.0": "The clearance checklist and the settlement run existed with nothing in between — no amounts.",
+    "What v1.1 does about it": "58_FnF_Settlement added for both cases, including the gratuity contrast at seven years against four.",
+    "Demo point affected": "Point 16"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Statutory",
+    "What was wrong or missing in v1.0": "Every location named a professional tax slab set and no slabs existed anywhere.",
+    "What v1.1 does about it": "48_PT_Slabs added for four states. Values are demo figures and must be confirmed against current notifications.",
+    "Demo point affected": "Point 17"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Recruitment and lifecycle",
+    "What was wrong or missing in v1.0": "Requisitions pointed at candidates who did not exist; confirmation and pre-boarding had no records.",
+    "What v1.1 does about it": "59_Candidates_and_Offers, 60_Confirmations and 61_Preboarding_Chain added.",
+    "Demo point affected": "Points 19, 23, 24, 25, 26"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Configuration masters",
+    "What was wrong or missing in v1.0": "Employment categories, leave schemes, the combination matrix, the grace policy and the night extension rule were all stated as rules with no configuration behind them.",
+    "What v1.1 does about it": "38, 39, 40, 41 and 42 added. Every number the client stated as policy now sits in a row rather than in the engine.",
+    "Demo point affected": "Points 2, 3, 4, 6, 7, 12"
+  },
+  {
+    "Type": "Gap",
+    "Sheet or area": "Tenant seeding",
+    "What was wrong or missing in v1.0": "The dataset could not seed a tenant on its own — the value sets lived only in the specification workbooks.",
+    "What v1.1 does about it": "65_Enum_Seed_Values and 66_Picklist_Seed_Values added, 25 enums and 119 picklists.",
+    "Demo point affected": null
+  },
+  {
+    "Type": "Addition",
+    "Sheet or area": "Traceability",
+    "What was wrong or missing in v1.0": "Nothing tied the dataset back to the specifications, so there was no way to tell what was missing.",
+    "What v1.1 does about it": "67_Reports_Register, 68_Acceptance_Test_Data and 69_Coverage_Matrix added.",
+    "Demo point affected": null
+  },
+  {
+    "Type": "v1.1, September 2026. Four defects and thirteen gaps. The four defects matter more than the gaps: a missing sheet is visible while you prepare, but a leave ledger that does not reconcile to the comp-off register only shows up when a client asks you to explain a balance, and an unbalanced journal only shows up in front of a finance head. LOAD ORDER for the new sheets: 38, 39, 40, 41, 42, 43, 44, 45, 47, 48 and 65, 66 are configuration and must be loaded before 12_Employees. Everything from 46 and 49 upward is transaction or output data and loads after 37.",
+    "Sheet or area": null,
+    "What was wrong or missing in v1.0": null,
+    "What v1.1 does about it": null,
+    "Demo point affected": null
+  }
+]

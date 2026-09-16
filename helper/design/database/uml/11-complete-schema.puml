@@ -1,0 +1,45 @@
+@startuml
+title MKraft HRMS - Complete Proposed Schema\n304 tables / 947 foreign-key constraints
+!include includes/style.iuml
+package "Identity, tenant & legal structure (21)" {
+!include includes/01-identity-tenant-tables.iuml
+}
+package "People, organization & documents (37)" {
+!include includes/02-people-org-documents-tables.iuml
+}
+package "Workflow, approvals, inbox & notifications (13)" {
+!include includes/03-workflow-notifications-tables.iuml
+}
+package "Attendance, shifts, leave, OT & gate pass (29)" {
+!include includes/04-attendance-leave-tables.iuml
+}
+package "Payroll, loans, statutory, GL & disbursement (41)" {
+!include includes/05-payroll-loans-statutory-tables.iuml
+}
+package "Talent, onboarding & lifecycle (40)" {
+!include includes/06-talent-onboarding-tables.iuml
+}
+package "Performance, skills, succession & learning (37)" {
+!include includes/07-performance-skills-learning-tables.iuml
+}
+package "Compensation & benefits (11)" {
+!include includes/08-compensation-benefits-tables.iuml
+}
+package "Engagement, analytics & AI (48)" {
+!include includes/09-engagement-analytics-ai-tables.iuml
+}
+package "Integrations, jobs, compliance evidence & audit (27)" {
+!include includes/10-integrations-jobs-audit-tables.iuml
+}
+!include includes/01-identity-tenant-relations.iuml
+!include includes/02-people-org-documents-relations.iuml
+!include includes/03-workflow-notifications-relations.iuml
+!include includes/04-attendance-leave-relations.iuml
+!include includes/05-payroll-loans-statutory-relations.iuml
+!include includes/06-talent-onboarding-relations.iuml
+!include includes/07-performance-skills-learning-relations.iuml
+!include includes/08-compensation-benefits-relations.iuml
+!include includes/09-engagement-analytics-ai-relations.iuml
+!include includes/10-integrations-jobs-audit-relations.iuml
+!include includes/legend.iuml
+@enduml

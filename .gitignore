@@ -11,7 +11,7 @@ npm-debug.log*
 /build/
 /.netlify/
 /.vercel/
-/docs/
+
 
 # TypeScript & Next.js Type Caches
 *.tsbuildinfo

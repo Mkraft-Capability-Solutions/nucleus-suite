@@ -24,7 +24,7 @@ In Nucleus HRMS, **`src/services/` and `src/server/` serve two fundamentally dif
                              ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     SERVER RUNTIME LAYER                    │
-│            Next.js App Router API Routes (/api/v1/*)        │
+│            Next.js Server Actions (src/app/actions/*)        │
 │                            │                                │
 │                            ▼                                │
 │                  src/server/ (SERVER ONLY)                  │
@@ -55,4 +55,4 @@ In Nucleus HRMS, **`src/services/` and `src/server/` serve two fundamentally dif
 
 - **`src/services/`**: Client calculation engines, UI data adapters, client fetchers, `workspace-data.mjs`.
 - **`src/server/`**: Authoritative domain business logic, Neon PostgreSQL Drizzle queries, tenant isolation, and transactional workflows.
-- **`src/app/api/v1/`**: REST gateway connecting client forms to `src/server/`.
+- **`src/app/actions/`**: Server Actions connecting client forms to `src/server/`.

@@ -53,10 +53,10 @@ Identify the conflict and select the safest implementation that preserves existi
 
 This repository is currently in the:
 
-**ENTERPRISE PRODUCTION READINESS PHASE**
+**BIFURCATED MODULAR MONOLITH PRODUCTION PHASE**
 
 The objective is to build a production-grade enterprise HRMS application (on par with Workday, Lighthouse HRMS, etc.).
-No more dummy, JSON-based templates, or mock validations are allowed. The application must perform real processes.
+The architecture strictly divides the Frontend Shell (`src/app/`) from the Backend Engine (`src/server/`).
 
 ### MANDATES:
 * Full database persistence using PostgreSQL (Neon DB).
@@ -66,7 +66,11 @@ No more dummy, JSON-based templates, or mock validations are allowed. The applic
 * End-to-end CRUD operations over dedicated backend service layers.
 * Atomic SQL transactions for business logic (e.g., payroll, leave balances).
 
-All UI forms and data grids MUST submit and fetch data dynamically through the real `/api/v1/` REST endpoints. Local JSON mocks are strictly deprecated.
+MOST IMPORTANT:
+BELOW IS STRICTLY PROHIBITED
+* **No production data** — all mutations are in-memory preview behaviors. STRICTLY PROHIBITED. All features must mutate actual database state.
+* **No server activation** — backend services in `src/server/` are dormant unless explicitly authorized. STRICTLY PROHIBITED. All services must be fully active and connected.
+* **JSON boundary** — business data flows only through `readData()` and explicit service adapters. STRICTLY PROHIBITED. Data must flow through Next.js Server Actions (`src/app/actions/*`).
 
 ---
 
@@ -467,12 +471,11 @@ Do not create isolated navigation definitions when the centralized catalog alrea
 
 # 17. Data Boundary Rules
 
-JSON/prototype data must flow through the existing service boundary.
+Data must flow strictly through Next.js Server Actions (`src/app/actions/`) which acts as the delivery mechanism for the `src/server/` Bifurcated Backend Engine.
 
 Do not:
 
 * Put business records directly inside page components
-* Invent production-looking business totals
 * Import private server fixtures into client components
 * Expose credentials
 * Expose secrets
@@ -1017,11 +1020,9 @@ to normal users.
 
 # 38. Database and Persistence
 
-During the current prototype phase:
+All features must persist to the Neon PostgreSQL database.
 
-**Do not activate production database behavior unless explicitly authorized.**
-
-When database work is authorized, verify:
+When working with the database, verify:
 
 * Schema
 * Relationships

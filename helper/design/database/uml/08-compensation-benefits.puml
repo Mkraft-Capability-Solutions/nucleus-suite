@@ -1,0 +1,90 @@
+@startuml
+title MKraft HRMS - Compensation & benefits\nPROPOSED: 11 owned tables / 37 outgoing FK constraints
+!include includes/style.iuml
+package "Compensation & benefits" {
+!include includes/08-compensation-benefits-tables.iuml
+}
+package "External reference keys" {
+entity "approval_requests" as approval_requests <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "documents" as documents <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "employees" as employees <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * employee_number : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, employee_number)
+}
+
+entity "grades" as grades <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "legal_entities" as legal_entities <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "locations" as locations <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * code : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, code)
+}
+
+entity "payroll_results" as payroll_results <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "person_dependents" as person_dependents <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  --
+  UK (tenant_id, id)
+}
+
+entity "tenants" as tenants <<external>> {
+  * id : uuid <<PK>>
+  * code : text
+  --
+  UK (code)
+}
+
+entity "users" as users <<external>> {
+  * id : uuid <<PK>>
+  * tenant_id : uuid
+  * email : text
+  --
+  UK (tenant_id, id)
+  UK (tenant_id, email)
+}
+}
+!include includes/08-compensation-benefits-relations.iuml
+!include includes/legend.iuml
+@enduml

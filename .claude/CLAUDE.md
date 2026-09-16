@@ -75,7 +75,7 @@ const text = readData("components.ModuleName.ComponentName", "label_key");
 
 ```
 src/
-├── app/api/v1/          # API routes (dormant — do NOT activate without authorization)
+├── app/actions/         # Next.js Server Actions (Primary execution entry point)
 ├── components/Clerio/   # All workspace views (PeopleCoreView, PayrollView, etc.)
 ├── components/Leave/    # Leave sub-components (LeaveApplicationDialog, etc.)
 ├── components/Dashboard/# 10 executive console dashboards + personalization

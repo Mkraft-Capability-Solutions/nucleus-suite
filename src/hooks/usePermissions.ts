@@ -31,7 +31,7 @@ export function usePermissions(): UsePermissionsReturn {
     // Universal Super Admin Bypass
     if (isSuperAdmin) return true;
     if (typeof contextHasPermission === 'function') {
-      return Boolean(contextHasPermission(permission, user.role));
+      return Boolean(contextHasPermission(permission));
     }
     return false;
   };

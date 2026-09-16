@@ -1,6 +1,6 @@
 "use client";
 import { Autocomplete, TextField } from "@mui/material";
-import type { LeaveEmployee } from "@/services/leave-reference";
+import type { LeaveEmployee } from "@/app/actions/leaveActions";
 export default function LeaveEmployeeSelect({
   options,
   value,

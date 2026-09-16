@@ -16,8 +16,7 @@ import styles from './DualPaneNav.module.css';
 
 const ROLE_PERMITTED_CONSOLES = readData("components.Navigation.DualPaneNav", "ROLE_PERMITTED_CONSOLES_1");
 
-export { navigationDomains as MODULES_TAXONOMY } from '@/lib/workspace-navigation';
-import { navigationDomains as MODULES_TAXONOMY } from '@/lib/workspace-navigation';
+import { getNavigationDomains as MODULES_TAXONOMY } from '@/lib/workspace-navigation';
 
 export default function DualPaneNav({
     isOpen = false,
@@ -65,7 +64,7 @@ export default function DualPaneNav({
     const userRole = user?.role || readData("components.Navigation.DualPaneNav", "fallback_1");
     const permittedConsoleIds = (ROLE_PERMITTED_CONSOLES[userRole] || readData("components.Navigation.DualPaneNav", "permittedConsoleIds_135")).filter((consoleId) => isConsoleAllowed(consoleId, userRole, user?.id || user?.email));
 
-    const effectiveTaxonomy = MODULES_TAXONOMY.map(m => {
+    const effectiveTaxonomy = MODULES_TAXONOMY().map(m => {
         if (m.id === 'dashboard') {
             return {
                 ...m,

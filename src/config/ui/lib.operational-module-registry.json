@@ -5,7 +5,7 @@
       "screenId": "SCR-001",
       "title": "Legal entity master",
       "primary": "plt_platform",
-      "endpoint": "/api/v1/organization/entities",
+      "serverAction": "organizationActions.ts",
       "fields": [
         {
           "key": "entityCode",
@@ -75,7 +75,7 @@
       "screenId": "SCR-002",
       "title": "Location / Work site master",
       "primary": "plt_platform",
-      "endpoint": "/api/v1/organization/locations",
+      "serverAction": "organizationActions.ts",
       "fields": [
         {
           "key": "locationCode",
@@ -139,7 +139,7 @@
       "screenId": "SCR-005",
       "title": "Access scope administration",
       "primary": "people_core",
-      "endpoint": "/api/v1/identity/memberships",
+      "serverAction": "identityActions.ts",
       "fields": [
         {
           "key": "principal",
@@ -197,7 +197,7 @@
       "screenId": "SCR-010",
       "title": "Employee record",
       "primary": "people_core",
-      "endpoint": "/api/v1/people",
+      "serverAction": "peopleActions.ts",
       "fields": [
         {
           "key": "employeeCode",
@@ -280,7 +280,7 @@
       "screenId": "SCR-011",
       "title": "Assignment and policy attributes",
       "primary": "people_core",
-      "endpoint": "/api/v1/organization/tree",
+      "serverAction": "organizationActions.ts",
       "fields": [
         {
           "key": "position",
@@ -362,7 +362,7 @@
       "screenId": "SCR-012",
       "title": "Position register",
       "primary": "people_core",
-      "endpoint": "/api/v1/organization/tree",
+      "serverAction": "organizationActions.ts",
       "fields": [
         {
           "key": "positionCode",
@@ -430,7 +430,7 @@
       "screenId": "SCR-013",
       "title": "Sanctioned strength board",
       "primary": "people_core",
-      "endpoint": "/api/v1/organization/tree",
+      "serverAction": "organizationActions.ts",
       "fields": [
         {
           "key": "orgUnit",
@@ -497,7 +497,7 @@
       "screenId": "SCR-014",
       "title": "Document vault",
       "primary": "people_core",
-      "endpoint": "/api/v1/ops/modules/document_vault/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -562,7 +562,7 @@
       "screenId": "SCR-022",
       "title": "Attendance day detail",
       "primary": "attendance",
-      "endpoint": "/api/v1/ops/modules/attendance_detail/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -614,7 +614,7 @@
       "screenId": "SCR-024",
       "title": "Overtime register",
       "primary": "attendance",
-      "endpoint": "/api/v1/ot-requests",
+      "serverAction": "attendanceActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -676,7 +676,7 @@
       "screenId": "SCR-025",
       "title": "Attendance exception queue",
       "primary": "attendance",
-      "endpoint": "/api/v1/regularizations",
+      "serverAction": "attendanceActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -729,7 +729,7 @@
       "screenId": "SCR-026",
       "title": "Attendance recompute monitor",
       "primary": "attendance",
-      "endpoint": "/api/v1/ops/scheduled-tasks",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "employeeScope",
@@ -781,7 +781,7 @@
       "screenId": "SCR-027",
       "title": "Team history",
       "primary": "attendance",
-      "endpoint": "/api/v1/reports/team-history",
+      "serverAction": "reportsActions.ts",
       "fields": [
         {
           "key": "team",
@@ -832,7 +832,7 @@
       "screenId": "SCR-032",
       "title": "Leave policy configuration",
       "primary": "leaves",
-      "endpoint": "/api/v1/ops/modules/leave_policy_admin/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "leaveType",
@@ -894,7 +894,7 @@
       "screenId": "SCR-054",
       "title": "Tax declaration and projection",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/tax_declarations/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -962,7 +962,7 @@
       "screenId": "SCR-055",
       "title": "Bank disbursement control",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/bank_disbursement/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "payrollRun",
@@ -1021,7 +1021,7 @@
       "screenId": "SCR-062",
       "title": "Policy acknowledgements",
       "primary": "onboarding",
-      "endpoint": "/api/v1/announcements",
+      "serverAction": "communicationActions.ts",
       "fields": [
         {
           "key": "policy",
@@ -1073,7 +1073,7 @@
       "screenId": "SCR-070",
       "title": "Rule-pack manager",
       "primary": "compliance",
-      "endpoint": "/api/v1/ops/modules/rule_pack_manager/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "packName",
@@ -1133,7 +1133,7 @@
       "screenId": "SCR-071",
       "title": "Golden-case library",
       "primary": "compliance",
-      "endpoint": "/api/v1/ops/modules/golden_case_library/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "caseName",
@@ -1191,7 +1191,7 @@
       "screenId": "SCR-101",
       "title": "Integration sync monitor",
       "primary": "integrations",
-      "endpoint": "/api/v1/webhooks/deliveries",
+      "serverAction": "webhookActions.ts",
       "fields": [
         {
           "key": "connection",
@@ -1243,7 +1243,7 @@
       "screenId": "SCR-102",
       "title": "GL mapping and journal",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/gl_mapping/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "payComponent",
@@ -1302,7 +1302,7 @@
       "screenId": "SCR-103",
       "title": "Payroll reconciliation",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/reconciliation/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "payrollRun",
@@ -1357,7 +1357,7 @@
       "screenId": "SCR-040",
       "title": "Unified approval inbox",
       "primary": "team",
-      "endpoint": "/api/v1/notifications",
+      "serverAction": "notificationActions.ts",
       "fields": [
         {
           "key": "requestType",
@@ -1404,7 +1404,7 @@
       "screenId": "SCR-060",
       "title": "Joining chain console",
       "primary": "onboarding",
-      "endpoint": "/api/v1/onboarding/instances",
+      "serverAction": "onboardingActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -1457,7 +1457,7 @@
       "screenId": "SCR-061",
       "title": "Clearance board",
       "primary": "onboarding",
-      "endpoint": "/api/v1/ops/modules/clearance_board/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -1519,7 +1519,7 @@
       "screenId": "SCR-064",
       "title": "Asset register",
       "primary": "onboarding",
-      "endpoint": "/api/v1/assets",
+      "serverAction": "assetActions.ts",
       "fields": [
         {
           "key": "assetTag",
@@ -1578,7 +1578,7 @@
       "screenId": "SCR-065",
       "title": "Recognition register",
       "primary": "experience",
-      "endpoint": "/api/v1/recognition-events",
+      "serverAction": "recognitionActions.ts",
       "fields": [
         {
           "key": "nominee",
@@ -1634,7 +1634,7 @@
       "screenId": "SCR-067",
       "title": "Letters and issue register",
       "primary": "onboarding",
-      "endpoint": "/api/v1/hr-letters",
+      "serverAction": "letterActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -1687,7 +1687,7 @@
       "screenId": "SCR-073",
       "title": "Statutory forms and registers",
       "primary": "compliance",
-      "endpoint": "/api/v1/ops/modules/statutory_register/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "formCode",
@@ -1747,7 +1747,7 @@
       "screenId": "SCR-080",
       "title": "Loans and advances",
       "primary": "payroll",
-      "endpoint": "/api/v1/loans",
+      "serverAction": "loanActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -1819,7 +1819,7 @@
       "screenId": "SCR-090",
       "title": "Recruitment requisitions",
       "primary": "recruitment",
-      "endpoint": "/api/v1/requisitions",
+      "serverAction": "recruitmentActions.ts",
       "fields": [
         {
           "key": "type",
@@ -1879,7 +1879,7 @@
       "screenId": "SCR-091",
       "title": "Referral tracking",
       "primary": "recruitment",
-      "endpoint": "/api/v1/referrals",
+      "serverAction": "recruitmentActions.ts",
       "fields": [
         {
           "key": "candidate",
@@ -1933,7 +1933,7 @@
       "screenId": "SCR-095",
       "title": "Contractor engagement and invoice",
       "primary": "contract_workforce",
-      "endpoint": "/api/v1/contractors/invoices",
+      "serverAction": "contractorActions.ts",
       "fields": [
         {
           "key": "agency",
@@ -1995,7 +1995,7 @@
       "screenId": "SCR-100",
       "title": "Integration configuration",
       "primary": "integrations",
-      "endpoint": "/api/v1/integrations/connections",
+      "serverAction": "integrationActions.ts",
       "fields": [
         {
           "key": "connection",
@@ -2054,7 +2054,7 @@
       "screenId": "SCR-110",
       "title": "Agent console and action ledger",
       "primary": "analytics",
-      "endpoint": "/api/v1/ai/actions",
+      "serverAction": "aiActions.ts",
       "fields": [
         {
           "key": "agent",
@@ -2117,7 +2117,7 @@
       "screenId": "SCR-111",
       "title": "Operational reports",
       "primary": "analytics",
-      "endpoint": "/api/v1/analytics/metrics",
+      "serverAction": "analyticsActions.ts",
       "fields": [
         {
           "key": "report",
@@ -2175,7 +2175,7 @@
       "screenId": "SCR-020",
       "title": "Check in and check out",
       "primary": "attendance",
-      "endpoint": "/api/v1/attendance/punches",
+      "serverAction": "attendanceActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2234,7 +2234,7 @@
       "screenId": "SCR-021",
       "title": "My attendance history",
       "primary": "attendance",
-      "endpoint": "/api/v1/attendance/days",
+      "serverAction": "attendanceActions.ts",
       "fields": [
         {
           "key": "fromDate",
@@ -2280,7 +2280,7 @@
       "screenId": "SCR-023",
       "title": "Gate pass register",
       "primary": "attendance",
-      "endpoint": "/api/v1/gate-passes",
+      "serverAction": "attendanceActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2346,7 +2346,7 @@
       "screenId": "SCR-030",
       "title": "Leave requests",
       "primary": "leaves",
-      "endpoint": "/api/v1/leave-requests",
+      "serverAction": "leaveActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2429,7 +2429,7 @@
       "screenId": "SCR-031",
       "title": "Leave balance and ledger",
       "primary": "leaves",
-      "endpoint": "/api/v1/leave-balances",
+      "serverAction": "leaveActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2475,7 +2475,7 @@
       "screenId": "SCR-050",
       "title": "Payroll run cockpit",
       "primary": "payroll",
-      "endpoint": "/api/v1/payroll-runs",
+      "serverAction": "payrollActions.ts",
       "fields": [
         {
           "key": "entity",
@@ -2538,7 +2538,7 @@
       "screenId": "SCR-051",
       "title": "Pre-payroll audit",
       "primary": "payroll",
-      "endpoint": "/api/v1/payroll-anomalies",
+      "serverAction": "payrollActions.ts",
       "fields": [
         {
           "key": "payrollRun",
@@ -2591,7 +2591,7 @@
       "screenId": "SCR-052",
       "title": "Salary structure simulator",
       "primary": "compensation",
-      "endpoint": "/api/v1/wage-simulations",
+      "serverAction": "complianceActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2659,7 +2659,7 @@
       "screenId": "SCR-053",
       "title": "Payslips",
       "primary": "payroll",
-      "endpoint": "/api/v1/payslips",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2705,7 +2705,7 @@
       "screenId": "SCR-056",
       "title": "Full and final settlement",
       "primary": "payroll",
-      "endpoint": "/api/v1/fnf-settlements",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2767,7 +2767,7 @@
       "screenId": "SCR-041",
       "title": "Assistant and helpdesk",
       "primary": "helpdesk",
-      "endpoint": "/api/v1/ai/knowledge",
+      "serverAction": "aiActions.ts",
       "fields": [
         {
           "key": "question",
@@ -2819,7 +2819,7 @@
       "screenId": "SCR-042",
       "title": "Employee home actions",
       "primary": "people_core",
-      "endpoint": "/api/v1/home",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "action",
@@ -2865,7 +2865,7 @@
       "screenId": "SCR-063",
       "title": "My learning",
       "primary": "learning",
-      "endpoint": "/api/v1/enrollments",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "employee",
@@ -2918,7 +2918,7 @@
       "screenId": "SCR-066",
       "title": "Announcements",
       "primary": "experience",
-      "endpoint": "/api/v1/announcements",
+      "serverAction": "communicationActions.ts",
       "fields": [
         {
           "key": "title",
@@ -2971,7 +2971,7 @@
       "screenId": "SCR-072",
       "title": "Obligation calendar",
       "primary": "compliance",
-      "endpoint": "/api/v1/compliance/obligations",
+      "serverAction": "genericActions.ts",
       "fields": [
         {
           "key": "obligation",
@@ -3038,7 +3038,7 @@
       "formId": "FRM-TIM-01",
       "title": "Shift master",
       "primary": "attendance",
-      "endpoint": "/api/v1/ops/modules/shift_master/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "shiftCode",
@@ -3425,7 +3425,7 @@
       "formId": "FRM-TIM-02",
       "title": "Roster / Shift Schedule",
       "primary": "attendance",
-      "endpoint": "/api/v1/ops/modules/roster_schedule/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "locationId",
@@ -3669,7 +3669,7 @@
       "formId": "FRM-LVE-03",
       "title": "Compensatory off claim",
       "primary": "leaves",
-      "endpoint": "/api/v1/ops/modules/compensatory_off/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "workedDate",
@@ -3861,7 +3861,7 @@
       "formId": "FRM-LVE-04",
       "title": "Leave encashment request",
       "primary": "leaves",
-      "endpoint": "/api/v1/ops/modules/leave_encashment/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "leaveType",
@@ -4097,7 +4097,7 @@
       "formId": "FRM-LCY-02",
       "title": "Confirmation review",
       "primary": "people_core",
-      "endpoint": "/api/v1/ops/modules/probation_confirmation/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "personIdConfirmationDue",
@@ -4337,7 +4337,7 @@
       "formId": "FRM-LCY-03",
       "title": "Resignation and exit",
       "primary": "people_core",
-      "endpoint": "/api/v1/ops/modules/resignation_exit/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "exitType",
@@ -4703,7 +4703,7 @@
       "formId": "FRM-PAY-01",
       "title": "Pay component master",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/pay_component_master/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "componentCode",
@@ -5282,7 +5282,7 @@
       "formId": "FRM-PAY-06",
       "title": "Reimbursement claim",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/reimbursement_claim/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "claimType",
@@ -5557,7 +5557,7 @@
       "formId": "FRM-CMB-02",
       "title": "Salary advance request",
       "primary": "payroll",
-      "endpoint": "/api/v1/ops/modules/salary_advance/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "amount",
@@ -5738,7 +5738,7 @@
       "formId": "FRM-TAL-02",
       "title": "Candidate record and application",
       "primary": "recruitment",
-      "endpoint": "/api/v1/ops/modules/candidate_application/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "name",
@@ -6203,7 +6203,7 @@
       "formId": "FRM-TAL-03",
       "title": "Interview feedback",
       "primary": "recruitment",
-      "endpoint": "/api/v1/ops/modules/interview_feedback/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "candidateIdRequisitionId",
@@ -6440,7 +6440,7 @@
       "formId": "FRM-TAL-04",
       "title": "Offer management",
       "primary": "recruitment",
-      "endpoint": "/api/v1/ops/modules/offer_management/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "candidateIdRequisitionIdPositionCode",
@@ -6777,7 +6777,7 @@
       "formId": "FRM-SSV-01",
       "title": "Helpdesk ticket",
       "primary": "analytics",
-      "endpoint": "/api/v1/ops/modules/helpdesk_ticket/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "category",
@@ -7095,7 +7095,7 @@
       "formId": "FRM-CTG-02",
       "title": "Contractor invoice reconciliation",
       "primary": "compliance",
-      "endpoint": "/api/v1/ops/modules/contractor_invoice/records",
+      "serverAction": "opsActions.ts",
       "fields": [
         {
           "key": "engagementIdPeriod",

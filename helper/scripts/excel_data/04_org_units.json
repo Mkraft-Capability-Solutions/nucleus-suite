@@ -1,0 +1,137 @@
+[
+  {
+    "Org unit code": "OU-100",
+    "Org unit name": "Executive Office",
+    "Parent": null,
+    "Level": 1,
+    "Type": "Function",
+    "Primary location": "LOC-BLR",
+    "Cost centre": "CC-1000"
+  },
+  {
+    "Org unit code": "OU-110",
+    "Org unit name": "Manufacturing",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": null,
+    "Cost centre": "CC-2000"
+  },
+  {
+    "Org unit code": "OU-111",
+    "Org unit name": "Machining",
+    "Parent": "OU-110",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-2100"
+  },
+  {
+    "Org unit code": "OU-112",
+    "Org unit name": "Assembly",
+    "Parent": "OU-110",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-2200"
+  },
+  {
+    "Org unit code": "OU-113",
+    "Org unit name": "Quality Assurance",
+    "Parent": "OU-110",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-2300"
+  },
+  {
+    "Org unit code": "OU-114",
+    "Org unit name": "Maintenance",
+    "Parent": "OU-110",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-2400"
+  },
+  {
+    "Org unit code": "OU-120",
+    "Org unit name": "Supply Chain",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": null,
+    "Cost centre": "CC-3000"
+  },
+  {
+    "Org unit code": "OU-121",
+    "Org unit name": "Stores",
+    "Parent": "OU-120",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-3100"
+  },
+  {
+    "Org unit code": "OU-122",
+    "Org unit name": "Logistics",
+    "Parent": "OU-120",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-3200"
+  },
+  {
+    "Org unit code": "OU-130",
+    "Org unit name": "Engineering",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": null,
+    "Cost centre": "CC-4000"
+  },
+  {
+    "Org unit code": "OU-140",
+    "Org unit name": "Sales & Marketing",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": "LOC-BLR",
+    "Cost centre": "CC-5000"
+  },
+  {
+    "Org unit code": "OU-150",
+    "Org unit name": "Finance & Accounts",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": "LOC-BLR",
+    "Cost centre": "CC-6000"
+  },
+  {
+    "Org unit code": "OU-160",
+    "Org unit name": "Human Resources",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": null,
+    "Cost centre": "CC-6500"
+  },
+  {
+    "Org unit code": "OU-170",
+    "Org unit name": "Information Technology",
+    "Parent": "OU-100",
+    "Level": 2,
+    "Type": "Function",
+    "Primary location": "LOC-BLR",
+    "Cost centre": "CC-7000"
+  },
+  {
+    "Org unit code": "OU-180",
+    "Org unit name": "Environment, Health & Safety",
+    "Parent": "OU-110",
+    "Level": 3,
+    "Type": "Sub-function",
+    "Primary location": null,
+    "Cost centre": "CC-2500"
+  }
+]

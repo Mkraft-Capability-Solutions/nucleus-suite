@@ -4,30 +4,30 @@
  */
 
 // Domain Views
-export { default as PeopleCoreView } from '../Clerio/PeopleCoreView';
-export { default as AttendanceView } from '../Clerio/AttendanceView';
-export { default as PayrollView } from '../Clerio/PayrollView';
-export { default as LeaveView } from '../Clerio/LeaveView';
-export { default as ComplianceView } from '../Clerio/ComplianceView';
-export { default as RecruitmentView } from '../Clerio/RecruitmentView';
-export { default as OnboardingView } from '../Clerio/OnboardingView';
-export { default as SettingsView } from '../Clerio/SettingsView';
-export { default as OperationalModuleView } from '../Clerio/OperationalModuleView';
-export { default as CatalogGridView } from '../Clerio/CatalogGridView';
+export { default as PeopleCoreView } from './PeopleCoreView';
+export { default as AttendanceView } from './AttendanceView';
+export { default as PayrollView } from './PayrollView';
+export { default as LeaveView } from './LeaveView';
+export { default as ComplianceView } from './ComplianceView';
+export { default as RecruitmentView } from './RecruitmentView';
+export { default as OnboardingView } from './OnboardingView';
+export { default as SettingsView } from './SettingsView';
+export { default as OperationalModuleView } from './OperationalModuleView';
+export { default as CatalogGridView } from './CatalogGridView';
 
 // Workspace Navigation
-export { default as TopNav } from '../Clerio/TopNav';
-export { default as LeftDock } from '../Clerio/LeftDock';
-export { default as RightSubNav } from '../Clerio/RightSubNav';
+export { default as TopNav } from './TopNav';
+export { default as LeftDock } from './LeftDock';
+export { default as RightSubNav } from './RightSubNav';
 
 // Modals & Entity Creation Wizards
-export { default as EmployeeCreationWizard } from '../Clerio/EmployeeCreationWizard';
-export { default as EmployeeDossierModal } from '../Clerio/EmployeeDossierModal';
+export { default as EmployeeCreationWizard } from './EmployeeCreationWizard';
+export { default as EmployeeDossierModal } from './EmployeeDossierModal';
 export { default as AccessControlModal } from '../Dashboard/Modals/AccessControlModal';
-export { default as ActionFormModal } from '../Clerio/ActionFormModal';
-export { default as BulkOnboardingModal } from '../Clerio/BulkOnboardingModal';
+export { default as ActionFormModal } from './ActionFormModal';
+export { default as BulkOnboardingModal } from './BulkOnboardingModal';
 
 // Intelligence & Productivity Panels
-export { default as AIPanel } from '../Clerio/AIPanel';
-export { default as ChatPanel } from '../Clerio/ChatPanel';
+export { default as AIPanel } from './AIPanel';
+export { default as ChatPanel } from './ChatPanel';
 export { default as VoiceNavigator } from '../VoiceNavigator';

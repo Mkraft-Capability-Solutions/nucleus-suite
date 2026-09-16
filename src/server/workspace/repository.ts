@@ -12,7 +12,7 @@ export async function getWorkspaceData() {
 
     if (mode === 'database' || mode === 'live') {
         try {
-            const liveResources = structuredClone(workspaceResources);
+            const liveResources = { ...workspaceResources };
 
             if (pool) {
                 const [
@@ -70,14 +70,10 @@ export async function getWorkspaceData() {
 
             return { version: 1, resources: liveResources };
         } catch (error) {
-            console.error('Database aggregation failed, falling back to canonical manifest:', error);
-            return { version: 1, resources: workspaceResources };
+            console.error('Database aggregation failed:', error);
+            throw error;
         }
     }
-
-    if (mode !== 'json') {
-        throw new Error('No workspace data provider is configured for this mode.');
-    }
-
-    return { version: 1, resources: workspaceResources };
+    
+    throw new Error('APP_DATA_MODE must be database');
 }

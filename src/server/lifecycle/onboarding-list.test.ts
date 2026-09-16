@@ -15,7 +15,7 @@ describe("onboarding worklist", () => {
   });
 
   it("renders the worklist instead of endpoint instructions", () => {
-    const page = readFileSync(resolve(process.cwd(), "src/components/Clerio/OnboardingView.js"), "utf8");
+    const page = readFileSync(resolve(process.cwd(), "src/components/Workspace/OnboardingView.js"), "utf8");
 
     expect(page).toContain("useHRMS()");
     expect(page).toContain("onboardingTasks.map");

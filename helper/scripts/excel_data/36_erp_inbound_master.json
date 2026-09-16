@@ -1,0 +1,110 @@
+[
+  {
+    "Sync row": "SY-0001",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1066",
+    "Nucleus code": "E1066",
+    "Field": "Department",
+    "ERP value": "Logistics",
+    "Nucleus value": "Logistics",
+    "Field owner": "ERP",
+    "Outcome": "Applied — no change",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0002",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1066",
+    "Nucleus code": "E1066",
+    "Field": "Cost centre",
+    "ERP value": "CC-3200",
+    "Nucleus value": "CC-3200",
+    "Field owner": "ERP",
+    "Outcome": "Applied — no change",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0003",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1051",
+    "Nucleus code": "E1051",
+    "Field": "Department",
+    "ERP value": "Assembly",
+    "Nucleus value": "Quality Assurance",
+    "Field owner": "ERP",
+    "Outcome": "Applied — Nucleus updated to Assembly",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0004",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1020",
+    "Nucleus code": "E1020",
+    "Field": "Grade",
+    "ERP value": "B",
+    "Nucleus value": "B",
+    "Field owner": "Nucleus",
+    "Outcome": "Rejected — grade is Nucleus-owned; ERP value ignored and logged",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0005",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1044",
+    "Nucleus code": "E1044",
+    "Field": "Manager",
+    "ERP value": "VPI-1039",
+    "Nucleus value": "VPI-1040",
+    "Field owner": "Nucleus",
+    "Outcome": "Held for review — ownership map marks manager as Nucleus-owned but the ERP value differs materially",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0006",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-9901",
+    "Nucleus code": null,
+    "Field": "Full record",
+    "ERP value": "New joiner from ERP",
+    "Nucleus value": null,
+    "Field owner": "ERP",
+    "Outcome": "Rejected — employee code not found in Nucleus and auto-create is off for this tenant",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0007",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1066",
+    "Nucleus code": "E1066",
+    "Field": "Department",
+    "ERP value": "Logistics",
+    "Nucleus value": "Logistics",
+    "Field owner": "ERP",
+    "Outcome": "Rejected — duplicate payload, identical hash to SY-0001",
+    "Demo point": "Point 14"
+  },
+  {
+    "Sync row": "SY-0008",
+    "Batch": "ERP-SYNC-2026-09-14",
+    "External employee code": "VPI-1056",
+    "Nucleus code": "E1056",
+    "Field": "Location",
+    "ERP value": "LOC-CHN",
+    "Nucleus value": "LOC-CHN",
+    "Field owner": "ERP",
+    "Outcome": "Applied — no change. Payroll group stays HO, which is Nucleus-owned",
+    "Demo point": "Points 8, 14"
+  },
+  {
+    "Sync row": "The ownership map decides every row. ERP owns employee code, name, joining date, department and cost centre; Nucleus owns grade, worker class, shift, leave policy and manager. Conflict policy is explicit configuration — never an implicit last-write-wins.",
+    "Batch": null,
+    "External employee code": null,
+    "Nucleus code": null,
+    "Field": null,
+    "ERP value": null,
+    "Nucleus value": null,
+    "Field owner": null,
+    "Outcome": null,
+    "Demo point": null
+  }
+]

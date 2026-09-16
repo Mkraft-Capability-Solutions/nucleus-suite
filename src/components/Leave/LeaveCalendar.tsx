@@ -14,9 +14,9 @@ import { useHRMS } from "@/context/HRMSContext";
 import {
   getLeaveEmployees,
   leaveCalendarPolicy,
-} from "@/services/leave-reference";
+} from "@/app/actions/leaveActions";
 import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
-import type { LeaveRequest } from "@/services/leave-workflow";
+import type { LeaveRequest } from "@/app/actions/leaveActions";
 export default function LeaveCalendar({
   requests,
 }: {
