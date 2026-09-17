@@ -371,11 +371,45 @@ export function calculateGratuity(lastDrawnBasic, tenureYears) {
 
 /**
  * Calculates Leave Encashment for Earned Leave balance.
- * Formula: (Earned Leave Days) * (Basic Salary / 30)
+ * Supports both positional arguments: (basicSalary, elBalance, divisor)
+ * and object argument: ({ basicSalary, elBalance, divisor, employee })
+ * Formula: (Earned Leave Days) * (Basic Salary / Divisor [default 30])
+ * @param {any} [basicOrObj]
+ * @param {any} [elBalanceParam]
+ * @param {any} [divisorParam]
+ * @returns {number}
  */
-export function calculateLeaveEncashment(basicSalary, elBalance) {
-    if (elBalance <= 0) return 0;
-    const perDayBasic = basicSalary / 30;
+export function calculateLeaveEncashment(basicOrObj, elBalanceParam = 0, divisorParam = 30) {
+    let basicSalary = 0;
+    let elBalance = 0;
+    let divisor = divisorParam || 30;
+
+    if (typeof basicOrObj === 'object' && basicOrObj !== null) {
+        const obj = basicOrObj;
+        const rawBasic = obj.basicSalaryNumeric ?? obj.basicSalary ?? obj.basic ?? obj.salary ?? 0;
+        const cleanBasic = typeof rawBasic === 'string' ? Number(rawBasic.replace(/[^0-9.]/g, '')) : Number(rawBasic);
+        basicSalary = cleanBasic || 0;
+
+        const rawEl = obj.elBalance ?? obj.leaveBalance ?? obj.earnedLeaveBalance ?? obj.earnedLeave ?? elBalanceParam;
+        const cleanEl = typeof rawEl === 'string' ? Number(rawEl.replace(/[^0-9.]/g, '')) : Number(rawEl);
+        elBalance = cleanEl || 0;
+
+        if (obj.divisor && Number(obj.divisor) > 0) {
+            divisor = Number(obj.divisor);
+        }
+    } else {
+        const cleanBasic = typeof basicOrObj === 'string' ? Number(basicOrObj.replace(/[^0-9.]/g, '')) : Number(basicOrObj);
+        basicSalary = cleanBasic || 0;
+
+        const cleanEl = typeof elBalanceParam === 'string' ? Number(elBalanceParam.replace(/[^0-9.]/g, '')) : Number(elBalanceParam);
+        elBalance = cleanEl || 0;
+    }
+
+    if (!Number.isFinite(basicSalary) || basicSalary <= 0 || !Number.isFinite(elBalance) || elBalance <= 0) {
+        return 0;
+    }
+
+    const perDayBasic = basicSalary / (divisor > 0 ? divisor : 30);
     return Math.round(elBalance * perDayBasic);
 }
 

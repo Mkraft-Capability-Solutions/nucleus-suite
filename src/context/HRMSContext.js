@@ -1644,7 +1644,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             payrollRunTypes: PAYROLL_RUN_TYPES, noDuesDepartments: NO_DUES_DEPARTMENTS,
             payrollRulesetVersion: PAYROLL_RULESET_VERSION,
             canViewCompensation, applyLocationScoping, calculateMaxLoanEligibility,
-            computeGuarantorLockStatus, calculateFnFSettlement,
+            computeGuarantorLockStatus, calculateFnFSettlement, calculateLeaveEncashment,
             sanctionedQuotas, setSanctionedQuotas, createJobRequisition,
             hardwareAssets, allocateHardwareAsset, markAssetReturned,
             recognitionAwards, grantRecognitionAward,

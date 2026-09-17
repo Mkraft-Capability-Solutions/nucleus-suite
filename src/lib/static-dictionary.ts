@@ -11,7 +11,12 @@ export const generateNetSuiteCsv = () => {};
 export const generateTallyXml = () => {};
 export const generateTallyPrimeXml = () => {};
 export const generateFormFDeclaration = () => {};
-export const loadDashboardPreferences = async (...args: any[]): Promise<any> => ({ preferences: { layouts: [], activeId: '' }, warning: '' });
+import { sanitizePreferences } from '@/lib/dashboard-layout';
+
+export const loadDashboardPreferences = async (identity: any, definitions: any, fallback: any): Promise<any> => ({
+  preferences: fallback ? sanitizePreferences(null, definitions, fallback) : { layouts: [], activeId: '' },
+  warning: ''
+});
 export const loadWorkspaceData = async () => {};
 export const SAMPLE_FORM_F_TEMPLATES = [
   {

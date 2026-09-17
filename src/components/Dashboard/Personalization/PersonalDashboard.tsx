@@ -33,7 +33,7 @@ import CheckCircleOutline from '@mui/icons-material/CheckCircleOutline';
 import ArrowForward from '@mui/icons-material/ArrowForward';
 import { useAuth } from '@/context/AuthContext';
 import { readData } from '@/services/workspace-data.mjs';
-import { loadDashboardPreferences, saveDashboardPreferences } from '@/lib/static-dictionary';
+import { loadDashboardPreferences, saveDashboardPreferences } from '@/services/dashboard-preferences';
 import { makeLayout, parseLayoutImport, permittedWidgets, sanitizeLayout, sanitizePreferences, type DashboardLayout, type DashboardPreferences, type WidgetDefinition, type WidgetInstance } from '@/lib/dashboard-layout';
 import WidgetContent, { type WidgetRow } from './WidgetContent';
 import styles from './PersonalDashboard.module.css';
@@ -91,10 +91,16 @@ export default function PersonalDashboard({ consoleId, onNavigate, onShowConsole
         let active = true;
         loadDashboardPreferences(identity, definitions, fallback).then(result => {
             if (!active) return;
-            setPreferences(result.preferences);
-            const next = result.preferences.layouts.find(layout => layout.id === result.preferences.activeId)!;
+            const prefs = result?.preferences || sanitizePreferences(null, definitions, fallback);
+            setPreferences(prefs);
+            const safeLayouts = prefs.layouts || [];
+            const next = safeLayouts.find(layout => layout.id === prefs.activeId) || safeLayouts[0] || fallback;
             setDraft(next); setHistory([next]); setCursor(0); setEditing(false);
-            setError(result.warning || ''); setSettings(null); setLibrary(false);
+            setError(result?.warning || ''); setSettings(null); setLibrary(false);
+        }).catch(() => {
+            if (!active) return;
+            setPreferences(sanitizePreferences(null, definitions, fallback));
+            setDraft(fallback); setHistory([fallback]); setCursor(0); setEditing(false);
         });
         return () => { active = false; };
     }, [identity, definitions, fallback]);
@@ -169,9 +175,9 @@ export default function PersonalDashboard({ consoleId, onNavigate, onShowConsole
         } catch (error) { setError((error as Error).message); }
         if (fileInput.current) fileInput.current.value = '';
     }
-    const visible = draft.widgets.filter(instance => definitions.some(definition => definition.id === instance.id));
-    if (!preferences) return <p role="status">{translateText("components.Dashboard.Personalization.PersonalDashboard","text_ac6f7ef8d2")}</p>;
-    return <div className={styles.dashboard} data-personal-dashboard data-dashboard-editing={editing} data-admin-overview={user.role === 'SUPER_ADMIN' ? '' : undefined} data-accent={draft.accent} data-density={draft.density}>
+    if (!preferences || !draft) return <p role="status">{translateText("components.Dashboard.Personalization.PersonalDashboard","text_ac6f7ef8d2")}</p>;
+    const visible = (draft.widgets || []).filter(instance => definitions.some(definition => definition.id === instance.id));
+    return <div className={styles.dashboard} data-personal-dashboard data-dashboard-editing={editing} data-admin-overview={user.role === 'SUPER_ADMIN' ? '' : undefined} data-accent={draft.accent || 'sapphire'} data-density={draft.density || 'comfortable'}>
         <header className={styles.header}><div><div className={styles.eyebrow}>{catalog.copy.eyebrow}</div><h1>{user.name}</h1><p>{catalog.copy.subtitle}</p></div><span className={styles.role}><ShieldOutlined sx={{ fontSize: 15 }} />{catalog.copy.roles[user.role]}</span></header>
         <div className={styles.toolbar} aria-label={translateText("components.Dashboard.Personalization.PersonalDashboard","text_6e60195197")}>
             {!editing ? <><label>{translateText("components.Dashboard.Personalization.PersonalDashboard","text_a511909161")}<select aria-label={translateText("components.Dashboard.Personalization.PersonalDashboard","text_a9d449165e")} value={preferences.activeId} onChange={event => selectLayout(event.target.value)}>{preferences.layouts.map(layout => <option key={layout.id} value={layout.id}>{layout.name}</option>)}</select></label><button className={styles.button} onClick={() => { setNewName(''); setNewLayout(true); }} disabled={preferences.layouts.length >= 6}><Add fontSize="small" />{translateText("components.Dashboard.Personalization.PersonalDashboard","text_ef02e11e38")}</button><button className={styles.button} disabled={preferences.layouts.length <= 1} onClick={() => setDeleteLayout(true)}>{translateText("components.Dashboard.Personalization.PersonalDashboard","text_4cf7481104")}</button><span className={styles.spacer} /><button className={styles.button} onClick={onShowConsole}>{translateText("components.Dashboard.Personalization.PersonalDashboard","text_b4d1987a22")}<ArrowForward fontSize="small" /></button><button className={`${styles.button} ${styles.primary}`} onClick={() => { resetDraft(draft); setEditing(true); setNotice(''); }}><EditOutlined fontSize="small" />{translateText("components.Dashboard.Personalization.PersonalDashboard","text_c5276e27af")}</button></> : <>
