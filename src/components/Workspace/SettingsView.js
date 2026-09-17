@@ -30,6 +30,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         anomalyAlerts: true,
         multiCurrency: 'INR (₹)'
     });
+    const settings = { twoFactor: true, ...settingPrefs };
 
     React.useEffect(() => {
         fetch('/api/v1/tenant/settings')

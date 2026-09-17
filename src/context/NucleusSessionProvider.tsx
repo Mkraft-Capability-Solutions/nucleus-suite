@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { MicrophoneCapture, SpeechPlayer, chunkLevel } from '@/lib/ai/nucleus-audio';
 import { NucleusLiveSession } from '@/lib/ai/nucleus-live';

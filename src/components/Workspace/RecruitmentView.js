@@ -23,6 +23,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     } = useHRMS() || {};
 
     const [candidateList, setCandidateList] = useState(initialCandidates || []);
+    const candidates = candidateList;
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.RecruitmentView", "initialState_1")); // pipeline, establishment, referrals, interviews, bias
 
     // Requisition Modal State

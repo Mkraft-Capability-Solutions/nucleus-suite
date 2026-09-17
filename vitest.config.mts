@@ -1,10 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import { fileURLToPath } from 'node:url';
 export default defineConfig({
-    resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)), 'server-only': fileURLToPath(new URL('./tests/server-only-stub.ts', import.meta.url)) } },
+    resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)), 'server-only': fileURLToPath(new URL('./internal-tests/server-only-stub.ts', import.meta.url)) } },
     test: {
-        include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
-        setupFiles: ['./scripts/test-data-setup.mjs'],
+        include: ['src/**/*.test.ts', 'internal-tests/**/*.test.ts'],
+        setupFiles: ['./internal-scripts/test-data-setup.mjs'],
         testTimeout: 15000,
         coverage: {
             provider: 'v8',

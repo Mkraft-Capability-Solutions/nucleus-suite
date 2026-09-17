@@ -23,6 +23,7 @@ const HelpdeskView = () => {
 
     const initialTickets = readData("components.Workspace.HelpdeskView", "tickets_2") || [];
     const [ticketList, setTicketList] = useState(initialTickets);
+    const tickets = ticketList;
     const [replyText, setReplyText] = useState('');
 
     // Modal Form State

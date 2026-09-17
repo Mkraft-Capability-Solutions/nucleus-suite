@@ -19,9 +19,11 @@ import {
     calculateFnFSettlement as calculateFnFSettlementService
 } from '@/services/payrollAdjacenciesService';
 import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
+import { launchAction } from '@/lib/action-launcher';
 
 const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
+    const { user } = useAuth() || {};
 
     const {
         payrollSummary, ewaTransactions, requestEWA, showToast,

@@ -195,6 +195,7 @@ const ProjectView = () => {
             console.warn('Task move warning:', err);
         }
     };
+    const moveTask = moveTaskState;
 
     const advanceTask = (e, taskId, currentCol) => {
         e?.stopPropagation?.();

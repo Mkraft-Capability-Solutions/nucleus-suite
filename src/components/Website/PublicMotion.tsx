@@ -4,7 +4,7 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './PublicMotion.module.css';
 
-const entrances: Record<string, Keyframe[]> = {
+const entrances: Record<string, Array<Record<string, string | number>>> = {
     rise: [{ opacity: 0, transform: 'translateY(28px)' }, { opacity: 1, transform: 'none' }],
     scale: [{ opacity: 0, transform: 'scale(.96)' }, { opacity: 1, transform: 'none' }],
     slide: [{ opacity: 0, transform: 'translateX(-24px)' }, { opacity: 1, transform: 'none' }],

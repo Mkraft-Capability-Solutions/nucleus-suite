@@ -20,7 +20,25 @@ export async function PATCH(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
     const access = await requireAccess(request);
-    const parsed = patchSettingsSchema.safeParse(await request.json().catch(() => null));
+    const rawBody = await request.json().catch(() => ({}));
+    let payload = rawBody;
+    if (rawBody && typeof rawBody === "object") {
+      const { locale, timezone, currency, settings, ...rest } = rawBody;
+      const hasTopLevelFields = locale || timezone || (currency && /^[A-Z]{3}$/.test(currency)) || settings;
+      if (hasTopLevelFields) {
+        payload = {
+          ...(locale ? { locale } : {}),
+          ...(timezone ? { timezone } : {}),
+          ...(currency && /^[A-Z]{3}$/.test(currency) ? { currency } : {}),
+          settings: settings && typeof settings === "object" ? { ...settings, ...rest } : (Object.keys(rest).length ? rest : settings || {}),
+        };
+      } else {
+        payload = {
+          settings: rest && Object.keys(rest).length ? rest : rawBody,
+        };
+      }
+    }
+    const parsed = patchSettingsSchema.safeParse(payload);
     if (!parsed.success) {
       throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "The settings payload is invalid.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }
@@ -29,4 +47,6 @@ export async function PATCH(request: Request) {
   } catch (error) {
     return fail(error, requestId);
   }
+}export async function POST(request: Request) {
+  return PATCH(request);
 }
