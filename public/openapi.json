@@ -6,7 +6,7 @@
     "description": "Complete OpenAPI 3.0 specification for Nucleus One HRMS. Covers all 352 route endpoints and 440+ HTTP method handlers including Core HR, Payroll, Workforce, Helpdesk, Recruitment, Analytics, AI Agents, and Operational Modules.",
     "contact": {
       "name": "Nucleus Engineering Architecture",
-      "email": "dhanraj@nucleus.corp"
+      "email": "dhanraj@nucleus.com"
     }
   },
   "servers": [

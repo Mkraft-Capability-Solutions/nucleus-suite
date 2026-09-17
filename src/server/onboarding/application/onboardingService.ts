@@ -11,7 +11,7 @@ export class OnboardingService {
     return {
       id: r.id,
       candidateName: attrs.candidateName || 'New Candidate',
-      email: attrs.email || 'candidate@nucleus.corp',
+      email: attrs.email || 'candidate@nucleus.com',
       phone: attrs.phone || '+1 555-0199',
       designation: attrs.designation || 'Software Engineer',
       department: attrs.department || 'Engineering',
@@ -43,7 +43,7 @@ export class OnboardingService {
         .select()
         .from(onboardingInstances)
         .where(eq(onboardingInstances.tenantId, tenantId as any));
-        
+
       return records.map(r => this.mapRecordToCandidate(r));
     } catch {
       return [];
@@ -77,7 +77,7 @@ export class OnboardingService {
 
     const totalDocs = candidate.documentsSubmitted.length;
     const verifiedDocs = candidate.documentsSubmitted.filter(d => d.isVerified).length;
-    
+
     let newStatus = candidate.status;
     if (verifiedDocs === totalDocs && candidate.status === 'Documents Under Review') {
       newStatus = 'BGV Initiated';
@@ -116,7 +116,7 @@ export class OnboardingService {
     if (checklistItem) checklistItem.isProvisioned = isProvisioned;
 
     const allIT = candidate.itChecklist.every(i => i.isProvisioned);
-    
+
     let newStatus = candidate.status;
     if (allIT && candidate.bgvStatus === 'Clear') {
       newStatus = 'Orientation Ready';

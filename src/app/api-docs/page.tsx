@@ -45,7 +45,7 @@ export default function ApiDocsPage() {
       if (stored) {
         setLocalUser(JSON.parse(stored));
       }
-    } catch {}
+    } catch { }
 
     const timer = setTimeout(() => setLoadingTimedOut(true), 800);
     return () => clearTimeout(timer);
@@ -61,7 +61,7 @@ export default function ApiDocsPage() {
     return (
       role === 'SUPER_ADMIN' ||
       role === 'OWNER' ||
-      effectiveUser.email === 'dhanraj@nucleus.corp' ||
+      effectiveUser.email === 'dhanraj@nucleus.com' ||
       effectiveUser.email?.includes('superadmin') ||
       effectiveUser.email?.includes('admin')
     );
@@ -302,7 +302,7 @@ export default function ApiDocsPage() {
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Super Administrator Clearance Required</h1>
           <p style={{ color: 'var(--text-2, #94a3b8)', margin: 0, fontSize: '0.925rem', lineHeight: 1.6 }}>
-            The API Specification and Interactive Explorer are restricted to Super Administrators. Please sign in with your administrator credentials (e.g. <code>dhanraj@nucleus.corp</code>) to unlock full API documentation and testing capabilities.
+            The API Specification and Interactive Explorer are restricted to Super Administrators. Please sign in with your administrator credentials (e.g. <code>dhanraj@nucleus.com</code>) to unlock full API documentation and testing capabilities.
           </p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link
@@ -558,279 +558,279 @@ export default function ApiDocsPage() {
 
         {/* Interactive Explorer View - Kept in DOM with display toggle */}
         <div style={{ display: viewMode === 'interactive' ? 'block' : 'none' }}>
-            {/* Filter and Search Bar */}
-            <div
-              style={{
-                background: 'var(--card, #1e293b)',
-                border: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                marginBottom: '1.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1rem',
-              }}
-            >
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <div style={{ flex: 1, minWidth: '280px', position: 'relative' }}>
-                  <SearchIcon
-                    sx={{
-                      position: 'absolute',
-                      left: '12px',
-                      top: '50%',
-                      transform: 'translateY(-50%)',
-                      color: 'var(--text-2, #94a3b8)',
-                      fontSize: 20,
-                    }}
-                  />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search endpoints, modules, paths (e.g. /api/v1/helpdesk, roster, attendance)..."
-                    style={{
-                      width: '100%',
-                      padding: '0.65rem 1rem 0.65rem 2.5rem',
-                      borderRadius: '8px',
-                      border: '1px solid var(--line, rgba(255, 255, 255, 0.15))',
-                      background: 'var(--surface-2, #334155)',
-                      color: '#ffffff',
-                      fontSize: '0.875rem',
-                    }}
-                  />
-                </div>
-
-                <select
-                  value={selectedTag}
-                  onChange={(e) => setSelectedTag(e.target.value)}
+          {/* Filter and Search Bar */}
+          <div
+            style={{
+              background: 'var(--card, #1e293b)',
+              border: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              marginBottom: '1.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '280px', position: 'relative' }}>
+                <SearchIcon
+                  sx={{
+                    position: 'absolute',
+                    left: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'var(--text-2, #94a3b8)',
+                    fontSize: 20,
+                  }}
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search endpoints, modules, paths (e.g. /api/v1/helpdesk, roster, attendance)..."
                   style={{
-                    padding: '0.65rem 1rem',
+                    width: '100%',
+                    padding: '0.65rem 1rem 0.65rem 2.5rem',
                     borderRadius: '8px',
                     border: '1px solid var(--line, rgba(255, 255, 255, 0.15))',
                     background: 'var(--surface-2, #334155)',
                     color: '#ffffff',
                     fontSize: '0.875rem',
                   }}
-                >
-                  <option value="ALL">All Categories ({allTags.length})</option>
-                  {allTags.map((tag) => (
-                    <option key={tag} value={tag}>
-                      {tag}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
-              {/* Method Filters */}
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-                {['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setSelectedMethod(m)}
-                    style={{
-                      padding: '0.35rem 0.75rem',
-                      borderRadius: '6px',
-                      border: 'none',
-                      background:
-                        selectedMethod === m
-                          ? m === 'ALL'
-                            ? 'var(--signal, #6366f1)'
-                            : methodColors[m]
-                          : 'var(--surface-2, #334155)',
-                      color: '#ffffff',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {m}
-                  </button>
+              <select
+                value={selectedTag}
+                onChange={(e) => setSelectedTag(e.target.value)}
+                style={{
+                  padding: '0.65rem 1rem',
+                  borderRadius: '8px',
+                  border: '1px solid var(--line, rgba(255, 255, 255, 0.15))',
+                  background: 'var(--surface-2, #334155)',
+                  color: '#ffffff',
+                  fontSize: '0.875rem',
+                }}
+              >
+                <option value="ALL">All Categories ({allTags.length})</option>
+                {allTags.map((tag) => (
+                  <option key={tag} value={tag}>
+                    {tag}
+                  </option>
                 ))}
-                <span style={{ marginLeft: 'auto', fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)', alignSelf: 'center' }}>
-                  Showing {filteredOps.length} of {operations.length} endpoints
-                </span>
-              </div>
+              </select>
             </div>
 
-            {/* Endpoints List */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {filteredOps.map((op, idx) => {
-                const isTesting = activeTest?.path === op.path && activeTest?.method === op.method;
-                return (
+            {/* Method Filters */}
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {['ALL', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setSelectedMethod(m)}
+                  style={{
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background:
+                      selectedMethod === m
+                        ? m === 'ALL'
+                          ? 'var(--signal, #6366f1)'
+                          : methodColors[m]
+                        : 'var(--surface-2, #334155)',
+                    color: '#ffffff',
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {m}
+                </button>
+              ))}
+              <span style={{ marginLeft: 'auto', fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)', alignSelf: 'center' }}>
+                Showing {filteredOps.length} of {operations.length} endpoints
+              </span>
+            </div>
+          </div>
+
+          {/* Endpoints List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            {filteredOps.map((op, idx) => {
+              const isTesting = activeTest?.path === op.path && activeTest?.method === op.method;
+              return (
+                <div
+                  key={`${op.method}-${op.path}-${idx}`}
+                  style={{
+                    background: 'var(--card, #1e293b)',
+                    border: '1px solid var(--line, rgba(255, 255, 255, 0.08))',
+                    borderRadius: '8px',
+                    overflow: 'hidden',
+                  }}
+                >
                   <div
-                    key={`${op.method}-${op.path}-${idx}`}
                     style={{
-                      background: 'var(--card, #1e293b)',
-                      border: '1px solid var(--line, rgba(255, 255, 255, 0.08))',
-                      borderRadius: '8px',
-                      overflow: 'hidden',
+                      padding: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: '1rem',
+                      flexWrap: 'wrap',
                     }}
                   >
-                    <div
-                      style={{
-                        padding: '1rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: '1rem',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
-                        <span
-                          style={{
-                            padding: '0.3rem 0.6rem',
-                            borderRadius: '4px',
-                            background: `${methodColors[op.method]}25`,
-                            border: `1px solid ${methodColors[op.method]}`,
-                            color: methodColors[op.method],
-                            fontWeight: 800,
-                            fontSize: '0.75rem',
-                            minWidth: '60px',
-                            textAlign: 'center',
-                          }}
-                        >
-                          {op.method}
-                        </span>
-                        <div>
-                          <div style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#f8fafc', fontFamily: 'monospace' }}>
-                            {op.path}
-                          </div>
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)', marginTop: '0.2rem' }}>
-                            {op.summary}
-                          </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1 }}>
+                      <span
+                        style={{
+                          padding: '0.3rem 0.6rem',
+                          borderRadius: '4px',
+                          background: `${methodColors[op.method]}25`,
+                          border: `1px solid ${methodColors[op.method]}`,
+                          color: methodColors[op.method],
+                          fontWeight: 800,
+                          fontSize: '0.75rem',
+                          minWidth: '60px',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {op.method}
+                      </span>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: '0.9375rem', color: '#f8fafc', fontFamily: 'monospace' }}>
+                          {op.path}
                         </div>
-                      </div>
-
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span
-                          style={{
-                            fontSize: '0.6875rem',
-                            padding: '0.2rem 0.5rem',
-                            borderRadius: '4px',
-                            background: 'rgba(255, 255, 255, 0.06)',
-                            color: 'var(--text-2, #94a3b8)',
-                          }}
-                        >
-                          {op.tags.join(', ')}
-                        </span>
-
-                        <button
-                          onClick={() => {
-                            const curl = `curl -X ${op.method} "http://localhost:3000${op.path}" -H "Content-Type: application/json"`;
-                            copyToClipboard(curl, `curl-${idx}`);
-                          }}
-                          title="Copy cURL Command"
-                          style={{
-                            padding: '0.35rem 0.6rem',
-                            borderRadius: '6px',
-                            border: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
-                            background: 'transparent',
-                            color: 'var(--text-2, #94a3b8)',
-                            fontSize: '0.75rem',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.3rem',
-                          }}
-                        >
-                          {copiedId === `curl-${idx}` ? <CheckCircleIcon sx={{ fontSize: 14, color: '#10b981' }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
-                          cURL
-                        </button>
-
-                        <button
-                          onClick={() => handleRunTest(op)}
-                          disabled={testLoading && isTesting}
-                          style={{
-                            padding: '0.35rem 0.75rem',
-                            borderRadius: '6px',
-                            border: 'none',
-                            background: 'var(--signal, #6366f1)',
-                            color: '#ffffff',
-                            fontSize: '0.75rem',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '0.3rem',
-                          }}
-                        >
-                          <PlayArrowIcon sx={{ fontSize: 14 }} /> Test
-                        </button>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)', marginTop: '0.2rem' }}>
+                          {op.summary}
+                        </div>
                       </div>
                     </div>
 
-                    {/* Interactive Test Panel */}
-                    {isTesting && (
-                      <div
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <span
                         style={{
-                          borderTop: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
-                          padding: '1rem',
-                          background: 'rgba(0, 0, 0, 0.25)',
+                          fontSize: '0.6875rem',
+                          padding: '0.2rem 0.5rem',
+                          borderRadius: '4px',
+                          background: 'rgba(255, 255, 255, 0.06)',
+                          color: 'var(--text-2, #94a3b8)',
                         }}
                       >
-                        {['POST', 'PUT', 'PATCH'].includes(op.method) && (
-                          <div style={{ marginBottom: '0.75rem' }}>
-                            <label style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)', display: 'block', marginBottom: '0.3rem' }}>
-                              Request Payload (JSON):
-                            </label>
-                            <textarea
-                              value={testPayload}
-                              onChange={(e) => setTestPayload(e.target.value)}
-                              rows={3}
-                              style={{
-                                width: '100%',
-                                padding: '0.5rem',
-                                borderRadius: '6px',
-                                background: 'var(--surface-2, #334155)',
-                                color: '#ffffff',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                fontFamily: 'monospace',
-                                fontSize: '0.8125rem',
-                              }}
-                            />
-                          </div>
-                        )}
+                        {op.tags.join(', ')}
+                      </span>
 
-                        {testLoading ? (
-                          <div style={{ fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)' }}>Executing live HTTP call...</div>
-                        ) : testResponse ? (
-                          <div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                              <span
-                                style={{
-                                  fontSize: '0.75rem',
-                                  fontWeight: 700,
-                                  color: testResponse.status < 400 ? '#10b981' : '#ef4444',
-                                }}
-                              >
-                                HTTP {testResponse.status} {testResponse.statusText}
-                              </span>
-                              <span style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)' }}>Time: {testResponse.duration}</span>
-                            </div>
-                            <pre
+                      <button
+                        onClick={() => {
+                          const curl = `curl -X ${op.method} "http://localhost:3000${op.path}" -H "Content-Type: application/json"`;
+                          copyToClipboard(curl, `curl-${idx}`);
+                        }}
+                        title="Copy cURL Command"
+                        style={{
+                          padding: '0.35rem 0.6rem',
+                          borderRadius: '6px',
+                          border: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
+                          background: 'transparent',
+                          color: 'var(--text-2, #94a3b8)',
+                          fontSize: '0.75rem',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                        }}
+                      >
+                        {copiedId === `curl-${idx}` ? <CheckCircleIcon sx={{ fontSize: 14, color: '#10b981' }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
+                        cURL
+                      </button>
+
+                      <button
+                        onClick={() => handleRunTest(op)}
+                        disabled={testLoading && isTesting}
+                        style={{
+                          padding: '0.35rem 0.75rem',
+                          borderRadius: '6px',
+                          border: 'none',
+                          background: 'var(--signal, #6366f1)',
+                          color: '#ffffff',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.3rem',
+                        }}
+                      >
+                        <PlayArrowIcon sx={{ fontSize: 14 }} /> Test
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Interactive Test Panel */}
+                  {isTesting && (
+                    <div
+                      style={{
+                        borderTop: '1px solid var(--line, rgba(255, 255, 255, 0.1))',
+                        padding: '1rem',
+                        background: 'rgba(0, 0, 0, 0.25)',
+                      }}
+                    >
+                      {['POST', 'PUT', 'PATCH'].includes(op.method) && (
+                        <div style={{ marginBottom: '0.75rem' }}>
+                          <label style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)', display: 'block', marginBottom: '0.3rem' }}>
+                            Request Payload (JSON):
+                          </label>
+                          <textarea
+                            value={testPayload}
+                            onChange={(e) => setTestPayload(e.target.value)}
+                            rows={3}
+                            style={{
+                              width: '100%',
+                              padding: '0.5rem',
+                              borderRadius: '6px',
+                              background: 'var(--surface-2, #334155)',
+                              color: '#ffffff',
+                              border: '1px solid rgba(255, 255, 255, 0.1)',
+                              fontFamily: 'monospace',
+                              fontSize: '0.8125rem',
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      {testLoading ? (
+                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)' }}>Executing live HTTP call...</div>
+                      ) : testResponse ? (
+                        <div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                            <span
                               style={{
-                                margin: 0,
-                                padding: '0.75rem',
-                                borderRadius: '6px',
-                                background: '#0b0f19',
-                                color: '#a5f3fc',
                                 fontSize: '0.75rem',
-                                overflowX: 'auto',
-                                maxHeight: '250px',
+                                fontWeight: 700,
+                                color: testResponse.status < 400 ? '#10b981' : '#ef4444',
                               }}
                             >
-                              {JSON.stringify(testResponse.body, null, 2)}
-                            </pre>
+                              HTTP {testResponse.status} {testResponse.statusText}
+                            </span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)' }}>Time: {testResponse.duration}</span>
                           </div>
-                        ) : null}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                          <pre
+                            style={{
+                              margin: 0,
+                              padding: '0.75rem',
+                              borderRadius: '6px',
+                              background: '#0b0f19',
+                              color: '#a5f3fc',
+                              fontSize: '0.75rem',
+                              overflowX: 'auto',
+                              maxHeight: '250px',
+                            }}
+                          >
+                            {JSON.stringify(testResponse.body, null, 2)}
+                          </pre>
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
+        </div>
       </main>
     </div>
   );

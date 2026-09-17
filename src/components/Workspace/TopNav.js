@@ -1,5 +1,5 @@
 "use client";
-import {useTranslation} from '@/context/I18nContext';
+import { useTranslation } from '@/context/I18nContext';
 
 import NextImage from 'next/image';
 
@@ -49,7 +49,7 @@ const TopNav = ({
     activeConsole = readData("components.Workspace.TopNav", "defaultValue_1"),
     onSelectConsole
 }) => {
-    const {t: translateText}=useTranslation();
+    const { t: translateText } = useTranslation();
 
     const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
     const { showToast } = useHRMS();
@@ -139,7 +139,7 @@ const TopNav = ({
     const handleLogout = () => {
         setShowProfileMenu(false);
         logout();
-        showToast(translateText("components.Workspace.TopNav","text_25941aea4c"),translateText("components.Workspace.TopNav","text_4d158fa9e7"), 'info');
+        showToast(translateText("components.Workspace.TopNav", "text_25941aea4c"), translateText("components.Workspace.TopNav", "text_4d158fa9e7"), 'info');
     };
 
     return (
@@ -184,12 +184,12 @@ const TopNav = ({
                                     item.type === 'form'
                                         ? { background: 'var(--signal-wash)', color: 'var(--signal)' }
                                         : item.type === 'screen'
-                                        ? { background: 'var(--info-wash)', color: 'var(--info)' }
-                                        : item.type === 'document'
-                                        ? { background: 'var(--flag-wash)', color: 'var(--flag)' }
-                                        : item.type === 'employee'
-                                        ? { background: 'var(--status-ok-wash)', color: 'var(--status-ok)' }
-                                        : { background: 'var(--pending-wash)', color: 'var(--pending)' };
+                                            ? { background: 'var(--info-wash)', color: 'var(--info)' }
+                                            : item.type === 'document'
+                                                ? { background: 'var(--flag-wash)', color: 'var(--flag)' }
+                                                : item.type === 'employee'
+                                                    ? { background: 'var(--status-ok-wash)', color: 'var(--status-ok)' }
+                                                    : { background: 'var(--pending-wash)', color: 'var(--pending)' };
 
                                 return (
                                     <div
@@ -311,7 +311,7 @@ const TopNav = ({
                                 <div style={{ fontSize: 'var(--t-micro)', color: 'var(--text-2)', marginTop: '0.2rem' }}>
                                     {userRole === 'SUPER_ADMIN'
                                         ? readData("components.Workspace.TopNav", "display_3")
-                                        :translateText("components.Workspace.TopNav","text_f0ea68918d", {value1: String(userRole.replace('_', ' '))})
+                                        : translateText("components.Workspace.TopNav", "text_f0ea68918d", { value1: String(userRole.replace('_', ' ')) })
                                     }
                                 </div>
                             </div>
@@ -326,7 +326,7 @@ const TopNav = ({
                                                 onSelectConsole(c.id);
                                                 if (onTabChange) onTabChange('dashboard', 'dashboard', c.id.toLowerCase());
                                                 setShowConsoleMenu(false);
-                                                showToast(translateText("components.Workspace.TopNav","text_8290d65752"),translateText("components.Workspace.TopNav","text_a00b1786e3", {value1: String(c.title), value2: String(c.id)}), 'info');
+                                                showToast(translateText("components.Workspace.TopNav", "text_8290d65752"), translateText("components.Workspace.TopNav", "text_a00b1786e3", { value1: String(c.title), value2: String(c.id) }), 'info');
                                             }}
                                         >
                                             <span className={styles.consoleItemBadge}>{c.id}</span>
@@ -533,7 +533,7 @@ const TopNav = ({
                                     }}
                                 >
                                     <Users sx={{ fontSize: 15 }} color="var(--text-2)" />{readData("components.Workspace.TopNav", "TopNav_text_41")}</button>}
-                                {((userRole && userRole.toUpperCase() === 'SUPER_ADMIN') || (user?.role && user?.role.toUpperCase() === 'SUPER_ADMIN') || user?.email === 'dhanraj@nucleus.corp') && (
+                                {((userRole && userRole.toUpperCase() === 'SUPER_ADMIN') || (user?.role && user?.role.toUpperCase() === 'SUPER_ADMIN') || user?.email === 'dhanraj@nucleus.com') && (
                                     <a
                                         href="/api-docs"
                                         target="_blank"

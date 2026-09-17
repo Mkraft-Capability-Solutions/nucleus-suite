@@ -57,14 +57,31 @@ export const AuthProvider = ({ children }) => {
     const [consolePermissions, setConsolePermissions] = useState(DEFAULT_CONSOLE_PERMISSIONS);
     const { data: session, isPending: isLoading } = useSession();
     const [liveProfile, setLiveProfile] = useState(null);
+    
+    const [savedUser, setSavedUser] = useState(() => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const hasCookie = document.cookie.includes('nucleus_session');
+            if (!hasCookie) return null;
+            const item = localStorage.getItem('nucleus_user');
+            return item ? JSON.parse(item) : null;
+        } catch {
+            return null;
+        }
+    });
+
+    const activeIdentity = isSigningOut ? null : (session?.user || (typeof document !== 'undefined' && document.cookie.includes('nucleus_session') ? savedUser : null));
 
     useEffect(() => {
+        if (!activeIdentity?.email) return;
         let active = true;
-        fetch('/api/v1/operations/profile')
+        fetch(`/api/v1/operations/profile?email=${encodeURIComponent(activeIdentity.email)}`)
             .then(res => res.ok ? res.json() : null)
             .then(json => {
                 if (active && json?.data?.name) {
-                    setLiveProfile(json.data);
+                    if (!json.data.email || json.data.email.toLowerCase() === activeIdentity.email.toLowerCase()) {
+                        setLiveProfile(json.data);
+                    }
                 }
             })
             .catch(() => {});
@@ -85,30 +102,24 @@ export const AuthProvider = ({ children }) => {
             active = false;
             window.removeEventListener('nucleus:profile-updated', handleProfileUpdated);
         };
-    }, []);
-    
-    const [savedUser, setSavedUser] = useState(() => {
-        if (typeof window === 'undefined') return null;
-        try {
-            const hasCookie = document.cookie.includes('nucleus_session');
-            if (!hasCookie) return null;
-            const item = localStorage.getItem('nucleus_user');
-            return item ? JSON.parse(item) : null;
-        } catch {
-            return null;
-        }
-    });
-
-    const activeIdentity = isSigningOut ? null : (session?.user || (typeof document !== 'undefined' && document.cookie.includes('nucleus_session') ? savedUser : null));
+    }, [activeIdentity?.email]);
 
     const user = activeIdentity ? {
-        id: activeIdentity.id || 'usr-admin',
-        name: liveProfile?.name || activeIdentity.name || 'Dhanraj Dadhich',
-        email: activeIdentity.email || 'dhanraj@nucleus.corp',
-        role: (activeIdentity.role || liveProfile?.role || 'SUPER_ADMIN').toUpperCase(),
+        id: activeIdentity.id,
+        name: (liveProfile?.email?.toLowerCase() === activeIdentity.email?.toLowerCase() && liveProfile?.name) ? liveProfile.name : (activeIdentity.name || 'User'),
+        email: activeIdentity.email,
+        role: (activeIdentity.role || 'EMPLOYEE').toUpperCase(),
         ...(savedUser || {}),
         ...(activeIdentity || {}),
-        ...(liveProfile || {})
+        ...(liveProfile && (!liveProfile.email || liveProfile.email.toLowerCase() === activeIdentity.email?.toLowerCase()) ? {
+            avatar: liveProfile.photoUrl || liveProfile.avatar || activeIdentity.avatar,
+            image: liveProfile.photoUrl || liveProfile.image || activeIdentity.image,
+            phone: liveProfile.phone || activeIdentity.phone,
+            designation: liveProfile.jobTitle || activeIdentity.designation,
+            dept: liveProfile.dept || activeIdentity.dept,
+            location: liveProfile.location || activeIdentity.location,
+            name: liveProfile.name || activeIdentity.name
+        } : {})
     } : null;
 
     const login = async (email, password) => {
@@ -121,6 +132,7 @@ export const AuthProvider = ({ children }) => {
             if (!res.ok) return false;
             const json = await res.json();
             if (json?.user) {
+                setLiveProfile(null);
                 setSavedUser(json.user);
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('nucleus_user', JSON.stringify(json.user));

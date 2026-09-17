@@ -62,7 +62,7 @@ export async function POST(request) {
                     const rawRole = (row.member_role || 'EMPLOYEE').toUpperCase().replace(/-/g, '_');
                     let resolvedRole = 'EMPLOYEE';
 
-                    if (email.startsWith('superadmin@') || email === 'dhanraj@nucleus.corp' || rawRole === 'SUPER_ADMIN' || (rawRole === 'OWNER' && (email.includes('superadmin') || email.includes('dhanraj') || email.includes('admin')))) {
+                    if (email.startsWith('superadmin@') || email === 'dhanraj@nucleus.com' || rawRole === 'SUPER_ADMIN' || (rawRole === 'OWNER' && (email.includes('superadmin') || email.includes('dhanraj') || email.includes('admin')))) {
                         resolvedRole = 'SUPER_ADMIN';
                     } else if (email.startsWith('admin@') || rawRole === 'ADMIN' || rawRole === 'OWNER') {
                         resolvedRole = 'ADMIN';
@@ -77,11 +77,11 @@ export async function POST(request) {
                     }
 
                     const defaultConsole = resolvedRole === 'SUPER_ADMIN' || resolvedRole === 'ADMIN'
-                        ? 'S1' 
-                        : (resolvedRole === 'HR_MANAGER' 
-                            ? 'S2' 
-                            : (resolvedRole === 'FINANCE_MANAGER' 
-                                ? 'S5' 
+                        ? 'S1'
+                        : (resolvedRole === 'HR_MANAGER'
+                            ? 'S2'
+                            : (resolvedRole === 'FINANCE_MANAGER'
+                                ? 'S5'
                                 : (resolvedRole === 'MANAGER' ? 'S7' : 'S8')));
 
                     const userObj = {

@@ -142,49 +142,233 @@ export function downloadJSON(filename, data) {
  * @param {string[]} headers 
  * @param {Array<Array<any>>} rows 
  */
+/**
+ * Opens a styled printable HTML document view ready for Ctrl+P / Save as PDF.
+ * Formatted with official corporate letterhead, CIN, watermark, and print styles.
+ * @param {string} title 
+ * @param {Record<string, any>} metadata 
+ * @param {string[]} headers 
+ * @param {Array<Array<any>>} rows 
+ */
 export function downloadPrintableDocument(title, metadata = {}, headers = [], rows = []) {
     if (typeof window === 'undefined') return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-        // Fallback to CSV if popup blocker prevents new window
-        downloadCSV(`${title.replace(/\s+/g, '_').toLowerCase()}.csv`, headers, rows);
-        return;
-    }
 
     const metaHtml = Object.entries(metadata)
-        .map(([k, v]) => `<div><strong>${k}:</strong> ${v}</div>`)
+        .map(([k, v]) => `
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:8px 12px; border-radius:6px;">
+                <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:700; letter-spacing:0.05em;">${k}</div>
+                <div style="font-size:13px; color:#0f172a; font-weight:600; margin-top:2px;">${v}</div>
+            </div>
+        `)
         .join('');
 
-    const headersHtml = headers.map(h => `<th style="border:1px solid #cbd5e1;padding:8px;background:#f1f5f9;text-align:left;">${h}</th>`).join('');
-    const rowsHtml = rows.map(r => `<tr>${r.map(cell => `<td style="border:1px solid #e2e8f0;padding:8px;">${cell ?? '-'}</td>`).join('')}</tr>`).join('');
+    const headersHtml = headers.map(h => `
+        <th style="border:1px solid #cbd5e1; padding:10px 12px; background:#f1f5f9; color:#0f172a; font-size:12px; font-weight:700; text-align:left;">${h}</th>
+    `).join('');
 
-    printWindow.document.write(`
+    const rowsHtml = rows.map((r, idx) => `
+        <tr style="background:${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
+            ${r.map(cell => `<td style="border:1px solid #e2e8f0; padding:9px 12px; font-size:12px; color:#1e293b;">${cell ?? '-'}</td>`).join('')}
+        </tr>
+    `).join('');
+
+    const docHtml = `
         <!DOCTYPE html>
-        <html>
+        <html lang="en">
         <head>
+            <meta charset="utf-8" />
             <title>${title}</title>
             <style>
-                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 24px; color: #1e293b; }
-                h1 { font-size: 20px; margin-bottom: 8px; }
-                .meta { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; font-size: 13px; color: #475569; background: #f8fafc; padding: 12px; border-radius: 6px; }
-                table { width: 100%; border-collapse: collapse; font-size: 13px; }
-                @media print { button { display: none; } }
+                @page {
+                    size: A4 portrait;
+                    margin: 15mm;
+                }
+                * { box-sizing: border-box; }
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                    padding: 24px 32px;
+                    color: #0f172a;
+                    background: #ffffff;
+                    margin: 0;
+                    line-height: 1.5;
+                    position: relative;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+                .no-print-bar {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: #f8fafc;
+                    border: 1px solid #e2e8f0;
+                    padding: 12px 20px;
+                    border-radius: 8px;
+                    margin-bottom: 24px;
+                }
+                .no-print-bar button {
+                    background: #0F6E5C;
+                    color: #ffffff;
+                    border: none;
+                    padding: 8px 18px;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    font-size: 13px;
+                    cursor: pointer;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 6px;
+                }
+                .no-print-bar button:hover {
+                    background: #0b5346;
+                }
+                @media print {
+                    .no-print-bar { display: none !important; }
+                    body { padding: 0 !important; }
+                }
+                .doc-container {
+                    max-width: 850px;
+                    margin: 0 auto;
+                    position: relative;
+                }
+                .watermark {
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%) rotate(-32deg);
+                    font-size: 40pt;
+                    font-weight: 900;
+                    color: rgba(15, 110, 92, 0.04);
+                    letter-spacing: 0.1em;
+                    pointer-events: none;
+                    white-space: nowrap;
+                    z-index: 0;
+                    user-select: none;
+                }
+                .header-box {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    border-bottom: 2.5px solid #10222f;
+                    padding-bottom: 14px;
+                    margin-bottom: 20px;
+                }
+                .brand-title {
+                    font-size: 24px;
+                    font-weight: 800;
+                    color: #0F6E5C;
+                    letter-spacing: 0.05em;
+                    font-family: 'Times New Roman', Times, serif;
+                }
+                .brand-sub {
+                    font-size: 11px;
+                    color: #64748b;
+                    margin-top: 2px;
+                }
+                .office-info {
+                    text-align: right;
+                    font-size: 11px;
+                    color: #64748b;
+                    line-height: 1.4;
+                }
+                .doc-title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #0f172a;
+                    margin: 0 0 16px 0;
+                }
+                .meta-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                    gap: 12px;
+                    margin-bottom: 24px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 24px;
+                }
+                .footer-box {
+                    margin-top: 36px;
+                    padding-top: 12px;
+                    border-top: 1px solid #e2e8f0;
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 11px;
+                    color: #94a3b8;
+                }
             </style>
         </head>
         <body>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                <h1>${title}</h1>
-                <button onclick="window.print()" style="padding:6px 14px; background:#4f46e5; color:white; border:none; border-radius:4px; cursor:pointer;">Print / Save PDF</button>
+            <div class="no-print-bar">
+                <div>
+                    <strong style="color: #0F6E5C; font-size: 14px;">${title}</strong>
+                    <div style="font-size: 12px; color: #64748b;">Ready to print or save • Select "Save as PDF" in destination to download</div>
+                </div>
+                <button onclick="window.print()">
+                    🖨️ Save as PDF / Print
+                </button>
             </div>
-            ${metaHtml ? `<div class="meta">${metaHtml}</div>` : ''}
-            <table>
-                <thead><tr>${headersHtml}</tr></thead>
-                <tbody>${rowsHtml}</tbody>
-            </table>
+            <div class="doc-container">
+                <div class="watermark">NUCLEUS ENTERPRISE HRMS</div>
+                <div class="header-box">
+                    <div>
+                        <div class="brand-title">N U C L E U S</div>
+                        <div class="brand-sub">Nucleus Technologies India Pvt Ltd • Corporate Human Resources</div>
+                    </div>
+                    <div class="office-info">
+                        Registered Office: Manyata Tech Park, Bengaluru<br />
+                        CIN: U72200KA2021PTC148892 • GSTIN: 29AABCN1234F1Z5
+                    </div>
+                </div>
+                <h1 class="doc-title">${title}</h1>
+                ${metaHtml ? `<div class="meta-grid">${metaHtml}</div>` : ''}
+                ${headers.length > 0 ? `
+                    <table>
+                        <thead><tr>${headersHtml}</tr></thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                ` : ''}
+                <div class="footer-box">
+                    <span>Nucleus Enterprise Solutions • System Authenticated Electronic Document</span>
+                    <span>Generated on ${new Date().toLocaleString('en-IN')}</span>
+                </div>
+            </div>
+            <script>
+                window.onload = function() {
+                    setTimeout(function() { window.print(); }, 350);
+                };
+            </script>
         </body>
         </html>
-    `);
-    printWindow.document.close();
+    `;
+
+    const printWindow = window.open('', '_blank', 'width=900,height=950');
+    if (printWindow) {
+        printWindow.document.open();
+        printWindow.document.write(docHtml);
+        printWindow.document.close();
+    } else {
+        // Fallback to hidden iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.position = 'fixed';
+        iframe.style.right = '0';
+        iframe.style.bottom = '0';
+        iframe.style.width = '0';
+        iframe.style.height = '0';
+        iframe.style.border = 'none';
+        document.body.appendChild(iframe);
+        const iframeDoc = iframe.contentWindow.document;
+        iframeDoc.open();
+        iframeDoc.write(docHtml);
+        iframeDoc.close();
+        setTimeout(() => {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+            }, 1000);
+        }, 500);
+    }
 }
 
 /**
