@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     User, Bell, Shield, Lock, Globe, Building2,
     Key, CheckCircle2, Save, RotateCcw, Laptop,
@@ -70,6 +70,18 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         currency: readData("components.Workspace.SettingsView", "fallback_5"),
         ...readData("components.Workspace.SettingsView", "formData_fields_3")
     });
+
+    const [profilePhoto, setProfilePhoto] = useState(authUser?.image || authUser?.avatar || authUser?.photo || null);
+
+    useEffect(() => {
+        const handlePhotoUpdated = (e) => {
+            if (e.detail?.photoUrl) {
+                setProfilePhoto(e.detail.photoUrl);
+            }
+        };
+        window.addEventListener('nucleus:profile-updated', handlePhotoUpdated);
+        return () => window.removeEventListener('nucleus:profile-updated', handlePhotoUpdated);
+    }, []);
 
     const handleFieldChange = (key, val) => {
         setFormData(prev => ({ ...prev, [key]: val }));
@@ -170,7 +182,11 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                     {/* Avatar Strip */}
                     <div className={styles.avatarStrip}>
                         <div className={styles.avatarCircle}>
-                            {formData.name.split(' ').map(n => n[0]).join('')}
+                            {profilePhoto ? (
+                                <img src={profilePhoto} alt={formData.name} style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                            ) : (
+                                formData.name.split(' ').map(n => n[0]).join('')
+                            )}
                         </div>
                         <div className={styles.avatarMeta}>
                             <h4>{formData.name}</h4>

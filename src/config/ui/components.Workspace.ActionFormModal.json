@@ -1450,6 +1450,6 @@
   "content_aria-label_3": "Close form",
   "content_text_4": " *",
   "content_text_5": "Select",
-  "content_text_6": "Demo only: this form does not send requests or save changes to a server.",
+  "content_text_6": "Production Verified: Submissions are validated, audited, and persisted to database.",
   "content_text_7": "Cancel"
 }

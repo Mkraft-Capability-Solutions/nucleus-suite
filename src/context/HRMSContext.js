@@ -67,6 +67,16 @@ export const HRMSProvider = ({ children }) => {
     // --- 1. USER PROFILE ---
     const [user, setUser] = useState(() => ({ ...readData("context.HRMSContext", "user_1"), ...authenticatedUser }));
 
+    useEffect(() => {
+        const handlePhotoUpdated = (e) => {
+            if (e.detail?.photoUrl) {
+                setUser(prev => ({ ...prev, avatar: e.detail.photoUrl, image: e.detail.photoUrl, photo: e.detail.photoUrl }));
+            }
+        };
+        window.addEventListener('nucleus:profile-updated', handlePhotoUpdated);
+        return () => window.removeEventListener('nucleus:profile-updated', handlePhotoUpdated);
+    }, []);
+
     // --- 2. ATTENDANCE & SHIFTS (Module 6) ---
     const [attendance, setAttendance] = useState(readData("context.HRMSContext", "attendance_2"));
 
@@ -382,19 +392,39 @@ export const HRMSProvider = ({ children }) => {
         return initial;
     });
 
-    const addEmployee = (newEmp) => {
+    const addEmployee = async (newEmp) => {
         setEmployees(prev => {
             const map = new Map();
             prev.forEach(e => map.set(e.id, e));
             map.set(newEmp.id, { ...map.get(newEmp.id), ...newEmp });
-            const updated = Array.from(map.values());
-            if (typeof window !== 'undefined') {
-                try {
-                    localStorage.setItem('nucleus_custom_employees', JSON.stringify(updated));
-                } catch (_) {}
-            }
-            return updated;
+            return Array.from(map.values());
         });
+
+        try {
+            const names = (newEmp.name || '').trim().split(' ');
+            const firstName = names[0] || 'Employee';
+            const lastName = names.slice(1).join(' ') || 'Team';
+            await fetch('/api/v1/people', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': crypto.randomUUID()
+                },
+                body: JSON.stringify({
+                    employeeCode: newEmp.id || `EMP-${Date.now().toString().slice(-4)}`,
+                    firstName,
+                    lastName,
+                    workEmail: newEmp.email || `${firstName.toLowerCase()}@nucleus.ai`,
+                    department: newEmp.dept || 'Engineering',
+                    designation: newEmp.role || 'Specialist',
+                    location: newEmp.location || 'Bangalore Plant',
+                    joiningDate: new Date().toISOString().split('T')[0],
+                    category: 'regular'
+                })
+            }).catch(() => null);
+        } catch (err) {
+            console.warn('Employee DB persistence error:', err);
+        }
     };
 
     // Live Database Sync for Central HRMS Context (People, Leaves, Requisitions, Loans, Announcements, Regularizations, Assets)

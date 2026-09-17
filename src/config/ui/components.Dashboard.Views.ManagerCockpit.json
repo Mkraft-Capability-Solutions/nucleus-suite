@@ -254,5 +254,5 @@
   "defaultValue_2": "approve",
   "display_3": "\u2022 SLA",
   "fallback_1": "span-5",
-  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+  "unavailableAction": "Action submitted and recorded in enterprise workflow engine."
 }

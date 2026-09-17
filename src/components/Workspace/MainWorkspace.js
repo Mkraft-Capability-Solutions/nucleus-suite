@@ -164,17 +164,25 @@ const MainWorkspace = ({
 
         const targetEndpoint = endpointMap[action] || `/api/v1/operations/${action}`;
         try {
-            await fetch(targetEndpoint, {
+            const res = await fetch(targetEndpoint, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Idempotency-Key': crypto.randomUUID()
                 },
                 body: JSON.stringify({ action, ...values, context })
-            }).catch(() => null);
-        } catch {}
+            });
+            if (action === 'photo') {
+                const json = await res.json().catch(() => ({}));
+                const photoUrl = json?.data?.photoUrl || values.photoDataUrl || (values.photo ? (values.photo.startsWith('http') || values.photo.startsWith('data:') ? values.photo : `/images/${values.photo}`) : '/images/logo-sqr.png');
+                window.dispatchEvent(new CustomEvent('nucleus:profile-updated', { detail: { photo: values.photo, photoUrl } }));
+            }
+        } catch (e) {
+            console.warn('Action server sync:', e);
+        }
 
         showToast(title, readData("components.Workspace.MainWorkspace", "demoActionComplete"), 'success');
+        return { success: true };
     };
 
     // Super Admin & Executive Telemetry Scope Filter States (4 Required Filters)

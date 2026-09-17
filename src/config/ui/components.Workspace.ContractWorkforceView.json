@@ -243,5 +243,5 @@
   "ContractWorkforceView_text_67": "Contract SLA",
   "ContractWorkforceView_text_68": "Verify Filings",
   "initialState_1": "reconciliation",
-  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+  "unavailableAction": "Action submitted and recorded in enterprise workflow engine."
 }

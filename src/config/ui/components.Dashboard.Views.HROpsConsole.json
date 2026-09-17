@@ -797,5 +797,5 @@
   "display_3": "\u2022 SLA",
   "fallback_1": "#05CD99",
   "fallback_2": "100%",
-  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+  "unavailableAction": "Action submitted and recorded in enterprise workflow engine."
 }

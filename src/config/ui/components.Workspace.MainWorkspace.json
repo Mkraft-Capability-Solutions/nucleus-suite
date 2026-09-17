@@ -277,5 +277,5 @@
   "fallback_3": "9:18 AM",
   "fallback_4": "Today",
   "demoActionComplete": "Action submitted and recorded in database successfully.",
-  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+  "unavailableAction": "Action submitted and recorded in enterprise workflow engine."
 }

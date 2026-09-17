@@ -66,7 +66,18 @@ function ActionFormContent({ request, onClose, onComplete }) {
                             <span>{label}{required && <b>{readData("components.Workspace.ActionFormModal", "content_text_4")}</b>}</span>
                             {type === 'textarea' ? <textarea aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} rows="3" />
                                 : type === 'select' ? <select aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)}><option value="">{readData("components.Workspace.ActionFormModal", "content_text_5")}</option>{Array.from(new Set(options)).map(option => <option key={option}>{option}</option>)}</select>
-                                    : type === 'file' ? <input type="file" required={required} onChange={(event) => update(key, event.target.files?.[0]?.name || '')} />
+                                    : type === 'file' ? <input type="file" accept={key === 'photo' ? 'image/*' : undefined} required={required} onChange={(event) => {
+                                        const file = event.target.files?.[0];
+                                        if (!file) return update(key, '');
+                                        update(key, file.name);
+                                        if (key === 'photo' && file.type && file.type.startsWith('image/')) {
+                                            const reader = new FileReader();
+                                            reader.onload = (e) => {
+                                                setValues(curr => ({ ...curr, [key]: file.name, photoDataUrl: e.target?.result, photoName: file.name }));
+                                            };
+                                            reader.readAsDataURL(file);
+                                        }
+                                    }} />
                                         : <input type={type} {...constraints} aria-invalid={Boolean(errors[key])} value={values[key]} required={required} onChange={(event) => update(key, event.target.value)} />}
                         </label>
                     ))}

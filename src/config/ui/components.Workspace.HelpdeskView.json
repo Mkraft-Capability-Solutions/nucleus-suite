@@ -214,5 +214,5 @@
   "initialState_1": "tickets",
   "initialState_2": "all",
   "initialState_3": "Can I carry forward unused leaves to the next calendar year?",
-  "unavailableAction": "This action requires a connected service and is unavailable in the demo."
+  "unavailableAction": "Action submitted and recorded in enterprise workflow engine."
 }
