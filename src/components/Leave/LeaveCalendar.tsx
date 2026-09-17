@@ -25,7 +25,7 @@ export default function LeaveCalendar({
 }) {
   const { user: authUser } = useAuth() || {};
   const { leaveApplications: contextApps, leaveActor: contextActor } = (useHRMS() as any) || {};
-  const leaveActor = authUser || contextActor || { employeeId: "MK-102", name: "Dhanraj Shah", role: "HR_MANAGER" };
+  const leaveActor = authUser || contextActor || { employeeId: "MK-102", name: "Dhanraj Dadhich", role: "HR_MANAGER" };
   const [employee, setEmployee] = useState(leaveActor?.employeeId ?? "MK-102");
   const leaveApplications = Array.isArray(contextApps) && contextApps.length > 0
     ? contextApps

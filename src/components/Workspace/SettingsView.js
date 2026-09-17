@@ -82,13 +82,36 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
     const [profilePhoto, setProfilePhoto] = useState(authUser?.image || authUser?.avatar || authUser?.photo || null);
 
     useEffect(() => {
-        const handlePhotoUpdated = (e) => {
-            if (e.detail?.photoUrl) {
-                setProfilePhoto(e.detail.photoUrl);
+        let active = true;
+        fetch('/api/v1/operations/profile')
+            .then(res => res.ok ? res.json() : null)
+            .then(res => {
+                if (!active || !res?.data) return;
+                const p = res.data;
+                setFormData(prev => ({
+                    ...prev,
+                    name: p.name || prev.name,
+                    email: p.email || prev.email,
+                    phone: p.phone || prev.phone,
+                    jobTitle: p.jobTitle || prev.jobTitle,
+                    dept: p.dept || prev.dept,
+                    location: p.location || prev.location
+                }));
+                if (p.photoUrl) setProfilePhoto(p.photoUrl);
+            })
+            .catch(() => {});
+        return () => { active = false; };
+    }, []);
+
+    useEffect(() => {
+        const handleProfileUpdated = (e) => {
+            if (e.detail) {
+                if (e.detail.photoUrl) setProfilePhoto(e.detail.photoUrl);
+                if (e.detail.name) setFormData(prev => ({ ...prev, name: e.detail.name }));
             }
         };
-        window.addEventListener('nucleus:profile-updated', handlePhotoUpdated);
-        return () => window.removeEventListener('nucleus:profile-updated', handlePhotoUpdated);
+        window.addEventListener('nucleus:profile-updated', handleProfileUpdated);
+        return () => window.removeEventListener('nucleus:profile-updated', handleProfileUpdated);
     }, []);
 
     const handleFieldChange = (key, val) => {
@@ -99,9 +122,24 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         if (isSaving) return;
         setIsSaving(true);
         try {
-            await launchAction('settings', formData);
+            const res = await fetch('/api/v1/operations/profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            const result = await res.json().catch(() => ({}));
+            if (res.ok && result.success !== false) {
+                showToast("Settings Saved", "Profile and preferences updated in database.", "success");
+                window.dispatchEvent(new CustomEvent('nucleus:profile-updated', {
+                    detail: { ...formData, name: formData.name, photoUrl: profilePhoto }
+                }));
+            } else {
+                throw new Error(result?.message || "Failed to save profile");
+            }
+        } catch (err) {
+            showToast("Save Failed", err?.message || "Failed to update profile", "error");
         } finally {
-            setTimeout(() => setIsSaving(false), 1500);
+            setTimeout(() => setIsSaving(false), 500);
         }
     };
 

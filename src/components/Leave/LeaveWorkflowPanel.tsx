@@ -40,7 +40,7 @@ export default function LeaveWorkflowPanel() {
     showToast,
   } = (useHRMS() as any) || {};
 
-  const user = authUser || contextUser || { role: "HR_MANAGER", employeeId: "MK-102", name: "Dhanraj Shah" };
+  const user = authUser || contextUser || { role: "HR_MANAGER", employeeId: "MK-102", name: "Dhanraj Dadhich" };
   const fallbackRequests = useMemo(() => {
     try {
       return workbookLeaveReferences();

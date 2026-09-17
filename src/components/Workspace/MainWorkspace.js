@@ -184,6 +184,13 @@ const MainWorkspace = ({
                 const json = await res.json().catch(() => ({}));
                 const photoUrl = json?.data?.photoUrl || values.photoDataUrl || (values.photo ? (values.photo.startsWith('http') || values.photo.startsWith('data:') ? values.photo : `/images/${values.photo}`) : '/images/logo-sqr.png');
                 window.dispatchEvent(new CustomEvent('nucleus:profile-updated', { detail: { photo: values.photo, photoUrl } }));
+            } else if (action === 'settings') {
+                fetch('/api/v1/operations/profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(values)
+                }).catch(() => {});
+                window.dispatchEvent(new CustomEvent('nucleus:profile-updated', { detail: { ...values, name: values.name } }));
             }
         } catch (e) {
             console.warn('Action server sync:', e);

@@ -71,7 +71,7 @@ function LeaveApplicationForm({
     id: "usr-admin",
     employeeId: "MK-102",
     role: "HR_MANAGER",
-    name: "Dhanraj Shah",
+    name: "Dhanraj Dadhich",
   };
   const { t } = useTranslation();
   const text = (key: string) => t("leave", key);

@@ -34,7 +34,7 @@ const keys: Record<string, string> = {
 export default function LeaveBalancePanel() {
   const { user: authUser } = useAuth() || {};
   const { leaveState: contextLeaveState, adjustLeaveAllocation, showToast } = (useHRMS() as any) || {};
-  const user = authUser || { role: "HR_MANAGER", employeeId: "MK-102", name: "Dhanraj Shah" };
+  const user = authUser || { role: "HR_MANAGER", employeeId: "MK-102", name: "Dhanraj Dadhich" };
   const { t } = useTranslation();
   const text = (key: string) => t("leave", key);
   const admin = ["HR_MANAGER", "SUPER_ADMIN"].includes(user?.role || "EMPLOYEE");

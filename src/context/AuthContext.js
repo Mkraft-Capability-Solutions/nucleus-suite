@@ -56,12 +56,48 @@ export const AuthProvider = ({ children }) => {
     const [modulePermissions, setModulePermissions] = useState(DEFAULT_MODULE_PERMISSIONS);
     const [consolePermissions, setConsolePermissions] = useState(DEFAULT_CONSOLE_PERMISSIONS);
     const { data: session, isPending: isLoading } = useSession();
+    const [liveProfile, setLiveProfile] = useState(null);
+
+    useEffect(() => {
+        let active = true;
+        fetch('/api/v1/operations/profile')
+            .then(res => res.ok ? res.json() : null)
+            .then(json => {
+                if (active && json?.data?.name) {
+                    setLiveProfile(json.data);
+                }
+            })
+            .catch(() => {});
+
+        const handleProfileUpdated = (e) => {
+            if (e.detail?.name || e.detail?.photoUrl) {
+                setLiveProfile(prev => ({
+                    ...(prev || {}),
+                    ...e.detail,
+                    name: e.detail.name || prev?.name,
+                    avatar: e.detail.photoUrl || prev?.avatar,
+                    image: e.detail.photoUrl || prev?.image
+                }));
+            }
+        };
+        window.addEventListener('nucleus:profile-updated', handleProfileUpdated);
+        return () => {
+            active = false;
+            window.removeEventListener('nucleus:profile-updated', handleProfileUpdated);
+        };
+    }, []);
     
-    const user = session?.user || {
+    const fallbackUser = {
         id: 'usr-admin',
-        name: 'Dhanraj Shah',
+        name: 'Dhanraj Dadhich',
         email: 'dhanraj@nucleus.corp',
         role: 'SUPER_ADMIN'
+    };
+
+    const user = {
+        ...fallbackUser,
+        ...(session?.user || {}),
+        ...(liveProfile || {})
     };
 
     const login = async (email, password) => {

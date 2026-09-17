@@ -36,7 +36,7 @@ const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         showToast
     } = useHRMS() || {};
 
-    const user = authUser || contextUser || { role: 'HR_MANAGER', employeeId: 'MK-102', name: 'Dhanraj Shah' };
+    const user = authUser || contextUser || { role: 'HR_MANAGER', employeeId: 'MK-102', name: 'Dhanraj Dadhich' };
 
     const defaultLeaves = {
         privilege: { available: 16, total: 25 },

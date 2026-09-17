@@ -68,13 +68,26 @@ export const HRMSProvider = ({ children }) => {
     const [user, setUser] = useState(() => ({ ...readData("context.HRMSContext", "user_1"), ...authenticatedUser }));
 
     useEffect(() => {
-        const handlePhotoUpdated = (e) => {
-            if (e.detail?.photoUrl) {
-                setUser(prev => ({ ...prev, avatar: e.detail.photoUrl, image: e.detail.photoUrl, photo: e.detail.photoUrl }));
+        if (authenticatedUser?.name) {
+            setUser(prev => ({ ...prev, ...authenticatedUser }));
+        }
+    }, [authenticatedUser]);
+
+    useEffect(() => {
+        const handleProfileUpdated = (e) => {
+            if (e.detail) {
+                setUser(prev => ({
+                    ...prev,
+                    ...e.detail,
+                    name: e.detail.name || prev.name,
+                    avatar: e.detail.photoUrl || prev.avatar,
+                    image: e.detail.photoUrl || prev.image,
+                    photo: e.detail.photoUrl || prev.photo
+                }));
             }
         };
-        window.addEventListener('nucleus:profile-updated', handlePhotoUpdated);
-        return () => window.removeEventListener('nucleus:profile-updated', handlePhotoUpdated);
+        window.addEventListener('nucleus:profile-updated', handleProfileUpdated);
+        return () => window.removeEventListener('nucleus:profile-updated', handleProfileUpdated);
     }, []);
 
     // --- 2. ATTENDANCE & SHIFTS (Module 6) ---
