@@ -4888,22 +4888,6 @@ export const workspaceContract = {
     "content_text_4",
     "content_text_5"
   ],
-  "context.AuthContext": [
-    "AuthContext_fields_1",
-    "AuthContext_fields_2",
-    "AuthContext_fields_3",
-    "roleProfiles_4",
-    "userConfig_5",
-    "userConfig_6",
-    "userConfig_7",
-    "userId_fields_8",
-    "userId_fields_9",
-    "getPermittedConsoles_10",
-    "allKeys_11",
-    "response_fields_12",
-    "targetUser_fields_14",
-    "openAccessControl_15"
-  ],
   "dashboard.widgets": [
     "copy",
     "defaults",

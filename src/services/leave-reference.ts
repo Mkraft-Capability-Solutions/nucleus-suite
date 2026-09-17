@@ -1,4 +1,5 @@
 import { readData } from "./workspace-data.mjs";
+import { DEFAULT_ROLE_PROFILES } from "./auth-defaults";
 export type LeaveEmployee = {
   employeeId: string;
   name: string;
@@ -14,9 +15,7 @@ export type LeaveEmployee = {
 export function getLeaveEmployees(): LeaveEmployee[] {
   const workbook = readData("workbook").sheets;
   const profiles = (
-    Object.values(
-      readData("context.AuthContext", "roleProfiles_4"),
-    ) as LeaveEmployee[]
+    Object.values(DEFAULT_ROLE_PROFILES) as LeaveEmployee[]
   )
     .filter((profile) => profile.employeeId)
     .map((profile) => ({ employeeId: profile.employeeId, name: profile.name }));

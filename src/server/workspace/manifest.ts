@@ -60,7 +60,6 @@ import resource55 from "@/config/ui/components.Dashboard.Views.PerformanceTalent
 import resource56 from "@/config/ui/components.Dashboard.Views.TalentAcquisition.json";
 import resource57 from "@/config/ui/components.Navigation.DualPaneNav.json";
 import resource58 from "@/config/ui/components.auth.RoleProtected.json";
-import resource59 from "@/config/ui/context.AuthContext.json";
 import resource61 from "@/config/ui/dashboard.widgets.json";
 import resource62 from "@/config/ui/leave.workflow.json";
 import resource63 from "@/config/ui/lib.demo-workbook-adapter.json";
@@ -138,7 +137,6 @@ export const workspaceResources = {
     "components.Dashboard.Views.TalentAcquisition": resource56,
     "components.Navigation.DualPaneNav": resource57,
     "components.auth.RoleProtected": resource58,
-    "context.AuthContext": resource59,
     "dashboard.widgets": resource61,
     "leave.workflow": resource62,
     "lib.demo-workbook-adapter": resource63,

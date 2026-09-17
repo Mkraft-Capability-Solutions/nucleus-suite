@@ -18,7 +18,7 @@ import { ROLES } from '@/utils/permissions';
 
 const ROLES_LIST = readData("components.Workspace.AccessControlView", "ROLE_LIST_4")
     .filter(role => role.key !== ROLES.SUPER_ADMIN)
-    .map(role => ({ ...role, name: readData("context.AuthContext", "roleProfiles_4")[role.key].name, icon: Users }));
+    .map(role => ({ ...role, name: role.label || role.name || role.key, icon: Users }));
 
 const MODULES_LIST = [
     { ...readData("components.Dashboard.Modals.AccessControlModal", "MODULES_LIST_fields_7"), icon: Users },
