@@ -12,7 +12,7 @@ import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, CheckCircle2, ChevronRight, Edit2, Eye, FileText, LoaderCircle, Plus, RefreshCw, Search, ShieldCheck, UploadCloud, X } from 'lucide-react';
-import { listModuleRecords } from '@/app/actions/moduleActions';
+import { listModuleRecords } from '@/services/module-service.mjs';
 import { getWorkbookFieldOptions, getWorkbookRowsForModule, recordCellValue as workbookRecordCellValue } from '@/lib/demo-workbook-adapter.mjs';
 import TablePagination from '../Common/TablePagination';
 import styles from './OperationalModuleView.module.css';
@@ -397,16 +397,20 @@ function OperationalModuleContent({ module, onNavigate }) {
 
     useEffect(() => {
         let active = true;
+        const initial = fallbackRows(module);
         listModuleRecords(module.id).then((items) => {
             if (!active) return;
-            setRecords(items);
-            if (items.length > 0 && !selected) {
-                setSelected(items[0]);
+            const dbItems = Array.isArray(items) ? items : [];
+            const combined = [...dbItems, ...initial.filter(init => !dbItems.some(d => d.id === init.id))];
+            setRecords(combined);
+            if (combined.length > 0 && !selected) {
+                setSelected(combined[0]);
             }
             setLoading(false);
         }).catch((loadError) => {
             if (!active) return;
-            setError(loadError.message);
+            console.warn('Module record list notice:', loadError);
+            setRecords(initial);
             setLoading(false);
         });
         return () => { active = false; };
@@ -416,9 +420,12 @@ function OperationalModuleContent({ module, onNavigate }) {
         setLoading(true);
         setError('');
         try {
+            const initial = fallbackRows(module);
             const items = await listModuleRecords(module.id);
-            setRecords(items);
-            if (items.length > 0) setSelected(items[0]);
+            const dbItems = Array.isArray(items) ? items : [];
+            const combined = [...dbItems, ...initial.filter(init => !dbItems.some(d => d.id === init.id))];
+            setRecords(combined);
+            if (combined.length > 0) setSelected(combined[0]);
         } catch (loadError) {
             setError(loadError.message);
         } finally {
@@ -448,43 +455,52 @@ function OperationalModuleContent({ module, onNavigate }) {
         setSelected(newRecord);
         setIsCreateOpen(false);
 
-        if (module.endpoint) {
-            try {
-                const res = await fetch(module.endpoint, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Idempotency-Key': crypto.randomUUID(),
-                    },
-                    body: JSON.stringify(values),
-                });
-                if (res.ok) {
-                    const json = await res.json().catch(() => null);
-                    const recData = json?.data || json;
-                    const finalId = recData?.id || json?.id || tempId;
-                    const finalAttrs = recData?.attributes || json?.attributes || values;
-                    const finalCreatedAt = recData?.createdAt || json?.createdAt || new Date().toISOString();
-                    setRecords(prev => [
-                        {
-                            id: finalId,
-                            _cells: finalAttrs,
-                            values: finalAttrs,
-                            attributes: finalAttrs,
-                            createdAt: finalCreatedAt,
-                        },
-                        ...prev.filter(r => r.id !== tempId),
-                    ]);
-                    setSelected({
+        const targetEndpoint = module.endpoint || `/api/v1/ops/modules/${module.id}/records`;
+        try {
+            const res = await fetch(targetEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': crypto.randomUUID(),
+                },
+                body: JSON.stringify(finalValues),
+            });
+            if (res.ok) {
+                const json = await res.json().catch(() => null);
+                const recData = Array.isArray(json?.data) ? json.data[0] : (json?.data || json);
+                const finalId = recData?.id || json?.id || tempId;
+                const rawAttrs = recData?.attributes || json?.attributes || finalValues;
+                const startTime = recData?.startTime || recData?.start_time || rawAttrs.startTime || finalValues.startTime;
+                const endTime = recData?.endTime || recData?.end_time || rawAttrs.endTime || finalValues.endTime;
+                const finalAttrs = {
+                    ...rawAttrs,
+                    startTime,
+                    endTime,
+                    periodFromPeriodTo: rawAttrs.periodFromPeriodTo || (startTime && endTime ? `${startTime} - ${endTime}` : (startTime || endTime))
+                };
+                const finalCreatedAt = recData?.createdAt || recData?.created_at || json?.createdAt || new Date().toISOString();
+                setRecords(prev => [
+                    {
                         id: finalId,
                         _cells: finalAttrs,
                         values: finalAttrs,
                         attributes: finalAttrs,
+                        status: recData?.status || 'Active',
                         createdAt: finalCreatedAt,
-                    });
-                }
-            } catch (postErr) {
-                console.warn(`Live DB persist for ${module.id} notice:`, postErr);
+                    },
+                    ...prev.filter(r => r.id !== tempId && r.id !== finalId),
+                ]);
+                setSelected({
+                    id: finalId,
+                    _cells: finalAttrs,
+                    values: finalAttrs,
+                    attributes: finalAttrs,
+                    status: recData?.status || 'Active',
+                    createdAt: finalCreatedAt,
+                });
             }
+        } catch (postErr) {
+            console.warn(`Live DB persist for ${module.id} notice:`, postErr);
         }
 
         setNotice(translateText("components.Workspace.OperationalModuleView", "text_created_success", { value1: String(module.title) }));
