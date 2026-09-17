@@ -34,13 +34,22 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ mo
   const body = await req.json().catch(() => ({}));
   
   const zodSchema = buildZodSchemaForModule(moduleId);
-  const parseResult = zodSchema.safeParse(body);
+  const validator = ('partial' in zodSchema && typeof (zodSchema as any).partial === 'function' && req.method === 'PATCH') 
+    ? (zodSchema as any).partial() 
+    : zodSchema;
+  const parseResult = validator.safeParse(body);
   if (!parseResult.success) {
     return NextResponse.json({ error: `Validation Failed: ${parseResult.error.issues.map(e => e.message).join(", ")}` }, { status: 400 });
   }
   
+  const updateValues: any = { attributes: parseResult.data, updatedAt: new Date() };
+  if (moduleId === "roster_schedule") {
+    if (parseResult.data?.startTime) updateValues.startTime = String(parseResult.data.startTime);
+    if (parseResult.data?.endTime) updateValues.endTime = String(parseResult.data.endTime);
+  }
+
   const query = db.update(table)
-    .set({ attributes: parseResult.data, updatedAt: new Date() })
+    .set(updateValues)
     .where(and(eq(table.tenantId, access.tenantId), eq(table.id, id)))
     .returning().toSQL();
     
