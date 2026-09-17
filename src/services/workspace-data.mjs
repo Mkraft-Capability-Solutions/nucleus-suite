@@ -76,14 +76,29 @@ export function createWorkspaceDataService(transport) {
 }
 
 async function httpTransport() {
-    const response = await fetch('/api/workspace-data', {
-        cache: 'no-store',
-        credentials: 'same-origin',
-        signal: AbortSignal.timeout(15_000),
-    });
-    if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        const error = new Error(`Workspace data could not be loaded (${response.status}).`);
+    let response;
+    let lastError;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            response = await fetch('/api/workspace-data', {
+                cache: 'no-store',
+                credentials: 'same-origin',
+                signal: AbortSignal.timeout(15_000),
+            });
+            if (response.ok) break;
+            if (response.status >= 500) {
+                await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+            } else {
+                break;
+            }
+        } catch (err) {
+            lastError = err;
+            await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+        }
+    }
+    if (!response || !response.ok) {
+        const payload = await response?.json().catch(() => null);
+        const error = new Error(`Workspace data could not be loaded (${response?.status || lastError?.message || 'unknown'}).`);
         error.code = payload?.error?.code;
         throw error;
     }
