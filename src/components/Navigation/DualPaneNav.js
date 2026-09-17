@@ -93,9 +93,9 @@ export default function DualPaneNav({
         effectiveTaxonomy.flatMap(m =>
             m.groups.flatMap(g =>
                 g.items.filter(item =>
-                    item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    item.desc.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    m.label.toLowerCase().includes(searchQuery.toLowerCase())
+                    (item.label || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (item.desc || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (m.label || '').toLowerCase().includes(searchQuery.toLowerCase())
                 ).map(item => ({ ...item, parentModule: m.label, parentId: m.id }))
             )
         )

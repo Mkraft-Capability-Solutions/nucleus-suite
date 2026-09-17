@@ -12,7 +12,7 @@ import {
 import styles from './RecruitmentView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 
-const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
+const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
@@ -25,6 +25,19 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     const [candidateList, setCandidateList] = useState(initialCandidates || []);
     const candidates = candidateList;
     const [referralList, setReferralList] = useState(employeeReferrals || []);
+
+    const parseSkills = (c) => {
+        if (Array.isArray(c?.skills) && c.skills.length > 0) return c.skills;
+        if (typeof c?.skills === 'string' && c.skills.trim()) {
+            try {
+                const parsed = JSON.parse(c.skills);
+                if (Array.isArray(parsed)) return parsed;
+            } catch {}
+            return c.skills.split(',').map(s => s.trim()).filter(Boolean);
+        }
+        if (Array.isArray(c?.attributes?.skills) && c.attributes.skills.length > 0) return c.attributes.skills;
+        return ['Operations', 'Specialist', 'Enterprise'];
+    };
 
     useEffect(() => {
         let active = true;
@@ -44,6 +57,10 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                         dept: c.dept || c.department || 'Operations',
                         stage: c.stage || 'sourced',
                         rating: c.rating || 4.5,
+                        matchScore: c.matchScore || c.score || 92,
+                        exp: c.exp || (c.experience ? `${c.experience} yrs` : '3 yrs'),
+                        biasScore: c.biasScore || 'Fair & Neutral',
+                        skills: parseSkills(c),
                         appliedDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : 'Recent',
                         source: c.source || 'Referral'
                     }));
@@ -70,6 +87,21 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     }, []);
 
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.RecruitmentView", "initialState_1")); // pipeline, establishment, referrals, interviews, bias
+
+    useEffect(() => {
+        if (!activeSubFeature) return;
+        if (activeSubFeature === 'talent_ats' || activeSubFeature === 'recruitment_pipeline') {
+            setActiveTab('pipeline');
+        } else if (activeSubFeature === 'talent_establishment' || activeSubFeature === 'recruitment_establishment') {
+            setActiveTab('establishment');
+        } else if (activeSubFeature === 'talent_referrals' || activeSubFeature === 'recruitment_referrals') {
+            setActiveTab('referrals');
+        } else if (activeSubFeature === 'talent_interviews' || activeSubFeature === 'recruitment_interviews') {
+            setActiveTab('interviews');
+        } else if (activeSubFeature === 'talent_bias' || activeSubFeature === 'recruitment_bias') {
+            setActiveTab('bias');
+        }
+    }, [activeSubFeature]);
 
     // Requisition Modal State
     const [isReqModalOpen, setIsReqModalOpen] = useState(false);
@@ -390,13 +422,18 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <strong style={{ color: 'var(--text)', fontSize: '0.95rem' }}>{cand.name}</strong>
                                             <span className={styles.matchScoreBadge}>
-                                                <Sparkles size={12} /> {cand.matchScore}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_25")}</span>
+                                                <Sparkles size={12} /> {cand.matchScore ?? 92}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_25")}</span>
                                         </div>
                                         <div style={{ fontSize: '0.82rem', color: 'var(--info)', fontWeight: '600' }}>{cand.role}</div>
-                                        <div style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_26")}{cand.exp}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_27")}{cand.biasScore}</div>
+                                        <div style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_26")}{cand.exp || '3 yrs'}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_27")}{cand.biasScore || 'Fair & Neutral'}</div>
 
                                         <div className={styles.skillTags}>
-                                            {cand.skills.map((s, i) => (
+                                            {(Array.isArray(cand.skills)
+                                                ? cand.skills
+                                                : typeof cand.skills === 'string' && cand.skills.trim()
+                                                    ? cand.skills.split(',').map(s => s.trim()).filter(Boolean)
+                                                    : (cand.attributes?.skills || ['Engineering', 'Specialist'])
+                                            ).map((s, i) => (
                                                 <span key={i} className={styles.skillTag}>{s}</span>
                                             ))}
                                         </div>
@@ -442,17 +479,26 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                     {/* Department Quota Capacity Grid */}
                     <div className={styles.establishmentGrid}>
                         {departmentsList.map(dept => {
-                            const cap = calculateDepartmentCapacity(dept, employees, positions, sanctionedQuotas);
-                            const fillPercent = Math.min(100, cap.utilizationRate);
+                            const cap = (typeof calculateDepartmentCapacity === 'function')
+                                ? (calculateDepartmentCapacity(dept, employees, positions, sanctionedQuotas) || {})
+                                : {};
+                            const sanctioned = cap.sanctioned ?? 5;
+                            const currentHeadcount = cap.currentHeadcount ?? 0;
+                            const activeOpenReqs = cap.activeOpenReqs ?? 0;
+                            const availableVacancies = cap.availableVacancies ?? 5;
+                            const utilizationRate = cap.utilizationRate ?? 0;
+                            const fillPercent = Math.min(100, utilizationRate);
+                            const isAtCapacity = Boolean(cap.isAtCapacity);
+                            const budgetCode = cap.quotaInfo?.budgetCode || 'CC-CORP';
                             return (
                                 <div key={dept} className={styles.deptCapacityCard}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                         <div>
                                             <strong style={{ fontSize: '0.95rem', color: 'var(--text)', display: 'block' }}>{dept}</strong>
-                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_36")}{cap.quotaInfo.budgetCode}</span>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_36")}{budgetCode}</span>
                                         </div>
-                                        <span className={`${styles.badge} ${cap.isAtCapacity ? styles.badgeDanger : fillPercent > 75 ? styles.badgeWarning : styles.badgeSuccess}`}>
-                                            {cap.isAtCapacity ? readData("components.Workspace.RecruitmentView", "display_11") :translateText("components.Workspace.RecruitmentView","text_ac513560df", {value1: String(cap.availableVacancies)})}
+                                        <span className={`${styles.badge} ${isAtCapacity ? styles.badgeDanger : fillPercent > 75 ? styles.badgeWarning : styles.badgeSuccess}`}>
+                                            {isAtCapacity ? readData("components.Workspace.RecruitmentView", "display_11") :translateText("components.Workspace.RecruitmentView","text_ac513560df", {value1: String(availableVacancies)})}
                                         </span>
                                     </div>
 
@@ -461,7 +507,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                             className={styles.capacityBarFill}
                                             style={{
                                                 width: `${fillPercent}%`,
-                                                background: cap.isAtCapacity ? '#ef4444' : fillPercent > 75 ? '#f59e0b' : '#05CD99'
+                                                background: isAtCapacity ? '#ef4444' : fillPercent > 75 ? '#f59e0b' : '#05CD99'
                                             }}
                                         />
                                     </div>
@@ -469,15 +515,15 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', textAlign: 'center', fontSize: '0.78rem', paddingTop: '0.4rem', borderTop: '1px solid var(--line-soft, #eee)' }}>
                                         <div>
                                             <span style={{ color: 'var(--text-2)', display: 'block' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_37")}</span>
-                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: 'var(--text)' }}>{cap.sanctioned}</strong>
+                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: 'var(--text)' }}>{sanctioned}</strong>
                                         </div>
                                         <div>
                                             <span style={{ color: 'var(--text-2)', display: 'block' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_38")}</span>
-                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: 'var(--signal)' }}>{cap.currentHeadcount}</strong>
+                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: 'var(--signal)' }}>{currentHeadcount}</strong>
                                         </div>
                                         <div>
                                             <span style={{ color: 'var(--text-2)', display: 'block' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_39")}</span>
-                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: '#3b82f6' }}>{cap.activeOpenReqs}</strong>
+                                            <strong style={{ fontFamily: 'var(--f-num, monospace)', color: '#3b82f6' }}>{activeOpenReqs}</strong>
                                         </div>
                                     </div>
                                 </div>
@@ -569,7 +615,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                     <div className={styles.card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                             <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_60")}</h3>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_61")}{employeeReferrals.length}</span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_61")}{(referralList.length > 0 ? referralList : (employeeReferrals || [])).length}</span>
                         </div>
 
                         <div style={{ overflowX: 'auto' }}>
@@ -586,30 +632,30 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {(employeeReferrals || []).map(ref => (
+                                    {(referralList.length > 0 ? referralList : (employeeReferrals || [])).map(ref => (
                                         <tr key={ref.id} style={{ borderBottom: '1px solid var(--line-soft, #eee)' }}>
                                             <td style={{ padding: '0.65rem 0.85rem', fontFamily: 'var(--f-num, monospace)', fontWeight: 700 }}>
                                                 {ref.id}
                                             </td>
                                             <td style={{ padding: '0.65rem 0.85rem', fontWeight: 600, color: 'var(--text)' }}>
-                                                {ref.candidateName}
+                                                {ref.candidateName || ref.name || 'Candidate'}
                                             </td>
                                             <td style={{ padding: '0.65rem 0.85rem' }}>
-                                                <div style={{ fontWeight: 600, color: 'var(--info)' }}>{ref.role}</div>
-                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{ref.dept}</div>
+                                                <div style={{ fontWeight: 600, color: 'var(--info)' }}>{ref.role || 'Specialist'}</div>
+                                                <div style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>{ref.dept || ref.department || 'Operations'}</div>
                                             </td>
                                             <td style={{ padding: '0.65rem 0.85rem', color: 'var(--text)' }}>
-                                                {ref.referredByName}
+                                                {ref.referredByName || ref.referrerName || 'Employee'}
                                             </td>
                                             <td style={{ padding: '0.65rem 0.85rem' }}>
                                                 <span className={`${styles.badge} ${ref.status === 'JOINED' ? styles.badgeSuccess : ref.status === 'OFFERED' ? styles.badgeInfo : styles.badgeWarning}`}>
-                                                    {ref.status}
+                                                    {ref.status || 'SUBMITTED'}
                                                 </span>
                                             </td>
-                                            <td style={{ padding: '0.65rem 0.85rem', fontFamily: 'var(--f-num, monospace)', fontWeight: 700, color: 'var(--signal)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_69")}{ref.disbursedAmount.toLocaleString()}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_70")}{ref.totalBonusEligible.toLocaleString()}
+                                            <td style={{ padding: '0.65rem 0.85rem', fontFamily: 'var(--f-num, monospace)', fontWeight: 700, color: 'var(--signal)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_69")}{(Number(ref.disbursedAmount) || 0).toLocaleString()}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_70")}{(Number(ref.totalBonusEligible) || 25000).toLocaleString()}
                                             </td>
                                             <td style={{ padding: '0.65rem 0.85rem', fontSize: '0.78rem', color: 'var(--text-2)' }}>
-                                                {ref.nextPayoutMilestone}
+                                                {ref.nextPayoutMilestone || 'Under Review'}
                                             </td>
                                         </tr>
                                     ))}
@@ -776,15 +822,21 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                 /* Quota check feedback for New Addition */
                                 <div>
                                     {(() => {
-                                        const cap = calculateDepartmentCapacity(reqDept, employees, positions, sanctionedQuotas);
-                                        return cap.isAtCapacity ? (
+                                        const cap = (typeof calculateDepartmentCapacity === 'function')
+                                            ? (calculateDepartmentCapacity(reqDept, employees, positions, sanctionedQuotas) || {})
+                                            : {};
+                                        const capIsAtCapacity = Boolean(cap.isAtCapacity);
+                                        const capTotalCommitted = cap.totalCommitted ?? 0;
+                                        const capSanctioned = cap.sanctioned ?? 5;
+                                        const capAvailableVacancies = cap.availableVacancies ?? 5;
+                                        return capIsAtCapacity ? (
                                             <div style={{ padding: '0.75rem', background: 'rgba(239, 68, 68, 0.08)', borderRadius: 6, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', color: 'var(--flag)', fontWeight: 600, fontSize: '0.84rem' }}>
-                                                    <AlertTriangle size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_101")}{reqDept}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_102")}{cap.totalCommitted}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_103")}{cap.sanctioned}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_104")}</div>
+                                                    <AlertTriangle size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_101")}{reqDept}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_102")}{capTotalCommitted}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_103")}{capSanctioned}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_104")}</div>
                                                 <div style={{ fontSize: '0.78rem', color: 'var(--text-2)', marginTop: '0.3rem' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_105")}</div>
                                             </div>
                                         ) : (
-                                            <div style={{ fontSize: '0.78rem', color: 'var(--signal)', fontWeight: 600 }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_106")}{reqDept}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_107")}{cap.availableVacancies}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_108")}{cap.totalCommitted}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_109")}{cap.sanctioned}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_110")}</div>
+                                            <div style={{ fontSize: '0.78rem', color: 'var(--signal)', fontWeight: 600 }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_106")}{reqDept}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_107")}{capAvailableVacancies}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_108")}{capTotalCommitted}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_109")}{capSanctioned}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_110")}</div>
                                         );
                                     })()}
                                 </div>

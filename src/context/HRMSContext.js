@@ -712,16 +712,36 @@ const HRMS_SYNC_TTL_MS = 30000;
                     const candJson = await candRes.value.json().catch(() => null);
                     const rawCands = Array.isArray(candJson?.data) ? candJson.data : (Array.isArray(candJson?.items) ? candJson.items : []);
                     if (rawCands.length > 0 && typeof setCandidates === 'function') {
-                        const dbCands = rawCands.map(c => ({
-                            id: c.id,
-                            name: c.name || 'Candidate',
-                            role: c.role || c.targetRole || 'Specialist',
-                            dept: c.dept || c.department || 'Operations',
-                            stage: c.stage || 'sourced',
-                            rating: c.rating || 4.5,
-                            appliedDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : 'Recent',
-                            source: c.source || 'Referral'
-                        }));
+                        const dbCands = rawCands.map(c => {
+                            let skillsArr = ['Operations', 'Specialist', 'Enterprise'];
+                            if (Array.isArray(c?.skills) && c.skills.length > 0) {
+                                skillsArr = c.skills;
+                            } else if (typeof c?.skills === 'string' && c.skills.trim()) {
+                                try {
+                                    const parsed = JSON.parse(c.skills);
+                                    skillsArr = Array.isArray(parsed) ? parsed : c.skills.split(',').map(s => s.trim()).filter(Boolean);
+                                } catch {
+                                    skillsArr = c.skills.split(',').map(s => s.trim()).filter(Boolean);
+                                }
+                            } else if (Array.isArray(c?.attributes?.skills) && c.attributes.skills.length > 0) {
+                                skillsArr = c.attributes.skills;
+                            }
+
+                            return {
+                                id: c.id,
+                                name: c.name || 'Candidate',
+                                role: c.role || c.targetRole || 'Specialist',
+                                dept: c.dept || c.department || 'Operations',
+                                stage: c.stage || 'sourced',
+                                rating: c.rating || 4.5,
+                                matchScore: c.matchScore || c.score || 92,
+                                exp: c.exp || (c.experience ? `${c.experience} yrs` : '3 yrs'),
+                                biasScore: c.biasScore || 'Fair & Neutral',
+                                skills: skillsArr,
+                                appliedDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : 'Recent',
+                                source: c.source || 'Referral'
+                            };
+                        });
                         setCandidates(prev => {
                             const candMap = new Map();
                             (prev || []).forEach(item => candMap.set(item.id, item));

@@ -1035,6 +1035,7 @@ const MainWorkspace = ({
         onboarding: 'core_hr',
         contract_workforce: 'core_hr',
         recruitment: 'talent',
+        talent: 'talent',
         performance: 'talent',
         learning: 'talent',
         experience: 'talent',
@@ -1112,8 +1113,8 @@ const MainWorkspace = ({
             )}
 
             {/* Module 3: Talent Acquisition / ATS */}
-            {activeTab === 'recruitment' && (
-                <RoleProtected moduleKey="recruitment" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD]}>
+            {(activeTab === 'recruitment' || activeTab === 'talent') && (
+                <RoleProtected moduleKey="recruitment" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
                     <RecruitmentView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
             )}
