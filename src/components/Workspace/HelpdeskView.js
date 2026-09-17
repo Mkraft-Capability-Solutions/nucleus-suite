@@ -58,11 +58,13 @@ const HelpdeskView = () => {
         ? ticketList
         : ticketList.filter(t => (t.category || '').toLowerCase().includes(selectedCategory.toLowerCase()));
 
+    const isSubmittingTicket = React.useRef(false);
     const handleCreateTicket = async (e) => {
         e?.preventDefault?.();
-        if (!modalSubject.trim() || !modalDescription.trim()) {
+        if (!modalSubject.trim() || !modalDescription.trim() || isSubmittingTicket.current) {
             return;
         }
+        isSubmittingTicket.current = true;
 
         const newT = {
             id: `TCK-${Date.now().toString().slice(-4)}`,
@@ -97,6 +99,8 @@ const HelpdeskView = () => {
             });
         } catch (err) {
             console.warn('Ticket creation sync warning:', err);
+        } finally {
+            setTimeout(() => { isSubmittingTicket.current = false; }, 500);
         }
 
         setIsRaiseModalOpen(false);
@@ -104,8 +108,10 @@ const HelpdeskView = () => {
         setModalDescription('');
     };
 
+    const isSubmittingReply = React.useRef(false);
     const handleSendReply = async () => {
-        if (!replyText.trim() || !selectedTicket) return;
+        if (!replyText.trim() || !selectedTicket || isSubmittingReply.current) return;
+        isSubmittingReply.current = true;
 
         const newMsg = {
             sender: 'You',
@@ -130,6 +136,8 @@ const HelpdeskView = () => {
             });
         } catch (err) {
             console.warn('Reply message sync warning:', err);
+        } finally {
+            setTimeout(() => { isSubmittingReply.current = false; }, 500);
         }
 
         setReplyText('');

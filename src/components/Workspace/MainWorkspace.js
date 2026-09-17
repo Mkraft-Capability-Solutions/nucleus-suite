@@ -5,7 +5,7 @@ import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     MoreHorizontal, Clock, Calendar, CheckCircle, AlertCircle, DollarSign,
     Users, TrendingUp, Sun, Cloud, Mic, Sparkles, MapPin, Play, Bell,
@@ -116,7 +116,15 @@ const MainWorkspace = ({
         };
     }, []);
 
+    const activeSubmissions = useRef(new Set());
     const completeAction = async ({ action, title, values, context }) => {
+        const dedupeKey = `${action}:${JSON.stringify(values || {})}`;
+        if (activeSubmissions.current.has(dedupeKey)) {
+            return { success: true };
+        }
+        activeSubmissions.current.add(dedupeKey);
+        setTimeout(() => activeSubmissions.current.delete(dedupeKey), 2500);
+
         const record = { action, title, values, context, recordedAt: new Date().toISOString() };
         window.dispatchEvent(new CustomEvent('nucleus:action-completed', { detail: record }));
         

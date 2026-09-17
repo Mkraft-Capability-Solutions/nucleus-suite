@@ -3,7 +3,7 @@ import NextImage from 'next/image';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     Briefcase, Plus, MoreHorizontal, Clock, Calendar, MessageSquare, Paperclip, CheckCircle,
     UserCheck, Filter, X, Check, ShieldAlert, Sparkles
@@ -81,9 +81,11 @@ const ProjectView = () => {
 
     const activeProject = visibleProjects.find(p => p.id === selectedProjectId) || visibleProjects[0] || projectList[0];
 
+    const isSubmittingProj = useRef(false);
     const handleCreateProject = async (e) => {
         e?.preventDefault?.();
-        if (!newProjTitle.trim()) return;
+        if (!newProjTitle.trim() || isSubmittingProj.current) return;
+        isSubmittingProj.current = true;
 
         const newP = {
             id: `proj-${Date.now()}`,
@@ -108,6 +110,8 @@ const ProjectView = () => {
             showToast?.('Project Created', `Project ${newP.title} saved to DB.`, 'success');
         } catch (err) {
             console.warn('Project create sync warning:', err);
+        } finally {
+            setTimeout(() => { isSubmittingProj.current = false; }, 500);
         }
 
         setNewProjTitle('');
@@ -115,9 +119,11 @@ const ProjectView = () => {
         setIsCreateProjectModalOpen(false);
     };
 
+    const isSubmittingTask = useRef(false);
     const handleCreateTask = async (e) => {
         e?.preventDefault?.();
-        if (!taskTitle.trim()) return;
+        if (!taskTitle.trim() || isSubmittingTask.current) return;
+        isSubmittingTask.current = true;
 
         const newT = {
             id: `task-${Date.now()}`,
@@ -144,6 +150,8 @@ const ProjectView = () => {
             showToast?.('Task Created', `Task created under ${newT.project}.`, 'success');
         } catch (err) {
             console.warn('Task create sync warning:', err);
+        } finally {
+            setTimeout(() => { isSubmittingTask.current = false; }, 500);
         }
 
         setTaskTitle('');

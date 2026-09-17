@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAccess } from "@/server/platform/access";
 import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
-import { getSettings, patchSettings, patchSettingsSchema } from "@/server/admin/service";
+import { getSettings, patchSettings, patchSettingsSchema, isValidTimezone } from "@/server/admin/service";
 
 export const dynamic = "force-dynamic";
 
@@ -21,23 +21,70 @@ export async function PATCH(request: Request) {
   try {
     const access = await requireAccess(request);
     const rawBody = await request.json().catch(() => ({}));
-    let payload = rawBody;
+    const payload: {
+      locale?: string;
+      timezone?: string;
+      currency?: string;
+      settings?: Record<string, unknown>;
+    } = {};
+
     if (rawBody && typeof rawBody === "object") {
       const { locale, timezone, currency, settings, ...rest } = rawBody;
-      const hasTopLevelFields = locale || timezone || (currency && /^[A-Z]{3}$/.test(currency)) || settings;
-      if (hasTopLevelFields) {
-        payload = {
-          ...(locale ? { locale } : {}),
-          ...(timezone ? { timezone } : {}),
-          ...(currency && /^[A-Z]{3}$/.test(currency) ? { currency } : {}),
-          settings: settings && typeof settings === "object" ? { ...settings, ...rest } : (Object.keys(rest).length ? rest : settings || {}),
-        };
-      } else {
-        payload = {
-          settings: rest && Object.keys(rest).length ? rest : rawBody,
-        };
+      const settingsBag: Record<string, unknown> = {
+        ...(settings && typeof settings === "object" ? settings : {}),
+        ...rest,
+      };
+
+      // 1. Timezone: validate IANA or extract before ' ('
+      if (typeof timezone === "string") {
+        const candidateTz = timezone.split(" ")[0].trim();
+        if (isValidTimezone(timezone)) {
+          payload.timezone = timezone;
+        } else if (isValidTimezone(candidateTz)) {
+          payload.timezone = candidateTz;
+          settingsBag.displayTimezone = timezone;
+        } else {
+          settingsBag.timezone = timezone;
+        }
+      }
+
+      // 2. Currency: 3-letter uppercase (e.g. INR from "INR (₹)")
+      if (typeof currency === "string") {
+        const candidateCurr = currency.slice(0, 3).toUpperCase();
+        if (/^[A-Z]{3}$/.test(currency)) {
+          payload.currency = currency;
+        } else if (/^[A-Z]{3}$/.test(candidateCurr)) {
+          payload.currency = candidateCurr;
+          settingsBag.displayCurrency = currency;
+        } else {
+          settingsBag.currency = currency;
+        }
+      }
+
+      // 3. Locale: format xx-XX (e.g. en-US from "English (US / Global)")
+      if (typeof locale === "string") {
+        if (/^[a-z]{2}-[A-Z]{2}$/.test(locale)) {
+          payload.locale = locale;
+        } else if (locale.toLowerCase().includes("us") || locale.toLowerCase().includes("global")) {
+          payload.locale = "en-US";
+          settingsBag.displayLanguage = locale;
+        } else if (locale.toLowerCase().includes("uk")) {
+          payload.locale = "en-GB";
+          settingsBag.displayLanguage = locale;
+        } else {
+          settingsBag.locale = locale;
+        }
+      }
+
+      if (Object.keys(settingsBag).length > 0) {
+        payload.settings = settingsBag;
       }
     }
+
+    if (Object.keys(payload).length === 0) {
+      payload.settings = { updatedAt: new Date().toISOString() };
+    }
+
     const parsed = patchSettingsSchema.safeParse(payload);
     if (!parsed.success) {
       throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "The settings payload is invalid.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });

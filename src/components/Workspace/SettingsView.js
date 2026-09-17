@@ -43,7 +43,12 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
             .catch(() => {});
     }, []);
 
+    const isUpdatingPref = React.useRef(false);
+    const [isSaving, setIsSaving] = useState(false);
+
     const updateSettingPref = async (key, val) => {
+        if (isUpdatingPref.current) return;
+        isUpdatingPref.current = true;
         setSettingPrefs(prev => ({ ...prev, [key]: val }));
         try {
             const res = await fetch('/api/v1/tenant/settings', {
@@ -58,6 +63,8 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         } catch (err) {
             setSettingPrefs(prev => ({ ...prev, [key]: !val }));
             showToast("Update Failed", err.message || "Failed to update preference", "error");
+        } finally {
+            setTimeout(() => { isUpdatingPref.current = false; }, 400);
         }
     };
 
@@ -88,7 +95,15 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         setFormData(prev => ({ ...prev, [key]: val }));
     };
 
-    const handleSave = () => launchAction('settings', formData);
+    const handleSave = async () => {
+        if (isSaving) return;
+        setIsSaving(true);
+        try {
+            await launchAction('settings', formData);
+        } finally {
+            setTimeout(() => setIsSaving(false), 1500);
+        }
+    };
 
     const handleReset = () => {
         showToast(translateText("components.Workspace.SettingsView","text_03673c17ae"),translateText("components.Workspace.SettingsView","text_ce3e59d613"), 'info');
@@ -125,7 +140,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                     )}
                     <button className={styles.btnSecondary} onClick={handleReset}>
                         <RotateCcw size={16} />{readData("components.Workspace.SettingsView", "SettingsView_text_8")}</button>
-                    <button className={styles.btnPrimary} onClick={handleSave}>
+                    <button className={styles.btnPrimary} onClick={handleSave} disabled={isSaving}>
                         <Save size={16} />{readData("components.Workspace.SettingsView", "SettingsView_text_9")}</button>
                 </div>
             </div>

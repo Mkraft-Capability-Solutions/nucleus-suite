@@ -61,116 +61,130 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
 
     const departmentsList = Object.keys(sanctionedQuotas || readData("components.Workspace.RecruitmentView", "departmentsList_2"));
 
+    const isSubmittingReq = React.useRef(false);
     // Handle create requisition
     const handleRequisitionSubmit = async (e) => {
         e.preventDefault();
-        const errors = [];
-        if (!reqTitle.trim() || reqTitle.trim().length < 3)
-            errors.push('Job Title is required (minimum 3 characters)');
-        if (!reqDept)
-            errors.push('Department is required');
-        if (!reqType)
-            errors.push('Requisition Type (New / Replacement) is required');
-        if (reqType === 'REPLACEMENT' && !vacatedCode.trim())
-            errors.push('Vacated Position Code is required for Replacement requisitions');
-        if (reqType === 'REPLACEMENT' && !prevIncumbent.trim())
-            errors.push('Previous Incumbent Employee ID is required for Replacement requisitions');
-        if (isExecWaiver && (!waiverReason.trim() || waiverReason.trim().length < 10))
-            errors.push('Waiver justification must be at least 10 characters');
-        const budgetNum = Number(reqBudget);
-        if (!reqBudget || !Number.isFinite(budgetNum) || budgetNum <= 0)
-            errors.push('Annual CTC Budget must be a positive number');
+        if (isSubmittingReq.current) return;
+        isSubmittingReq.current = true;
+        try {
+            const errors = [];
+            if (!reqTitle.trim() || reqTitle.trim().length < 3)
+                errors.push('Job Title is required (minimum 3 characters)');
+            if (!reqDept)
+                errors.push('Department is required');
+            if (!reqType)
+                errors.push('Requisition Type (New / Replacement) is required');
+            if (reqType === 'REPLACEMENT' && !vacatedCode.trim())
+                errors.push('Vacated Position Code is required for Replacement requisitions');
+            if (reqType === 'REPLACEMENT' && !prevIncumbent.trim())
+                errors.push('Previous Incumbent Employee ID is required for Replacement requisitions');
+            if (isExecWaiver && (!waiverReason.trim() || waiverReason.trim().length < 10))
+                errors.push('Waiver justification must be at least 10 characters');
+            const budgetNum = Number(reqBudget);
+            if (!reqBudget || !Number.isFinite(budgetNum) || budgetNum <= 0)
+                errors.push('Annual CTC Budget must be a positive number');
 
-        if (errors.length > 0) {
-            showToast('Validation Error', errors[0], 'error');
-            return;
-        }
+            if (errors.length > 0) {
+                showToast('Validation Error', errors[0], 'error');
+                return;
+            }
 
-        // Duplicate check — same title + dept within existing positions
-        if (positions && positions.some(p =>
-            p.title?.toLowerCase() === reqTitle.trim().toLowerCase() &&
-            p.dept?.toLowerCase() === reqDept.toLowerCase()
-        )) {
-            showToast('Duplicate Entry', `A requisition for "${reqTitle}" in ${reqDept} already exists.`, 'error');
-            return;
-        }
+            // Duplicate check — same title + dept within existing positions
+            if (positions && positions.some(p =>
+                p.title?.toLowerCase() === reqTitle.trim().toLowerCase() &&
+                p.dept?.toLowerCase() === reqDept.toLowerCase()
+            )) {
+                showToast('Duplicate Entry', `A requisition for "${reqTitle}" in ${reqDept} already exists.`, 'error');
+                return;
+            }
 
-        const res = await createJobRequisition({
-            title: reqTitle,
-            dept: reqDept,
-            requisitionType: reqType,
-            vacatedPositionCode: reqType === 'REPLACEMENT' ? vacatedCode : null,
-            previousIncumbentId: reqType === 'REPLACEMENT' ? prevIncumbent : null,
-            budget: budgetNum,
-            isExecutiveWaiver: isExecWaiver,
-            waiverReason: isExecWaiver ? waiverReason : null
-        });
+            const res = await createJobRequisition({
+                title: reqTitle,
+                dept: reqDept,
+                requisitionType: reqType,
+                vacatedPositionCode: reqType === 'REPLACEMENT' ? vacatedCode : null,
+                previousIncumbentId: reqType === 'REPLACEMENT' ? prevIncumbent : null,
+                budget: budgetNum,
+                isExecutiveWaiver: isExecWaiver,
+                waiverReason: isExecWaiver ? waiverReason : null
+            });
 
-        if (res?.success) {
-            try {
-                fetch('/api/v1/requisitions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
-                    body: JSON.stringify({
-                        title: reqTitle,
-                        dept: reqDept,
-                        requisitionType: reqType,
-                        budget: budgetNum,
-                        isExecutiveWaiver: isExecWaiver,
-                        waiverReason: isExecWaiver ? waiverReason : null
-                    })
-                }).catch(() => null);
-            } catch {}
-            setIsReqModalOpen(false);
-            setReqTitle('');
-            setIsExecWaiver(false);
-            setWaiverReason('');
+            if (res?.success) {
+                try {
+                    fetch('/api/v1/requisitions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                        body: JSON.stringify({
+                            title: reqTitle,
+                            dept: reqDept,
+                            requisitionType: reqType,
+                            budget: budgetNum,
+                            isExecutiveWaiver: isExecWaiver,
+                            waiverReason: isExecWaiver ? waiverReason : null
+                        })
+                    }).catch(() => null);
+                } catch {}
+                setIsReqModalOpen(false);
+                setReqTitle('');
+                setIsExecWaiver(false);
+                setWaiverReason('');
+            }
+        } finally {
+            setTimeout(() => { isSubmittingReq.current = false; }, 600);
         }
     };
 
+    const isSubmittingRef = React.useRef(false);
     // Handle referral submit
     const handleReferralSubmit = async (e) => {
         e.preventDefault();
-        const errors = [];
-        if (!refCandidateName.trim() || refCandidateName.trim().length < 2)
-            errors.push('Candidate name is required (minimum 2 characters)');
-        if (!refRole)
-            errors.push('Role / Position is required');
-        if (!refDept)
-            errors.push('Department is required');
-
-        if (errors.length > 0) {
-            showToast('Validation Error', errors[0], 'error');
-            return;
-        }
-
-        // Duplicate check — same candidate + role
-        if (employeeReferrals && employeeReferrals.some(r =>
-            r.candidateName?.toLowerCase() === refCandidateName.trim().toLowerCase() &&
-            r.role?.toLowerCase() === refRole.toLowerCase()
-        )) {
-            showToast('Duplicate Entry', `${refCandidateName} has already been referred for the ${refRole} role.`, 'error');
-            return;
-        }
-
-        await submitEmployeeReferral({
-            candidateName: refCandidateName,
-            role: refRole,
-            dept: refDept
-        });
+        if (isSubmittingRef.current) return;
+        isSubmittingRef.current = true;
         try {
-            fetch('/api/v1/referrals', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
-                body: JSON.stringify({
-                    candidateName: refCandidateName,
-                    role: refRole,
-                    dept: refDept
-                })
-            }).catch(() => null);
-        } catch {}
-        setIsRefModalOpen(false);
-        setRefCandidateName('');
+            const errors = [];
+            if (!refCandidateName.trim() || refCandidateName.trim().length < 2)
+                errors.push('Candidate name is required (minimum 2 characters)');
+            if (!refRole)
+                errors.push('Role / Position is required');
+            if (!refDept)
+                errors.push('Department is required');
+
+            if (errors.length > 0) {
+                showToast('Validation Error', errors[0], 'error');
+                return;
+            }
+
+            // Duplicate check — same candidate + role
+            if (employeeReferrals && employeeReferrals.some(r =>
+                r.candidateName?.toLowerCase() === refCandidateName.trim().toLowerCase() &&
+                r.role?.toLowerCase() === refRole.toLowerCase()
+            )) {
+                showToast('Duplicate Entry', `${refCandidateName} has already been referred for the ${refRole} role.`, 'error');
+                return;
+            }
+
+            await submitEmployeeReferral({
+                candidateName: refCandidateName,
+                role: refRole,
+                dept: refDept
+            });
+            try {
+                fetch('/api/v1/referrals', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                    body: JSON.stringify({
+                        candidateName: refCandidateName,
+                        role: refRole,
+                        dept: refDept
+                    })
+                }).catch(() => null);
+            } catch {}
+            setIsRefModalOpen(false);
+            setRefCandidateName('');
+        } finally {
+            setTimeout(() => { isSubmittingRef.current = false; }, 600);
+        }
     };
 
     return (

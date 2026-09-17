@@ -427,22 +427,43 @@ export const HRMSProvider = ({ children }) => {
         }
     };
 
+let globalHrmsSyncPromise = null;
+let lastHrmsSyncTimestamp = 0;
+const HRMS_SYNC_TTL_MS = 30000;
+
     // Live Database Sync for Central HRMS Context (People, Leaves, Requisitions, Loans, Announcements, Regularizations, Assets)
     useEffect(() => {
         let active = true;
         async function syncWithDb() {
-            try {
-                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes] = await Promise.allSettled([
-                    fetch('/api/v1/people?pageSize=200'),
-                    fetch('/api/v1/leave-requests?pageSize=100'),
-                    fetch('/api/v1/requisitions'),
-                    fetch('/api/v1/loans?pageSize=100'),
-                    fetch('/api/v1/announcements'),
-                    fetch('/api/v1/regularizations'),
-                    fetch('/api/v1/assets?pageSize=100')
-                ]);
+            const now = Date.now();
+            if (globalHrmsSyncPromise) {
+                try { await globalHrmsSyncPromise; } catch {}
+                return;
+            }
+            if (now - lastHrmsSyncTimestamp < HRMS_SYNC_TTL_MS) {
+                return;
+            }
+            lastHrmsSyncTimestamp = now;
+            globalHrmsSyncPromise = (async () => {
+                try {
+                    return await Promise.allSettled([
+                        fetch('/api/v1/people?pageSize=200'),
+                        fetch('/api/v1/leave-requests?pageSize=100'),
+                        fetch('/api/v1/requisitions'),
+                        fetch('/api/v1/loans?pageSize=100'),
+                        fetch('/api/v1/announcements'),
+                        fetch('/api/v1/regularizations'),
+                        fetch('/api/v1/assets?pageSize=100')
+                    ]);
+                } finally {
+                    setTimeout(() => { globalHrmsSyncPromise = null; }, 5000);
+                }
+            })();
 
-                if (!active) return;
+            try {
+                const results = await globalHrmsSyncPromise;
+                if (!active || !results) return;
+                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes] = results;
 
                 // 1. Employees from Database
                 if (empRes.status === 'fulfilled' && empRes.value.ok) {
