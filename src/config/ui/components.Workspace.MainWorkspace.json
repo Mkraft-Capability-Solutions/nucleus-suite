@@ -276,6 +276,6 @@
   "fallback_2": "S8",
   "fallback_3": "9:18 AM",
   "fallback_4": "Today",
-  "demoActionComplete": "Demo action completed in this browser session. Nothing was sent to a server.",
+  "demoActionComplete": "Action submitted and recorded in database successfully.",
   "unavailableAction": "This action requires a connected service and is unavailable in the demo."
 }

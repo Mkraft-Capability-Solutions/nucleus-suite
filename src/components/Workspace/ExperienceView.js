@@ -17,15 +17,57 @@ import { launchAction } from '@/lib/action-launcher';
 const ExperienceView = () => {
     const {t: translateText}=useTranslation();
 
-    const { mciScore, vedicFramework, socialFeed, addKudos, showToast } = useHRMS();
+    const { mciScore = {}, vedicFramework = {}, socialFeed = [], showToast } = useHRMS() || {};
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.ExperienceView", "initialState_1"));
     const [newPost, setNewPost] = useState('');
+    const [feedPosts, setFeedPosts] = useState(socialFeed || []);
 
-    const handleShareKudos = (e) => {
+    const handleShareKudos = async (e) => {
         e.preventDefault();
         if (!newPost.trim()) return;
-        showToast(translateText("components.Workspace.ExperienceView","text_95e02cd741"),translateText("components.Workspace.ExperienceView","text_9778b2c25d"), 'success');
+
+        const content = newPost.trim();
         setNewPost('');
+
+        const optimisticPost = {
+            id: crypto.randomUUID(),
+            author: 'You',
+            role: 'Team Member',
+            time: 'Just now',
+            text: content,
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80',
+            tags: ['#Recognition', '#Impact'],
+            kudos: 0
+        };
+        setFeedPosts(prev => [optimisticPost, ...prev]);
+
+        try {
+            await fetch('/api/v1/recognition-events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    recipientEmployeeId: '00000000-0000-0000-0000-000000000001',
+                    message: content,
+                    points: 100
+                })
+            });
+        } catch (err) {
+            console.warn('Recognition sync warning:', err);
+        }
+
+        showToast(translateText("components.Workspace.ExperienceView","text_95e02cd741"),translateText("components.Workspace.ExperienceView","text_9778b2c25d"), 'success');
+    };
+
+    const handleAddKudos = async (postId) => {
+        setFeedPosts(prev => prev.map(p => p.id === postId ? { ...p, kudos: (p.kudos || 0) + 1 } : p));
+        try {
+            await fetch(`/api/v1/recognition-events/${postId}/like`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+            });
+        } catch (err) {
+            console.warn('Kudos like sync warning:', err);
+        }
     };
 
     return (
@@ -192,7 +234,7 @@ const ExperienceView = () => {
 
                     {/* Feed List */}
                     <div className={styles.feedGrid}>
-                        {socialFeed.map((post) => (
+                        {(feedPosts.length > 0 ? feedPosts : (socialFeed || [])).map((post) => (
                             <div key={post.id} className={styles.feedCard}>
                                 <NextImage unoptimized width={48} height={48} src={post.avatar} className={styles.avatar} alt={post.author} />
                                 <div style={{ flex: 1 }}>
@@ -216,9 +258,9 @@ const ExperienceView = () => {
                                     <button
                                         className={styles.btnSecondary}
                                         style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
-                                        onClick={() => addKudos(post.id)}
+                                        onClick={() => handleAddKudos(post.id)}
                                     >
-                                        <ThumbsUp size={14} color="#2563eb" /> {post.kudos}{readData("components.Workspace.ExperienceView", "ExperienceView_text_44")}</button>
+                                        <ThumbsUp size={14} style={{ color: 'var(--signal)' }} /> {post.kudos}{readData("components.Workspace.ExperienceView", "ExperienceView_text_44")}</button>
                                 </div>
                             </div>
                         ))}

@@ -15,7 +15,7 @@ import { launchAction } from '@/lib/action-launcher';
 const LearningView = ({ onNavigate, onSelectConsole }) => {
     const {t: translateText}=useTranslation();
 
-    const { courses, setCourses, showToast } = useHRMS();
+    const { courses = [], setCourses, showToast } = useHRMS() || {};
 
     return (
         <div className={styles.container}>
@@ -55,7 +55,7 @@ const LearningView = ({ onNavigate, onSelectConsole }) => {
 
             {/* Courses Grid */}
             <div className={styles.courseGrid}>
-                {courses.map((course) => (
+                {(courses || []).map((course) => (
                     <div key={course.id} className={styles.courseCard}>
                         <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>

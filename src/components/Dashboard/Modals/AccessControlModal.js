@@ -78,18 +78,36 @@ export default function AccessControlModal({ isOpen, onClose }) {
         c.desc.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const handleToggleModule = (moduleKey, title) => {
+    const handleToggleModule = async (moduleKey, title) => {
         const currentlyAllowed = isModuleAllowed(moduleKey, selectedRole);
         toggleModulePermission(moduleKey, selectedRole);
+        try {
+            await fetch(`/api/v1/roles/${selectedRole}/permissions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ permissionKeys: [moduleKey] })
+            });
+        } catch (e) {
+            console.error('Failed to persist permission:', e);
+        }
         showToast?.(
             currentlyAllowed ? 'Access Revoked' : 'Access Granted',translateText("components.Dashboard.Modals.AccessControlModal","text_06096d35df", {value1: String(title), value2: String(currentlyAllowed ? 'locked' : 'unlocked'), value3: String(currentRoleObj.label)}),
             currentlyAllowed ? 'warning' : 'success'
         );
     };
 
-    const handleToggleConsole = (consoleId, title) => {
+    const handleToggleConsole = async (consoleId, title) => {
         const currentlyAllowed = isConsoleAllowed(consoleId, selectedRole);
         toggleConsolePermission(consoleId, selectedRole);
+        try {
+            await fetch(`/api/v1/roles/${selectedRole}/permissions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ permissionKeys: [`console:${consoleId}`] })
+            });
+        } catch (e) {
+            console.error('Failed to persist console permission:', e);
+        }
         showToast?.(
             currentlyAllowed ? 'Console Locked' : 'Console Unlocked',translateText("components.Dashboard.Modals.AccessControlModal","text_e99dd8509b", {value1: String(consoleId), value2: String(title), value3: String(currentlyAllowed ? 'hidden from' : 'available to'), value4: String(currentRoleObj.label)}),
             currentlyAllowed ? 'warning' : 'success'

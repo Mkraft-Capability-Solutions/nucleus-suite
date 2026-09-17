@@ -12,11 +12,35 @@ import styles from './ProjectView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 
+const DEFAULT_PROJECTS = [
+    { id: 'proj-1', title: 'Platform Core', desc: 'Core infrastructure & API endpoints', due: '2026-10-31', color: 'var(--signal)', visibility: 'all', members: ['Alex Morgan', 'Sarah Jenkins'] },
+    { id: 'proj-2', title: 'Payroll Modernization', desc: 'Autonomous calculation and GL export engine', due: '2026-11-15', color: 'var(--status-ok)', visibility: 'all', members: ['David Chen'] },
+];
+
+const DEFAULT_TASKS = {
+    todo: [
+        { id: 'task-1', title: 'Design System Tokens Audit', project: 'Platform Core', assignee: 'Alex Morgan', priority: 'high', due: 'Tomorrow', tag: 'UI/UX' },
+        { id: 'task-2', title: 'Neon Database Schema Sync', project: 'Platform Core', assignee: 'Sarah Jenkins', priority: 'urgent', due: 'Friday', tag: 'Backend' },
+    ],
+    inprogress: [
+        { id: 'task-3', title: 'Workforce Timesheet API', project: 'Platform Core', assignee: 'David Chen', priority: 'medium', due: 'In 2 days', tag: 'API' },
+    ],
+    review: [
+        { id: 'task-4', title: 'EWA Approval Workflow', project: 'Platform Core', assignee: 'Elena Rostova', priority: 'high', due: 'Today', tag: 'Security' },
+    ],
+    done: [
+        { id: 'task-5', title: 'Role Based Access Control Matrix', project: 'Platform Core', assignee: 'Alex Morgan', priority: 'medium', due: 'Yesterday', tag: 'Auth' },
+    ]
+};
+
 const ProjectView = () => {
-    const { kanbanTasks, moveTask, addTask, projects = [], addProject, employees = [] } = useHRMS();
+    const { employees = [], showToast } = useHRMS();
     const { user } = useAuth();
 
-    const [selectedProjectId, setSelectedProjectId] = useState(projects[0]?.id || readData("components.Workspace.ProjectView", "fallback_1"));
+    const [projectList, setProjectList] = useState(DEFAULT_PROJECTS);
+    const [kanbanTasks, setKanbanTasks] = useState(DEFAULT_TASKS);
+
+    const [selectedProjectId, setSelectedProjectId] = useState('proj-1');
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);
     const [filterMyTasks, setFilterMyTasks] = useState(false);
@@ -40,21 +64,14 @@ const ProjectView = () => {
     const activeUserName = (user?.name || readData("components.Workspace.ProjectView", "fallback_3")).toLowerCase();
     const isAdminOrHR = readData("components.Workspace.ProjectView", "isAdminOrHR_2").includes(user?.role);
 
-    // PROJECT VISIBILITY RULES:
-    // 1. Super Admin / HR: can see ALL projects.
-    // 2. Public projects (visibility === 'all'): everyone sees.
-    // 3. Project Creator: sees it.
-    // 4. Project Member: sees it.
-    // 5. ASSIGNED TASK RULE: If ANY task in this project is assigned to the user, they can see the project and interact!
-    const visibleProjects = projects.filter(proj => {
+    const visibleProjects = projectList.filter(proj => {
         if (isAdminOrHR) return true;
         if (proj.visibility === 'all') return true;
         if (proj.createdBy && proj.createdBy.toLowerCase().includes(activeUserName)) return true;
         if (proj.members && proj.members.some(m => m.toLowerCase().includes(activeUserName) || activeUserName.includes(m.toLowerCase()))) return true;
 
-        // Check if user has any tasks assigned in this project
         const hasAssignedTask = Object.values(kanbanTasks).some(col =>
-            col.some(t =>
+            (col || []).some(t =>
                 (t.project === proj.title || t.project === proj.id) &&
                 ((t.assignee || '').toLowerCase().includes(activeUserName) || activeUserName.includes((t.assignee || '').toLowerCase()))
             )
@@ -62,51 +79,77 @@ const ProjectView = () => {
         return hasAssignedTask;
     });
 
-    const activeProject = visibleProjects.find(p => p.id === selectedProjectId) || visibleProjects[0] || projects[0];
+    const activeProject = visibleProjects.find(p => p.id === selectedProjectId) || visibleProjects[0] || projectList[0];
 
-    const handleCreateProject = (e) => {
+    const handleCreateProject = async (e) => {
         e?.preventDefault?.();
         if (!newProjTitle.trim()) return;
 
-        const created = addProject({
+        const newP = {
+            id: `proj-${Date.now()}`,
             title: newProjTitle.trim(),
             desc: newProjDesc.trim() || readData("components.Workspace.ProjectView", "fallback_4"),
             due: newProjDue,
-            color: newProjColor,
+            color: newProjColor || 'var(--signal)',
             visibility: newProjVisibility,
             members: newProjMembers
-        });
+        };
 
-        if (created) {
-            setSelectedProjectId(created.id);
-            setTaskProject(created.title);
+        setProjectList(prev => [newP, ...prev]);
+        setSelectedProjectId(newP.id);
+        setTaskProject(newP.title);
+
+        try {
+            await fetch('/api/v1/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify(newP)
+            });
+            showToast?.('Project Created', `Project ${newP.title} saved to DB.`, 'success');
+        } catch (err) {
+            console.warn('Project create sync warning:', err);
         }
 
-        // Reset form & close
         setNewProjTitle('');
         setNewProjDesc('');
         setIsCreateProjectModalOpen(false);
     };
 
-    const handleCreateTask = (e) => {
+    const handleCreateTask = async (e) => {
         e?.preventDefault?.();
         if (!taskTitle.trim()) return;
 
-        addTask({
+        const newT = {
+            id: `task-${Date.now()}`,
             title: taskTitle.trim(),
             project: taskProject || activeProject?.title || readData("components.Workspace.ProjectView", "fallback_5"),
             assignee: taskAssignee,
             tag: taskTag,
             priority: taskPriority,
-            due: taskDue
-        });
+            due: taskDue,
+            column: 'todo'
+        };
 
-        // Reset form & close
+        setKanbanTasks(prev => ({
+            ...prev,
+            todo: [newT, ...(prev.todo || [])]
+        }));
+
+        try {
+            await fetch('/api/v1/projects/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify(newT)
+            });
+            showToast?.('Task Created', `Task created under ${newT.project}.`, 'success');
+        } catch (err) {
+            console.warn('Task create sync warning:', err);
+        }
+
         setTaskTitle('');
         setIsAssignModalOpen(false);
     };
 
-    // Filter tasks for the active project and user toggle
     const filterFn = (task) => {
         const taskProj = task.project || readData("components.Workspace.ProjectView", "fallback_6");
         const matchesProject = taskProj === activeProject?.title || taskProj === activeProject?.id;
@@ -120,25 +163,52 @@ const ProjectView = () => {
     };
 
     const displayTasks = {
-        todo: kanbanTasks.todo.filter(filterFn),
-        inprogress: kanbanTasks.inprogress.filter(filterFn),
-        review: kanbanTasks.review.filter(filterFn),
-        done: kanbanTasks.done.filter(filterFn)
+        todo: (kanbanTasks.todo || []).filter(filterFn),
+        inprogress: (kanbanTasks.inprogress || []).filter(filterFn),
+        review: (kanbanTasks.review || []).filter(filterFn),
+        done: (kanbanTasks.done || []).filter(filterFn)
     };
 
     const columnOrder = readData("components.Workspace.ProjectView", "columnOrder_3");
+
+    const moveTaskState = async (taskId, currentCol, targetCol) => {
+        let movedTask = null;
+        setKanbanTasks(prev => {
+            const currentList = prev[currentCol] || [];
+            const task = currentList.find(t => t.id === taskId);
+            if (!task) return prev;
+            movedTask = { ...task, column: targetCol };
+            return {
+                ...prev,
+                [currentCol]: currentList.filter(t => t.id !== taskId),
+                [targetCol]: [...(prev[targetCol] || []), movedTask]
+            };
+        });
+
+        try {
+            await fetch(`/api/v1/projects/tasks/${taskId}/status`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ column: targetCol })
+            });
+        } catch (err) {
+            console.warn('Task move warning:', err);
+        }
+    };
+
     const advanceTask = (e, taskId, currentCol) => {
         e?.stopPropagation?.();
         const nextIndex = columnOrder.indexOf(currentCol) + 1;
         if (nextIndex < columnOrder.length) {
-            moveTask(taskId, currentCol, columnOrder[nextIndex]);
+            moveTaskState(taskId, currentCol, columnOrder[nextIndex]);
         }
     };
+
     const rollbackTask = (e, taskId, currentCol) => {
         e?.stopPropagation?.();
         const prevIndex = columnOrder.indexOf(currentCol) - 1;
         if (prevIndex >= 0) {
-            moveTask(taskId, currentCol, columnOrder[prevIndex]);
+            moveTaskState(taskId, currentCol, columnOrder[prevIndex]);
         }
     };
 

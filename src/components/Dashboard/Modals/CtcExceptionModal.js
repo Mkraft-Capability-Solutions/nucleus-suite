@@ -33,6 +33,13 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
 
   const handleAction = async (decision) => {
     setIsSubmitting(true);
+    try {
+      fetch('/api/v1/workspace/approvals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+        body: JSON.stringify({ id: data.id, action: decision.toLowerCase(), remarks, item: data })
+      }).catch(() => null);
+    } catch {}
     if (decision === 'APPROVE' && onApprove) {
       await onApprove({ ...data, decision: 'APPROVED', remarks });
     } else if (decision === 'REJECT' && onReject) {

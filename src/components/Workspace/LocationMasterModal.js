@@ -68,6 +68,18 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                 showToast('Duplicate Entry', `A location named "${formData.locationName}" already exists.`, 'error');
                 return;
             }
+            // Live persistence to Neon DB via Next.js API
+            try {
+                fetch('/api/v1/operations/locations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': crypto.randomUUID()
+                    },
+                    body: JSON.stringify(formData)
+                }).catch(() => null);
+            } catch {}
+
             if (onSave) onSave(formData);
             showToast('Location Master Saved', `Location ${formData.locationName} (${formData.locationCode}) saved.`, 'success');
             resetValidation();

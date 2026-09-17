@@ -58,7 +58,7 @@ export default function RoleProtected({ children, moduleKey = null, allowedRoles
                 </div>
                 <div>
                     <h3 style={{ fontSize: 'var(--t-h2)', fontWeight: 800, color: 'var(--text)', margin: '0 0 0.4rem' }}>{readData("components.auth.RoleProtected", "content_text_3")}</h3>
-                    <p style={{ color: 'var(--text-2)', fontSize: 'var(--t-body)', margin: 0 }}>{readData("components.auth.RoleProtected", "content_text_4")}<strong style={{ color: 'var(--text)' }}>{user.role.replace('_', ' ')}</strong>{readData("components.auth.RoleProtected", "content_text_5")}</p>
+                    <p style={{ color: 'var(--text-2)', fontSize: 'var(--t-body)', margin: 0 }}>{readData("components.auth.RoleProtected", "content_text_4")}<strong style={{ color: 'var(--text)' }}>{String(user?.role || 'EMPLOYEE').replace(/_/g, ' ')}</strong>{readData("components.auth.RoleProtected", "content_text_5")}</p>
                 </div>
             </div>
         );

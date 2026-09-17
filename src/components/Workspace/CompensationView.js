@@ -11,6 +11,7 @@ import {
 import styles from './CompensationView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
+import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
 
 const CompensationView = () => {
     const {t: translateText}=useTranslation();
@@ -41,7 +42,18 @@ const CompensationView = () => {
                     <p>{readData("components.Workspace.CompensationView", "CompensationView_text_2")}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Workspace.CompensationView","text_b5b9434a68"),translateText("components.Workspace.CompensationView","text_48269108c6"), 'success')}>
+                    <button className={styles.btnSecondary} onClick={() => {
+                        const headers = ['Benefit / Component', 'Allocated Value (₹/yr)', 'Selected by Employee'];
+                        const rows = (benefits || []).map(b => [b.name, b.value, b.selected ? 'Yes' : 'No']);
+                        downloadPrintableDocument('Total_Rewards_Compensation_Statement', {
+                            'Current CTC': compensationData.currentCTC,
+                            'Compensation Band': compensationData.band,
+                            'Compa-Ratio': compensationData.compaRatio,
+                            'Market Benchmark': compensationData.marketBenchmark,
+                            'Salary Range': compensationData.salaryRange
+                        }, headers, rows);
+                        showToast(translateText("components.Workspace.CompensationView","text_b5b9434a68"),translateText("components.Workspace.CompensationView","text_48269108c6"), 'success');
+                    }}>
                         <Download size={16} />{readData("components.Workspace.CompensationView", "CompensationView_text_3")}</button>
                     <button className={styles.btnPrimary} onClick={() => launchAction('compCycle')}>
                         <TrendingUp size={16} />{readData("components.Workspace.CompensationView", "CompensationView_text_4")}</button>

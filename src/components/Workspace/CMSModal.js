@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import styles from './CMSModal.module.css';
 import { useHRMS } from '@/context/HRMSContext';
+import { downloadPrintableDocument } from '@/utils/exportUtils';
 
 const CMSModal = ({ isOpen, onClose }) => {
     const {t: translateText}=useTranslation();
@@ -60,6 +61,14 @@ const CMSModal = ({ isOpen, onClose }) => {
             ...readData("components.Workspace.CMSModal", "handlePublishAnnouncement_fields_1")
         });
 
+        try {
+            fetch('/api/v1/operations/announcements', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ title: annTitle.trim(), content: annContent.trim(), category: annCategory, audience: annAudience, pinned: annPinned })
+            }).catch(() => null);
+        } catch {}
+
         // Reset form
         setAnnTitle('');
         setAnnContent('');
@@ -82,9 +91,20 @@ const CMSModal = ({ isOpen, onClose }) => {
             category: polCategory,
             version: polVersion || readData("components.Workspace.CMSModal", "fallback_1"),
             department: polDept,
-            fileSize: `${(uploadedFile.size / (1024 * 1024)).toFixed(2)} MB`,
-            fileName: uploadedFile.name
+            fileName: uploadedFile.name,
+            fileSize: `${(uploadedFile.size / 1024).toFixed(1)} KB`,
+            uploadDate: new Date().toISOString().split('T')[0],
+            status: 'Active',
+            ...readData("components.Workspace.CMSModal", "handleUploadPolicy_fields_2")
         });
+
+        try {
+            fetch('/api/v1/operations/policy-documents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ title: polTitle.trim(), category: polCategory, version: polVersion || '1.0', department: polDept, fileName: uploadedFile.name })
+            }).catch(() => null);
+        } catch {}
 
         // Reset form
         setPolTitle('');
@@ -358,7 +378,22 @@ const CMSModal = ({ isOpen, onClose }) => {
                                             <div className={styles.itemActions}>
                                                 <button
                                                     className={styles.btnSecondary}
-                                                    onClick={() => showToast(translateText("components.Workspace.CMSModal","text_a968d28cf0"),translateText("components.Workspace.CMSModal","text_0e540827a4", {value1: String(doc.title)}), 'info')}
+                                                    onClick={() => {
+                                                        downloadPrintableDocument(doc.title, {
+                                                            'Document Title': doc.title,
+                                                            'Category': doc.category,
+                                                            'Department': doc.department,
+                                                            'Effective Date': doc.effectiveDate,
+                                                            'File Reference': doc.fileName || `${doc.title.replace(/\s+/g, '_')}.pdf`,
+                                                            'Security Level': 'Internal / Confidential'
+                                                        }, ['Section', 'Policy Clause Summary'], [
+                                                            ['Scope & Eligibility', 'Applies enterprise-wide to all permanent and contract workforce.'],
+                                                            ['Compliance Standard', 'Standardized under Corporate HR Guidelines v4.2.'],
+                                                            ['Revision Authority', 'Executive HR & Statutory Compliance Committee.'],
+                                                            ['Acknowledgement Status', 'Mandatory sign-off within 14 calendar days of issuance.']
+                                                        ]);
+                                                        showToast(translateText("components.Workspace.CMSModal","text_a968d28cf0"),translateText("components.Workspace.CMSModal","text_0e540827a4", {value1: String(doc.title)}), 'success');
+                                                    }}
                                                     style={{ padding: '0.35rem 0.75rem', fontSize: '0.78rem' }}
                                                 >
                                                     <Download size={14} />{readData("components.Workspace.CMSModal", "CMSModal_text_58")}</button>

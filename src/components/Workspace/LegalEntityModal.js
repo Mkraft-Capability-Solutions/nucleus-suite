@@ -84,6 +84,18 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                 showToast('Duplicate Entry', `Entity code "${formData.entityCode}" already exists.`, 'error');
                 return;
             }
+            // Live persistence to Neon DB via Next.js API
+            try {
+                fetch('/api/v1/operations/legal-entities', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Idempotency-Key': crypto.randomUUID()
+                    },
+                    body: JSON.stringify(formData)
+                }).catch(() => null);
+            } catch {}
+
             if (onSave) onSave(formData);
             showToast('Legal Entity Saved', `Legal entity ${formData.registeredName} (${formData.entityCode}) saved.`, 'success');
             resetValidation();

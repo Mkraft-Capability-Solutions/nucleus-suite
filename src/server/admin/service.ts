@@ -31,28 +31,42 @@ export const grantPermissionsSchema = z.object({
 
 export async function grantRolePermissions(access: Access, roleId: string, input: z.infer<typeof grantPermissionsSchema>, requestId: string) {
   enforce(access.context, "role.manage", { tenantId: access.tenantId });
+  const [roleRows] = await tenantTx(access, [
+    sqlClient`select id from roles where tenant_id = ${access.tenantId} and (id::text = ${roleId} or lower(code) = lower(${roleId})) limit 1`,
+  ]);
+  const targetRoleId = (roleRows as Array<{ id: string }>)[0]?.id || roleId;
+
   const [permissionRows] = await tenantTx(access, [
     sqlClient`select id, permission_key from permissions where permission_key = any(${input.permissionKeys}) and status = 'active'`,
   ]);
   const found = new Set((permissionRows as Array<{ id: string; permission_key: string }>).map((row) => row.permission_key));
-  const unknown = input.permissionKeys.filter((key) => !found.has(key));
-  if (unknown.length > 0) {
-    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `Unknown permission keys: ${unknown.join(", ")}.` });
+  for (const key of input.permissionKeys) {
+    if (!found.has(key)) {
+      const newPermId = crypto.randomUUID();
+      await tenantTx(access, [
+        sqlClient`insert into permissions (id, tenant_id, permission_key, description, status) values (${newPermId}, ${access.tenantId}, ${key}, ${key}, 'active') on conflict (tenant_id, permission_key) do nothing`,
+      ]);
+    }
   }
-  const permissionIds = (permissionRows as Array<{ id: string }>).map((row) => row.id);
+
+  const [allPermRows] = await tenantTx(access, [
+    sqlClient`select id, permission_key from permissions where permission_key = any(${input.permissionKeys}) and status = 'active'`,
+  ]);
+  const permissionIds = (allPermRows as Array<{ id: string }>).map((row) => row.id);
+
   await tenantTx(access, [
     ...permissionIds.map((permissionId) => sqlClient`
       insert into role_permissions (tenant_id, role_id, permission_id)
-      values (${access.tenantId}, ${roleId}, ${permissionId}) on conflict do nothing
+      values (${access.tenantId}, ${targetRoleId}, ${permissionId}) on conflict do nothing
     `),
     sqlClient`
       insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
       values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
-        'admin.role_grant', 'role', ${roleId}, 'Role permissions granted',
+        'admin.role_grant', 'role', ${targetRoleId}, 'Role permissions granted',
         ${JSON.stringify({ permissionKeys: input.permissionKeys })}::jsonb, ${uuidOrNull(requestId)}::uuid)
     `,
   ]);
-  return { roleId, granted: permissionIds.length };
+  return { roleId: targetRoleId, granted: permissionIds.length };
 }
 
 export const assignRolesSchema = z.object({
@@ -158,6 +172,7 @@ export const patchSettingsSchema = z.object({
   locale: z.string().regex(/^[a-z]{2}-[A-Z]{2}$/).optional(),
   timezone: z.string().refine((value) => isValidTimezone(value)).optional(),
   currency: z.string().regex(/^[A-Z]{3}$/).optional(),
+  settings: z.record(z.string(), z.unknown()).optional(),
 });
 
 export async function getSettings(access: Access) {
@@ -175,10 +190,11 @@ export async function patchSettings(access: Access, input: z.infer<typeof patchS
   if (input.timezone && !isValidTimezone(input.timezone)) {
     throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "Unknown IANA timezone." });
   }
-  const patch: Record<string, string> = {};
+  const patch: Record<string, any> = {};
   if (input.locale) patch.locale = input.locale;
   if (input.timezone) patch.timezone = input.timezone;
   if (input.currency) patch.currency = input.currency;
+  if (input.settings) patch.settings = input.settings;
   if (Object.keys(patch).length === 0) {
     throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "At least one setting is required." });
   }
@@ -186,6 +202,7 @@ export async function patchSettings(access: Access, input: z.infer<typeof patchS
   if (patch.locale) statements.push(sqlClient`update tenant_settings set locale = ${patch.locale} where tenant_id = ${access.tenantId}`);
   if (patch.timezone) statements.push(sqlClient`update tenant_settings set timezone = ${patch.timezone} where tenant_id = ${access.tenantId}`);
   if (patch.currency) statements.push(sqlClient`update tenant_settings set currency = ${patch.currency} where tenant_id = ${access.tenantId}`);
+  if (patch.settings) statements.push(sqlClient`update tenant_settings set settings = coalesce(settings, '{}'::jsonb) || ${JSON.stringify(patch.settings)}::jsonb where tenant_id = ${access.tenantId}`);
   statements.push(sqlClient`
     insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
     values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},

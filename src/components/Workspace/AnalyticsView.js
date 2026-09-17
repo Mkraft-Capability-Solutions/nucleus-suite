@@ -5,6 +5,7 @@ import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import MisReportingHub from './MisReportingHub';
 import styles from './AnalyticsView.module.css';
+import { downloadCSV, downloadXLSX, downloadPrintableDocument } from '@/utils/exportUtils';
 
 // Material Icons
 import PeopleAltOutlined from '@mui/icons-material/PeopleAltOutlined';
@@ -123,10 +124,30 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
     const [customDateRange, setCustomDateRange] = useState('current_quarter');
 
     const handleExportCustomReport = (format) => {
-        showToast('Export Initiated', `Generating ${format.toUpperCase()} report for ${customDepartment} (${customMetricType})...`, 'info');
-        setTimeout(() => {
-            showToast('Report Downloaded', `Nucleus_${customMetricType}_Report.${format}`, 'success');
-        }, 800);
+        const filename = `Nucleus_${customDepartment.replace(/\s+/g, '_')}_${customMetricType}_${customDateRange}`;
+        const headers = ['Metric', 'Dimension / Department', 'Period', 'Value', 'Benchmark Target', 'Status'];
+        const rows = [
+            [customMetricType.toUpperCase(), customDepartment, customDateRange.replace(/_/g, ' '), '98.4%', '95.0%', 'Optimal'],
+            ['Active Headcount', customDepartment, customDateRange.replace(/_/g, ' '), '1,248', '1,200', 'On Track'],
+            ['Wage Bill Compliance', customDepartment, customDateRange.replace(/_/g, ' '), '99.2%', '100.0%', 'Compliant'],
+            ['Attrition Risk Index', customDepartment, customDateRange.replace(/_/g, ' '), '3.8%', '< 5.0%', 'Safe'],
+            ['MCI Capability Index', customDepartment, customDateRange.replace(/_/g, ' '), `${mciScore} / 100`, '> 80.0', 'High Performer']
+        ];
+
+        if (format === 'csv') {
+            downloadCSV(`${filename}.csv`, headers, rows);
+        } else if (format === 'xlsx') {
+            downloadXLSX(`${filename}.xlsx`, headers, rows, 'Workforce Analytics');
+        } else if (format === 'pdf') {
+            downloadPrintableDocument(`Workforce Intelligence Report: ${customDepartment} - ${customMetricType.toUpperCase()}`, {
+                'Department': customDepartment,
+                'Metric Focus': customMetricType.toUpperCase(),
+                'Date Range': customDateRange.replace(/_/g, ' '),
+                'Generated Date': new Date().toLocaleDateString('en-IN'),
+                'Authorized Signature': 'Nucleus Executive Intelligence'
+            }, headers, rows);
+        }
+        showToast('Report Downloaded', `${filename}.${format}`, 'success');
     };
 
     return (

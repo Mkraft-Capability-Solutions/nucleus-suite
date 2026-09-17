@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "@/context/I18nContext";
 import { useHRMS } from "@/context/HRMSContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   getLeaveEmployees,
   leaveCalendarPolicy,
@@ -22,15 +23,22 @@ export default function LeaveCalendar({
 }: {
   requests: LeaveRequest[];
 }) {
-  const { leaveApplications, leaveActor } = useHRMS();
-  const [employee, setEmployee] = useState(leaveActor.employeeId ?? "");
+  const { user: authUser } = useAuth() || {};
+  const { leaveApplications: contextApps, leaveActor: contextActor } = (useHRMS() as any) || {};
+  const leaveActor = authUser || contextActor || { employeeId: "MK-102", name: "Dhanraj Shah", role: "HR_MANAGER" };
+  const [employee, setEmployee] = useState(leaveActor?.employeeId ?? "MK-102");
+  const leaveApplications = Array.isArray(contextApps) && contextApps.length > 0
+    ? contextApps
+    : Array.isArray(requests)
+      ? requests
+      : [];
   const ids = (leaveApplications as LeaveRequest[]).map(
-    (app) => app.employee_id,
+    (app) => app?.employee_id,
   );
   const employees = getLeaveEmployees().filter(
     (item) =>
       ids.includes(item.employeeId) ||
-      item.employeeId === leaveActor.employeeId,
+      item.employeeId === leaveActor?.employeeId,
   );
   const { t, locale } = useTranslation();
   const [month, setMonth] = useState(new Date().toISOString().slice(0, 7));

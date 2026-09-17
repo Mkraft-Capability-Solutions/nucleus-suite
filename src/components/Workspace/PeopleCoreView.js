@@ -29,10 +29,10 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
-        positions, documents, auditLogs, showToast, employees, addEmployee,
-        recognitionAwards, grantRecognitionAward,
-        sanctionedQuotas, calculateDepartmentCapacity,
-    } = useHRMS();
+        positions = [], documents = [], auditLogs = [], showToast, employees = [], addEmployee,
+        recognitionAwards = [], grantRecognitionAward,
+        sanctionedQuotas = [], calculateDepartmentCapacity,
+    } = useHRMS() || {};
     const [activeSection, setActiveSection] = useState(() => {
         if (activeSubFeature === 'person_record') return 'directory';
         if (activeSubFeature === 'core_people' || activeSubFeature === 'people_core') return 'overview';
@@ -216,14 +216,14 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
     const exportPositionsCSV = () => {
         const headers = ['Position Code', 'Position Title', 'Department', 'Open Slots', 'Filled', 'Budget', 'Status'];
-        const rows = positions.map(p => [p.id, p.title, p.dept, p.openSlots, p.filled, p.budget, p.status]);
+        const rows = (positions || []).map(p => [p.id, p.title, p.dept, p.openSlots, p.filled, p.budget, p.status]);
         downloadCSV('nucleus_positions_register.csv', headers, rows);
         showToast('Export Complete', 'Positions CSV downloaded.', 'success');
     };
 
     const exportDocumentsCSV = () => {
         const headers = ['Document Title', 'Category', 'Verification Status', 'Expiry Date', 'Access Scope'];
-        const rows = documents.map(d => [d.title, d.type, d.ocrStatus, d.expiry, 'HR Only']);
+        const rows = (documents || []).map(d => [d.title, d.type, d.ocrStatus, d.expiry, 'HR Only']);
         downloadCSV('nucleus_document_vault.csv', headers, rows);
         showToast('Export Complete', 'Document Vault CSV downloaded.', 'success');
     };
@@ -482,7 +482,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Department-wise sanctioned strength and manpower caps (Demo Point 25).
+                                Department-wise sanctioned strength and manpower caps.
                             </p>
                         </div>
                     </div>
@@ -638,17 +638,17 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                 </div>
             )}
 
-            {/* Section 2: Dynamic Org Chart — Demo Point #22 */}
+            {/* Section 2: Dynamic Org Chart */}
             {activeSection === 'orgchart' && (
                 <OrgChartView />
             )}
 
-            {/* Section: Star Employees — Demo Point #18 */}
+            {/* Section: Star Employees */}
             {activeSection === 'star_employees' && (
                 <StarEmployeesPanel employees={employees} recognitionAwards={recognitionAwards} grantRecognitionAward={grantRecognitionAward} showToast={showToast} />
             )}
 
-            {/* Section: Approved Manpower — Demo Point #25 */}
+            {/* Section: Approved Manpower */}
             {activeSection === 'manpower' && (
                 <ApprovedManpowerPanel employees={employees} positions={positions} sanctionedQuotas={sanctionedQuotas} calculateDepartmentCapacity={calculateDepartmentCapacity} />
             )}
@@ -681,7 +681,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {positions.map((pos) => (
+                                {(positions || []).map((pos) => (
                                     <tr key={pos.id}>
                                         <td><strong>{pos.id}</strong></td>
                                         <td><strong>{pos.title}</strong></td>
@@ -730,7 +730,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {documents.map((doc) => (
+                                {(documents || []).map((doc) => (
                                     <tr key={doc.id}>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -779,7 +779,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {auditLogs.map((log) => (
+                                {(auditLogs || []).map((log) => (
                                     <tr key={log.id}>
                                         <td><code>{log.id}</code></td>
                                         <td><strong>{log.field}</strong></td>
@@ -799,7 +799,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'entities' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Building2 size={20} style={{ color: 'var(--info)' }} /> Legal Entity Master (SCR-001)</h3>
+                        <h3><Building2 size={20} style={{ color: 'var(--info)' }} /> Legal Entity Master </h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportEntitiesCSV}>
                                 <Download size={15} /> Export Entities CSV
@@ -939,7 +939,18 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             >{readData("components.Workspace.PeopleCoreView", "PeopleCoreView_text_84")}</button>
                             <button
                                 className={styles.btnPrimary}
-                                onClick={() => {
+                                onClick={async () => {
+                                    try {
+                                        await fetch(`/api/v1/people/${reassignTarget.id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                metadata: { manager: selectedNewManager, managerId: selectedNewManager }
+                                            })
+                                        });
+                                    } catch (err) {
+                                        console.warn('Manager reassign sync warning:', err);
+                                    }
                                     setManagerOverrides((current) => ({ ...current, [reassignTarget.id]: selectedNewManager }));
                                     showToast(translateText("components.Workspace.PeopleCoreView","text_353f98aa9a"),translateText("components.Workspace.PeopleCoreView","text_2703bfa588", {value1: String(reassignTarget.name), value2: String(selectedNewManager)}), 'success');
                                     setReassignTarget(null);
@@ -1003,14 +1014,15 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         const fallbackFirst = nameParts[0] || 'Employee';
                         const fallbackLast = nameParts.slice(1).join(' ') || '-';
 
-                        const rawPayload = {
+                        const fullPayload = {
+                            ...details,
                             employeeCode: savedEmp.id,
                             firstName: details.firstName || fallbackFirst,
                             lastName: details.lastName || fallbackLast,
                             workEmail: details.officialEmail || details.personalEmail || `${savedEmp.id.toLowerCase().replace(/[^a-z0-9]/g, '')}@nucleus.com`,
-                            designation: savedEmp.role || 'Associate',
-                            department: savedEmp.dept || 'General',
-                            location: savedEmp.location || 'Head Office',
+                            designation: savedEmp.role || details.designation || 'Associate',
+                            department: savedEmp.dept || details.department || 'General',
+                            location: savedEmp.location || details.location || 'Head Office',
                             joiningDate: details.joiningDate || new Date().toISOString().split('T')[0],
                             workerCategory: details.workerCategory || 'PERM',
                             hasRestDays: details.hasRestDays ?? true,
@@ -1019,23 +1031,29 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             isTrainee: Boolean(details.isTrainee),
                             traineeType: details.traineeType || undefined,
                             assignedShift: details.assignedShift || 'GENERAL',
-                            panNumber: details.panNumber || details.pan || undefined,
-                            aadhaarLast4: details.aadhaarNumber || details.aadhaar ? (details.aadhaarNumber || details.aadhaar).slice(-4) : undefined,
+                            panNumber: details.panNumber || details.panToken || details.pan || undefined,
+                            panToken: details.panToken || details.panNumber || details.pan || undefined,
+                            aadhaarLast4: details.aadhaarNumber || details.aadhaarToken || details.aadhaar ? (details.aadhaarNumber || details.aadhaarToken || details.aadhaar).slice(-4) : undefined,
+                            aadhaarToken: details.aadhaarToken || details.aadhaarNumber || details.aadhaar || undefined,
                             uan: details.uan || undefined,
-                            esicNumber: details.esicNumber || details.esic || undefined,
-                            bankAccountNo: details.accountToken || undefined,
-                            bankIfsc: details.ifsc || undefined,
+                            esicNumber: details.esicNumber || details.esiIp || details.esic || undefined,
+                            bankAccountNo: details.accountToken || details.bankAccountNo || undefined,
+                            bankIfsc: details.ifsc || details.bankIfsc || undefined,
                             bankName: details.bankName || undefined,
                             emergencyContactName: details.emergencyName || details.emergencyContactName || undefined,
                             emergencyContactPhone: details.emergencyPhone || details.emergencyContactPhone || undefined,
-                            emergencyContactRelation: details.emergencyRelation || undefined,
-                            biometricEnrolId: details.biometricEnrolId || undefined,
-                            accessCardNo: details.accessCardNo || undefined,
-                            lockerNo: details.lockerNo || undefined,
+                            emergencyContactRelation: details.emergencyRelation || details.emergencyContactRelation || undefined,
+                            biometricEnrolId: details.biometricEnrolId || details.biometricEnrolmentId || undefined,
+                            accessCardNo: details.accessCardNo || details.accessCardNumber || undefined,
+                            lockerNo: details.lockerNo || details.lockerNumber || undefined,
+                            details: {
+                                ...details,
+                                employeeCode: savedEmp.id,
+                            }
                         };
 
                         const cleanPayload = {};
-                        for (const [k, v] of Object.entries(rawPayload)) {
+                        for (const [k, v] of Object.entries(fullPayload)) {
                             if (v !== undefined && v !== null && v !== '') {
                                 cleanPayload[k] = v;
                             }
@@ -1118,17 +1136,31 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     );
 };
 
-// ── Star Employees Panel (Demo Point #18) ──────────────────────────────────
-function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitionAward, showToast }) {
+// ── Star Employees Panel ──────────────────────────────────
+function StarEmployeesPanel({ employees = [], recognitionAwards = [], grantRecognitionAward, showToast }) {
     const [nominee, setNominee] = React.useState('');
     const [category, setCategory] = React.useState('Star Employee of the Month');
     const [note, setNote] = React.useState('');
     const [month] = React.useState(new Date().toLocaleString('default', { month: 'long', year: 'numeric' }));
 
-    const handleGrant = () => {
+    const handleGrant = async () => {
         if (!nominee) { showToast('Select Employee', 'Please select an employee to nominate.', 'error'); return; }
         const emp = employees.find(e => e.name === nominee || e.id === nominee);
-        grantRecognitionAward && grantRecognitionAward({ employeeId: emp?.id, employeeName: emp?.name || nominee, award: category, period: month, note });
+        const targetEmpId = emp?.id || nominee;
+        try {
+            await fetch('/api/v1/recognition-events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    recipientEmployeeId: targetEmpId,
+                    message: `${category}: ${note || 'Star performance recognition'}`,
+                    points: 250
+                })
+            });
+        } catch (err) {
+            console.warn('Recognition event sync warning:', err);
+        }
+        grantRecognitionAward && grantRecognitionAward({ employeeId: targetEmpId, employeeName: emp?.name || nominee, award: category, period: month, note });
         showToast('🌟 Award Granted', `${emp?.name || nominee} recognized as ${category} for ${month}!`, 'success');
         setNominee(''); setNote('');
     };
@@ -1136,7 +1168,7 @@ function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitio
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {/* Nomination Form */}
-            <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem', borderTop: '3px solid #f59e0b' }}>
+            <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem', borderTop: '3px solid var(--pending)' }}>
                 <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem' }}>
                     ⭐ Nominate Star Employee — {month}
                 </h3>
@@ -1146,7 +1178,7 @@ function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitio
                         <select value={nominee} onChange={e => setNominee(e.target.value)}
                             style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}>
                             <option value="">Select employee…</option>
-                            {employees.map(e => <option key={e.id} value={e.id}>{e.name} — {e.dept}</option>)}
+                            {(employees || []).map(e => <option key={e.id} value={e.id}>{e.name} — {e.dept}</option>)}
                         </select>
                     </label>
                     <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -1169,7 +1201,7 @@ function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitio
                     </label>
                 </div>
                 <button onClick={handleGrant}
-                    style={{ marginTop: '0.75rem', padding: '8px 20px', background: '#f59e0b', color: '#fff', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}>
+                    style={{ marginTop: '0.75rem', padding: '8px 20px', background: 'var(--pending)', color: 'var(--bg)', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}>
                     ⭐ Grant Award
                 </button>
             </div>
@@ -1198,7 +1230,7 @@ function StarEmployeesPanel({ employees, recognitionAwards = [], grantRecognitio
     );
 }
 
-// ── Approved Manpower Panel (SCR-013 / Demo Point #25) ─────────────────────────
+// ── Approved Manpower Panel (SCR-013) ─────────────────────────
 function ApprovedManpowerPanel({ employees = [], positions = [], sanctionedQuotas = {}, calculateDepartmentCapacity }) {
     const empList = Array.isArray(employees) ? employees : [];
     const posList = Array.isArray(positions) ? positions : [];

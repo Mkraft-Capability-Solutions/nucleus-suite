@@ -89,6 +89,13 @@ const WorkflowBuilderModal = ({ isOpen, onClose }) => {
             subtitle: nodeSubtitle,
             sla: nodeSLA
         });
+        try {
+            fetch('/api/v1/operations/workflows', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ workflowId: activeWorkflowId, nodeId: selectedNodeId, title: nodeTitle, subtitle: nodeSubtitle, sla: nodeSLA })
+            }).catch(() => null);
+        } catch {}
     };
 
     const handleAddStep = (type) => {

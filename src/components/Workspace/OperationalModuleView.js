@@ -95,7 +95,11 @@ function recordValue(record, column, module, liveReferences) {
         } else if (norm === 'status' || norm === 'publishstatus') {
             val = all.publishStatus || all.status || all.recordStatus;
         } else if (norm === 'periodfromto' || norm === 'period') {
-            val = all.periodFromPeriodTo || all.period;
+            val = all.periodFromPeriodTo || all.period || (all.startTime && all.endTime ? `${all.startTime} - ${all.endTime}` : (all.startTime || all.endTime));
+        } else if (norm === 'starttime' || norm === 'start') {
+            val = all.startTime;
+        } else if (norm === 'endtime' || norm === 'end') {
+            val = all.endTime;
         } else if (norm === 'shift' || norm === 'shiftcode') {
             val = all.shiftCode || all.shift || all.shiftId;
         } else if (norm === 'assignment') {
@@ -428,12 +432,16 @@ function OperationalModuleContent({ module, onNavigate }) {
         setFormErrors(errors);
         if (Object.keys(errors).length) return;
 
+        const finalValues = { ...values };
+        if (finalValues.startTime && finalValues.endTime && !finalValues.periodFromPeriodTo) {
+            finalValues.periodFromPeriodTo = `${finalValues.startTime} - ${finalValues.endTime}`;
+        }
         const tempId = `${module.id}-${crypto.randomUUID()}`;
         const newRecord = {
             id: tempId,
-            _cells: values,
-            values,
-            attributes: values,
+            _cells: finalValues,
+            values: finalValues,
+            attributes: finalValues,
             createdAt: new Date().toISOString()
         };
         setRecords(prev => [newRecord, ...prev]);
@@ -489,8 +497,12 @@ function OperationalModuleContent({ module, onNavigate }) {
         if (Object.keys(errors).length) return;
         setIsSavingEdit(true);
 
+        const finalEditValues = { ...editValues };
+        if (finalEditValues.startTime && finalEditValues.endTime && !finalEditValues.periodFromPeriodTo) {
+            finalEditValues.periodFromPeriodTo = `${finalEditValues.startTime} - ${finalEditValues.endTime}`;
+        }
         const updatedAttrs = {
-            ...editValues,
+            ...finalEditValues,
             updatedAt: new Date().toISOString(),
         };
 
@@ -540,8 +552,41 @@ function OperationalModuleContent({ module, onNavigate }) {
         setNotice(editSuccessMsg && !editSuccessMsg.includes('text_updated_success') ? editSuccessMsg : `${module.title} updated successfully in database.`);
     };
 
-    const advanceState = (state) => {
-        setNotice(translateText("components.Workspace.OperationalModuleView", "text_942fc1b03f", { value1: String(state) }));
+    const advanceState = async (state) => {
+        if (!selectedRecord?.id) {
+            setNotice("Please select a record to transition its lifecycle state.");
+            return;
+        }
+        try {
+            const res = await fetch(`/api/v1/ops/modules/${module.id}/records/${selectedRecord.id}/state`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ state })
+            });
+            if (res.ok) {
+                setRecords(prev => prev.map(r => r.id === selectedRecord.id ? {
+                    ...r,
+                    status: state,
+                    _cells: { ...r._cells, status: state, Status: state },
+                    values: { ...r.values, status: state, Status: state },
+                    attributes: { ...(r.attributes || {}), status: state, state }
+                } : r));
+                setSelected(prev => prev ? {
+                    ...prev,
+                    status: state,
+                    _cells: { ...prev._cells, status: state, Status: state },
+                    values: { ...prev.values, status: state, Status: state },
+                    attributes: { ...(prev.attributes || {}), status: state, state }
+                } : prev);
+                setNotice(translateText("components.Workspace.OperationalModuleView", "text_942fc1b03f", { value1: String(state) }));
+            } else {
+                const errData = await res.json().catch(() => ({}));
+                setNotice(`State transition failed: ${errData.error || 'Server error'}`);
+            }
+        } catch (err) {
+            console.error('State transition error:', err);
+            setNotice(`State transition error: ${err.message}`);
+        }
     };
     const transition = advanceState;
 
@@ -863,9 +908,12 @@ function OperationalModuleContent({ module, onNavigate }) {
                                         </span>
                                     ) : item.type === 'textarea' ? (
                                         <textarea {...props} rows={3} />
+                                    ) : item.type === 'time' || (item.control && item.control.toLowerCase().includes('time')) ? (
+                                        <input {...props} type="time" />
                                     ) : (
                                         <input {...props} type={item.type} min={item.min} max={item.max} step={item.step} />
                                     )}
+                                    {formErrors[item.key] && <span style={{ color: 'var(--flag)', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>{formErrors[item.key]}</span>}
                                 </label>
                             );
                         })}
@@ -927,9 +975,12 @@ function OperationalModuleContent({ module, onNavigate }) {
                                         </span>
                                     ) : item.type === 'textarea' ? (
                                         <textarea {...props} rows={3} />
+                                    ) : item.type === 'time' || (item.control && item.control.toLowerCase().includes('time')) ? (
+                                        <input {...props} type="time" />
                                     ) : (
                                         <input {...props} type={item.type} min={item.min} max={item.max} step={item.step} />
                                     )}
+                                    {editErrors[item.key] && <span style={{ color: 'var(--flag)', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>{editErrors[item.key]}</span>}
                                 </label>
                             );
                         })}

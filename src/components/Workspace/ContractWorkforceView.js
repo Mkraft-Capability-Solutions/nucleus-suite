@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import styles from './ContractWorkforceView.module.css';
 import { launchAction } from '@/lib/action-launcher';
+import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
 
 const ContractWorkforceView = () => {
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.ContractWorkforceView", "initialState_1")); // 'reconciliation' | 'workers' | 'vendors'
@@ -157,7 +158,20 @@ const ContractWorkforceView = () => {
                 </div>
 
                 <div className={styles.headerActions}>
-                    <button className={styles.btnSecondary} disabled title={readData("components.Workspace.ContractWorkforceView", "unavailableAction")}>
+                    <button className={styles.btnSecondary} onClick={() => {
+                        const headers = ['Worker ID', 'Name', 'Vendor', 'Trade / Role', 'Shift', 'Wage Rate (₹/day)', 'Biometric ID', 'Status'];
+                        const rows = (workers || []).map(w => [
+                            w.id,
+                            w.name,
+                            w.vendor,
+                            w.trade,
+                            w.shift,
+                            w.wageRate,
+                            w.biometricId,
+                            w.status
+                        ]);
+                        downloadCSV('contract_workforce_register.csv', headers, rows);
+                    }} title="Export Contract Workforce Register">
                         <Download size={16} />{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_8")}</button>
                     <button className={styles.btnPrimary} onClick={() => setIsRegisterOpen(true)}>
                         <Plus size={16} /> Register Contract Worker</button>
@@ -314,7 +328,25 @@ const ContractWorkforceView = () => {
                                     </table>
                                     <div className={styles.modalFooter}>
                                         <button className={styles.btnSecondary} onClick={() => setSelectedRecon(null)}>{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_48")}</button>
-                                        <button className={styles.btnPrimary} disabled title={readData("components.Workspace.ContractWorkforceView", "unavailableAction")}>
+                                        <button className={styles.btnPrimary} onClick={() => {
+                                            const headers = ['Category / Trade', 'Claimed Headcount', 'Biometric Verified', 'Variance', 'Billable Amount (₹)'];
+                                            const rows = (selectedRecon.breakdown || []).map(b => [
+                                                b.category,
+                                                b.claimed,
+                                                b.verified,
+                                                b.variance,
+                                                b.amount
+                                            ]);
+                                            downloadPrintableDocument(`Vendor_Recon_${selectedRecon.vendorName.replace(/\s+/g, '_')}_${selectedRecon.month}`, {
+                                                'Vendor': selectedRecon.vendorName,
+                                                'Billing Month': selectedRecon.month,
+                                                'Total Claimed': selectedRecon.claimedWorkers,
+                                                'Total Verified': selectedRecon.verifiedWorkers,
+                                                'Total Hours': selectedRecon.totalHours,
+                                                'Approved Invoice Amount': selectedRecon.billAmount,
+                                                'Statutory Compliance Status': selectedRecon.compliancePassed ? 'PF / ESIC Cleared' : 'Action Required'
+                                            }, headers, rows);
+                                        }} title="Download Vendor Reconciliation Invoice Sheet">
                                             <Download size={14} />{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_49")}</button>
                                     </div>
                                 </div>
@@ -376,7 +408,7 @@ const ContractWorkforceView = () => {
                                                         color: 'var(--signal-ink)',
                                                         fontWeight: 700
                                                     }}>
-                                                        Rest Days: Eligible (Demo Point 3)
+                                                        Rest Days: Eligible
                                                     </span>
                                                 ) : (
                                                     <span style={{
@@ -388,7 +420,7 @@ const ContractWorkforceView = () => {
                                                         fontWeight: 600,
                                                         border: '1px solid var(--line)'
                                                     }}>
-                                                        Daily Wages · No Rest Days (Demo Point 2)
+                                                        Daily Wages · No Rest Days
                                                     </span>
                                                 )}
                                             </div>
@@ -492,9 +524,9 @@ const ContractWorkforceView = () => {
                                 <div className={styles.restDayBanner}>
                                     <ShieldCheck size={16} />
                                     <span>
-                                        {formData.category === 'contract' && 'Demo Point 2: Contractual employees receive daily wages and have NO rest days.'}
-                                        {formData.category === 'third-party-employee' && 'Demo Point 3: 3rd party skilled employees are eligible for weekly paid rest days.'}
-                                        {formData.category === 'third-party-helper' && 'Demo Point 3: 3rd party helpers have NO rest days and earn daily wage overtime.'}
+                                        {formData.category === 'contract' && 'Statutory Rule: Contractual employees receive daily wages and have no weekly rest days.'}
+                                        {formData.category === 'third-party-employee' && 'Statutory Rule: 3rd party skilled employees are eligible for weekly paid rest days.'}
+                                        {formData.category === 'third-party-helper' && 'Statutory Rule: 3rd party helpers earn daily wage overtime on working hours.'}
                                     </span>
                                 </div>
 

@@ -14,18 +14,22 @@ import styles from './OnboardingView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import WorkflowBuilderModal from './WorkflowBuilderModal';
 import { launchAction } from '@/lib/action-launcher';
+import { downloadPrintableDocument } from '@/utils/exportUtils';
 
 const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
 
     const {
-        onboardingTasks, completeOnboardingTask, workflows = [], showToast,
-        hardwareAssets, allocateHardwareAsset, markAssetReturned,
-        recognitionAwards, grantRecognitionAward,
-        generateHRLetter, letterTemplates, employees,
-        assetTypes, recognitionAwardTypes, establishmentRulesetVersion
-    } = useHRMS();
+        onboardingTasks: initialTasks = [], workflows = [], showToast,
+        hardwareAssets = [], allocateHardwareAsset, markAssetReturned,
+        recognitionAwards: initialAwards = [],
+        generateHRLetter, letterTemplates = [], employees = [],
+        assetTypes = [], recognitionAwardTypes = [], establishmentRulesetVersion
+    } = useHRMS() || {};
 
+    const [taskList, setTaskList] = useState(initialTasks);
+    const onboardingTasks = taskList.length > 0 ? taskList : initialTasks;
+    const [awardsList, setAwardsList] = useState(initialAwards);
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.OnboardingView", "initialState_1")); // default to 'assets' to showcase Sprint 4!
 
     useEffect(() => {
@@ -101,17 +105,51 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     };
 
     // Handle Award Submit
-    const handleAwardSubmit = (e) => {
+    const handleAwardSubmit = async (e) => {
         e.preventDefault();
         if (!awardCitation) return;
-        grantRecognitionAward({
+
+        const newAward = {
+            id: Date.now(),
             employeeId: awardEmpId,
             awardType,
             citation: awardCitation,
-            rewardAmount: awardPrize
-        });
+            rewardAmount: awardPrize,
+            grantedAt: new Date().toISOString()
+        };
+        setAwardsList(prev => [newAward, ...prev]);
+
+        try {
+            await fetch('/api/v1/recognition-events', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    recipientEmployeeId: awardEmpId || '00000000-0000-0000-0000-000000000001',
+                    message: `${awardType}: ${awardCitation}`,
+                    points: Number(awardPrize) || 100
+                })
+            });
+            showToast?.('Award Granted', `Granted ${awardType} to employee`, 'success');
+        } catch (err) {
+            console.warn('Award sync warning:', err);
+        }
+
         setIsAwardModalOpen(false);
         setAwardCitation('');
+    };
+
+    const handleCompleteTask = async (taskId) => {
+        setTaskList(prev => prev.map(t => t.id === taskId ? { ...t, status: 'Completed' } : t));
+        try {
+            await fetch(`/api/v1/onboarding/tasks/${taskId}/complete`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ note: 'Task marked completed from Onboarding workspace' })
+            });
+            showToast?.('Task Completed', 'Onboarding milestone saved to DB.', 'success');
+        } catch (err) {
+            console.warn('Onboarding task complete warning:', err);
+        }
     };
 
     // Rendered letter preview
@@ -166,7 +204,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeTab === 'recognition' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('recognition')}
                 >
-                    <Award size={16} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_12")}<span className={`${styles.badge} ${styles.badgePurple}`}>{recognitionAwards?.length || readData("components.Workspace.OnboardingView", "fallback_2")}{readData("components.Workspace.OnboardingView", "OnboardingView_text_13")}</span>
+                    <Award size={16} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_12")}<span className={`${styles.badge} ${styles.badgePurple}`}>{(awardsList?.length || initialAwards?.length || readData("components.Workspace.OnboardingView", "fallback_2"))}{readData("components.Workspace.OnboardingView", "OnboardingView_text_13")}</span>
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeTab === 'studio' ? styles.activeTab : ''}`}
@@ -186,7 +224,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             </div>
 
             {/* ========================================================================= */}
-            {/* TAB 1: HARDWARE ASSET REGISTER (DEMO POINT 23)                            */}
+            {/* TAB 1: HARDWARE ASSET REGISTER                                            */}
             {/* ========================================================================= */}
             {activeTab === 'assets' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -269,7 +307,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             )}
 
             {/* ========================================================================= */}
-            {/* TAB 2: HR LETTER GENERATION STUDIO (DEMO POINT 21)                        */}
+            {/* TAB 2: HR LETTER GENERATION STUDIO                                        */}
             {/* ========================================================================= */}
             {activeTab === 'letters' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -283,12 +321,29 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button
                                     className={styles.btnSecondary}
-                                    onClick={() => showToast(translateText("components.Workspace.OnboardingView","text_e589d3921c"),translateText("components.Workspace.OnboardingView","text_2435b5cb6d"), 'success')}
+                                    onClick={() => {
+                                        if (typeof window !== 'undefined') window.print();
+                                    }}
                                 >
                                     <Printer size={14} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_45")}</button>
                                 <button
                                     className={styles.btnPrimary}
-                                    onClick={() => showToast(translateText("components.Workspace.OnboardingView","text_f2d1f36de1"),translateText("components.Workspace.OnboardingView","text_5e9be7e2b6", {value1: String(renderedLetter?.title)}), 'success')}
+                                    onClick={() => {
+                                        const letterTitle = renderedLetter?.title || 'HR_Letter';
+                                        const letterEmployee = selectedEmployeeObj?.name || 'Employee';
+                                        downloadPrintableDocument(letterTitle, {
+                                            'Recipient': letterEmployee,
+                                            'Employee ID': selectedEmpId,
+                                            'Date': new Date().toLocaleDateString('en-IN'),
+                                            'Letter Type': selectedTemplateId,
+                                            'Organization': 'Nucleus Enterprise Solutions'
+                                        }, ['Clause / Item', 'Details'], [
+                                            ['Status', 'Approved & Released'],
+                                            ['Issued By', 'Head of Human Resources'],
+                                            ['Verification Ref', `NUC-${selectedTemplateId}-${selectedEmpId}-${Date.now().toString(36).toUpperCase()}`]
+                                        ]);
+                                        showToast(translateText("components.Workspace.OnboardingView","text_f2d1f36de1"),translateText("components.Workspace.OnboardingView","text_5e9be7e2b6", {value1: String(renderedLetter?.title || 'Letter')}), 'success');
+                                    }}
                                 >
                                     <Download size={14} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_46")}</button>
                             </div>
@@ -425,7 +480,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             )}
 
             {/* ========================================================================= */}
-            {/* TAB 3: EMPLOYEE RECOGNITION & EVENTS (POINTS 18 & 20)                     */}
+            {/* TAB 3: EMPLOYEE RECOGNITION & EVENTS                                      */}
             {/* ========================================================================= */}
             {activeTab === 'recognition' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -493,11 +548,11 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     <div className={styles.card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
                             <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)' }}>{readData("components.Workspace.OnboardingView", "OnboardingView_text_94")}</h3>
-                            <span style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>{recognitionAwards.length}{readData("components.Workspace.OnboardingView", "OnboardingView_text_95")}</span>
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-2)' }}>{(awardsList?.length || initialAwards?.length || 0)}{readData("components.Workspace.OnboardingView", "OnboardingView_text_95")}</span>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
-                            {recognitionAwards.map(award => (
+                            {(awardsList.length > 0 ? awardsList : initialAwards).map(award => (
                                 <div key={award.id} style={{ background: 'var(--card-2, #fafafa)', padding: '1.25rem', borderRadius: 'var(--r-card)', border: '1px solid var(--line)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
@@ -572,7 +627,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeTab === 'milestones' && (
                 <div className={styles.timelineGrid}>
                     {onboardingTasks.map((t) => (
-                        <div key={t.id} className={styles.milestoneCard}>
+                        <div key={t.id} className={styles.taskRow}>
                             <div>
                                 <strong style={{ color: 'var(--text)', display: 'block' }}>{t.title}</strong>
                                 <span style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Workspace.OnboardingView", "OnboardingView_text_107")}{t.phase}{readData("components.Workspace.OnboardingView", "OnboardingView_text_108")}{t.days}</span>
@@ -585,7 +640,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <button
                                         className={styles.btnSecondary}
                                         style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem' }}
-                                        onClick={() => completeOnboardingTask(t.id)}
+                                        onClick={() => handleCompleteTask(t.id)}
                                     >{readData("components.Workspace.OnboardingView", "OnboardingView_text_109")}</button>
                                 )}
                             </div>

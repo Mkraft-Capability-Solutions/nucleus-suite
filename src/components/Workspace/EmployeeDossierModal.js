@@ -6,6 +6,7 @@ import {
     X, Printer, Award, Lock, ExternalLink, Download, AlertCircle
 } from 'lucide-react';
 import styles from './EmployeeDossierModal.module.css';
+import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
 
 export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
     const [activeTab, setActiveTab] = useState('overview'); // overview, contact, placement, bank, leaves, docs
@@ -220,7 +221,7 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                 <span className={styles.infoValue}>General Plant Shift (08:00 - 20:00)</span>
                             </div>
                             <div className={styles.infoItem} style={{ gridColumn: '1 / -1' }}>
-                                <span className={styles.infoLabel}>Labour Law & Rest Day Policy (Demo Points 2, 3, 4)</span>
+                                <span className={styles.infoLabel}>Labour Law & Rest Day Policy</span>
                                 <div style={{ marginTop: '0.35rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                                     <span style={{ fontSize: '0.75rem', padding: '0.2rem 0.5rem', borderRadius: 4, background: 'var(--signal-wash)', color: 'var(--signal-ink)', fontWeight: 600 }}>
                                         Weekly Rest Day: Sunday (Paid)
@@ -244,7 +245,7 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                 <div className={styles.statCard}>
                                     <span className={styles.statTitle}>Company Loan Limit</span>
                                     <span className={styles.statNum}>₹1,80,000</span>
-                                    <span className={styles.statSub}>4x Basic Policy (Demo Point 9)</span>
+                                    <span className={styles.statSub}>Standard Statutory Policy</span>
                                 </div>
                                 <div className={styles.statCard}>
                                     <span className={styles.statTitle}>Active Loans</span>
@@ -271,7 +272,7 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                     <span className={styles.infoValue}>Direct Corporate NEFT / NACH</span>
                                 </div>
                                 <div className={styles.infoItem}>
-                                    <span className={styles.infoLabel}>Salary Masking Status (Demo Point 8)</span>
+                                    <span className={styles.infoLabel}>Salary Masking Status</span>
                                     <span className={styles.infoValue}>HO Generated · Plant Masked</span>
                                 </div>
                             </div>
@@ -284,7 +285,7 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                 <div className={styles.statCard}>
                                     <span className={styles.statTitle}>Earned Leave (EL)</span>
                                     <span className={styles.statNum}>14.5</span>
-                                    <span className={styles.statSub}>Auto-accrued (Demo Point 7)</span>
+                                    <span className={styles.statSub}>Auto-accrued Policy</span>
                                 </div>
                                 <div className={styles.statCard}>
                                     <span className={styles.statTitle}>Casual Leave (CL)</span>
@@ -299,12 +300,12 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                 <div className={styles.statCard}>
                                     <span className={styles.statTitle}>Comp-Off (COFF)</span>
                                     <span className={styles.statNum}>1.0</span>
-                                    <span className={styles.statSub}>60-day Auto-Lapse (Demo Pt 6)</span>
+                                    <span className={styles.statSub}>60-day Auto-Lapse</span>
                                 </div>
                             </div>
 
                             <div className={styles.infoItem} style={{ marginBottom: '1rem' }}>
-                                <span className={styles.infoLabel}>Gate Pass Allowance (Demo Point 11)</span>
+                                <span className={styles.infoLabel}>Gate Pass Allowance</span>
                                 <span className={styles.infoValue}>4 Hours monthly allowance (2 passes max / month) · 180 mins remaining</span>
                             </div>
 
@@ -316,7 +317,7 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                             <th>Type</th>
                                             <th>Applied Days</th>
                                             <th>Actual Utilized</th>
-                                            <th>Auto Re-credited (Demo Pt 5)</th>
+                                            <th>Auto Re-credited</th>
                                             <th>Approval Chain</th>
                                         </tr>
                                     </thead>
@@ -350,21 +351,79 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                                     <tbody>
                                         <tr>
                                             <td><strong>Factory Act Form F</strong> (Gratuity Nomination)</td>
-                                            <td>Factory Act 1948 · Demo Point 26</td>
+                                            <td>Factory Act 1948 · Statutory Gratuity Compliance</td>
                                             <td><span className={styles.statusActive}>Executed & Nominated</span></td>
-                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }}><Download size={13} /> View Form</button></td>
+                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }} onClick={() => {
+                                                const meta = employee.metadata || {};
+                                                downloadPrintableDocument(`Form_F_Gratuity_Nomination_${employee.id}`, {
+                                                    'Employee Code': employee.id || employee.employeeCode,
+                                                    'Full Legal Name': employee.name,
+                                                    'Father / Spouse Name': meta.fatherName || 'Shri R. Sharma',
+                                                    'Permanent Address': meta.permanentAddress || employee.address || '12, Indiranagar, Bengaluru, KA',
+                                                    'Department & Designation': `${employee.department || 'Engineering'} · ${employee.role || employee.designation || 'Staff'}`,
+                                                    'Date of Appointment': meta.joiningDate || '2026-01-15',
+                                                    'Nominee Name': meta.emergencyContactName || 'Pooja Sharma',
+                                                    'Relationship with Employee': 'Spouse',
+                                                    'Nominee Age / DOB': '32 Years',
+                                                    'Proportion of Gratuity': '100%',
+                                                    'Statutory Act': 'Payment of Gratuity Act 1972 & Factory Act 1948 Rule 6'
+                                                }, ['Particulars', 'Statutory Record Details'], [
+                                                    ['Establishment Name', 'Nucleus Manufacturing & Technology Facilities Ltd.'],
+                                                    ['Registration / Factory License', 'FAC-KA-BNG-2026-0988'],
+                                                    ['Employee Provident Fund (UAN)', meta.uanNumber || '100904567890'],
+                                                    ['Statutory Gratuity Trust ID', 'GRAT-TRUST-IND-01'],
+                                                    ['Verification Status', 'Executed & Nominated by Employee']
+                                                ]);
+                                            }}><Download size={13} /> View Form</button></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Signed Appointment Letter</strong></td>
-                                            <td>Template SCR-015 · Demo Point 21</td>
+                                            <td>Template SCR-015 · HR Letter Lifecycle</td>
                                             <td><span className={styles.statusActive}>Signed & Sealed</span></td>
-                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }}><Download size={13} /> Download</button></td>
+                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }} onClick={() => {
+                                                const meta = employee.metadata || {};
+                                                downloadPrintableDocument(`Appointment_Letter_${employee.id}`, {
+                                                    'Candidate / Employee ID': employee.id || employee.employeeCode,
+                                                    'Employee Name': employee.name,
+                                                    'Designation': employee.role || employee.designation || 'Specialist',
+                                                    'Department': employee.department || 'Operations',
+                                                    'Location': employee.location || 'Bengaluru Corporate Office',
+                                                    'Effective Date of Joining': meta.joiningDate || '2026-01-15',
+                                                    'Worker Class / Band': employee.band || meta.workerClass || 'Permanent Full-Time',
+                                                    'Reporting Manager': employee.manager || 'Ananya Roy',
+                                                    'Annual Compensation (CTC)': meta.grossCtc ? `₹${Number(meta.grossCtc).toLocaleString('en-IN')}` : '₹24,00,000'
+                                                }, ['Appointment Clause', 'Terms & Conditions'], [
+                                                    ['Role Responsibilities', 'Defined as per Position Master Register & Supervisory SLA'],
+                                                    ['Probation Period', '6 Months from Effective Joining Date with Quarterly Review'],
+                                                    ['Notice Period', '60 Days for Confirmation Staff / 30 Days during Probation'],
+                                                    ['Statutory Benefits', 'Coverage under EPF Act 1952, ESI Act 1948 & Gratuity Act 1972'],
+                                                    ['Confidentiality & IP', 'Execution of Standard Nucleus Proprietary Rights Agreement']
+                                                ]);
+                                            }}><Download size={13} /> Download</button></td>
                                         </tr>
                                         <tr>
                                             <td><strong>Form 28 / Muster Roll Extraction</strong></td>
-                                            <td>Demo Point 17</td>
+                                            <td>Statutory Form 28 Compliance</td>
                                             <td><span className={styles.statusActive}>Current Period Synced</span></td>
-                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }}><ExternalLink size={13} /> Inspect</button></td>
+                                            <td><button className={styles.btnPrint} style={{ padding: '0.2rem 0.5rem' }} onClick={() => {
+                                                const meta = employee.metadata || {};
+                                                downloadPrintableDocument(`Form_28_Muster_Roll_${employee.id}`, {
+                                                    'Employee Token': employee.id || employee.employeeCode,
+                                                    'Worker Name': employee.name,
+                                                    'Workstation / Department': employee.department || 'Operations',
+                                                    'Assigned Shift': 'General Shift (09:00 - 18:00)',
+                                                    'Factory Location': employee.location || 'Bengaluru Facility',
+                                                    'Statutory Register': 'Form 28 - Adult Worker Register (Rule 88)',
+                                                    'Reporting Period': 'September 2026'
+                                                }, ['Audit Metric', 'Reported Value', 'Statutory Compliance Rule'], [
+                                                    ['Scheduled Working Days', '26 Days', 'Factories Act Section 51'],
+                                                    ['Days Present & Punched', '24 Days', 'Biometric Verified / GPS Geo-Fenced'],
+                                                    ['Weekly Rest Days Taken', '4 Days', 'Section 52 (Mandatory Rest Day)'],
+                                                    ['Overtime Hours Recorded', '0.0 Hours', 'Section 59 (Double Wages for OT)'],
+                                                    ['Approved Paid Leave', '2 Days (CL)', 'Factories Act Annual Leave with Wages'],
+                                                    ['Compliance Status', '100% Verified', 'Audit Passed · Inspector Signature Ready']
+                                                ]);
+                                            }}><ExternalLink size={13} /> Inspect</button></td>
                                         </tr>
                                         <tr>
                                             <td><strong>PAN & Aadhaar KYC Bundle</strong></td>

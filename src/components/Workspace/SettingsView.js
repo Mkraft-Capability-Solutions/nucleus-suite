@@ -19,11 +19,46 @@ import { getAllPicklists, searchPicklists } from '@/lib/picklist-catalog';
 const SettingsView = ({ onNavigate, onSelectConsole }) => {
     const {t: translateText}=useTranslation();
 
-    const { settings, updateSettings, showToast } = useHRMS();
+    const { showToast } = useHRMS();
     const { user: authUser, openAccessControl, modulePermissions, consolePermissions, switchRole } = useAuth();
     const userRole = authUser?.role || readData("components.Workspace.SettingsView", "fallback_1");
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.SettingsView", "initialState_1"));
     const [picklistSearch, setPicklistSearch] = useState('');
+    const [settingPrefs, setSettingPrefs] = useState({
+        emailNotif: true,
+        pushNotif: true,
+        anomalyAlerts: true,
+        multiCurrency: 'INR (₹)'
+    });
+
+    React.useEffect(() => {
+        fetch('/api/v1/tenant/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data?.data?.settings) {
+                    setSettingPrefs(prev => ({ ...prev, ...data.data.settings }));
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    const updateSettingPref = async (key, val) => {
+        setSettingPrefs(prev => ({ ...prev, [key]: val }));
+        try {
+            const res = await fetch('/api/v1/tenant/settings', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    settings: { [key]: val }
+                })
+            });
+            if (!res.ok) throw new Error('Failed to update setting');
+            showToast("Settings Saved", "Notification preference updated in database.", "success");
+        } catch (err) {
+            setSettingPrefs(prev => ({ ...prev, [key]: !val }));
+            showToast("Update Failed", err.message || "Failed to update preference", "error");
+        }
+    };
 
     // Local form states
     const [formData, setFormData] = useState({
@@ -32,7 +67,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
         ...readData("components.Workspace.SettingsView", "formData_fields_1"),
         jobTitle: authUser?.role || readData("components.Workspace.SettingsView", "fallback_4"),
         ...readData("components.Workspace.SettingsView", "formData_fields_2"),
-        currency: settings?.multiCurrency || readData("components.Workspace.SettingsView", "fallback_5"),
+        currency: readData("components.Workspace.SettingsView", "fallback_5"),
         ...readData("components.Workspace.SettingsView", "formData_fields_3")
     });
 
@@ -334,10 +369,10 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                                 <p>{readData("components.Workspace.SettingsView", "SettingsView_text_58")}</p>
                             </div>
                             <div
-                                className={`${styles.toggleSwitch} ${settings.emailNotif ? styles.toggleActive : ''}`}
-                                onClick={() => updateSettings('emailNotif', !settings.emailNotif)}
+                                className={`${styles.toggleSwitch} ${settingPrefs.emailNotif ? styles.toggleActive : ''}`}
+                                onClick={() => updateSettingPref('emailNotif', !settingPrefs.emailNotif)}
                             >
-                                <div className={`${styles.switchKnob} ${settings.emailNotif ? styles.thumbActive : ''}`}></div>
+                                <div className={`${styles.switchKnob} ${settingPrefs.emailNotif ? styles.thumbActive : ''}`}></div>
                             </div>
                         </div>
 
@@ -347,10 +382,10 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                                 <p>{readData("components.Workspace.SettingsView", "SettingsView_text_60")}</p>
                             </div>
                             <div
-                                className={`${styles.toggleSwitch} ${settings.pushNotif ? styles.toggleActive : ''}`}
-                                onClick={() => updateSettings('pushNotif', !settings.pushNotif)}
+                                className={`${styles.toggleSwitch} ${settingPrefs.pushNotif ? styles.toggleActive : ''}`}
+                                onClick={() => updateSettingPref('pushNotif', !settingPrefs.pushNotif)}
                             >
-                                <div className={`${styles.switchKnob} ${settings.pushNotif ? styles.thumbActive : ''}`}></div>
+                                <div className={`${styles.switchKnob} ${settingPrefs.pushNotif ? styles.thumbActive : ''}`}></div>
                             </div>
                         </div>
 
@@ -360,10 +395,10 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                                 <p>{readData("components.Workspace.SettingsView", "SettingsView_text_62")}</p>
                             </div>
                             <div
-                                className={`${styles.toggleSwitch} ${settings.anomalyAlerts ? styles.toggleActive : ''}`}
-                                onClick={() => updateSettings('anomalyAlerts', !settings.anomalyAlerts)}
+                                className={`${styles.toggleSwitch} ${settingPrefs.anomalyAlerts ? styles.toggleActive : ''}`}
+                                onClick={() => updateSettingPref('anomalyAlerts', !settingPrefs.anomalyAlerts)}
                             >
-                                <div className={`${styles.switchKnob} ${settings.anomalyAlerts ? styles.thumbActive : ''}`}></div>
+                                <div className={`${styles.switchKnob} ${settingPrefs.anomalyAlerts ? styles.thumbActive : ''}`}></div>
                             </div>
                         </div>
 
@@ -410,7 +445,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                                 value={formData.currency}
                                 onChange={(e) => {
                                     handleFieldChange('currency', e.target.value);
-                                    updateSettings('multiCurrency', e.target.value);
+                                    updateSettingPref('multiCurrency', e.target.value);
                                 }}
                             >
                                 <option value="INR (₹)">{readData("components.Workspace.SettingsView", "SettingsView_text_70")}</option>
@@ -448,12 +483,21 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
             {/* TAB 5: AUDIT TRAIL & SESSIONS */}
             {activeTab === 'audit' && (
                 <div className={styles.sectionCard}>
-                    <div className={styles.sectionHeader}>
-                        <div className={styles.sectionIcon} style={{ background: 'var(--signal-wash)' }}><Key size={20} color="var(--signal)" /></div>
-                        <div>
-                            <h3>{readData("components.Workspace.SettingsView", "SettingsView_text_82")}</h3>
-                            <p>{readData("components.Workspace.SettingsView", "SettingsView_text_83")}</p>
+                    <div className={styles.sectionHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <div className={styles.sectionIcon} style={{ background: 'var(--signal-wash)' }}><Key size={20} color="var(--signal)" /></div>
+                            <div>
+                                <h3>{readData("components.Workspace.SettingsView", "SettingsView_text_82")}</h3>
+                                <p>{readData("components.Workspace.SettingsView", "SettingsView_text_83")}</p>
+                            </div>
                         </div>
+                        <button
+                            className={styles.btnSecondary}
+                            onClick={() => window.open('/api/v1/audit/export', '_blank')}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontWeight: 600, fontSize: '0.85rem' }}
+                        >
+                            Export Audit CSV
+                        </button>
                     </div>
 
                     <div className={styles.tableWrapper}>

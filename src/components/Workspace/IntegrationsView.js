@@ -15,7 +15,7 @@ import { launchAction } from '@/lib/action-launcher';
 const IntegrationsView = () => {
     const {t: translateText}=useTranslation();
 
-    const { connectors, apiKeys, showToast } = useHRMS();
+    const { connectors = [], apiKeys = [{ name: 'Live Production Key', prefix: 'pk_live_sec' }], showToast } = useHRMS() || {};
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.IntegrationsView", "initialState_1"));
 
     return (
@@ -56,7 +56,7 @@ const IntegrationsView = () => {
             {/* Tab 1: Connectors */}
             {activeTab === 'connectors' && (
                 <div className={styles.connectorsGrid}>
-                    {connectors.map((c) => (
+                    {(connectors || []).map((c) => (
                         <div key={c.id} className={styles.connectorCard}>
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
@@ -103,7 +103,7 @@ const IntegrationsView = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
                             <strong>{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_19")}</strong>
-                            <div style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>{apiKeys[0].name}{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_20")}{apiKeys[0].prefix}{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_21")}</div>
+                            <div style={{ fontSize: '0.82rem', color: 'var(--text-2)' }}>{apiKeys?.[0]?.name || 'Primary Key'}{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_20")}{apiKeys?.[0]?.prefix || 'pk_live_sec'}{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_21")}</div>
                         </div>
                         <button className={styles.btnSecondary} onClick={() => showToast(translateText("components.Workspace.IntegrationsView","text_8d525e5f15"),translateText("components.Workspace.IntegrationsView","text_4241b54bbc"), 'success')}>
                             <Copy size={14} />{readData("components.Workspace.IntegrationsView", "IntegrationsView_text_22")}</button>

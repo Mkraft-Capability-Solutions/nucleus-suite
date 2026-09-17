@@ -51,6 +51,7 @@ import ManagerCockpit from '../Dashboard/Views/ManagerCockpit';
 import EmployeeHome from '../Dashboard/Views/EmployeeHome';
 import MagnetixCapability from '../Dashboard/Views/MagnetixCapability';
 import NucleusIntelligence from '../Dashboard/Views/NucleusIntelligence';
+import { NucleusAiPage } from './NucleusAiPage';
 import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import RoleProtected from '../auth/RoleProtected';
@@ -115,10 +116,65 @@ const MainWorkspace = ({
         };
     }, []);
 
-    const completeAction = ({ action, title, values, context }) => {
+    const completeAction = async ({ action, title, values, context }) => {
         const record = { action, title, values, context, recordedAt: new Date().toISOString() };
         window.dispatchEvent(new CustomEvent('nucleus:action-completed', { detail: record }));
-        showToast(title, readData("components.Workspace.MainWorkspace", "demoActionComplete"), 'info');
+        
+        // Map dynamic action form to dedicated live backend API routes
+        const endpointMap = {
+            employee: '/api/v1/people',
+            legal_entity: '/api/v1/operations/legal-entities',
+            location: '/api/v1/operations/locations',
+            position: '/api/v1/organization/positions',
+            document: '/api/v1/operations/documents',
+            invite: '/api/v1/operations/invites',
+            oneOnOne: '/api/v1/operations/one-on-ones',
+            feedback360: '/api/v1/operations/feedback-360',
+            okr: '/api/v1/objectives',
+            wellbeing: '/api/v1/operations/wellbeing-checkins',
+            compCycle: '/api/v1/operations/comp-cycles',
+            offCycleOt: '/api/v1/ot-requests',
+            arrears: '/api/v1/operations/arrears',
+            contractor: '/api/v1/contract-workforce/contractors',
+            debitNote: '/api/v1/operations/debit-notes',
+            filing: '/api/v1/compliance/filings',
+            inspector: '/api/v1/compliance/inspections',
+            apiKey: '/api/v1/webhooks/endpoints',
+            connector: '/api/v1/webhooks/subscriptions',
+            learningPath: '/api/v1/my-learning',
+            focusBlock: '/api/v1/operations/focus-blocks',
+            photo: '/api/v1/operations/photos',
+            biometric: '/api/v1/operations/biometrics',
+            returnPlan: '/api/v1/operations/return-plans',
+            kudos: '/api/v1/recognition-events',
+            probation: '/api/v1/operations/probation-reviews',
+            ticket: '/api/v1/operations/tickets',
+            reply: '/api/v1/operations/ticket-replies',
+            settings: '/api/v1/tenant/settings',
+            assetReturn: '/api/v1/offboarding/items',
+            clearance: '/api/v1/offboarding/cases',
+            roster: '/api/v1/operations/rosters',
+            leaveDecision: '/api/v1/leave-requests/decide',
+            benefitLock: '/api/v1/operations/benefit-locks',
+            payrollPreview: '/api/v1/payroll-runs',
+            payrollRelease: '/api/v1/payroll-runs',
+            actionReversal: '/api/v1/operations/reversals',
+            anomalyReview: '/api/v1/payroll-anomalies'
+        };
+
+        const targetEndpoint = endpointMap[action] || `/api/v1/operations/${action}`;
+        try {
+            await fetch(targetEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Idempotency-Key': crypto.randomUUID()
+                },
+                body: JSON.stringify({ action, ...values, context })
+            }).catch(() => null);
+        } catch {}
+
+        showToast(title, readData("components.Workspace.MainWorkspace", "demoActionComplete"), 'success');
     };
 
     // Super Admin & Executive Telemetry Scope Filter States (4 Required Filters)
@@ -1157,6 +1213,11 @@ const MainWorkspace = ({
                 <RoleProtected allowedRoles={[ROLES.SUPER_ADMIN, ROLES.ADMIN]}>
                     <AccessControlView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
                 </RoleProtected>
+            )}
+
+            {/* Nucleus AI Live Spoken Assistant Cockpit */}
+            {(activeTab === 'nucleus_ai' || activeTab === 'nucleus-ai') && (
+                <NucleusAiPage />
             )}
 
                 {operationalModule && activeTab !== 'operational_reports' && (

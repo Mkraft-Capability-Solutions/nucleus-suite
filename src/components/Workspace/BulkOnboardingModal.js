@@ -9,15 +9,17 @@ import { useHRMS } from '@/context/HRMSContext';
 import { downloadCSVTemplate } from '@/utils/exportUtils';
 
 const TEMPLATE_HEADERS = [
-    'employeeCode', 'salutation', 'firstName', 'lastName', 'officialEmail',
-    'mobile', 'gender', 'dateOfBirth', 'department', 'designation',
-    'location', 'joiningDate', 'workerClass', 'bankName', 'ifsc', 'accountNumber'
+    'employeeCode', 'salutation', 'firstName', 'middleName', 'lastName', 'officialEmail',
+    'personalEmail', 'mobile', 'gender', 'dateOfBirth', 'maritalStatus', 'bloodGroup',
+    'department', 'designation', 'location', 'joiningDate', 'workerClass', 'employmentType',
+    'panNumber', 'aadhaarNumber', 'uanNumber', 'pfNumber', 'bankName', 'ifsc', 'accountNumber',
+    'emergencyContactName', 'emergencyContactPhone', 'permanentAddress', 'currentAddress'
 ];
 
 const SAMPLE_BATCH_ROWS = [
-    { employeeCode: 'EMP-901', salutation: 'Mr', firstName: 'Aarav', lastName: 'Sharma', officialEmail: 'aarav.sharma@nucleus.com', mobile: '9876543210', gender: 'Male', dateOfBirth: '1992-05-14', department: 'Engineering', designation: 'Sr Frontend Dev', location: 'Bangalore Plant', joiningDate: '2026-10-01', workerClass: 'Permanent Full-Time', bankName: 'HDFC Bank', ifsc: 'HDFC0000123', accountNumber: '501002345678' },
-    { employeeCode: 'EMP-902', salutation: 'Ms', firstName: 'Diya', lastName: 'Patel', officialEmail: 'diya.patel@nucleus.com', mobile: '9876543211', gender: 'Female', dateOfBirth: '1995-08-22', department: 'Product', designation: 'Product Manager', location: 'Mumbai Corporate HQ', joiningDate: '2026-10-01', workerClass: 'Permanent Full-Time', bankName: 'ICICI Bank', ifsc: 'ICIC0000456', accountNumber: '000401567890' },
-    { employeeCode: 'EMP-903', salutation: 'Mr', firstName: 'Rohan', lastName: 'Verma', officialEmail: 'rohan.verma@nucleus.com', mobile: '9876543212', gender: 'Male', dateOfBirth: '1990-11-03', department: 'Operations', designation: 'Plant Supervisor', location: 'Delhi Logistics Hub', joiningDate: '2026-10-05', workerClass: 'Contractor', bankName: 'SBI', ifsc: 'SBIN0000789', accountNumber: '201987654321' }
+    { employeeCode: 'EMP-901', salutation: 'Mr', firstName: 'Aarav', middleName: '', lastName: 'Sharma', officialEmail: 'aarav.sharma@nucleus.com', personalEmail: 'aarav.sharma@gmail.com', mobile: '9876543210', gender: 'Male', dateOfBirth: '1992-05-14', maritalStatus: 'Married', bloodGroup: 'O+', department: 'Engineering', designation: 'Sr Frontend Dev', location: 'Bengaluru Corporate Office', joiningDate: '2026-10-01', workerClass: 'Permanent Full-Time', employmentType: 'Full-Time', panNumber: 'ABCDE1234F', aadhaarNumber: '123456789012', uanNumber: '100904567890', pfNumber: 'KA/BNG/0012345/000/0000101', bankName: 'HDFC Bank', ifsc: 'HDFC0000123', accountNumber: '501002345678', emergencyContactName: 'Pooja Sharma', emergencyContactPhone: '9876543299', permanentAddress: '12, Indiranagar, Bengaluru, KA', currentAddress: '12, Indiranagar, Bengaluru, KA' },
+    { employeeCode: 'EMP-902', salutation: 'Ms', firstName: 'Diya', middleName: '', lastName: 'Patel', officialEmail: 'diya.patel@nucleus.com', personalEmail: 'diya.patel@gmail.com', mobile: '9876543211', gender: 'Female', dateOfBirth: '1995-08-22', maritalStatus: 'Single', bloodGroup: 'B+', department: 'Product & Design', designation: 'Product Manager', location: 'Mumbai Delivery Center', joiningDate: '2026-10-01', workerClass: 'Permanent Full-Time', employmentType: 'Full-Time', panNumber: 'BCDEF2345G', aadhaarNumber: '234567890123', uanNumber: '100904567891', pfNumber: 'MH/BOM/0012345/000/0000102', bankName: 'ICICI Bank', ifsc: 'ICIC0000456', accountNumber: '000401567890', emergencyContactName: 'Rajesh Patel', emergencyContactPhone: '9876543298', permanentAddress: '45, Nariman Point, Mumbai, MH', currentAddress: '45, Nariman Point, Mumbai, MH' },
+    { employeeCode: 'EMP-903', salutation: 'Mr', firstName: 'Rohan', middleName: 'K', lastName: 'Verma', officialEmail: 'rohan.verma@nucleus.com', personalEmail: 'rohan.v@gmail.com', mobile: '9876543212', gender: 'Male', dateOfBirth: '1990-11-03', maritalStatus: 'Married', bloodGroup: 'A+', department: 'Operations', designation: 'Plant Supervisor', location: 'Gurugram Tech Park', joiningDate: '2026-10-05', workerClass: 'Contractor', employmentType: 'Contract', panNumber: 'CDEFG3456H', aadhaarNumber: '345678901234', uanNumber: '100904567892', pfNumber: 'HR/GUR/0012345/000/0000103', bankName: 'State Bank of India', ifsc: 'SBIN0000789', accountNumber: '201987654321', emergencyContactName: 'Suman Verma', emergencyContactPhone: '9876543297', permanentAddress: '78, DLF Phase 3, Gurugram, HR', currentAddress: '78, DLF Phase 3, Gurugram, HR' }
 ];
 
 export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
@@ -43,9 +45,15 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
         downloadCSVTemplate(
             'nucleus_bulk_employee_onboarding_template.csv',
             TEMPLATE_HEADERS,
-            ['EMP-1001', 'Mr', 'John', 'Doe', 'john.doe@company.com', '9876543210', 'Male', '1995-01-01', 'Engineering', 'Developer', 'Bangalore Plant', '2026-10-01', 'Permanent Full-Time', 'HDFC Bank', 'HDFC0000123', '501001234567']
+            [
+                'EMP-1001', 'Mr', 'Aarav', '', 'Sharma', 'aarav.sharma@nucleus.com',
+                'aarav.sharma@gmail.com', '9876543210', 'Male', '1992-05-14', 'Married', 'O+',
+                'Engineering', 'Sr Frontend Dev', 'Bengaluru Corporate Office', '2026-10-01', 'Permanent Full-Time', 'Full-Time',
+                'ABCDE1234F', '123456789012', '100904567890', 'KA/BNG/0012345/000/0000101', 'HDFC Bank', 'HDFC0000123', '501002345678',
+                'Pooja Sharma', '9876543299', '12, Indiranagar, Bengaluru, KA', '12, Indiranagar, Bengaluru, KA'
+            ]
         );
-        showToast('Template Downloaded', 'CSV template for bulk employee onboarding downloaded.', 'success');
+        showToast('Template Downloaded', 'Official CSV template with 29 master fields downloaded.', 'success');
     };
 
     const handleFileUpload = (e) => {
@@ -84,6 +92,10 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                     else if (low.includes('last')) newMap.lastName = h;
                     else if (low.includes('name')) newMap.firstName = h;
                     else if (low.includes('email') || low.includes('mail')) newMap.officialEmail = h;
+                    else if (low.includes('mobile') || low.includes('phone')) newMap.mobile = h;
+                    else if (low.includes('pan')) newMap.panNumber = h;
+                    else if (low.includes('aadhaar')) newMap.aadhaarNumber = h;
+                    else if (low.includes('uan')) newMap.uanNumber = h;
                     else if (low.includes('dept') || low.includes('department')) newMap.department = h;
                     else if (low.includes('role') || low.includes('designation') || low.includes('title')) newMap.designation = h;
                     else if (low.includes('loc') || low.includes('plant') || low.includes('city')) newMap.location = h;
@@ -104,17 +116,31 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
             const lastName = r[mappings.lastName] || r.lastName || r.LastName || (r.FullName ? r.FullName.split(' ').slice(1).join(' ') : `#${i + 1}`);
             const role = r[mappings.designation] || r.designation || r.Role || 'Specialist';
             const dept = r[mappings.department] || r.department || r.Department || 'Operations';
-            const location = r[mappings.location] || r.location || r.Location || 'Bangalore Plant';
+            const location = r[mappings.location] || r.location || r.Location || 'Bengaluru Corporate Office';
             const band = r.workerClass || r.WorkerClass || 'Permanent Full-Time';
             return {
                 id: code,
+                employeeCode: code,
                 name: `${firstName} ${lastName}`.trim(),
+                firstName,
+                lastName,
+                officialEmail: r[mappings.officialEmail] || r.officialEmail || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@nucleus.com`,
                 role,
                 dept,
                 manager: 'Ananya Roy',
                 location,
                 status: 'Active',
-                band
+                band,
+                panNumber: r.panNumber || r.PAN || '',
+                aadhaarNumber: r.aadhaarNumber || r.Aadhaar || '',
+                uanNumber: r.uanNumber || r.UAN || '',
+                pfNumber: r.pfNumber || r.PFNumber || '',
+                bankName: r.bankName || r.BankName || '',
+                ifsc: r.ifsc || r.IFSC || '',
+                accountNumber: r.accountNumber || r.AccountNumber || '',
+                joiningDate: r.joiningDate || r.DateOfJoining || new Date().toISOString().split('T')[0],
+                attributes: r,
+                metadata: r
             };
         });
 

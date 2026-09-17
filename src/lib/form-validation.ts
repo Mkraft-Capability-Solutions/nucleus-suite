@@ -42,5 +42,6 @@ export function validateForm(fields:FormField[],values:FormValues):Record<string
   if(start!==null&&end!==null&&end<start)errors[to]=t('validation','dateOrder');
  }
  if(values.fromTime&&values.toTime&&String(values.toTime)<=String(values.fromTime))errors.toTime=t('validation','timeOrder');
+ if(values.startTime&&values.endTime&&String(values.endTime)<=String(values.startTime))errors.endTime=t('validation','timeOrder');
  return errors;
 }

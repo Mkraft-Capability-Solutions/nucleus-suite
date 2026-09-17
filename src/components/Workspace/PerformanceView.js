@@ -11,7 +11,7 @@ import { useHRMS } from '@/context/HRMSContext';
 import { launchAction } from '@/lib/action-launcher';
 
 const PerformanceView = ({ onNavigate, onSelectConsole }) => {
-    const { okrs, addGoal, talentMatrix, showToast } = useHRMS();
+    const { okrs = [], addGoal, talentMatrix, showToast } = useHRMS() || {};
     const [activeSection, setActiveSection] = useState(readData("components.Workspace.PerformanceView", "initialState_1"));
 
     return (
@@ -82,7 +82,7 @@ const PerformanceView = ({ onNavigate, onSelectConsole }) => {
                         <span style={{ fontSize: '0.85rem', color: 'var(--signal)', fontWeight: '700' }}>{readData("components.Workspace.PerformanceView", "PerformanceView_text_12")}</span>
                     </div>
 
-                    {okrs.map((okr) => (
+                    {(okrs || []).map((okr) => (
                         <div key={okr.id} className={styles.okrItem}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                                 <div>

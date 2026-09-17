@@ -372,16 +372,23 @@ const TopNav = ({
                 <button
                     className={styles.iconBtn}
                     onClick={() => {
-                        if (typeof window !== 'undefined') {
-                            const hour = new Date().getHours();
-                            let timeGreeting = 'Good evening';
-                            if (hour < 12) timeGreeting = 'Good morning';
-                            else if (hour < 17) timeGreeting = 'Good afternoon';
-                            const name = user?.name ? user.name.trim().split(' ')[0] : 'Superadmin';
-                            const greetingText = `${timeGreeting}, ${name}! How can I help you today?`;
-                            
-                            window.dispatchEvent(new CustomEvent('nucleus:voice_navigation', { detail: { greeting: greetingText } }));
-                        }
+                        if (typeof window === 'undefined') return;
+
+                        const hour = new Date().getHours();
+                        let timeGreeting = 'Good evening';
+                        if (hour < 12) timeGreeting = 'Good morning';
+                        else if (hour < 17) timeGreeting = 'Good afternoon';
+                        const name = user?.name ? user.name.trim().split(' ')[0] : 'Superadmin';
+                        const greetingText = `${timeGreeting}, ${name}! How can I help you today?`;
+
+                        window.dispatchEvent(
+                            new CustomEvent('nucleus:voice_navigation', {
+                                detail: {
+                                    greeting: greetingText,
+                                    autoStart: true,
+                                },
+                            })
+                        );
                     }}
                     title="Nucleus Talk — Voice Assist (Click or Speak)"
                     aria-label="Nucleus Talk"

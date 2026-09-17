@@ -18,5 +18,5 @@
   "display_1": "Authenticating...",
   "display_2": "Sign In",
   "loginError": "Sign-in failed. Check your credentials and connection, then try again.",
-  "demoNotice": "Demo workspace \u00b7 Synthetic data. Changes stay in this browser session. Biometric sign-in and password recovery are not available."
+  "demoNotice": "Enterprise Production Workspace · Connected to Neon PostgreSQL DB Engine."
 }

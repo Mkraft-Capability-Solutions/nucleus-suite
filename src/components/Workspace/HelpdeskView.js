@@ -21,7 +21,15 @@ const HelpdeskView = () => {
     const [policyQuery, setPolicyQuery] = useState(readData("components.Workspace.HelpdeskView", "initialState_3"));
     const [groundedResult, setGroundedResult] = useState(readData("components.Workspace.HelpdeskView", "groundedResult_1"));
 
-    const tickets = readData("components.Workspace.HelpdeskView", "tickets_2");
+    const initialTickets = readData("components.Workspace.HelpdeskView", "tickets_2") || [];
+    const [ticketList, setTicketList] = useState(initialTickets);
+    const [replyText, setReplyText] = useState('');
+
+    // Modal Form State
+    const [modalCategory, setModalCategory] = useState('Payroll & Tax');
+    const [modalPriority, setModalPriority] = useState('Medium');
+    const [modalSubject, setModalSubject] = useState('');
+    const [modalDescription, setModalDescription] = useState('');
 
     const sampleQueries = readData("components.Workspace.HelpdeskView", "sampleQueries_3");
 
@@ -46,8 +54,85 @@ const HelpdeskView = () => {
     };
 
     const filteredTickets = selectedCategory === 'all'
-        ? tickets
-        : tickets.filter(t => t.category.toLowerCase().includes(selectedCategory.toLowerCase()));
+        ? ticketList
+        : ticketList.filter(t => (t.category || '').toLowerCase().includes(selectedCategory.toLowerCase()));
+
+    const handleCreateTicket = async (e) => {
+        e?.preventDefault?.();
+        if (!modalSubject.trim() || !modalDescription.trim()) {
+            return;
+        }
+
+        const newT = {
+            id: `TCK-${Date.now().toString().slice(-4)}`,
+            category: modalCategory,
+            priority: modalPriority.toUpperCase(),
+            subject: modalSubject.trim(),
+            description: modalDescription.trim(),
+            status: 'OPEN',
+            slaHours: 24,
+            messages: [
+                {
+                    sender: 'You',
+                    role: 'Requester',
+                    time: 'Just now',
+                    text: modalDescription.trim()
+                }
+            ]
+        };
+
+        setTicketList(prev => [newT, ...prev]);
+
+        try {
+            await fetch('/api/v1/helpdesk/tickets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    category: modalCategory,
+                    priority: modalPriority,
+                    subject: modalSubject.trim(),
+                    description: modalDescription.trim()
+                })
+            });
+        } catch (err) {
+            console.warn('Ticket creation sync warning:', err);
+        }
+
+        setIsRaiseModalOpen(false);
+        setModalSubject('');
+        setModalDescription('');
+    };
+
+    const handleSendReply = async () => {
+        if (!replyText.trim() || !selectedTicket) return;
+
+        const newMsg = {
+            sender: 'You',
+            role: 'Requester',
+            time: 'Just now',
+            text: replyText.trim()
+        };
+
+        const updatedSelected = {
+            ...selectedTicket,
+            messages: [...(selectedTicket.messages || []), newMsg]
+        };
+        setSelectedTicket(updatedSelected);
+
+        setTicketList(prev => prev.map(t => t.id === selectedTicket.id ? updatedSelected : t));
+
+        try {
+            await fetch(`/api/v1/helpdesk/tickets/${selectedTicket.id}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ text: replyText.trim() })
+            });
+        } catch (err) {
+            console.warn('Reply message sync warning:', err);
+        }
+
+        setReplyText('');
+    };
 
     return (
         <div className={styles.container}>
@@ -185,8 +270,11 @@ const HelpdeskView = () => {
                                             type="text"
                                             placeholder={readData("components.Workspace.HelpdeskView", "HelpdeskView_placeholder_29")}
                                             className={styles.replyInput}
+                                            value={replyText}
+                                            onChange={(e) => setReplyText(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && handleSendReply()}
                                         />
-                                        <button className={styles.btnPrimary} onClick={() => launchAction('reply', { ticket: selectedTicket.id })}>
+                                        <button className={styles.btnPrimary} onClick={handleSendReply}>
                                             <Send size={14} />{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_30")}</button>
                                     </div>
                                 </div>
@@ -202,39 +290,61 @@ const HelpdeskView = () => {
                                     <h3>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_31")}</h3>
                                     <button className={styles.closeBtn} onClick={() => setIsRaiseModalOpen(false)}>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_32")}</button>
                                 </div>
-                                <div className={styles.modalBody}>
+                                <form onSubmit={handleCreateTicket} className={styles.modalBody}>
                                     <div className={styles.formGroup}>
                                         <label>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_33")}</label>
-                                        <select className={styles.formSelect}>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_34")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_35")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_36")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_37")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_38")}</option>
+                                        <select
+                                            className={styles.formSelect}
+                                            value={modalCategory}
+                                            onChange={(e) => setModalCategory(e.target.value)}
+                                        >
+                                            <option value="Payroll & Tax">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_34")}</option>
+                                            <option value="Leave & Attendance">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_35")}</option>
+                                            <option value="Hardware / IT Assets">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_36")}</option>
+                                            <option value="Benefits & Claims">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_37")}</option>
+                                            <option value="General Query">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_38")}</option>
                                         </select>
                                     </div>
                                     <div className={styles.formGroup}>
                                         <label>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_39")}</label>
-                                        <select className={styles.formSelect}>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_40")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_41")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_42")}</option>
-                                            <option>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_43")}</option>
+                                        <select
+                                            className={styles.formSelect}
+                                            value={modalPriority}
+                                            onChange={(e) => setModalPriority(e.target.value)}
+                                        >
+                                            <option value="Low">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_40")}</option>
+                                            <option value="Medium">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_41")}</option>
+                                            <option value="High">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_42")}</option>
+                                            <option value="Urgent">{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_43")}</option>
                                         </select>
                                     </div>
                                     <div className={styles.formGroup}>
                                         <label>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_44")}</label>
-                                        <input type="text" placeholder={readData("components.Workspace.HelpdeskView", "HelpdeskView_placeholder_45")} className={styles.formInput} />
+                                        <input
+                                            type="text"
+                                            placeholder={readData("components.Workspace.HelpdeskView", "HelpdeskView_placeholder_45")}
+                                            className={styles.formInput}
+                                            value={modalSubject}
+                                            onChange={(e) => setModalSubject(e.target.value)}
+                                            required
+                                        />
                                     </div>
                                     <div className={styles.formGroup}>
                                         <label>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_46")}</label>
-                                        <textarea rows={4} placeholder={readData("components.Workspace.HelpdeskView", "HelpdeskView_placeholder_47")} className={styles.formTextarea}></textarea>
+                                        <textarea
+                                            rows={4}
+                                            placeholder={readData("components.Workspace.HelpdeskView", "HelpdeskView_placeholder_47")}
+                                            className={styles.formTextarea}
+                                            value={modalDescription}
+                                            onChange={(e) => setModalDescription(e.target.value)}
+                                            required
+                                        ></textarea>
                                     </div>
                                     <div className={styles.modalFooter}>
-                                        <button className={styles.btnSecondary} onClick={() => setIsRaiseModalOpen(false)}>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_48")}</button>
-                                        <button className={styles.btnPrimary} onClick={() => { setIsRaiseModalOpen(false); launchAction('ticket'); }}>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_49")}</button>
+                                        <button type="button" className={styles.btnSecondary} onClick={() => setIsRaiseModalOpen(false)}>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_48")}</button>
+                                        <button type="submit" className={styles.btnPrimary}>{readData("components.Workspace.HelpdeskView", "HelpdeskView_text_49")}</button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     )}

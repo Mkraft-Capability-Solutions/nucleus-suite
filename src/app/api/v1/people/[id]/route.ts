@@ -27,6 +27,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         joiningDate: item.joining_date,
         basicSalary: item.basic_salary_minor === null ? null : { amount: (item.basic_salary_minor / 100).toFixed(2), currency: item.currency },
         salaryMasked: item.salaryMasked,
+        metadata: item.metadata || {},
+        details: item.metadata || {},
       },
       requestId,
       self: `/api/v1/people/${item.id}`,

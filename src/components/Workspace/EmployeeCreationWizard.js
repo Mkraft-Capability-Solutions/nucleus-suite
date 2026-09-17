@@ -222,7 +222,7 @@ export default function EmployeeCreationWizard({
         effectiveFrom: new Date().toISOString().split('T')[0],
         changeReason: 'New hire onboarding',
 
-        // Section 13: Labour Law & OT Classification (Demo Points 2, 3, 4, 7, 8)
+        // Section 13: Labour Law & OT Classification
         workerCategory: 'PERM',           // PERM | CONTRACT | THIRD_PARTY_EMP | THIRD_PARTY_HELPER | TRAINEE_DET | TRAINEE_GET
         hasRestDays: true,                // false for daily-wage contractual, 3rd-party helpers
         otEligibility: 'ALL_DAYS',        // ALL_DAYS | REST_HOLIDAYS_ONLY | NONE
@@ -446,6 +446,17 @@ export default function EmployeeCreationWizard({
             }
         }
 
+        // Sanitize repeating arrays before saving
+        const sanitizedDetails = {
+            ...formData,
+            experience: (formData.experience || []).filter(e => e && e.employer && e.employer.trim() !== ''),
+            education: (formData.education || []).map((edu, idx) => ({
+                ...edu,
+                isHighest: edu.isHighest !== undefined ? edu.isHighest : idx === 0,
+                yearOfPassing: edu.yearOfPassing || edu.passingYear || 2020
+            }))
+        };
+
         const newEmployee = {
             id: formData.employeeCode,
             name: `${formData.firstName} ${formData.lastName}`.trim(),
@@ -456,7 +467,7 @@ export default function EmployeeCreationWizard({
             status: formData.status,
             band: formData.workerClass,
             mobile: formData.mobile,
-            details: formData
+            details: sanitizedDetails
         };
 
         if (onSave) onSave(newEmployee);
@@ -1213,7 +1224,7 @@ export default function EmployeeCreationWizard({
                                 </label>
                             </div>
 
-                            {/* Labour Law & OT Classification — Demo Points 2, 3, 4, 7, 8, 13 */}
+                            {/* Labour Law & OT Classification */}
                             <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Labour Law & OT Classification</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>

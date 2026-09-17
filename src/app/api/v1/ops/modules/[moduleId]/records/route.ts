@@ -40,12 +40,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ mod
     return NextResponse.json({ error: `Validation Failed: ${parseResult.error.issues.map(e => e.message).join(", ")}` }, { status: 400 });
   }
 
-  const query = db.insert(table).values({
+  const insertValues: any = {
     tenantId: access.tenantId,
     employeeId: body.employeeId || null,
     attributes: parseResult.data,
     status: "active"
-  }).returning().toSQL();
+  };
+  if (moduleId === "roster_schedule") {
+    if (parseResult.data?.startTime) insertValues.startTime = String(parseResult.data.startTime);
+    if (parseResult.data?.endTime) insertValues.endTime = String(parseResult.data.endTime);
+  }
+
+  const query = db.insert(table).values(insertValues).returning().toSQL();
 
   const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
   return NextResponse.json({ data: inserted });

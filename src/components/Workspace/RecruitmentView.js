@@ -16,12 +16,13 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     const {t: translateText}=useTranslation();
 
     const {
-        candidates, moveCandidate, showToast,
-        positions, createJobRequisition, sanctionedQuotas,
-        employeeReferrals, submitEmployeeReferral, employees,
+        candidates: initialCandidates = [], showToast,
+        positions = [], createJobRequisition, sanctionedQuotas = {},
+        employeeReferrals = [], submitEmployeeReferral, employees = [],
         calculateDepartmentCapacity, establishmentRulesetVersion
-    } = useHRMS();
+    } = useHRMS() || {};
 
+    const [candidateList, setCandidateList] = useState(initialCandidates || []);
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.RecruitmentView", "initialState_1")); // pipeline, establishment, referrals, interviews, bias
 
     // Requisition Modal State
@@ -42,6 +43,20 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
     const [refDept, setRefDept] = useState(readData("components.Workspace.RecruitmentView", "initialState_8"));
 
     const stages = readData("components.Workspace.RecruitmentView", "stages_1");
+
+    const handleMoveCandidate = async (candidateId, nextStageKey) => {
+        setCandidateList(prev => prev.map(c => c.id === candidateId ? { ...c, stage: nextStageKey } : c));
+        try {
+            await fetch(`/api/v1/applications/${candidateId}/advance`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ to: nextStageKey })
+            });
+            showToast?.('Candidate Advanced', `Candidate moved to stage: ${nextStageKey}`, 'success');
+        } catch (err) {
+            console.warn('Candidate advance warning:', err);
+        }
+    };
 
     const departmentsList = Object.keys(sanctionedQuotas || readData("components.Workspace.RecruitmentView", "departmentsList_2"));
 
@@ -90,7 +105,21 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             waiverReason: isExecWaiver ? waiverReason : null
         });
 
-        if (res.success) {
+        if (res?.success) {
+            try {
+                fetch('/api/v1/requisitions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                    body: JSON.stringify({
+                        title: reqTitle,
+                        dept: reqDept,
+                        requisitionType: reqType,
+                        budget: budgetNum,
+                        isExecutiveWaiver: isExecWaiver,
+                        waiverReason: isExecWaiver ? waiverReason : null
+                    })
+                }).catch(() => null);
+            } catch {}
             setIsReqModalOpen(false);
             setReqTitle('');
             setIsExecWaiver(false);
@@ -128,6 +157,17 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             role: refRole,
             dept: refDept
         });
+        try {
+            fetch('/api/v1/referrals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    candidateName: refCandidateName,
+                    role: refRole,
+                    dept: refDept
+                })
+            }).catch(() => null);
+        } catch {}
         setIsRefModalOpen(false);
         setRefCandidateName('');
     };
@@ -277,7 +317,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             {activeTab === 'pipeline' && (
                 <div className={styles.pipelineGrid}>
                     {stages.map((stage) => {
-                        const stageCandidates = candidates.filter(c => c.stage === stage.key);
+                        const stageCandidates = (candidateList.length > 0 ? candidateList : (candidates || [])).filter(c => c.stage === stage.key);
                         return (
                             <div key={stage.key} className={styles.column}>
                                 <div className={styles.colHeader}>
@@ -308,7 +348,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                                     style={{ width: '100%', padding: '0.4rem', fontSize: '0.78rem', justifyContent: 'center' }}
                                                     onClick={() => {
                                                         const nextIdx = stages.findIndex(s => s.key === stage.key) + 1;
-                                                        if (nextIdx < stages.length) moveCandidate(cand.id, stages[nextIdx].key);
+                                                        if (nextIdx < stages.length) handleMoveCandidate(cand.id, stages[nextIdx].key);
                                                     }}
                                                 >{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_28")}</button>
                                             )}
@@ -327,7 +367,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
             {activeTab === 'establishment' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     {/* Policy Banner */}
-                    <div className={styles.card} style={{ borderLeft: '4px solid #05CD99' }}>
+                    <div className={styles.card} style={{ borderLeft: '4px solid var(--status-ok)' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
                             <div>
                                 <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -406,7 +446,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {positions.map(pos => (
+                                    {(positions || []).map(pos => (
                                         <tr key={pos.id} style={{ borderBottom: '1px solid var(--line-soft, #eee)' }}>
                                             <td style={{ padding: '0.65rem 0.85rem', fontFamily: 'var(--f-num, monospace)', fontWeight: 700 }}>
                                                 {pos.id}
@@ -486,7 +526,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {employeeReferrals.map(ref => (
+                                    {(employeeReferrals || []).map(ref => (
                                         <tr key={ref.id} style={{ borderBottom: '1px solid var(--line-soft, #eee)' }}>
                                             <td style={{ padding: '0.65rem 0.85rem', fontFamily: 'var(--f-num, monospace)', fontWeight: 700 }}>
                                                 {ref.id}
@@ -664,7 +704,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
                                                 onChange={(e) => setPrevIncumbent(e.target.value)}
                                                 className={styles.formInput}
                                             >
-                                                {employees.map(e => (
+                                                {(employees || []).map(e => (
                                                     <option key={e.id} value={e.id}>{e.name}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_98")}{e.id}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_99")}</option>
                                                 ))}
                                             </select>

@@ -117,28 +117,28 @@ const DataImportModal = ({ isOpen, onClose }) => {
         const templates = {
             employee: {
                 filename: 'Employee_Master_Sample.csv',
-                content: 'StaffCode,FullName,Department,Role,DateOfJoining,GrossCTC,WorkEmail,Location,Phone\nMK-101,Aarav Sharma,Engineering,Senior Architect,2026-01-15,2400000,aarav.s@nucleus.com,Bangalore,9876543210\nMK-102,Diya Patel,Product,Senior PM,2026-02-01,2100000,diya.p@nucleus.com,Mumbai,9876543211\nMK-103,Rohan Verma,Operations,Lead Specialist,2026-03-01,1600000,rohan.v@nucleus.com,Delhi,9876543212'
+                content: 'StaffCode,FirstName,LastName,Department,Role,DateOfJoining,GrossCTC,WorkEmail,Location,Phone,PAN,Aadhaar,UAN,BankName,AccountNumber,IFSC\nMK-101,Aarav,Sharma,Engineering,Senior Architect,2026-01-15,2400000,aarav.s@nucleus.com,Bengaluru Corporate Office,9876543210,ABCDE1234F,123456789012,100904567890,HDFC Bank,501002345678,HDFC0000123\nMK-102,Diya,Patel,Product & Design,Senior PM,2026-02-01,2100000,diya.p@nucleus.com,Mumbai Delivery Center,9876543211,BCDEF2345G,234567890123,100904567891,ICICI Bank,000401567890,ICIC0000456\nMK-103,Rohan,Verma,Operations,Lead Specialist,2026-03-01,1600000,rohan.v@nucleus.com,Gurugram Tech Park,9876543212,CDEFG3456H,345678901234,100904567892,State Bank of India,201987654321,SBIN0000789'
             },
             biometric: {
                 filename: 'Attendance_Punches_Sample.csv',
-                content: 'EmpId,StaffName,PunchDate,InTime,OutTime,TerminalID,Location,Status\nMK-101,Aarav Sharma,2026-09-14,09:02,18:15,TERM-01,Main Gate,Present\nMK-102,Diya Patel,2026-09-14,08:55,18:05,TERM-02,Floor 3,Present\nMK-103,Rohan Verma,2026-09-14,09:30,18:30,TERM-01,Main Gate,Present'
+                content: 'EmpId,StaffName,PunchDate,InTime,OutTime,TerminalID,Location,Status,VerificationMethod\nMK-101,Aarav Sharma,2026-09-14,09:02,18:15,TERM-01,Main Gate,Present,Fingerprint\nMK-102,Diya Patel,2026-09-14,08:55,18:05,TERM-02,Floor 3,Present,Facial Recognition\nMK-103,Rohan Verma,2026-09-14,09:30,18:30,TERM-01,Main Gate,Present,RFID Badge'
             },
             leave: {
                 filename: 'Leave_Balances_Sample.csv',
-                content: 'EmpId,StaffName,LeaveType,OpeningBalance,AccruedDays,UsedDays,Year\nMK-101,Aarav Sharma,CL,12,6,2,2026\nMK-101,Aarav Sharma,SL,10,5,1,2026\nMK-102,Diya Patel,EL,18,9,3,2026'
+                content: 'EmpId,StaffName,LeaveType,OpeningBalance,AccruedDays,UsedDays,PendingDays,AvailableBalance,Year\nMK-101,Aarav Sharma,CL,12,6,2,0,16,2026\nMK-101,Aarav Sharma,SL,10,5,1,0,14,2026\nMK-102,Diya Patel,EL,18,9,3,1,23,2026'
             },
             payroll: {
                 filename: 'Salary_Structure_Sample.csv',
-                content: 'EmpId,StaffName,BasicSalary,HRA,SpecialAllowance,PFEmployer,StatutoryBonus,GrossMonthly\nMK-101,Aarav Sharma,100000,50000,40000,12000,8000,200000\nMK-102,Diya Patel,87500,43750,35000,10500,7000,175000'
+                content: 'EmpId,StaffName,BasicSalary,HRA,SpecialAllowance,PFEmployer,ProfessionalTax,IncomeTaxTDS,StatutoryBonus,GrossMonthly,NetPay\nMK-101,Aarav Sharma,100000,50000,40000,12000,200,8500,8000,200000,179300\nMK-102,Diya Patel,87500,43750,35000,10500,200,6800,7000,175000,157500'
             },
             candidates: {
                 filename: 'Candidates_ATS_Sample.csv',
-                content: 'JobReqCode,CandidateName,Email,Phone,CurrentCTC,ExpectedCTC,ExperienceYears,KeySkills\nREQ-TECH-01,Siddharth Mehta,sid.m@test.com,9876500001,1800000,2200000,6.5,React TypeScript Next.js\nREQ-TECH-02,Ananya Roy,ananya.r@test.com,9876500002,1400000,1750000,4.0,Node.js PostgreSQL Cloud'
+                content: 'JobReqCode,CandidateName,Email,Phone,CurrentCTC,ExpectedCTC,NoticePeriodDays,ExperienceYears,KeySkills,CurrentLocation\nREQ-TECH-01,Siddharth Mehta,sid.m@test.com,9876500001,1800000,2200000,30,6.5,React TypeScript Next.js,Bengaluru\nREQ-TECH-02,Ananya Roy,ananya.r@test.com,9876500002,1400000,1750000,15,4.0,Node.js PostgreSQL Cloud,Mumbai'
             }
         };
 
         const t = templates[typeKey] || templates.employee;
-        const blob = new Blob([t.content], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(['\uFEFF' + t.content], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);

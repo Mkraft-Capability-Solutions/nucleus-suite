@@ -14,6 +14,7 @@ import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
 import VoiceNavigator from '@/components/VoiceNavigator';
+import { NucleusDock } from '@/components/Workspace/NucleusDock';
 import CtcExceptionModal from '@/components/Dashboard/Modals/CtcExceptionModal';
 import DataImportModal from '@/components/Workspace/DataImportModal';
 import { HRMSProvider, useHRMS } from '@/context/HRMSContext';
@@ -95,6 +96,7 @@ const AppContent = () => {
   // Dual-Pane Navigation Modal state (Modules Left, Sub-modules Right)
   const [isModulesOpen, setIsModulesOpen] = useState(false);
   const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
+  const [voiceNavDetail, setVoiceNavDetail] = useState(null);
   const [isCtcModalOpen, setIsCtcModalOpen] = useState(false);
   const [ctcModalData, setCtcModalData] = useState(null);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
@@ -114,7 +116,10 @@ const AppContent = () => {
         }
       }
     };
-    const handleVoiceNav = () => setIsVoiceModalOpen(true);
+    const handleVoiceNav = (e) => {
+      setVoiceNavDetail(e?.detail || null);
+      setIsVoiceModalOpen(true);
+    };
     const handleCtcException = (e) => {
       setCtcModalData(e.detail || null);
       setIsCtcModalOpen(true);
@@ -526,7 +531,11 @@ const AppContent = () => {
       {/* Voice-Powered Natural Language Navigator */}
       <VoiceNavigator
         isOpen={isVoiceModalOpen}
-        onClose={() => setIsVoiceModalOpen(false)}
+        onClose={() => {
+          setIsVoiceModalOpen(false);
+          setVoiceNavDetail(null);
+        }}
+        initialDetail={voiceNavDetail}
         onNavigate={(tab, domain, sub) => {
           setActiveTab(tab);
           if (domain) setActiveDomain(domain);
@@ -542,6 +551,9 @@ const AppContent = () => {
           if (modalType === 'chat') setActiveFloatingDrawer('chat');
         }}
       />
+
+      {/* Floating Persistent Voice Session Dock */}
+      <NucleusDock onOpenVoiceModal={() => setIsVoiceModalOpen(true)} />
 
       {/* Talent CTC Exception Approval Modal */}
       <CtcExceptionModal

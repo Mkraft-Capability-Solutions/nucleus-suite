@@ -34,6 +34,13 @@ export default function HROpsConsole({ onNavigate }) {
 
     const handleModalSubmit = ({ id, actionType, remarks, rerouteTargetName, item }) => {
         setApprovalList(prev => prev.filter(a => a.id !== id));
+        try {
+            fetch('/api/v1/workspace/approvals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ id, action: actionType, remarks, rerouteTargetName, item })
+            }).catch(() => null);
+        } catch {}
         if (actionType === 'approve') {
             showToast?.(translateText("components.Dashboard.Views.HROpsConsole","text_e847085d37"),translateText("components.Dashboard.Views.HROpsConsole","text_91801f7d34", {value1: String(item.name), value2: String(item.type), value3: String(remarks ? ` • Note: ${remarks}` : '')}), 'success');
         } else if (actionType === 'reject') {
@@ -216,7 +223,22 @@ export default function HROpsConsole({ onNavigate }) {
                     </div>
                     <div className={shared.anomalyActions}>
                         <button className={shared.btnAnomalyPrimary} disabled title={readData("components.Dashboard.Views.HROpsConsole", "unavailableAction")}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_89")}</button>
-                        <button className={shared.btnAnomalySecondary} onClick={() => setDismissAnomaly(true)}>{readData("components.Dashboard.Views.HROpsConsole", "content_text_90")}</button>
+                        <button
+                            className={shared.btnAnomalySecondary}
+                            onClick={async () => {
+                                setDismissAnomaly(true);
+                                try {
+                                    await fetch('/api/v1/payroll-anomalies/00000000-0000-0000-0000-000000000001/dismiss', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                                        body: JSON.stringify({ reason: 'Dismissed by HR Ops Administrator from console ribbon' })
+                                    });
+                                    showToast?.('Anomaly Dismissed', 'Payroll finding marked as dismissed and logged in audit trail.', 'info');
+                                } catch (err) {
+                                    console.warn('Anomaly dismissal warning:', err);
+                                }
+                            }}
+                        >{readData("components.Dashboard.Views.HROpsConsole", "content_text_90")}</button>
                     </div>
                 </div>
             )}

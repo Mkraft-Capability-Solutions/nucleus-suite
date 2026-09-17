@@ -27,6 +27,13 @@ export default function ManagerCockpit({ onNavigate }) {
 
     const handleModalSubmit = ({ id, actionType, remarks, rerouteTargetName, item }) => {
         setApprovals(prev => prev.filter(a => a.id !== id));
+        try {
+            fetch('/api/v1/workspace/approvals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({ id, action: actionType, remarks, rerouteTargetName, item })
+            }).catch(() => null);
+        } catch {}
         if (actionType === 'approve') {
             setUndoToast(`✓ Approved ${item.name} (${item.type})${remarks ? ` • Note: ${remarks}` : ''}`);
         } else if (actionType === 'reject') {

@@ -12,6 +12,11 @@ npm-debug.log*
 /.netlify/
 /.vercel/
 
+# Other Secure Directories and Files
+/internal*/
+
+# Agent Definitions
+INTERNAL*.*
 
 # TypeScript & Next.js Type Caches
 *.tsbuildinfo
@@ -56,3 +61,5 @@ next-panic-*.log
 /.agents/
 /.vscode/
 /.idea/
+/.claude-/
+

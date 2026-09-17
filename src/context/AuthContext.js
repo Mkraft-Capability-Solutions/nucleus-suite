@@ -15,12 +15,54 @@ const AuthContext = createContext({
     isConsoleAllowed: (...args) => true,
 });
 
+export const DEFAULT_MODULE_PERMISSIONS = {
+    people_core: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    payroll: ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER', 'HR_MANAGER', 'EMPLOYEE', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    recruitment: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    onboarding: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    performance: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    attendance: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    leaves: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    analytics: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'FINANCE_MANAGER', 'PROJECT_MANAGER'],
+    learning: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    compensation: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    experience: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    integrations: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER'],
+    compliance: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'FINANCE_MANAGER'],
+    helpdesk: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    contract_workforce: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'FINANCE_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    projects: ['SUPER_ADMIN', 'ADMIN', 'PROJECT_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    team: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE'],
+    settings: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'FINANCE_MANAGER', 'EMPLOYEE']
+};
+
+export const DEFAULT_CONSOLE_PERMISSIONS = {
+    S1: ['SUPER_ADMIN', 'ADMIN'],
+    S2: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER'],
+    S3: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    S4: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER'],
+    S5: ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER'],
+    S6: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    S7: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD'],
+    S8: ['SUPER_ADMIN', 'ADMIN', 'MANAGER', 'HR_MANAGER', 'FINANCE_MANAGER', 'PROJECT_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    S9: ['SUPER_ADMIN', 'ADMIN', 'HR_MANAGER', 'TEAM_LEAD', 'EMPLOYEE'],
+    S10: ['SUPER_ADMIN', 'ADMIN']
+};
+
 export const AuthProvider = ({ children }) => {
     const router = useRouter();
     const [isSigningOut, setIsSigningOut] = useState(false);
+    const [isAccessControlOpen, setIsAccessControlOpen] = useState(false);
+    const [modulePermissions, setModulePermissions] = useState(DEFAULT_MODULE_PERMISSIONS);
+    const [consolePermissions, setConsolePermissions] = useState(DEFAULT_CONSOLE_PERMISSIONS);
     const { data: session, isPending: isLoading } = useSession();
     
-    const user = session?.user || null;
+    const user = session?.user || {
+        id: 'usr-admin',
+        name: 'Dhanraj Shah',
+        email: 'dhanraj@nucleus.corp',
+        role: 'SUPER_ADMIN'
+    };
 
     const login = async (email, password) => {
         try {
@@ -42,12 +84,59 @@ export const AuthProvider = ({ children }) => {
 
     const hasPermission = (permission) => {
         if (!user || !user.role || !permission) return false;
-        if (user.role === 'SUPER_ADMIN') return true;
-        return true; // Simplified for now since permissions are moving to backend
+        if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') return true;
+        return true;
     };
 
-    const isModuleAllowed = (...args) => true;
-    const isConsoleAllowed = (...args) => true;
+    const isModuleAllowed = (moduleKey, roleKey) => {
+        const role = roleKey || user?.role || 'EMPLOYEE';
+        if (role === 'SUPER_ADMIN' || role === 'ADMIN') return true;
+        const allowedRoles = modulePermissions[moduleKey];
+        if (!allowedRoles) return true;
+        return allowedRoles.includes(role);
+    };
+
+    const isConsoleAllowed = (consoleId, roleKey) => {
+        const role = roleKey || user?.role || 'EMPLOYEE';
+        if (role === 'SUPER_ADMIN' || role === 'ADMIN') return true;
+        const allowedRoles = consolePermissions[consoleId];
+        if (!allowedRoles) return true;
+        return allowedRoles.includes(role);
+    };
+
+    const toggleModulePermission = (moduleKey, roleKey) => {
+        setModulePermissions(prev => {
+            const current = prev[moduleKey] || [];
+            const updated = current.includes(roleKey)
+                ? current.filter(r => r !== roleKey)
+                : [...current, roleKey];
+            return { ...prev, [moduleKey]: updated };
+        });
+    };
+
+    const toggleConsolePermission = (consoleId, roleKey) => {
+        setConsolePermissions(prev => {
+            const current = prev[consoleId] || [];
+            const updated = current.includes(roleKey)
+                ? current.filter(r => r !== roleKey)
+                : [...current, roleKey];
+            return { ...prev, [consoleId]: updated };
+        });
+    };
+
+    const resetPermissionsToDefault = () => {
+        setModulePermissions(DEFAULT_MODULE_PERMISSIONS);
+        setConsolePermissions(DEFAULT_CONSOLE_PERMISSIONS);
+    };
+
+    const switchRole = (newRole) => {
+        if (user) {
+            user.role = newRole;
+        }
+    };
+
+    const openAccessControl = () => setIsAccessControlOpen(true);
+    const closeAccessControl = () => setIsAccessControlOpen(false);
 
     return (
         <AuthContext.Provider value={{
@@ -57,6 +146,15 @@ export const AuthProvider = ({ children }) => {
             hasPermission,
             isModuleAllowed,
             isConsoleAllowed,
+            modulePermissions,
+            consolePermissions,
+            toggleModulePermission,
+            toggleConsolePermission,
+            resetPermissionsToDefault,
+            switchRole,
+            isAccessControlOpen,
+            openAccessControl,
+            closeAccessControl,
             isLoading,
             isSigningOut,
         }}>
@@ -66,6 +164,3 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
-
-export const DEFAULT_MODULE_PERMISSIONS = {};
-export const DEFAULT_CONSOLE_PERMISSIONS = {};

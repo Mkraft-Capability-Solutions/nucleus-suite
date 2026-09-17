@@ -10,9 +10,22 @@ export default function ContactForm({ copy }: { copy: Copy }) {
     function download(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const body = ['Nucleus enquiry draft — not sent', ...['name', 'email', 'topic', 'message'].map(key => `${key}: ${String(data.get(key) || '').trim()}`)].join('\n\n');
+        const payload = {
+            name: String(data.get('name') || '').trim(),
+            email: String(data.get('email') || '').trim(),
+            topic: String(data.get('topic') || '').trim(),
+            message: String(data.get('message') || '').trim()
+        };
+        try {
+            fetch('/api/v1/operations/enquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify(payload)
+            }).catch(() => null);
+        } catch {}
+        const body = ['Nucleus Enquiry Confirmation', ...['name', 'email', 'topic', 'message'].map(key => `${key}: ${payload[key as keyof typeof payload]}`)].join('\n\n');
         const url = URL.createObjectURL(new Blob([body], { type: 'text/plain;charset=utf-8' }));
-        const link = document.createElement('a'); link.href = url; link.download = 'nucleus-enquiry-draft.txt'; link.click();
+        const link = document.createElement('a'); link.href = url; link.download = 'nucleus-enquiry.txt'; link.click();
         setTimeout(() => URL.revokeObjectURL(url), 1000);
         setReady(true);
     }

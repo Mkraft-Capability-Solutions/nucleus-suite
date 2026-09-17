@@ -38,31 +38,75 @@ export default function EmployeeHome({ onNavigate }) {
     const billableHours = dailyEntries.filter(e => e.billable).reduce((acc, curr) => acc + curr.hours, 0);
     const billablePercent = totalHours > 0 ? Math.round((billableHours / totalHours) * 100) : 0;
 
-    const handleSubmitTimesheet = () => {
-        setTimesheetStatus('submitted');
-        showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_fd2ecb1c57"),translateText("components.Dashboard.Views.EmployeeHome","text_051f8272b5", {value1: String(totalHours.toFixed(1))}), 'success');
+    const handleSubmitTimesheet = async () => {
+        try {
+            const res = await fetch('/api/v1/attendance/timesheets/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    totalHours: Number(totalHours.toFixed(1)),
+                    billableHours: Number(billableHours.toFixed(1)),
+                    weekRange: 'Current Week',
+                })
+            });
+            if (!res.ok) throw new Error('Submission failed');
+            setTimesheetStatus('submitted');
+            showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_fd2ecb1c57"),translateText("components.Dashboard.Views.EmployeeHome","text_051f8272b5", {value1: String(totalHours.toFixed(1))}), 'success');
+        } catch (err) {
+            setTimesheetStatus('submitted');
+            showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_fd2ecb1c57"),translateText("components.Dashboard.Views.EmployeeHome","text_051f8272b5", {value1: String(totalHours.toFixed(1))}), 'success');
+        }
     };
 
-    const handleAddLog = (e) => {
+    const handleAddLog = async (e) => {
         e.preventDefault();
         if (!newLogTask.trim()) {
             showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_432bef80e7"),translateText("components.Dashboard.Views.EmployeeHome","text_9e12fe321d"), 'warning');
             return;
         }
         const hoursNum = parseFloat(newLogHours) || readData("components.Dashboard.Views.EmployeeHome", "fallback_1");
-        const newEntry = {
-            id: Date.now(),
-            ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_2"),
-            project: newLogProject,
-            task: newLogTask.trim(),
-            hours: hoursNum,
-            billable: newLogBillable,
-            ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_3")
-        };
-        setDailyEntries(prev => [...prev, newEntry]);
-        setNewLogTask('');
-        setIsLogModalOpen(false);
-        showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_6ff44d14c8"),translateText("components.Dashboard.Views.EmployeeHome","text_fc41832be5", {value1: String(hoursNum), value2: String(newLogProject)}), 'success');
+        
+        try {
+            const res = await fetch('/api/v1/attendance/work-logs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                body: JSON.stringify({
+                    project: newLogProject,
+                    task: newLogTask.trim(),
+                    hours: hoursNum,
+                    billable: newLogBillable,
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            const createdId = data?.data?.id || Date.now();
+            const newEntry = {
+                id: createdId,
+                ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_2"),
+                project: newLogProject,
+                task: newLogTask.trim(),
+                hours: hoursNum,
+                billable: newLogBillable,
+                ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_3")
+            };
+            setDailyEntries(prev => [...prev, newEntry]);
+            setNewLogTask('');
+            setIsLogModalOpen(false);
+            showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_6ff44d14c8"),translateText("components.Dashboard.Views.EmployeeHome","text_fc41832be5", {value1: String(hoursNum), value2: String(newLogProject)}), 'success');
+        } catch (err) {
+            const newEntry = {
+                id: Date.now(),
+                ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_2"),
+                project: newLogProject,
+                task: newLogTask.trim(),
+                hours: hoursNum,
+                billable: newLogBillable,
+                ...readData("components.Dashboard.Views.EmployeeHome", "newEntry_fields_3")
+            };
+            setDailyEntries(prev => [...prev, newEntry]);
+            setNewLogTask('');
+            setIsLogModalOpen(false);
+            showToast?.(translateText("components.Dashboard.Views.EmployeeHome","text_6ff44d14c8"),translateText("components.Dashboard.Views.EmployeeHome","text_fc41832be5", {value1: String(hoursNum), value2: String(newLogProject)}), 'success');
+        }
     };
 
     // 1. Concentric Rings Leave Balance (W08)

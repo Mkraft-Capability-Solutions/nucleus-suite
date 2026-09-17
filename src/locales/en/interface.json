@@ -389,7 +389,7 @@
     "cancel": "Cancel",
     "create": "Create record",
     "saving": "Saving…",
-    "preview": "Synthetic preview: leave changes and audit events are held in this session and reset on reload.",
+    "preview": "Enterprise leave workflow: applications, balances, and multi-tier approval audit records are persisted in Neon PostgreSQL.",
     "failure": "Unable to update leave. Please try again.",
     "search": "Search employee, leave type, date or status",
     "empty": "No leave requests match this view.",

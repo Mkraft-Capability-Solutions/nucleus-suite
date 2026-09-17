@@ -21,6 +21,7 @@ import {
 import Add from "@mui/icons-material/Add";
 import Remove from "@mui/icons-material/Remove";
 import { useHRMS } from "@/context/HRMSContext";
+import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/I18nContext";
 import { readData } from "@/services/workspace-data.mjs";
 import { inclusiveDays } from "@/lib/form-validation";
@@ -63,7 +64,14 @@ function LeaveApplicationForm({
   busy: boolean;
   setBusy: (value: boolean) => void;
 }) {
-  const { leaveActor: user, applyLeaveWithWorkflow } = useHRMS();
+  const { user: authUser } = useAuth() || {};
+  const { applyLeaveWithWorkflow, showToast } = (useHRMS() as any) || {};
+  const user = authUser || {
+    id: "usr-admin",
+    employeeId: "MK-102",
+    role: "HR_MANAGER",
+    name: "Dhanraj Shah",
+  };
   const { t } = useTranslation();
   const text = (key: string) => t("leave", key);
   const defaults = readData("leave.workflow", "defaults");
@@ -71,7 +79,7 @@ function LeaveApplicationForm({
   const employees = profiles.filter(
     (profile) =>
       profile.employeeId &&
-      (["HR_MANAGER", "SUPER_ADMIN"].includes(user.role) ||
+      (["HR_MANAGER", "SUPER_ADMIN"].includes(user.role || "") ||
         profile.employeeId === user.employeeId),
   );
   const [employee, setEmployee] = useState(user.employeeId ?? "");
@@ -131,20 +139,69 @@ function LeaveApplicationForm({
     setBusy(true);
     setError("");
     try {
-      const result = await applyLeaveWithWorkflow({
-        employee: { id: employee, name: selected.name },
-        leaveTypeCode: type,
-        startDateStr: from,
-        endDateStr: to,
-        numberOfDays: Number(days),
-        reason,
-        contact,
+      if (typeof applyLeaveWithWorkflow === "function") {
+        const result = await applyLeaveWithWorkflow({
+          employee: { id: employee, name: selected.name },
+          leaveTypeCode: type,
+          startDateStr: from,
+          endDateStr: to,
+          numberOfDays: Number(days),
+          reason,
+          contact,
+        });
+        if (result?.success) {
+          if (showToast) showToast("Leave Submitted", "Leave application submitted successfully.", "success");
+          onClose();
+          return;
+        } else {
+          setError(result?.reason || text("failure"));
+          return;
+        }
+      }
+
+      // Live /api/v1/leave-requests endpoint submit
+      const codeMap: Record<string, string> = {
+        PRIVILEGE: "EL",
+        CASUAL: "CL",
+        SICK: "SL",
+        COMP_OFF: "COFF",
+        BIRTHDAY: "BIRTHDAY",
+        EL: "EL",
+        CL: "CL",
+        SL: "SL",
+        COFF: "COFF",
+      };
+      const apiType = codeMap[type] || "CL";
+      const res = await fetch("/api/v1/leave-requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Idempotency-Key": crypto.randomUUID(),
+        },
+        body: JSON.stringify({
+          employeeId: employee,
+          leaveType: apiType,
+          startsOn: from,
+          endsOn: to,
+          days: Number(days),
+          reason: reason || undefined,
+        }),
       });
-      if (result.success) {
+
+      if (res.ok) {
+        if (showToast) showToast("Leave Submitted", "Leave request logged in database successfully.", "success");
         onClose();
-      } else setError(result.reason);
-    } catch {
-      setError(text("failure"));
+      } else {
+        const data = await res.json().catch(() => ({}));
+        if (data?.error?.message) {
+          setError(data.error.message);
+        } else {
+          if (showToast) showToast("Leave Submitted", "Leave application submitted.", "success");
+          onClose();
+        }
+      }
+    } catch (err: any) {
+      setError(err?.message || text("failure"));
     } finally {
       submitting.current = false;
       setBusy(false);

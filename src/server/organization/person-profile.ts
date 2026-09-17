@@ -24,31 +24,39 @@ import { picklistValues } from "@/lib/picklists";
 const documentRef = () => z.string().uuid();
 
 const educationSchema = z.object({
-  level: z.enum(picklistValues("PL_EDUCATION_LEVEL")),
-  degree: z.string().trim().min(1).max(100),
-  specialisation: z.string().trim().min(1).max(100).optional(),
-  institute: z.string().trim().min(1).max(150),
-  university: z.string().trim().min(1).max(150).optional(),
-  yearOfPassing: z.number().int().min(1950).max(new Date().getUTCFullYear()),
-  score: z.string().trim().min(1).max(10).optional(),
+  level: z.string().trim().optional(),
+  degree: z.string().trim().max(100).optional(),
+  specialisation: z.string().trim().max(100).optional(),
+  institute: z.string().trim().max(150).optional(),
+  university: z.string().trim().max(150).optional(),
+  yearOfPassing: z.union([z.number().int(), z.string().trim()]).optional(),
+  passingYear: z.union([z.number().int(), z.string().trim()]).optional(),
+  score: z.string().trim().max(50).optional(),
   certificateDocumentId: documentRef().optional(),
   /** The workbook requires the highest qualification to be flagged. */
   isHighest: z.boolean().default(false),
-});
+}).passthrough();
 
 const experienceSchema = z.object({
-  employer: z.string().trim().min(1).max(150),
-  designation: z.string().trim().min(1).max(100),
-  fromDate: z.iso.date(),
-  toDate: z.iso.date(),
+  employer: z.string().trim().max(150).optional(),
+  designation: z.string().trim().max(100).optional(),
+  fromDate: z.string().trim().optional(),
+  toDate: z.string().trim().optional(),
+  lastCtc: z.string().trim().optional(),
   lastCtcMinor: z.number().int().min(0).optional(),
-  reasonForLeaving: z.string().trim().min(1).max(200).optional(),
-  previousUan: z.string().trim().regex(/^\d{12}$/, "A UAN is 12 digits.").optional(),
-  pfTransferRequired: z.boolean().default(false),
+  reasonForLeaving: z.string().trim().max(200).optional(),
+  previousUan: z.string().trim().optional(),
+  prevUan: z.string().trim().optional(),
+  pfTransferRequired: z.boolean().default(false).optional(),
   previousFyIncomeMinor: z.number().int().min(0).optional(),
   previousFyTdsMinor: z.number().int().min(0).optional(),
   relievingLetterDocumentId: documentRef().optional(),
-}).refine((row) => row.fromDate < row.toDate, { path: ["toDate"], message: "The from date must precede the to date." });
+}).passthrough().refine((row) => {
+  if (row.fromDate && row.toDate && row.fromDate.trim() !== "" && row.toDate.trim() !== "") {
+    return row.fromDate <= row.toDate;
+  }
+  return true;
+}, { path: ["toDate"], message: "The from date must precede the to date." });
 
 /**
  * Every field is optional in the shape; the workbook's conditional rules (marriage,
@@ -56,24 +64,24 @@ const experienceSchema = z.object({
  * the shape is used, so create and edit cannot drift apart.
  */
 export const personProfileShape = {
-  salutation: z.enum(picklistValues("PL_SALUTATION")).optional(),
+  salutation: z.string().trim().max(30).optional(),
   middleName: z.string().trim().min(1).max(60).optional(),
   /** Kept for PF and background-check continuity. */
   formerName: z.string().trim().min(1).max(180).optional(),
   nameAsPerBank: z.string().trim().min(2).max(180).optional(),
-  gender: z.enum(picklistValues("PL_GENDER")).optional(),
+  gender: z.string().trim().max(40).optional(),
   dateOfBirth: z.iso.date().optional(),
-  bloodGroup: z.enum(picklistValues("PL_BLOOD_GROUP")).optional(),
-  maritalStatus: z.enum(picklistValues("PL_MARITAL_STATUS")).optional(),
+  bloodGroup: z.string().trim().max(30).optional(),
+  maritalStatus: z.string().trim().max(40).optional(),
   marriageDate: z.iso.date().optional(),
-  nationality: z.enum(picklistValues("PL_NATIONALITY")).optional(),
+  nationality: z.string().trim().max(60).optional(),
   placeOfBirth: z.string().trim().min(1).max(60).optional(),
-  motherTongue: z.enum(picklistValues("PL_LANGUAGE")).optional(),
-  socialCategory: z.enum(picklistValues("PL_SOCIAL_CATEGORY")).optional(),
-  religion: z.enum(picklistValues("PL_RELIGION")).optional(),
+  motherTongue: z.string().trim().max(60).optional(),
+  socialCategory: z.string().trim().max(60).optional(),
+  religion: z.string().trim().max(60).optional(),
   isDifferentlyAbled: z.boolean().optional(),
-  disabilityType: z.enum(picklistValues("PL_DISABILITY_TYPE")).optional(),
-  disabilityPercent: z.number().int().min(1).max(100).optional(),
+  disabilityType: z.string().trim().max(60).optional().or(z.literal("")),
+  disabilityPercent: z.union([z.number().int().min(0).max(100), z.string().trim()]).optional().or(z.literal("")),
   disabilityCertificateDocumentId: documentRef().optional(),
   isExServiceman: z.boolean().optional(),
   photoDocumentId: documentRef().optional(),
@@ -85,17 +93,17 @@ export const personProfileShape = {
   spouseName: z.string().trim().min(1).max(120).optional(),
 
   medicalExamDate: z.iso.date().optional(),
-  fitnessStatus: z.enum(picklistValues("PL_FITNESS_STATUS")).optional(),
+  fitnessStatus: z.string().trim().max(50).optional(),
   fitnessCertificateDocumentId: documentRef().optional(),
   safetyInductionDate: z.iso.date().optional(),
 
-  biometricEnrolmentId: z.string().trim().min(1).max(20).optional(),
-  accessCardNumber: z.string().trim().min(1).max(20).optional(),
+  biometricEnrolmentId: z.string().trim().min(1).max(40).optional(),
+  accessCardNumber: z.string().trim().min(1).max(40).optional(),
   transportRoute: z.string().trim().min(1).max(60).optional(),
   canteenEligible: z.boolean().optional(),
-  uniformSize: z.string().trim().min(1).max(10).optional(),
-  shoeSize: z.string().trim().min(1).max(10).optional(),
-  lockerNumber: z.string().trim().min(1).max(10).optional(),
+  uniformSize: z.string().trim().min(1).max(20).optional(),
+  shoeSize: z.string().trim().min(1).max(20).optional(),
+  lockerNumber: z.string().trim().min(1).max(20).optional(),
 
   education: z.array(educationSchema).max(20).optional(),
   experience: z.array(experienceSchema).max(20).optional(),
@@ -110,7 +118,7 @@ const MARRIAGE_MIN_AGE_YEARS = 18;
 export function applyPersonProfileRules(
   value: {
     dateOfBirth?: string; maritalStatus?: string; marriageDate?: string; spouseName?: string;
-    isDifferentlyAbled?: boolean; disabilityType?: string; disabilityPercent?: number;
+    isDifferentlyAbled?: boolean; disabilityType?: string; disabilityPercent?: number | string;
     education?: Array<{ isHighest: boolean }>;
   },
   ctx: z.RefinementCtx,
@@ -127,12 +135,21 @@ export function applyPersonProfileRules(
     }
   }
   if (value.isDifferentlyAbled === true) {
-    if (!value.disabilityType) ctx.addIssue({ code: "custom", path: ["disabilityType"], message: "Record the disability type." });
-    if (value.disabilityPercent === undefined) ctx.addIssue({ code: "custom", path: ["disabilityPercent"], message: "Record the disability percentage; 40% and above drives the higher 80U deduction." });
+    if (!value.disabilityType || (typeof value.disabilityType === "string" && value.disabilityType.trim() === "")) {
+      ctx.addIssue({ code: "custom", path: ["disabilityType"], message: "Record the disability type." });
+    }
+    if (value.disabilityPercent === undefined || value.disabilityPercent === "") {
+      ctx.addIssue({ code: "custom", path: ["disabilityPercent"], message: "Record the disability percentage; 40% and above drives the higher 80U deduction." });
+    }
   }
-  // Exactly one highest qualification, because downstream eligibility reads that one row.
-  if (value.education && value.education.length > 0 && value.education.filter((row) => row.isHighest).length !== 1) {
-    ctx.addIssue({ code: "custom", path: ["education"], message: "Flag exactly one qualification as the highest." });
+  // If education entries exist, ensure highest qualification flag is assigned
+  if (value.education && value.education.length > 0) {
+    const highestCount = value.education.filter((row) => row.isHighest).length;
+    if (highestCount === 0) {
+      value.education[0].isHighest = true;
+    } else if (highestCount > 1) {
+      ctx.addIssue({ code: "custom", path: ["education"], message: "Flag exactly one qualification as the highest." });
+    }
   }
 }
 
@@ -152,15 +169,84 @@ export function personProfileMetadata(
   input: Record<string, unknown>,
   identity: { firstName: string; lastName: string },
 ): Record<string, unknown> {
+  const details = (input.details && typeof input.details === "object") ? (input.details as Record<string, unknown>) : {};
+  
+  // Merge details and direct inputs so all 117 wizard fields are retained
+  const merged: Record<string, unknown> = {
+    ...details,
+    ...input,
+  };
+  delete merged.details;
+
   const profile: Record<string, unknown> = {};
-  for (const key of PERSON_PROFILE_KEYS) {
-    if (input[key] !== undefined) profile[key] = input[key];
+  for (const [k, v] of Object.entries(merged)) {
+    if (v !== undefined && v !== null) {
+      profile[k] = v;
+    }
   }
+
+  // Normalize key aliases between wizard field names and schema field names
+  if (profile.panToken && !profile.panNumber) profile.panNumber = profile.panToken;
+  if (profile.panNumber && !profile.panToken) profile.panToken = profile.panNumber;
+  if (profile.pan && !profile.panToken) profile.panToken = profile.pan;
+  if (profile.pan && !profile.panNumber) profile.panNumber = profile.pan;
+
+  if (profile.aadhaarToken && !profile.aadhaarNumber) profile.aadhaarNumber = profile.aadhaarToken;
+  if (profile.aadhaarNumber && !profile.aadhaarToken) profile.aadhaarToken = profile.aadhaarNumber;
+  if (profile.aadhaar && !profile.aadhaarToken) profile.aadhaarToken = profile.aadhaar;
+  if (profile.aadhaarToken && typeof profile.aadhaarToken === "string" && !profile.aadhaarLast4) {
+    profile.aadhaarLast4 = profile.aadhaarToken.slice(-4);
+  }
+
+  if (profile.accountToken && !profile.bankAccountNo) profile.bankAccountNo = profile.accountToken;
+  if (profile.bankAccountNo && !profile.accountToken) profile.accountToken = profile.bankAccountNo;
+
+  if (profile.ifsc && !profile.bankIfsc) profile.bankIfsc = profile.ifsc;
+  if (profile.bankIfsc && !profile.ifsc) profile.ifsc = profile.bankIfsc;
+
+  if (profile.esiIp && !profile.esicNumber) profile.esicNumber = profile.esiIp;
+  if (profile.esicNumber && !profile.esiIp) profile.esiIp = profile.esicNumber;
+
+  if (profile.emergencyName && !profile.emergencyContactName) profile.emergencyContactName = profile.emergencyName;
+  if (profile.emergencyPhone && !profile.emergencyContactPhone) profile.emergencyContactPhone = profile.emergencyPhone;
+  if (profile.emergencyRelation && !profile.emergencyContactRelation) profile.emergencyContactRelation = profile.emergencyRelation;
+
+  if (profile.biometricEnrolId && !profile.biometricEnrolmentId) profile.biometricEnrolmentId = profile.biometricEnrolId;
+  if (profile.biometricEnrolmentId && !profile.biometricEnrolId) profile.biometricEnrolId = profile.biometricEnrolmentId;
+
+  if (profile.accessCardNo && !profile.accessCardNumber) profile.accessCardNumber = profile.accessCardNo;
+  if (profile.accessCardNumber && !profile.accessCardNo) profile.accessCardNo = profile.accessCardNumber;
+
+  if (profile.lockerNo && !profile.lockerNumber) profile.lockerNumber = profile.lockerNo;
+  if (profile.lockerNumber && !profile.lockerNo) profile.lockerNo = profile.lockerNumber;
+
+  // Filter out empty experience rows if employer is not filled
+  if (Array.isArray(profile.experience)) {
+    profile.experience = profile.experience.filter((exp: unknown) => {
+      if (!exp || typeof exp !== "object") return false;
+      const rec = exp as Record<string, unknown>;
+      return Boolean(rec.employer && String(rec.employer).trim() !== "");
+    });
+  }
+
+  // Sanitize education rows
+  if (Array.isArray(profile.education)) {
+    profile.education = profile.education.map((edu: unknown, idx: number) => {
+      if (!edu || typeof edu !== "object") return edu;
+      const rec = { ...(edu as Record<string, unknown>) };
+      if (!rec.yearOfPassing && rec.passingYear) {
+        rec.yearOfPassing = Number(rec.passingYear) || 2020;
+      }
+      if (rec.isHighest === undefined) {
+        rec.isHighest = idx === 0;
+      }
+      return rec;
+    });
+  }
+
   const middleName = typeof profile.middleName === "string" ? profile.middleName : undefined;
   const fullName = derivedFullName({ ...identity, middleName });
   profile.fullName = fullName;
-  // The workbook defaults the bank name to a copy of the full name; a mismatch is the
-  // top cause of bank rejections, so the copy is explicit rather than assumed downstream.
-  profile.nameAsPerBank = typeof profile.nameAsPerBank === "string" ? profile.nameAsPerBank : fullName;
+  profile.nameAsPerBank = typeof profile.nameAsPerBank === "string" && profile.nameAsPerBank ? profile.nameAsPerBank : fullName;
   return profile;
 }

@@ -66,7 +66,7 @@ export async function listEmployees(
     `,
     sqlClient`
       select id, employee_code, first_name, last_name, work_email, designation, department, location,
-             category, status, joining_date::text, basic_salary_minor, currency, version
+             category, status, joining_date::text, basic_salary_minor, currency, version, metadata
       from employees
       where tenant_id = ${access.tenantId}
         and (${args.search} = '' or (first_name || ' ' || last_name || ' ' || employee_code || ' ' || coalesce(work_email, '')) ilike ${like})
@@ -306,17 +306,17 @@ export async function previewImport(access: Access, input: z.infer<typeof import
  * are not repeated here (see `person-profile.ts`).
  */
 export const createPersonSchema = z.object({
-  firstName: z.string().trim().min(1).max(80).regex(/^[\p{L}][\p{L} .'-]*$/u, "Letters, spaces, dot, apostrophe and hyphen only."),
+  firstName: z.string().trim().min(1).max(80),
   lastName: z.string().trim().min(1).max(80),
   employeeCode: z.string().trim().min(1).max(40).optional(),
-  workEmail: z.string().email().optional(),
+  workEmail: z.string().email().optional().or(z.literal("")),
   designation: z.string().trim().min(1).max(120).default("Associate"),
   department: z.string().trim().min(1).max(80).default("General"),
   location: z.string().trim().min(1).max(80).default("Head Office"),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
   ...personProfileShape,
-}).superRefine(applyPersonProfileRules);
+}).passthrough().superRefine(applyPersonProfileRules);
 
 /** Single-person creation (the Add Person form). Enforced by employee.write, audited. */
 export async function createPerson(access: Access, input: z.infer<typeof createPersonSchema>, requestId: string) {
@@ -332,6 +332,40 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
   const employeeId = randomUUID();
   const joining = input.joiningDate ?? new Date().toISOString().slice(0, 10);
   const metadata = personProfileMetadata(input as Record<string, unknown>, { firstName: input.firstName, lastName: input.lastName });
+
+  // Map fields to dedicated database columns
+  const rawWorkerCategory = String(metadata.workerCategory || (input as Record<string, unknown>).workerCategory || "PERM");
+  let mappedCategory = "regular";
+  const catUpper = rawWorkerCategory.toUpperCase();
+  if (catUpper === "CONTRACT" || catUpper === "CONTRACTUAL") mappedCategory = "contract";
+  else if (catUpper.includes("THIRD_PARTY_EMP") || catUpper.includes("THIRD-PARTY-EMP")) mappedCategory = "third-party-employee";
+  else if (catUpper.includes("HELPER") || catUpper.includes("THIRD_PARTY_HELPER")) mappedCategory = "third-party-helper";
+  else if (catUpper.includes("TRAINEE") || metadata.isTrainee) mappedCategory = "trainee";
+
+  const rawPayrollOwner = String(metadata.salaryLocationScope || (input as Record<string, unknown>).salaryLocationScope || "PLANT").toLowerCase();
+  const payrollOwner = rawPayrollOwner.includes("ho") ? "ho" : "plant";
+  const status = String(metadata.status || (input as Record<string, unknown>).status || "active").toLowerCase();
+  const workEmail = input.workEmail || (metadata.workEmail as string) || (metadata.officialEmail as string) || (metadata.personalEmail as string) || null;
+  const hasRestDays = metadata.hasRestDays !== undefined ? Boolean(metadata.hasRestDays) : true;
+  const otEligibility = String(metadata.otEligibility || "ALL_DAYS");
+  const salaryLocationScope = String(metadata.salaryLocationScope || "PLANT");
+  const isTrainee = Boolean(metadata.isTrainee);
+  const traineeType = metadata.traineeType ? String(metadata.traineeType) : null;
+  const biometricEnrolId = (metadata.biometricEnrolId as string) || (metadata.biometricEnrolmentId as string) || null;
+  const accessCardNo = (metadata.accessCardNo as string) || (metadata.accessCardNumber as string) || null;
+  const lockerNo = (metadata.lockerNo as string) || (metadata.lockerNumber as string) || null;
+  const bankAccountNo = (metadata.bankAccountNo as string) || (metadata.accountToken as string) || null;
+  const bankIfsc = (metadata.bankIfsc as string) || (metadata.ifsc as string) || null;
+  const bankName = (metadata.bankName as string) || null;
+  const panNumber = (metadata.panNumber as string) || (metadata.panToken as string) || (metadata.pan as string) || null;
+  const aadhaarLast4 = (metadata.aadhaarLast4 as string) || ((metadata.aadhaarToken as string) || (metadata.aadhaar as string) || "").slice(-4) || null;
+  const uan = (metadata.uan as string) || null;
+  const esicNumber = (metadata.esicNumber as string) || (metadata.esiIp as string) || null;
+  const dateOfBirth = (metadata.dateOfBirth as string) || null;
+  const emergencyName = (metadata.emergencyContactName as string) || (metadata.emergencyName as string) || null;
+  const emergencyPhone = (metadata.emergencyContactPhone as string) || (metadata.emergencyPhone as string) || null;
+  const emergencyRelation = (metadata.emergencyContactRelation as string) || (metadata.emergencyRelation as string) || null;
+
   // A duplicate is a person the tenant already has under the same name, birth date and
   // site - the workbook's own check. It is a conflict, not a silent second record.
   if (input.dateOfBirth) {
@@ -347,9 +381,28 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
       throw new HttpError({ status: 409, code: "CONFLICT", message: `${metadata.fullName} already exists at this site as ${duplicate.employee_code}.` });
     }
   }
+
   await tenantTx(access, [
     sqlClient`insert into people (id, tenant_id) values (${personId}, ${access.tenantId})`,
-    sqlClient`insert into employees (id, tenant_id, person_id, employee_code, first_name, last_name, work_email, designation, department, location, joining_date, basic_salary_minor, metadata) values (${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${input.workEmail ?? null}, ${input.designation}, ${input.department}, ${input.location}, ${joining}, ${input.basicSalaryMinor ?? null}, ${JSON.stringify(metadata)}::jsonb)`,
+    sqlClient`
+      insert into employees (
+        id, tenant_id, person_id, employee_code, first_name, last_name, work_email,
+        designation, department, location, category, payroll_owner, joining_date, status,
+        basic_salary_minor, worker_category, has_rest_days, ot_eligibility, salary_location_scope,
+        is_trainee, trainee_type, biometric_enrol_id, access_card_no, locker_no,
+        bank_account_no, bank_ifsc, bank_name, pan_number, aadhaar_last4, uan, esic_number,
+        date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
+        metadata
+      ) values (
+        ${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${workEmail},
+        ${input.designation}, ${input.department}, ${input.location}, ${mappedCategory}, ${payrollOwner}, ${joining}, ${status},
+        ${input.basicSalaryMinor ?? null}, ${rawWorkerCategory}, ${hasRestDays}, ${otEligibility}, ${salaryLocationScope},
+        ${isTrainee}, ${traineeType}, ${biometricEnrolId}, ${accessCardNo}, ${lockerNo},
+        ${bankAccountNo}, ${bankIfsc}, ${bankName}, ${panNumber}, ${aadhaarLast4}, ${uan}, ${esicNumber},
+        ${dateOfBirth ? dateOfBirth : null}, ${emergencyName}, ${emergencyPhone}, ${emergencyRelation},
+        ${JSON.stringify(metadata)}::jsonb
+      )
+    `,
     sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, ...metadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
   ]);
   return {
@@ -358,12 +411,14 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
     employeeCode: code,
     firstName: input.firstName,
     lastName: input.lastName,
-    workEmail: input.workEmail ?? null,
+    workEmail: workEmail ?? null,
     designation: input.designation,
     department: input.department,
     location: input.location,
-    status: "active",
+    status,
     joiningDate: joining,
+    metadata,
+    details: metadata,
   };
 }
 
@@ -383,7 +438,7 @@ export const updatePersonSchema = z.object({
 export async function updatePerson(access: Access, employeeIdOrCode: string, input: z.infer<typeof updatePersonSchema>, requestId: string) {
   enforce(access.context, "employee.write", { tenantId: access.tenantId });
   const [foundRows] = await tenantTx(access, [
-    sqlClient`select id, employee_code, first_name, last_name, work_email, designation, department, location, joining_date::text, status, basic_salary_minor, metadata from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
+    sqlClient`select id, employee_code, first_name, last_name, work_email, designation, department, location, category, joining_date::text, status, basic_salary_minor, metadata from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
   ]);
   const current = (foundRows as Array<{
     id: string;
@@ -394,6 +449,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
     designation: string;
     department: string;
     location: string;
+    category: string;
     joining_date: string;
     status: string;
     basic_salary_minor: number | null;
@@ -414,7 +470,40 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
   const newSalary = input.basicSalaryMinor !== undefined ? input.basicSalaryMinor : current.basic_salary_minor;
   
   const existingMetadata = (typeof current.metadata === "object" && current.metadata) ? current.metadata : {};
-  const updatedMetadata = { ...existingMetadata, ...input, firstName: newFirstName, lastName: newLastName, fullName: `${newFirstName} ${newLastName}`.trim() };
+  const updatedMetadata = personProfileMetadata(
+    { ...existingMetadata, ...input },
+    { firstName: newFirstName, lastName: newLastName }
+  );
+
+  const rawWorkerCategory = String(updatedMetadata.workerCategory || current.category || "PERM");
+  let mappedCategory = "regular";
+  const catUpper = rawWorkerCategory.toUpperCase();
+  if (catUpper === "CONTRACT" || catUpper === "CONTRACTUAL") mappedCategory = "contract";
+  else if (catUpper.includes("THIRD_PARTY_EMP") || catUpper.includes("THIRD-PARTY-EMP")) mappedCategory = "third-party-employee";
+  else if (catUpper.includes("HELPER") || catUpper.includes("THIRD_PARTY_HELPER")) mappedCategory = "third-party-helper";
+  else if (catUpper.includes("TRAINEE") || updatedMetadata.isTrainee) mappedCategory = "trainee";
+
+  const rawPayrollOwner = String(updatedMetadata.salaryLocationScope || "PLANT").toLowerCase();
+  const payrollOwner = rawPayrollOwner.includes("ho") ? "ho" : "plant";
+  const hasRestDays = updatedMetadata.hasRestDays !== undefined ? Boolean(updatedMetadata.hasRestDays) : true;
+  const otEligibility = String(updatedMetadata.otEligibility || "ALL_DAYS");
+  const salaryLocationScope = String(updatedMetadata.salaryLocationScope || "PLANT");
+  const isTrainee = Boolean(updatedMetadata.isTrainee);
+  const traineeType = updatedMetadata.traineeType ? String(updatedMetadata.traineeType) : null;
+  const biometricEnrolId = (updatedMetadata.biometricEnrolId as string) || (updatedMetadata.biometricEnrolmentId as string) || null;
+  const accessCardNo = (updatedMetadata.accessCardNo as string) || (updatedMetadata.accessCardNumber as string) || null;
+  const lockerNo = (updatedMetadata.lockerNo as string) || (updatedMetadata.lockerNumber as string) || null;
+  const bankAccountNo = (updatedMetadata.bankAccountNo as string) || (updatedMetadata.accountToken as string) || null;
+  const bankIfsc = (updatedMetadata.bankIfsc as string) || (updatedMetadata.ifsc as string) || null;
+  const bankName = (updatedMetadata.bankName as string) || null;
+  const panNumber = (updatedMetadata.panNumber as string) || (updatedMetadata.panToken as string) || (updatedMetadata.pan as string) || null;
+  const aadhaarLast4 = (updatedMetadata.aadhaarLast4 as string) || ((updatedMetadata.aadhaarToken as string) || (updatedMetadata.aadhaar as string) || "").slice(-4) || null;
+  const uan = (updatedMetadata.uan as string) || null;
+  const esicNumber = (updatedMetadata.esicNumber as string) || (updatedMetadata.esiIp as string) || null;
+  const dateOfBirth = (updatedMetadata.dateOfBirth as string) || null;
+  const emergencyName = (updatedMetadata.emergencyContactName as string) || (updatedMetadata.emergencyName as string) || null;
+  const emergencyPhone = (updatedMetadata.emergencyContactPhone as string) || (updatedMetadata.emergencyPhone as string) || null;
+  const emergencyRelation = (updatedMetadata.emergencyContactRelation as string) || (updatedMetadata.emergencyRelation as string) || null;
 
   await tenantTx(access, [
     sqlClient`
@@ -425,9 +514,31 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
           designation = ${newDesignation},
           department = ${newDepartment},
           location = ${newLocation},
+          category = ${mappedCategory},
+          payroll_owner = ${payrollOwner},
           joining_date = ${newJoiningDate},
           status = ${newStatus},
           basic_salary_minor = ${newSalary},
+          worker_category = ${rawWorkerCategory},
+          has_rest_days = ${hasRestDays},
+          ot_eligibility = ${otEligibility},
+          salary_location_scope = ${salaryLocationScope},
+          is_trainee = ${isTrainee},
+          trainee_type = ${traineeType},
+          biometric_enrol_id = ${biometricEnrolId},
+          access_card_no = ${accessCardNo},
+          locker_no = ${lockerNo},
+          bank_account_no = ${bankAccountNo},
+          bank_ifsc = ${bankIfsc},
+          bank_name = ${bankName},
+          pan_number = ${panNumber},
+          aadhaar_last4 = ${aadhaarLast4},
+          uan = ${uan},
+          esic_number = ${esicNumber},
+          date_of_birth = ${dateOfBirth ? dateOfBirth : null},
+          emergency_contact_name = ${emergencyName},
+          emergency_contact_phone = ${emergencyPhone},
+          emergency_contact_relation = ${emergencyRelation},
           metadata = ${JSON.stringify(updatedMetadata)}::jsonb,
           updated_at = clock_timestamp()
       where tenant_id = ${access.tenantId} and id = ${current.id}
@@ -451,6 +562,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
     joiningDate: newJoiningDate,
     basicSalaryMinor: newSalary,
     metadata: updatedMetadata,
+    details: updatedMetadata,
   };
 }
 

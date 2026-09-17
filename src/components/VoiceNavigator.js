@@ -11,7 +11,6 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import { useAuth } from '@/context/AuthContext';
 import { useNucleusSession } from '@/context/NucleusSessionProvider';
-import { NucleusOrb } from '@/components/Workspace/NucleusOrb';
 import styles from './VoiceNavigator.module.css';
 import { parseVoiceCommand, speakAloud, getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed } from '@/utils/voiceCommandEngine';
 
@@ -46,7 +45,7 @@ const AI_COMMANDS = [
   'Give feedback about a team member',
 ];
 
-export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectConsole, onOpenModal }) {
+export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectConsole, onOpenModal, initialDetail }) {
   const { user } = useAuth();
   const nucleusSession = useNucleusSession();
 
@@ -63,6 +62,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
   const [showTrace, setShowTrace] = useState(false);
   const [activeTab, setActiveTab] = useState('instant'); // 'instant' | 'ai'
 
+  const mediaStreamRef = useRef(null);
   const recognitionRef = useRef(null);
   const silenceTimerRef = useRef(null);
   const isSpeakingRef = useRef(false);
@@ -148,37 +148,30 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
   useEffect(() => { executeCommandRef.current = executeCommand; }, [executeCommand]);
 
   // ─── Mic permission + speech recognition ─────────────────────────────────────
-  // KEY FIX: getUserMedia is called directly — no try/catch wrapper around the
-  // permission request itself. The browser shows its dialog on the first call
-  // from a user gesture. If we catch the error and retry, we suppress the dialog.
   const startListening = useCallback(async () => {
     if (typeof window === 'undefined') return;
+
+    // Trigger browser native permission prompt via getUserMedia (matching helper)
+    if (navigator.mediaDevices?.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+        mediaStreamRef.current = stream;
+      } catch {
+        // Native prompt handled by browser
+      }
+    }
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       setFeedback('Speech recognition is not supported in this browser. Type your command below.');
       return;
     }
 
-    // Request mic permission DIRECTLY — this call triggers the browser permission dialog.
-    // Do not wrap in try/catch: if denied, the recognition.onerror will surface it cleanly.
-    if (navigator.mediaDevices?.getUserMedia) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        // Immediately release the test stream — the recognition engine opens its own stream
-        stream.getTracks().forEach(t => t.stop());
-      } catch (err) {
-        // Permission denied by the user — show a clear message without retrying
-        if (err?.name === 'NotAllowedError' || err?.name === 'PermissionDeniedError') {
-          setFeedback('Microphone permission denied. Please click the camera/mic icon in your browser address bar and allow microphone access, then try again.');
-          return;
-        }
-        // Any other hardware error
-        setFeedback('Microphone could not be accessed. Please check your device settings.');
-        return;
-      }
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch {}
     }
-
-    if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
 
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
@@ -188,7 +181,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
     recognition.onstart = () => {
       setIsListening(true);
-      setFeedback('Listening… Speak your command now (auto-executes after 1.2s pause)');
+      setFeedback('🎙️ Listening… Speak your command now');
     };
 
     recognition.onresult = (event) => {
@@ -208,12 +201,8 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
 
     recognition.onerror = (event) => {
       if (event.error === 'no-speech') return; // normal silence, keep going
-      if (event.error === 'not-allowed') {
-        setIsListening(false);
-        setFeedback('Microphone access denied. Click the mic/lock icon in your browser address bar to allow access.');
-      } else {
-        setIsListening(false);
-      }
+      setIsListening(false);
+      setFeedback('🎙️ Click the logo to speak, or type commands below');
     };
 
     recognition.onend = () => {
@@ -227,14 +216,22 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
     };
 
     recognitionRef.current = recognition;
-    recognition.start();
-    setIsListening(true);
+    try {
+      recognition.start();
+      setIsListening(true);
+    } catch {
+      setIsListening(false);
+    }
   }, []);
 
   const toggleListening = useCallback(() => {
     if (isListening) {
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
+      if (mediaStreamRef.current) {
+        try { mediaStreamRef.current.getTracks().forEach(t => t.stop()); } catch {}
+        mediaStreamRef.current = null;
+      }
       recognitionRef.current = null;
       setIsListening(false);
       if (inputText.trim()) executeCommand(inputText.trim());
@@ -278,13 +275,17 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsListening(false); setIsSpeaking(false); setTranscript(''); setInputText(''); setFeedback('');
       if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
       if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
+      if (mediaStreamRef.current) {
+        try { mediaStreamRef.current.getTracks().forEach(t => t.stop()); } catch {}
+        mediaStreamRef.current = null;
+      }
       recognitionRef.current = null;
       if (aiMode) { nucleusSession.disconnect(); setAiMode(false); }
       return;
     }
 
     // Greet on open
-    const greeting = getTimeGreeting(user?.name);
+    const greeting = initialDetail?.greeting || getTimeGreeting(user?.name);
     setFeedback(greeting);
     const userKey = user?.id || user?.email || 'user';
     if (!hasPlayedDailyGreeting(userKey)) {
@@ -292,15 +293,10 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       setIsSpeaking(true);
       speakAloud(greeting, () => setIsSpeaking(false));
     }
-    // Start mic after brief delay so the modal animation completes first
-    const timer = setTimeout(() => startListening(), 400);
-    return () => {
-      clearTimeout(timer);
-      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-      if (recognitionRef.current) { try { recognitionRef.current.stop(); } catch {} }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen]);
+
+    // Automatically start listening immediately on open
+    startListening();
+  }, [isOpen, initialDetail, startListening, user]);
 
   if (!isOpen) return null;
 
@@ -325,24 +321,61 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
           <Close sx={{ fontSize: 16 }} />
         </button>
 
-        {/* ── Header: Logo + Title ── */}
+        {/* ── Header: Layered Images Exactly Centered Above Nucleus Talk ── */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '0.85rem' }}>
-          <NucleusOrb
-            getLevels={getActiveLevels}
-            active={orbActive}
-            label={
-              aiMode
-                ? (aiStatus === 'live' ? 'Nucleus AI is listening' : aiStatus === 'connecting' ? 'Connecting to Nucleus AI' : 'Tap to start Nucleus AI')
-                : (isListening ? 'Nucleus Talk is listening' : 'Tap to start listening')
-            }
-            size={100}
-            isListening={aiMode ? aiStatus === 'live' : isListening}
-            isSpeaking={aiMode ? false : isSpeaking}
+          <div
             onClick={handleOrbClick}
-          />
+            style={{
+              position: 'relative',
+              width: '130px',
+              height: '130px',
+              margin: '0 auto 0.4rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              userSelect: 'none',
+            }}
+            title={isListening ? "Listening... (Click to stop)" : "Click to speak"}
+          >
+            {/* voice.gif layer */}
+            <img
+              src="/images/voice.gif"
+              alt="Voice waves"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                opacity: isListening ? 1 : 0.75,
+                transition: 'opacity 0.3s ease',
+                pointerEvents: 'none',
+              }}
+            />
+            {/* logo-sqr.png layer on top in exact center */}
+            <img
+              src="/images/logo-sqr.png"
+              alt="Nucleus Logo"
+              style={{
+                position: 'relative',
+                width: '68px',
+                height: '68px',
+                objectFit: 'contain',
+                zIndex: 2,
+                borderRadius: '16px',
+                filter: isListening
+                  ? 'drop-shadow(0 0 16px rgba(147, 51, 234, 0.7))'
+                  : 'drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15))',
+                transition: 'all 0.3s ease',
+                transform: isListening ? 'scale(1.06)' : 'scale(1)',
+              }}
+            />
+          </div>
 
           <h3 style={{
-            margin: '0.6rem 0 0.15rem', fontSize: '1.3rem', fontWeight: 800,
+            margin: '0.4rem 0 0.15rem', fontSize: '1.3rem', fontWeight: 800,
             color: 'var(--text)', letterSpacing: '-0.02em',
             display: 'flex', alignItems: 'center', gap: '6px',
           }}>
@@ -363,7 +396,7 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
                 ? '💬 Speaking…'
                 : isListening
                   ? '🎙️ Listening — speak now'
-                  : feedback || 'Tap the logo to start listening, or type below'
+                  : feedback || '🎙️ Listening — speak now'
             }
           </p>
         </div>

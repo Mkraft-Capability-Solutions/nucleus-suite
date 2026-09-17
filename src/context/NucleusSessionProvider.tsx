@@ -1,10 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MicrophoneCapture, SpeechPlayer, chunkLevel } from '@/lib/ai/nucleus-audio';
 import { NucleusLiveSession } from '@/lib/ai/nucleus-live';
 import { findAction, validateDraft, submitDraft, type ActionDraft, type TraceEntry } from '@/lib/ai/nucleus-catalog';
 import type { LiveFunctionCall, LiveFunctionResponse } from '@/lib/ai/nucleus-live';
+import { navigationCatalog } from '@/lib/navigation-catalog';
 
 /**
  * Nucleus AI live voice session — held above the router in the workspace layout.
@@ -17,6 +19,7 @@ import type { LiveFunctionCall, LiveFunctionResponse } from '@/lib/ai/nucleus-li
 export type OrbLevels = { user: number; assistant: number };
 export type Status = 'idle' | 'connecting' | 'live' | 'error';
 export type Turn = { role: 'user' | 'assistant'; text: string };
+export type OpenedScreen = { moduleId: string; label: string; href: string; at: number };
 
 export type SessionAttributes = {
   socketUrl: string;
@@ -48,6 +51,7 @@ export type NucleusSessionValue = {
   draft: ActionDraft | null;
   draftResult: string | null;
   analysis: { tool: string; result: Record<string, unknown> } | null;
+  screens: OpenedScreen[];
   session: SessionAttributes | null;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
@@ -66,6 +70,7 @@ export function useNucleusSession(): NucleusSessionValue {
 }
 
 export function NucleusSessionProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [status, setStatus] = useState<Status>('idle');
   const [notice, setNotice] = useState<string | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -73,6 +78,7 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
   const [draft, setDraft] = useState<ActionDraft | null>(null);
   const [draftResult, setDraftResult] = useState<string | null>(null);
   const [analysis, setAnalysis] = useState<{ tool: string; result: Record<string, unknown> } | null>(null);
+  const [screens, setScreens] = useState<OpenedScreen[]>([]);
   const [session, setSession] = useState<SessionAttributes | null>(null);
 
   const live = useRef<NucleusLiveSession | null>(null);
@@ -152,11 +158,27 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
       const player = new SpeechPlayer();
       speaker.current = player;
 
-      // Tool dispatcher: read tools → server analyze endpoint; write tools → draft card
+      // Tool dispatcher: read tools → server analyze endpoint; navigation → router.push; write tools → draft card
       const dispatch = async (calls: LiveFunctionCall[]): Promise<LiveFunctionResponse[]> => {
         const responses: LiveFunctionResponse[] = [];
         for (const call of calls) {
           const args = (call.args ?? {}) as Record<string, unknown>;
+
+          if (call.name === 'open_screen' || call.name.startsWith('navigate_')) {
+            const moduleId = String(args.moduleId ?? args.screen ?? args.id ?? call.name.replace('navigate_', ''));
+            const item = navigationCatalog.find((c) => c.id === moduleId);
+            const href = item?.href ?? `/${moduleId}`;
+            const label = item?.label ?? moduleId;
+            setScreens((current) => [
+              { moduleId, label, href, at: Date.now() },
+              ...current.filter((c) => c.moduleId !== moduleId),
+            ].slice(0, 4));
+            router.push(href);
+            setTrace((t) => ([{ tool: call.name, outcome: 'ok' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+            responses.push({ id: call.id, name: call.name, response: { ok: true, screen: label, href } });
+            continue;
+          }
+
           try {
             // Read/analysis tools go to server
             const response = await analyzeViaApi(call.name, args, runId.current);
@@ -276,7 +298,7 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
 
   const value: NucleusSessionValue = {
     status, listening: status === 'live', notice, turns, trace,
-    draft, draftResult, analysis, session,
+    draft, draftResult, analysis, screens, session,
     connect, disconnect, sendText, confirmDraft, cancelDraft, getLevels,
   };
 

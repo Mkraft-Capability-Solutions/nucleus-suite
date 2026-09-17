@@ -153,14 +153,21 @@ export function validateLoanApplication({
         errors.push(`Applicant already has an active loan (${existingActiveLoan.id}) with outstanding balance ₹${existingActiveLoan.remainingBalance.toLocaleString()}. Limit 1 active loan per employee.`);
     }
 
-    // 2. Ceiling Check: 4x Basic Salary
+    // 2. Ceiling Check: 4x Basic Salary (or 6x if employee completed 5 years tenure)
     const applicantBasic = applicant.basicSalaryNumeric || (applicant.basicSalary ? parseFloat(String(applicant.basicSalary).replace(/[^\d.]/g, '')) : 40000);
-    const maxPermitted = calculateMaxLoanEligibility(applicantBasic, 4);
+    let allowedMultiplier = 4;
+    const dojStr = applicant.joiningDate || applicant.doj || applicant.dateOfJoining;
+    if (dojStr) {
+        const doj = new Date(dojStr);
+        const years = (new Date() - doj) / (1000 * 60 * 60 * 24 * 365.25);
+        if (years >= 5) allowedMultiplier = 6;
+    }
+    const maxPermitted = calculateMaxLoanEligibility(applicantBasic, allowedMultiplier);
 
     if (requestedAmount > maxPermitted && !isManagementOverride) {
-        errors.push(`Requested amount (₹${requestedAmount.toLocaleString()}) exceeds the 4x Basic ceiling of ₹${maxPermitted.toLocaleString()} (Basic: ₹${applicantBasic.toLocaleString()}).`);
+        errors.push(`Requested amount (₹${requestedAmount.toLocaleString()}) exceeds the ${allowedMultiplier}x Basic ceiling of ₹${maxPermitted.toLocaleString()} (Basic: ₹${applicantBasic.toLocaleString()}${allowedMultiplier === 6 ? ', 5+ years tenure benefit applied' : ''}).`);
     } else if (requestedAmount > maxPermitted && isManagementOverride) {
-        warnings.push(`Loan exceeds 4x Basic ceiling (₹${maxPermitted.toLocaleString()}) but is permitted via Management Exception Override.`);
+        warnings.push(`Loan exceeds ${allowedMultiplier}x Basic ceiling (₹${maxPermitted.toLocaleString()}) but is permitted via Management Exception Override.`);
     }
 
     // 3. Dual Guarantor Check

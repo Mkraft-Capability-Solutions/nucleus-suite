@@ -17,14 +17,17 @@ export function buildZodSchemaForModule(moduleId: string) {
       switch (field.type) {
         case 'number':
         case 'currency':
-          fieldSchema = z.number();
+          fieldSchema = z.coerce.number();
           break;
         case 'switch':
         case 'boolean':
-          fieldSchema = z.boolean();
+          fieldSchema = z.union([z.boolean(), z.string().transform(v => v === 'true' || v === '1' || v === 'yes')]);
           break;
         case 'date':
           fieldSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be a valid date YYYY-MM-DD");
+          break;
+        case 'time':
+          fieldSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/, "Must be a valid time (HH:mm)");
           break;
         case 'email':
           fieldSchema = z.string().email();

@@ -207,7 +207,7 @@ function TreeNode({ node, searchQuery, activeDept, onOpenDossier, forceExpanded 
 }
 
 export default function OrgChartView() {
-    const { employees: contextEmployees } = useHRMS();
+    const { employees: contextEmployees = [] } = useHRMS() || {};
     const [employees, setEmployees] = useState(contextEmployees || []);
     const [view, setView] = useState('tree'); // 'tree' | 'dept'
     const [searchQuery, setSearchQuery] = useState('');
@@ -376,7 +376,7 @@ export default function OrgChartView() {
                 <div className={styles.deptViewGrid}>
                     {deptSummary
                         .filter(d => activeDept === 'ALL' || d.name === activeDept)
-                        .filter(d => !searchQuery || d.name.toLowerCase().includes(searchQuery.toLowerCase()) || d.employees.some(e => (e.name || '').toLowerCase().includes(searchQuery.toLowerCase())))
+                        .filter(d => !searchQuery || d.name.toLowerCase().includes(searchQuery.toLowerCase()) || (d.employees || []).some(e => (e.name || '').toLowerCase().includes(searchQuery.toLowerCase())))
                         .map(dept => (
                             <div key={dept.name} className={styles.deptSection}>
                                 <div className={styles.deptHeader}>
