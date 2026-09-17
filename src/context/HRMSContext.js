@@ -1,3 +1,4 @@
+import { getHrmsDefault } from './hrms-defaults';
 "use client";
 import { readData } from '../services/workspace-data.mjs';
 
@@ -56,7 +57,7 @@ export const HRMSProvider = ({ children }) => {
 
     // --- TOAST NOTIFICATIONS ---
     const [toasts, setToasts] = useState([]);
-    const showToast = (title, message, type = readData("context.HRMSContext", "defaultValue_1")) => {
+    const showToast = (title, message, type = getHrmsDefault("defaultValue_1")) => {
         const id = crypto.randomUUID();
         setToasts(prev => [...prev, { id, title, message, type }].slice(-3));
     };
@@ -65,7 +66,13 @@ export const HRMSProvider = ({ children }) => {
     }, []);
 
     // --- 1. USER PROFILE ---
-    const [user, setUser] = useState(() => ({ ...readData("context.HRMSContext", "user_1"), ...authenticatedUser }));
+    const { user: authUser } = useAuth();
+    const [user, setUser] = useState(() => authUser || authenticatedUser || getHrmsDefault("user_1"));
+    useEffect(() => {
+        if (authUser) {
+            setUser(authUser);
+        }
+    }, [authUser]);
 
     useEffect(() => {
         if (authenticatedUser?.name) {
@@ -91,28 +98,28 @@ export const HRMSProvider = ({ children }) => {
     }, []);
 
     // --- 2. ATTENDANCE & SHIFTS (Module 6) ---
-    const [attendance, setAttendance] = useState(readData("context.HRMSContext", "attendance_2"));
+    const [attendance, setAttendance] = useState(getHrmsDefault("attendance_2"));
 
-    const [attendanceAnomalies] = useState(readData("context.HRMSContext", "attendanceAnomalies_3"));
+    const [attendanceAnomalies] = useState(getHrmsDefault("attendanceAnomalies_3"));
 
     const punchIn = (log = '') => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString([], readData("context.HRMSContext", "timeStr_4"));
+        const timeStr = now.toLocaleTimeString([], getHrmsDefault("timeStr_4"));
         setAttendance(prev => ({
             ...prev,
-            ...readData("context.HRMSContext", "punchIn_fields_5"),
+            ...getHrmsDefault("punchIn_fields_5"),
             punchInTime: timeStr,
-            history: [{ ...readData("context.HRMSContext", "history_fields_6"), in: timeStr, ...readData("context.HRMSContext", "history_fields_7"), log }, ...prev.history]
+            history: [{ ...getHrmsDefault("history_fields_6"), in: timeStr, ...getHrmsDefault("history_fields_7"), log }, ...prev.history]
         }));
         showToast('Punched In', `Attendance recorded at ${timeStr}`, 'success');
     };
 
     const punchOut = (log = '') => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString([], readData("context.HRMSContext", "timeStr_8"));
+        const timeStr = now.toLocaleTimeString([], getHrmsDefault("timeStr_8"));
         setAttendance(prev => ({
             ...prev,
-            ...readData("context.HRMSContext", "punchOut_fields_9"),
+            ...getHrmsDefault("punchOut_fields_9"),
             punchOutTime: timeStr,
             history: prev.history.map((h, i) => i === 0 ? { ...h, out: timeStr, log: log || h.log } : h)
         }));
@@ -120,15 +127,15 @@ export const HRMSProvider = ({ children }) => {
     };
 
     // --- 2B. TIME-OFFICE & GATE PASS SUBSYSTEM (Blueprint Addendum G1 & G2) ---
-    const [gatePasses, setGatePasses] = useState(readData("context.HRMSContext", "gatePasses_10"));
+    const [gatePasses, setGatePasses] = useState(getHrmsDefault("gatePasses_10"));
 
-    const requestGatePass = ({ employeeId = readData("context.HRMSContext", "defaultValue_2"), employeeName = readData("context.HRMSContext", "defaultValue_3"), date = readData("context.HRMSContext", "defaultValue_4"), type = readData("context.HRMSContext", "defaultValue_5"), minutes = readData("context.HRMSContext", "defaultValue_6"), reason = '' }) => {
+    const requestGatePass = ({ employeeId = getHrmsDefault("defaultValue_2"), employeeName = getHrmsDefault("defaultValue_3"), date = getHrmsDefault("defaultValue_4"), type = getHrmsDefault("defaultValue_5"), minutes = getHrmsDefault("defaultValue_6"), reason = '' }) => {
         const approvedAndPending = gatePasses.filter(gp => gp.employee_id === employeeId && gp.status !== 'REJECTED');
         const quotaCheck = validateGatePassQuota(approvedAndPending, minutes);
 
         if (!quotaCheck.allowed) {
             showToast('Gate Pass Rejected', quotaCheck.reason, 'error');
-            return { ...readData("context.HRMSContext", "requestGatePass_fields_11"), reason: quotaCheck.reason };
+            return { ...getHrmsDefault("requestGatePass_fields_11"), reason: quotaCheck.reason };
         }
 
         const newPass = {
@@ -139,17 +146,17 @@ export const HRMSProvider = ({ children }) => {
             type,
             minutes,
             reason,
-            ...readData("context.HRMSContext", "newPass_fields_12"),
+            ...getHrmsDefault("newPass_fields_12"),
             applied_at: new Date().toISOString()
         };
 
         setGatePasses(prev => [newPass, ...prev]);
         showToast('Gate Pass Approved', `${minutes} mins approved. ${quotaCheck.remaining_minutes} mins remaining in monthly quota.`, 'success');
-        return { ...readData("context.HRMSContext", "requestGatePass_fields_13"), gatePass: newPass };
+        return { ...getHrmsDefault("requestGatePass_fields_13"), gatePass: newPass };
     };
 
     const approveGatePass = (gatePassId) => {
-        setGatePasses(prev => prev.map(gp => gp.id === gatePassId ? { ...gp, ...readData("context.HRMSContext", "approveGatePass_fields_14") } : gp));
+        setGatePasses(prev => prev.map(gp => gp.id === gatePassId ? { ...gp, ...getHrmsDefault("approveGatePass_fields_14") } : gp));
         showToast('Gate Pass Approved', 'Pass updated and minutes added to attendance net span.', 'success');
     };
 
@@ -260,9 +267,9 @@ export const HRMSProvider = ({ children }) => {
     };
 
     // Precomputed initial ledger covering all 7 Sprint 1 HR Demo points
-    const [timeOfficeLedger, setTimeOfficeLedger] = useState(readData("context.HRMSContext", "timeOfficeLedger_15"));
+    const [timeOfficeLedger, setTimeOfficeLedger] = useState(getHrmsDefault("timeOfficeLedger_15"));
 
-    const recomputeAttendanceRecord = ({ employee, dateStr, rawPunches, shiftId = readData("context.HRMSContext", "defaultValue_7"), priorDay = null, monthlyLateCount = readData("context.HRMSContext", "defaultValue_8") }) => {
+    const recomputeAttendanceRecord = ({ employee, dateStr, rawPunches, shiftId = getHrmsDefault("defaultValue_7"), priorDay = null, monthlyLateCount = getHrmsDefault("defaultValue_8") }) => {
         const approvedPasses = gatePasses.filter(gp => gp.employee_id === employee.id && gp.date === dateStr && gp.status === 'APPROVED');
         const computed = computeAttendanceDay({
             employee,
@@ -282,9 +289,9 @@ export const HRMSProvider = ({ children }) => {
                 employee_id: employee.id,
                 employee_name: employee.name,
                 designation: employee.role || employee.designation,
-                worker_category_code: employee.worker_category_code || readData("context.HRMSContext", "fallback_1"),
+                worker_category_code: employee.worker_category_code || getHrmsDefault("fallback_1"),
                 wage_type: (WORKER_CATEGORIES[employee.worker_category_code] || WORKER_CATEGORIES.PERM).wage_type,
-                location_id: employee.location_id || readData("context.HRMSContext", "fallback_2"),
+                location_id: employee.location_id || getHrmsDefault("fallback_2"),
                 ...computed
             };
             if (exists >= 0) {
@@ -302,15 +309,15 @@ export const HRMSProvider = ({ children }) => {
     // --- 3. LEAVES & ENTERPRISE ACCRUAL SUBSYSTEM (Blueprint Addendum G3) ---
     const leaveActor = authenticatedUser ?? {id: '', employeeId: null, role: '', name: ''};
     const [leaveService] = useState(() => createLeavePreviewService({
-        requests: [...readData('context.HRMSContext', 'leaveApplications_18').map(app => ({...app, version:1, contact:app.contact??'',reference_only:true})),...workbookLeaveReferences()],
+        requests: [...getHrmsDefault("leaveApplications_18").map(app => ({...app, version:1, contact:app.contact??'',reference_only:true})),...workbookLeaveReferences()],
         balances: readData('leave.workflow', 'accounts'),
-        credits: [...readData('context.HRMSContext', 'compOffCredits_17'),...workbookCompOffCredits()],
+        credits: [...getHrmsDefault("compOffCredits_17"),...workbookCompOffCredits()],
         events: [],
     }));
     const [leaveState, setLeaveState] = useState(() => leaveService.snapshot());
     const leaveApplications = leaveState.requests.filter(app => ['HR_MANAGER','SUPER_ADMIN'].includes(leaveActor.role) || app.employee_id===leaveActor.employeeId || (leaveActor.role==='MANAGER' && readData('leave.workflow','reportingManagers')[app.employee_id]===leaveActor.employeeId));
     const compOffCredits = evaluateCompOffValidity(leaveState.credits.filter(credit=>credit.employee_id===leaveActor.employeeId)).credits;
-    const emptyBalances = Object.fromEntries(Object.keys(readData('context.HRMSContext','leaves_16')).filter(key=>key!=='history').map(key=>[key,{available:0,total:0}]));
+    const emptyBalances = Object.fromEntries(Object.keys(getHrmsDefault("leaves_16")).filter(key=>key!=='history').map(key=>[key,{available:0,total:0}]));
     const leaves = {...emptyBalances, ...leaveState.balances[leaveActor.employeeId], history:leaveApplications.filter(app=>app.employee_id===leaveActor.employeeId).map(app=>({id:app.id,type:app.leave_type_label,date:`${app.start_date} – ${app.end_date}`,duration:app.chargeable_days,status:app.status,reason:app.reason}))};
     const runLeave = async operation => {
         try {
@@ -389,16 +396,18 @@ export const HRMSProvider = ({ children }) => {
 
     // --- 4. PEOPLE CORE (Module 1) ---
     const [employees, setEmployees] = useState(() => {
-        const initial = readData("context.HRMSContext", "employees_28") || [];
+        // Initial state is empty array; live records load exclusively from database via syncWithDb
+        const initial = [];
         if (typeof window !== 'undefined') {
             try {
                 const stored = localStorage.getItem('nucleus_custom_employees');
                 if (stored) {
                     const parsed = JSON.parse(stored);
-                    const map = new Map();
-                    initial.forEach(e => map.set(e.id, e));
-                    parsed.forEach(e => map.set(e.id, { ...map.get(e.id), ...e }));
-                    return Array.from(map.values());
+                    if (Array.isArray(parsed)) {
+                        // Only load user-created custom employees, never stale mock data
+                        const customOnly = parsed.filter(e => e.isCustom || e._isUserCreated);
+                        if (customOnly.length > 0) return customOnly;
+                    }
                 }
             } catch (_) {}
         }
@@ -477,7 +486,43 @@ const HRMS_SYNC_TTL_MS = 30000;
             try {
                 const results = await globalHrmsSyncPromise;
                 if (!active || !results) return;
-                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes, candRes] = results;
+                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes, candRes, wfRes, docRes] = results;
+
+                // Sync live workflows from database if available
+                if (wfRes && wfRes.status === 'fulfilled' && wfRes.value?.ok) {
+                    const wfJson = await wfRes.value.json().catch(() => null);
+                    const wfItems = Array.isArray(wfJson?.items) ? wfJson.items : (Array.isArray(wfJson?.data) ? wfJson.data : []);
+                    if (wfItems.length > 0 && typeof setWorkflows === 'function') {
+                        setWorkflows(wfItems.map(w => ({
+                            id: w.id,
+                            name: w.name || w.attributes?.name || 'Automated Workflow',
+                            category: w.category || w.attributes?.category || 'General',
+                            status: w.status || 'Active',
+                            version: w.version ? String(w.version) : '1.0',
+                            lastUpdated: w.updatedAt ? new Date(w.updatedAt).toLocaleDateString('en-GB') : 'Recent',
+                            nodes: w.nodes || w.attributes?.nodes || []
+                        })));
+                    }
+                }
+
+                // Sync live policy documents from database if available
+                if (docRes && docRes.status === 'fulfilled' && docRes.value?.ok) {
+                    const docJson = await docRes.value.json().catch(() => null);
+                    const docItems = Array.isArray(docJson?.items) ? docJson.items : (Array.isArray(docJson?.data) ? docJson.data : []);
+                    if (docItems.length > 0 && typeof setPolicyDocuments === 'function') {
+                        setPolicyDocuments(docItems.map(d => ({
+                            id: d.id,
+                            title: d.title || d.attributes?.title || d.name || 'Policy Document',
+                            category: d.category || d.attributes?.category || 'Compliance',
+                            version: d.version ? `v${d.version}` : 'v1.0',
+                            effectiveDate: d.effectiveDate || (d.createdAt ? new Date(d.createdAt).toLocaleDateString('en-GB') : 'Current'),
+                            fileSize: d.fileSize || d.attributes?.fileSize || '1.0 MB',
+                            department: d.department || d.attributes?.department || 'All Departments',
+                            author: d.author || d.attributes?.author || 'Compliance Team',
+                            format: d.format || d.attributes?.format || 'PDF'
+                        })));
+                    }
+                }
 
                 // 1. Employees from Database
                 if (empRes.status === 'fulfilled' && empRes.value.ok) {
@@ -517,7 +562,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                                 if (matchIdx >= 0) {
                                     merged[matchIdx] = { ...p, ...merged[matchIdx], details: { ...(p.details || {}), ...(merged[matchIdx].details || {}) } };
                                 } else {
-                                    merged.push(p);
+                                    if (p.isCustom || p._isUserCreated) {
+                                        merged.push(p);
+                                    }
                                 }
                             }
 
@@ -759,11 +806,11 @@ const HRMS_SYNC_TTL_MS = 30000;
     }, []);
 
     // --- 4B. MY TEAM PODS (Module 1 / Pod Directory) ---
-    const [teamMembers, setTeamMembers] = useState(readData("context.HRMSContext", "teamMembers_29"));
+    const [teamMembers, setTeamMembers] = useState(getHrmsDefault("teamMembers_29"));
 
     // --- 4C. POSITIONS & ESTABLISHMENT CONTROL (Sprint 4: Demo Points 24 & 25) ---
     const [sanctionedQuotas, setSanctionedQuotas] = useState(DEFAULT_SANCTIONED_QUOTAS);
-    const [positions, setPositions] = useState(readData("context.HRMSContext", "positions_30"));
+    const [positions, setPositions] = useState(getHrmsDefault("positions_30"));
 
     const createJobRequisition = async (reqData) => {
         const validation = validateRequisitionCreation({
@@ -775,17 +822,17 @@ const HRMS_SYNC_TTL_MS = 30000;
 
         if (!validation.isValid) {
             showToast('Requisition Creation Blocked', validation.errors[0], 'error');
-            return { ...readData("context.HRMSContext", "createJobRequisition_fields_31"), errors: validation.errors };
+            return { ...getHrmsDefault("createJobRequisition_fields_31"), errors: validation.errors };
         }
 
         const newPos = {
             id: `POS-${Date.now().toString().slice(-4)}`,
             title: reqData.title,
             dept: reqData.dept,
-            ...readData("context.HRMSContext", "newPos_fields_32"),
-            budget: reqData.budget || readData("context.HRMSContext", "fallback_6"),
-            ...readData("context.HRMSContext", "newPos_fields_33"),
-            requisitionType: reqData.requisitionType || readData("context.HRMSContext", "fallback_7"),
+            ...getHrmsDefault("newPos_fields_32"),
+            budget: reqData.budget || getHrmsDefault("fallback_6"),
+            ...getHrmsDefault("newPos_fields_33"),
+            requisitionType: reqData.requisitionType || getHrmsDefault("fallback_7"),
             vacatedPositionCode: reqData.vacatedPositionCode || null,
             previousIncumbentId: reqData.previousIncumbentId || null,
             isExecutiveWaiver: reqData.isExecutiveWaiver || false,
@@ -826,7 +873,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             `${newPos.title} created under ${newPos.dept} (${newPos.requisitionType}).`,
             'success'
         );
-        return { ...readData("context.HRMSContext", "createJobRequisition_fields_34"), position: newPos };
+        return { ...getHrmsDefault("createJobRequisition_fields_34"), position: newPos };
     };
 
     // --- 4D. HARDWARE ASSET ALLOCATION & SERIAL TRACKING (Sprint 4: Demo Point 23) ---
@@ -835,17 +882,17 @@ const HRMS_SYNC_TTL_MS = 30000;
     const allocateHardwareAsset = async (assetData) => {
         const newAsset = {
             id: `AST-${crypto.randomUUID()}`,
-            assetType: assetData.assetType || readData("context.HRMSContext", "fallback_8"),
-            brand: assetData.brand || readData("context.HRMSContext", "fallback_9"),
+            assetType: assetData.assetType || getHrmsDefault("fallback_8"),
+            brand: assetData.brand || getHrmsDefault("fallback_9"),
             model: assetData.model,
             serialNumber: assetData.serialNumber,
             assetTag: assetData.assetTag || `NUC-IT-${crypto.randomUUID().slice(0, 8)}`,
             assignedToEmployeeId: assetData.assignedToEmployeeId,
-            assignedToName: employees.find(e => e.id === assetData.assignedToEmployeeId)?.name || readData("context.HRMSContext", "fallback_10"),
+            assignedToName: employees.find(e => e.id === assetData.assignedToEmployeeId)?.name || getHrmsDefault("fallback_10"),
             assignedDate: new Date().toISOString().split('T')[0],
-            ...readData("context.HRMSContext", "newAsset_fields_35"),
-            condition: assetData.condition || readData("context.HRMSContext", "fallback_11"),
-            replacementValue: Number(assetData.replacementValue) || readData("context.HRMSContext", "fallback_12")
+            ...getHrmsDefault("newAsset_fields_35"),
+            condition: assetData.condition || getHrmsDefault("fallback_11"),
+            replacementValue: Number(assetData.replacementValue) || getHrmsDefault("fallback_12")
         };
 
         setHardwareAssets(prev => [newAsset, ...prev]);
@@ -878,12 +925,12 @@ const HRMS_SYNC_TTL_MS = 30000;
         return newAsset;
     };
 
-    const markAssetReturned = (assetId, condition = readData("context.HRMSContext", "defaultValue_10"), remarks = '') => {
+    const markAssetReturned = (assetId, condition = getHrmsDefault("defaultValue_10"), remarks = '') => {
         setHardwareAssets(prev => prev.map(a => {
             if (a.id !== assetId) return a;
             return {
                 ...a,
-                ...readData("context.HRMSContext", "markAssetReturned_fields_36"),
+                ...getHrmsDefault("markAssetReturned_fields_36"),
                 returnDate: new Date().toISOString().split('T')[0],
                 condition,
                 returnRemarks: remarks
@@ -901,14 +948,14 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newAward = {
             id: `AWD-${Date.now().toString().slice(-4)}`,
             employeeId: awardData.employeeId,
-            employeeName: emp ? emp.name : awardData.employeeName || readData("context.HRMSContext", "fallback_13"),
+            employeeName: emp ? emp.name : awardData.employeeName || getHrmsDefault("fallback_13"),
             dept: emp ? emp.dept : 'General',
-            awardType: awardData.awardType || readData("context.HRMSContext", "fallback_14"),
+            awardType: awardData.awardType || getHrmsDefault("fallback_14"),
             citation: awardData.citation,
-            rewardAmount: Number(awardData.rewardAmount) || readData("context.HRMSContext", "fallback_15"),
-            awardedBy: user?.name || readData("context.HRMSContext", "fallback_16"),
-            date: new Date().toLocaleDateString('en-GB', readData("context.HRMSContext", "date_38")),
-            ...readData("context.HRMSContext", "newAward_fields_37")
+            rewardAmount: Number(awardData.rewardAmount) || getHrmsDefault("fallback_15"),
+            awardedBy: user?.name || getHrmsDefault("fallback_16"),
+            date: new Date().toLocaleDateString('en-GB', getHrmsDefault("date_38")),
+            ...getHrmsDefault("newAward_fields_37")
         };
 
         setRecognitionAwards(prev => [newAward, ...prev]);
@@ -921,10 +968,10 @@ const HRMS_SYNC_TTL_MS = 30000;
             id: `REF-${crypto.randomUUID()}`,
             candidateName: refData.candidateName,
             role: refData.role,
-            dept: refData.dept || readData("context.HRMSContext", "fallback_17"),
-            referredByEmployeeId: user?.id || readData("context.HRMSContext", "fallback_18"),
-            referredByName: user?.name || readData("context.HRMSContext", "fallback_19"),
-            ...readData("context.HRMSContext", "newRef_fields_39")
+            dept: refData.dept || getHrmsDefault("fallback_17"),
+            referredByEmployeeId: user?.id || getHrmsDefault("fallback_18"),
+            referredByName: user?.name || getHrmsDefault("fallback_19"),
+            ...getHrmsDefault("newRef_fields_39")
         };
 
         setEmployeeReferrals(prev => [newRef, ...prev]);
@@ -972,30 +1019,30 @@ const HRMS_SYNC_TTL_MS = 30000;
         return renderLetterTemplate(templateId, emp, customFields);
     };
 
-    const [documents] = useState(readData("context.HRMSContext", "documents_40"));
+    const [documents] = useState(getHrmsDefault("documents_40"));
 
-    const [auditLogs] = useState(readData("context.HRMSContext", "auditLogs_41"));
+    const [auditLogs] = useState(getHrmsDefault("auditLogs_41"));
 
     // --- 5. PAYROLL & EARNED WAGE ACCESS (Module 2) ---
-    const [payrollSummary] = useState(readData("context.HRMSContext", "payrollSummary_42"));
+    const [payrollSummary] = useState(getHrmsDefault("payrollSummary_42"));
 
-    const [ewaTransactions, setEwaTransactions] = useState(readData("context.HRMSContext", "ewaTransactions_43"));
+    const [ewaTransactions, setEwaTransactions] = useState(getHrmsDefault("ewaTransactions_43"));
 
     const requestEWA = (amount) => {
         const num = parseFloat(amount);
         if (isNaN(num) || num <= 0) return;
         setEwaTransactions(prev => [{
             id: `EWA-${crypto.randomUUID()}`,
-            ...readData("context.HRMSContext", "requestEWA_fields_44"),
+            ...getHrmsDefault("requestEWA_fields_44"),
             amount: `₹ ${num.toLocaleString()}`,
-            ...readData("context.HRMSContext", "requestEWA_fields_45")
+            ...getHrmsDefault("requestEWA_fields_45")
         }, ...prev]);
         showToast('EWA Transfer Complete', `₹ ${num.toLocaleString()} instant credited to your salary account.`, 'success');
     };
 
     // --- 5B. ADVANCED PAYROLL ADJACENCIES & LOCATION SCOPING (Sprint 3: Demo Points 8, 9, 10, 16) ---
     // User Role Context (For Demo Point 8 Location Scoping Simulation)
-    const [currentRoleContext, setCurrentRoleContext] = useState(readData("context.HRMSContext", "currentRoleContext_46"));
+    const [currentRoleContext, setCurrentRoleContext] = useState(getHrmsDefault("currentRoleContext_46"));
 
     const switchUserRole = (newRole, newScope, newLocation) => {
         setCurrentRoleContext({
@@ -1011,7 +1058,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 9: Company Loan Scheme with Dual-Guarantor Lock
-    const [companyLoans, setCompanyLoans] = useState(readData("context.HRMSContext", "companyLoans_47"));
+    const [companyLoans, setCompanyLoans] = useState(getHrmsDefault("companyLoans_47"));
 
     const applyForCompanyLoan = (loanRequest) => {
         const validation = validateLoanApplication({
@@ -1022,27 +1069,27 @@ const HRMS_SYNC_TTL_MS = 30000;
 
         if (!validation.isValid) {
             showToast('Loan Application Rejected', validation.errors[0], 'error');
-            return { ...readData("context.HRMSContext", "applyForCompanyLoan_fields_48"), errors: validation.errors };
+            return { ...getHrmsDefault("applyForCompanyLoan_fields_48"), errors: validation.errors };
         }
 
         const newLoan = {
             id: `LOAN-${crypto.randomUUID()}`,
             borrowerId: loanRequest.applicantId,
             borrowerName: validation.computed.applicantName,
-            borrowerRole: employees.find(e => e.id === loanRequest.applicantId)?.role || readData("context.HRMSContext", "fallback_20"),
-            borrowerDept: employees.find(e => e.id === loanRequest.applicantId)?.dept || readData("context.HRMSContext", "fallback_21"),
+            borrowerRole: employees.find(e => e.id === loanRequest.applicantId)?.role || getHrmsDefault("fallback_20"),
+            borrowerDept: employees.find(e => e.id === loanRequest.applicantId)?.dept || getHrmsDefault("fallback_21"),
             principalAmount: validation.computed.requestedAmount,
             remainingBalance: validation.computed.requestedAmount,
             monthlyEMI: validation.computed.monthlyEMI,
             tenureMonths: validation.computed.tenureMonths,
-            ...readData("context.HRMSContext", "newLoan_fields_49"),
-            purpose: loanRequest.purpose || readData("context.HRMSContext", "fallback_22"),
+            ...getHrmsDefault("newLoan_fields_49"),
+            purpose: loanRequest.purpose || getHrmsDefault("fallback_22"),
             guarantors: validation.computed.guarantors,
             guarantorNames: validation.computed.guarantors.map(gid => {
                 const emp = employees.find(e => e.id === gid);
                 return `${emp?.name || gid} (${gid})`;
             }),
-            ...readData("context.HRMSContext", "newLoan_fields_50"),
+            ...getHrmsDefault("newLoan_fields_50"),
             isManagementOverride: validation.computed.isManagementOverride,
             overrideReason: validation.computed.overrideReason
         };
@@ -1082,7 +1129,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             `₹${newLoan.principalAmount.toLocaleString()} loan created. Both guarantors are now LOCKED from raising loans.`,
             'success'
         );
-        return { ...readData("context.HRMSContext", "applyForCompanyLoan_fields_51"), loan: newLoan };
+        return { ...getHrmsDefault("applyForCompanyLoan_fields_51"), loan: newLoan };
     };
 
     const repayLoanEMI = (loanId) => {
@@ -1102,30 +1149,30 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 10: Off-Cycle Payroll Runs
-    const [payrollRuns, setPayrollRuns] = useState(readData("context.HRMSContext", "payrollRuns_52"));
+    const [payrollRuns, setPayrollRuns] = useState(getHrmsDefault("payrollRuns_52"));
 
     const createOffCycleRun = (type, customParams = {}) => {
         let newRun;
         if (type === 'OFF_CYCLE_OT') {
-            const otRecords = readData("context.HRMSContext", "otRecords_53");
+            const otRecords = getHrmsDefault("otRecords_53");
             newRun = generateOffCycleOTRun({
-                cyclePeriod: customParams.period || readData("context.HRMSContext", "fallback_23"),
+                cyclePeriod: customParams.period || getHrmsDefault("fallback_23"),
                 otRecords,
                 employees
             });
         } else if (type === 'ARREARS') {
             newRun = generateArrearsRun({
-                cyclePeriod: customParams.period || readData("context.HRMSContext", "fallback_24"),
-                ...readData("context.HRMSContext", "createOffCycleRun_fields_54")
+                cyclePeriod: customParams.period || getHrmsDefault("fallback_24"),
+                ...getHrmsDefault("createOffCycleRun_fields_54")
             });
         } else {
             newRun = {
                 id: `RUN-${type}-${Date.now().toString().slice(-4)}`,
                 type,
                 label: `${type} Cycle Run`,
-                cyclePeriod: customParams.period || readData("context.HRMSContext", "fallback_25"),
+                cyclePeriod: customParams.period || getHrmsDefault("fallback_25"),
                 batchDate: new Date().toISOString().split('T')[0],
-                ...readData("context.HRMSContext", "createOffCycleRun_fields_56"),
+                ...getHrmsDefault("createOffCycleRun_fields_56"),
                 bankFileRef: `NEFT_${type}_${Date.now().toString().slice(-4)}.txt`
             };
         }
@@ -1136,7 +1183,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 16: Same-Day Full & Final (F&F) Settlement & 4-Department No-Dues
-    const [fnfSettlements, setFnfSettlements] = useState(readData("context.HRMSContext", "fnfSettlements_57"));
+    const [fnfSettlements, setFnfSettlements] = useState(getHrmsDefault("fnfSettlements_57"));
 
     const updateDepartmentNoDues = (settlementId, deptKey, newStatus, remarks, serialNo) => {
         setFnfSettlements(prev => prev.map(s => {
@@ -1220,7 +1267,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             'success'
         );
     };
-    const [candidates, setCandidates] = useState(readData("context.HRMSContext", "candidates_59"));
+    const [candidates, setCandidates] = useState(getHrmsDefault("candidates_59"));
 
     const moveCandidate = async (id, newStage) => {
         setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage: newStage } : c));
@@ -1240,43 +1287,43 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 7. ONBOARDING & LIFECYCLE (Module 4) ---
-    const [onboardingTasks, setOnboardingTasks] = useState(readData("context.HRMSContext", "onboardingTasks_60"));
+    const [onboardingTasks, setOnboardingTasks] = useState(getHrmsDefault("onboardingTasks_60"));
 
     const completeOnboardingTask = (id) => {
-        setOnboardingTasks(prev => prev.map(t => t.id === id ? { ...t, ...readData("context.HRMSContext", "completeOnboardingTask_fields_61") } : t));
+        setOnboardingTasks(prev => prev.map(t => t.id === id ? { ...t, ...getHrmsDefault("completeOnboardingTask_fields_61") } : t));
         showToast('Onboarding Progress Updated', 'Milestone marked as complete.', 'success');
     };
 
     // --- 8. PERFORMANCE & OKR CASCADE (Module 5) ---
-    const [okrs, setOkrs] = useState(readData("context.HRMSContext", "okrs_62"));
+    const [okrs, setOkrs] = useState(getHrmsDefault("okrs_62"));
 
-    const [talentMatrix] = useState(readData("context.HRMSContext", "talentMatrix_63"));
+    const [talentMatrix] = useState(getHrmsDefault("talentMatrix_63"));
 
     const addGoal = () => {
         const newGoal = {
             id: Date.now(),
-            ...readData("context.HRMSContext", "newGoal_fields_64"),
+            ...getHrmsDefault("newGoal_fields_64"),
             owner: user.name,
-            ...readData("context.HRMSContext", "newGoal_fields_65")
+            ...getHrmsDefault("newGoal_fields_65")
         };
         setOkrs([...okrs, newGoal]);
     };
 
     // --- 9. PEOPLE INTELLIGENCE & ANALYTICS (Module 7) ---
-    const [analyticsData] = useState(readData("context.HRMSContext", "analyticsData_67"));
+    const [analyticsData] = useState(getHrmsDefault("analyticsData_67"));
 
     // --- 10. LEARNING & DEVELOPMENT (Module 8) ---
-    const [courses, setCourses] = useState(readData("context.HRMSContext", "courses_68"));
+    const [courses, setCourses] = useState(getHrmsDefault("courses_68"));
 
     // --- 11. COMPENSATION & BENEFITS (Module 9) ---
-    const [compensationData] = useState(readData("context.HRMSContext", "compensationData_69"));
+    const [compensationData] = useState(getHrmsDefault("compensationData_69"));
 
     // --- 12. EMPLOYEE EXPERIENCE, MCI & VEDIC WELLBEING (Module 10) ---
-    const [mciScore] = useState(readData("context.HRMSContext", "mciScore_70"));
+    const [mciScore] = useState(getHrmsDefault("mciScore_70"));
 
-    const [vedicFramework, setVedicFramework] = useState(readData("context.HRMSContext", "vedicFramework_71"));
+    const [vedicFramework, setVedicFramework] = useState(getHrmsDefault("vedicFramework_71"));
 
-    const [socialFeed, setSocialFeed] = useState(readData("context.HRMSContext", "socialFeed_72"));
+    const [socialFeed, setSocialFeed] = useState(getHrmsDefault("socialFeed_72"));
 
     const addKudos = (id) => {
         setSocialFeed(prev => prev.map(p => p.id === id ? { ...p, kudos: p.kudos + 1 } : p));
@@ -1284,14 +1331,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 13. INTEGRATIONS & API PLATFORM (Module 11) ---
-    const [connectors, setConnectors] = useState(readData("context.HRMSContext", "connectors_73"));
+    const [connectors, setConnectors] = useState(getHrmsDefault("connectors_73"));
 
-    const [apiKeys, setApiKeys] = useState(readData("context.HRMSContext", "apiKeys_74"));
+    const [apiKeys, setApiKeys] = useState(getHrmsDefault("apiKeys_74"));
 
     // --- PROJECTS / TASKS (Kanban) ---
-    const [projects, setProjects] = useState(readData("context.HRMSContext", "projects_75"));
+    const [projects, setProjects] = useState(getHrmsDefault("projects_75"));
 
-    const [kanbanTasks, setKanbanTasks] = useState(readData("context.HRMSContext", "kanbanTasks_76"));
+    const [kanbanTasks, setKanbanTasks] = useState(getHrmsDefault("kanbanTasks_76"));
 
     const moveTask = (taskId, fromCol, toCol) => {
         const task = kanbanTasks[fromCol]?.find(t => t.id === taskId);
@@ -1306,12 +1353,12 @@ const HRMS_SYNC_TTL_MS = 30000;
     const addTask = (taskData) => {
         const newTask = {
             id: 't-' + Date.now(),
-            title: taskData.title || readData("context.HRMSContext", "fallback_26"),
-            tag: taskData.tag || readData("context.HRMSContext", "fallback_27"),
-            assignee: taskData.assignee || readData("context.HRMSContext", "fallback_28"),
-            project: taskData.project || readData("context.HRMSContext", "fallback_29"),
-            due: taskData.due || readData("context.HRMSContext", "fallback_30"),
-            priority: taskData.priority || readData("context.HRMSContext", "fallback_31")
+            title: taskData.title || getHrmsDefault("fallback_26"),
+            tag: taskData.tag || getHrmsDefault("fallback_27"),
+            assignee: taskData.assignee || getHrmsDefault("fallback_28"),
+            project: taskData.project || getHrmsDefault("fallback_29"),
+            due: taskData.due || getHrmsDefault("fallback_30"),
+            priority: taskData.priority || getHrmsDefault("fallback_31")
         };
         setKanbanTasks(prev => ({
             ...prev,
@@ -1339,14 +1386,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     const addProject = (projectData) => {
         const newProj = {
             id: 'proj-' + Date.now(),
-            title: projectData.title || readData("context.HRMSContext", "fallback_32"),
-            desc: projectData.desc || readData("context.HRMSContext", "fallback_33"),
+            title: projectData.title || getHrmsDefault("fallback_32"),
+            desc: projectData.desc || getHrmsDefault("fallback_33"),
             progress: Number(projectData.progress) || 0,
-            color: projectData.color || readData("context.HRMSContext", "fallback_34"),
-            due: projectData.due || readData("context.HRMSContext", "fallback_35"),
-            members: projectData.members && projectData.members.length > 0 ? projectData.members : readData("context.HRMSContext", "members_77"),
-            createdBy: user?.name || readData("context.HRMSContext", "fallback_36"),
-            visibility: projectData.visibility || readData("context.HRMSContext", "fallback_37") // 'all', 'team', 'private'
+            color: projectData.color || getHrmsDefault("fallback_34"),
+            due: projectData.due || getHrmsDefault("fallback_35"),
+            members: projectData.members && projectData.members.length > 0 ? projectData.members : getHrmsDefault("members_77"),
+            createdBy: user?.name || getHrmsDefault("fallback_36"),
+            visibility: projectData.visibility || getHrmsDefault("fallback_37") // 'all', 'team', 'private'
         };
         setProjects(prev => [...prev, newProj]);
         showToast('Project Created', `Project "${newProj.title}" successfully created.`, 'success');
@@ -1364,14 +1411,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- DASHBOARD FOCUS TASKS ---
-    const [focusTasks, setFocusTasks] = useState(readData("context.HRMSContext", "focusTasks_78"));
+    const [focusTasks, setFocusTasks] = useState(getHrmsDefault("focusTasks_78"));
 
     const completeFocusTask = (id) => {
-        setFocusTasks(prev => prev.map(t => t.id === id ? { ...t, ...readData("context.HRMSContext", "completeFocusTask_fields_79") } : t));
+        setFocusTasks(prev => prev.map(t => t.id === id ? { ...t, ...getHrmsDefault("completeFocusTask_fields_79") } : t));
     };
 
     // --- SETTINGS ---
-    const [settings, setSettings] = useState(readData("context.HRMSContext", "settings_80"));
+    const [settings, setSettings] = useState(getHrmsDefault("settings_80"));
 
     const updateSettings = (key, value) => {
         setSettings(prev => ({ ...prev, [key]: value }));
@@ -1379,12 +1426,12 @@ const HRMS_SYNC_TTL_MS = 30000;
 
 
     // --- 14. CMS: ANNOUNCEMENTS & BROADCASTS ---
-    const [announcements, setAnnouncements] = useState(readData("context.HRMSContext", "announcements_81"));
+    const [announcements, setAnnouncements] = useState(getHrmsDefault("announcements_81"));
 
     const addAnnouncement = async (newAnn) => {
         const item = {
             id: `ANN-${Date.now().toString().slice(-4)}`,
-            ...readData("context.HRMSContext", "item_fields_82"),
+            ...getHrmsDefault("item_fields_82"),
             ...newAnn
         };
         setAnnouncements(prev => [item, ...prev]);
@@ -1420,13 +1467,13 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 15. CMS: POLICY DOCUMENTS & KNOWLEDGE BASE ---
-    const [policyDocuments, setPolicyDocuments] = useState(readData("context.HRMSContext", "policyDocuments_83"));
+    const [policyDocuments, setPolicyDocuments] = useState(getHrmsDefault("policyDocuments_83"));
 
     const addPolicyDocument = (newDoc) => {
         const item = {
             id: `DOC-POL-${Date.now().toString().slice(-4)}`,
-            effectiveDate: new Date().toLocaleDateString('en-GB', readData("context.HRMSContext", "effectiveDate_85")),
-            ...readData("context.HRMSContext", "item_fields_84"),
+            effectiveDate: new Date().toLocaleDateString('en-GB', getHrmsDefault("effectiveDate_85")),
+            ...getHrmsDefault("item_fields_84"),
             ...newDoc
         };
         setPolicyDocuments(prev => [item, ...prev]);
@@ -1434,9 +1481,9 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 16. CUSTOM MIS REPORTS & INGESTION MASTER RECORDS ---
-    const [misMasterData, setMisMasterData] = useState(readData("context.HRMSContext", "misMasterData_86"));
+    const [misMasterData, setMisMasterData] = useState(getHrmsDefault("misMasterData_86"));
 
-    const ingestMappedData = (importType, newRecords, fileName = readData("context.HRMSContext", "defaultValue_11")) => {
+    const ingestMappedData = (importType, newRecords, fileName = getHrmsDefault("defaultValue_11")) => {
         setMisMasterData(prev => {
             const merged = [...prev];
             newRecords.forEach(rec => {
@@ -1487,7 +1534,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 17. WORKFLOW AUTOMATION ENGINE & NODE PIPELINES ---
-    const [workflows, setWorkflows] = useState(readData("context.HRMSContext", "workflows_87"));
+    const [workflows, setWorkflows] = useState(getHrmsDefault("workflows_87"));
 
     const updateWorkflowNode = (workflowId, nodeId, updatedFields) => {
         setWorkflows(prev => prev.map(wf => {
@@ -1537,8 +1584,8 @@ const HRMS_SYNC_TTL_MS = 30000;
     const [factoryInspections, setFactoryInspections] = useState(INITIAL_INSPECTION_BOOK_FORM36);
     const [statutoryMusterRoll, setStatutoryMusterRoll] = useState(() => generateForm28MusterRoll('March', 2026));
 
-    const triggerErpSync = (connector = readData("context.HRMSContext", "defaultValue_12")) => {
-        const inboundBatch = readData("context.HRMSContext", "inboundBatch_88");
+    const triggerErpSync = (connector = getHrmsDefault("defaultValue_12")) => {
+        const inboundBatch = getHrmsDefault("inboundBatch_88");
 
         const { updatedEmployees, syncReport } = executeErpEmployeeSync(inboundBatch, employees, connector);
         setEmployees(updatedEmployees);
@@ -1556,7 +1603,7 @@ const HRMS_SYNC_TTL_MS = 30000;
         return syncReport;
     };
 
-    const dispatchGLPostingBatch = (batchId, targetErp = readData("context.HRMSContext", "defaultValue_13")) => {
+    const dispatchGLPostingBatch = (batchId, targetErp = getHrmsDefault("defaultValue_13")) => {
         const batch = erpPostingQueue.find(b => b.batchId === batchId);
         if (!batch) return false;
 
@@ -1573,10 +1620,10 @@ const HRMS_SYNC_TTL_MS = 30000;
             if (b.batchId !== batchId) return b;
             return {
                 ...b,
-                ...readData("context.HRMSContext", "dispatchGLPostingBatch_fields_89"),
+                ...getHrmsDefault("dispatchGLPostingBatch_fields_89"),
                 ackReceiptId,
                 ackTimestamp,
-                ...readData("context.HRMSContext", "dispatchGLPostingBatch_fields_90")
+                ...getHrmsDefault("dispatchGLPostingBatch_fields_90")
             };
         }));
 
@@ -1589,8 +1636,8 @@ const HRMS_SYNC_TTL_MS = 30000;
             if (b.batchId !== batchId) return b;
             return {
                 ...b,
-                ...readData("context.HRMSContext", "reconcileGLBatch_fields_91"),
-                reconciledBy: `${user?.name || readData("context.HRMSContext", "fallback_38")} (Reconciled)`
+                ...getHrmsDefault("reconcileGLBatch_fields_91"),
+                reconciledBy: `${user?.name || getHrmsDefault("fallback_38")} (Reconciled)`
             };
         }));
         showToast('GL Batch Reconciled', `Batch ${batchId} marked as fully closed & reconciled with ERP general ledger.`, 'success');
@@ -1601,22 +1648,22 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newRecord = {
             noticeId,
             dateOfOccurrence: accidentData.dateOfOccurrence || new Date().toISOString().split('T')[0],
-            exactTime: accidentData.exactTime || readData("context.HRMSContext", "fallback_39"),
-            exactPlace: accidentData.exactPlace || readData("context.HRMSContext", "fallback_40"),
+            exactTime: accidentData.exactTime || getHrmsDefault("fallback_39"),
+            exactPlace: accidentData.exactPlace || getHrmsDefault("fallback_40"),
             injuredPerson: {
-                name: accidentData.injuredPersonName || readData("context.HRMSContext", "fallback_41"),
-                tokenNo: accidentData.tokenNo || readData("context.HRMSContext", "fallback_42"),
-                age: accidentData.age || readData("context.HRMSContext", "fallback_43"),
-                sex: accidentData.sex || readData("context.HRMSContext", "fallback_44"),
-                occupation: accidentData.occupation || readData("context.HRMSContext", "fallback_45")
+                name: accidentData.injuredPersonName || getHrmsDefault("fallback_41"),
+                tokenNo: accidentData.tokenNo || getHrmsDefault("fallback_42"),
+                age: accidentData.age || getHrmsDefault("fallback_43"),
+                sex: accidentData.sex || getHrmsDefault("fallback_44"),
+                occupation: accidentData.occupation || getHrmsDefault("fallback_45")
             },
-            natureOfInjury: accidentData.natureOfInjury || readData("context.HRMSContext", "fallback_46"),
-            causeOfAccident: accidentData.causeOfAccident || readData("context.HRMSContext", "fallback_47"),
-            lostWorkdays: Number(accidentData.lostWorkdays) || readData("context.HRMSContext", "fallback_48"),
-            ...readData("context.HRMSContext", "newRecord_fields_92"),
+            natureOfInjury: accidentData.natureOfInjury || getHrmsDefault("fallback_46"),
+            causeOfAccident: accidentData.causeOfAccident || getHrmsDefault("fallback_47"),
+            lostWorkdays: Number(accidentData.lostWorkdays) || getHrmsDefault("fallback_48"),
+            ...getHrmsDefault("newRecord_fields_92"),
             inspectorateFilingDate: new Date().toISOString().split('T')[0],
-            investigatingOfficer: accidentData.investigatingOfficer || readData("context.HRMSContext", "fallback_49"),
-            remedialActions: accidentData.remedialActions || readData("context.HRMSContext", "fallback_50")
+            investigatingOfficer: accidentData.investigatingOfficer || getHrmsDefault("fallback_49"),
+            remedialActions: accidentData.remedialActions || getHrmsDefault("fallback_50")
         };
 
         setStatutoryAccidents(prev => [newRecord, ...prev]);
@@ -1629,13 +1676,13 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newRecord = {
             inspectionId,
             inspectionDate: inspectionData.inspectionDate || new Date().toISOString().split('T')[0],
-            inspectorName: inspectionData.inspectorName || readData("context.HRMSContext", "fallback_51"),
-            inspectorOffice: inspectionData.inspectorOffice || readData("context.HRMSContext", "fallback_52"),
-            statutoryObservations: inspectionData.statutoryObservations || readData("context.HRMSContext", "fallback_53"),
-            remedialDirections: inspectionData.remedialDirections || readData("context.HRMSContext", "fallback_54"),
-            complianceStatus: inspectionData.complianceStatus || readData("context.HRMSContext", "fallback_55"),
+            inspectorName: inspectionData.inspectorName || getHrmsDefault("fallback_51"),
+            inspectorOffice: inspectionData.inspectorOffice || getHrmsDefault("fallback_52"),
+            statutoryObservations: inspectionData.statutoryObservations || getHrmsDefault("fallback_53"),
+            remedialDirections: inspectionData.remedialDirections || getHrmsDefault("fallback_54"),
+            complianceStatus: inspectionData.complianceStatus || getHrmsDefault("fallback_55"),
             closureDate: inspectionData.closureDate || new Date().toISOString().split('T')[0],
-            certifyingManager: user?.name || readData("context.HRMSContext", "fallback_56")
+            certifyingManager: user?.name || getHrmsDefault("fallback_56")
         };
 
         setFactoryInspections(prev => [newRecord, ...prev]);
@@ -1646,7 +1693,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     const generateFormFGratuity = (employeeId, nominees, witnesses) => {
         const targetEmp = employees.find(e => e.id === employeeId) || {
             id: employeeId,
-            ...readData("context.HRMSContext", "targetEmp_fields_93")
+            ...getHrmsDefault("targetEmp_fields_93")
         };
         return generateFormFDeclaration(targetEmp, nominees, witnesses);
     };
