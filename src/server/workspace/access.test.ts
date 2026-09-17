@@ -18,7 +18,7 @@ describe('synthetic workspace access boundary', () => {
   });
   it('rejects oversized and cross-origin demo sign-ins', async () => {
     vi.stubEnv('DEMO_AUTH_ENABLED', 'true');
-    vi.stubEnv('APP_DATA_MODE', 'json');
+    vi.stubEnv('APP_DATA_MODE', 'database');
     const oversized = await POST(new Request('http://localhost/api/auth/login', { method: 'POST', body: 'a'.repeat(5000) }));
     expect(oversized.status).toBe(413);
     const crossOrigin = await POST(new Request('http://localhost/api/auth/login', { method: 'POST', headers: { origin: 'https://untrusted.test' }, body: '{}' }));

@@ -30,7 +30,7 @@ npm install
 Create `.env.local` with these local preview settings. If it already exists, update these keys and preserve other values:
 
 ```dotenv
-APP_DATA_MODE=json
+APP_DATA_MODE=database
 DEMO_AUTH_ENABLED=true
 BETTER_AUTH_URL=http://localhost:3000
 ALLOW_INITIAL_ADMIN_SIGNUP=false
@@ -180,7 +180,7 @@ Files inside `public/` are served from `/`: `public/images/file.svg` becomes `/i
 
 `.env.example` documents supported settings. Next.js determines `NODE_ENV`; leave it out of shared environment files. Session and optional AI variables are only relevant to later backend integration. Do not commit secrets or expose them through `NEXT_PUBLIC_` variables.
 
-For an isolated Netlify UI preview, the supplied `netlify.toml` uses Node 22, `npm run build`, `.next`, and the Next.js adapter. Set `APP_DATA_MODE=json`, `DEMO_AUTH_ENABLED=true`, and the actual HTTPS `BETTER_AUTH_URL` in Builds and Functions. Protect the preview at the hosting level and use synthetic data. A private repository does not make its deployed website private.
+For an isolated Netlify UI preview, the supplied `netlify.toml` uses Node 22, `npm run build`, `.next`, and the Next.js adapter. Set `APP_DATA_MODE=database`, `DEMO_AUTH_ENABLED=true`, and the actual HTTPS `BETTER_AUTH_URL` in Builds and Functions. Protect the preview at the hosting level and use synthetic data. A private repository does not make its deployed website private.
 
 ### Vercel synthetic preview
 
@@ -190,7 +190,7 @@ Set these server environment variables for Production and Preview before deployi
 
 | Variable | Value |
 | --- | --- |
-| `APP_DATA_MODE` | `json` |
+| `APP_DATA_MODE` | `database` |
 | `DEMO_AUTH_ENABLED` | `true` |
 | `ALLOW_INITIAL_ADMIN_SIGNUP` | `false` |
 | `BETTER_AUTH_URL` | The project's actual HTTPS production origin, without a path |

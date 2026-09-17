@@ -3,6 +3,14 @@
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
+  "env": {
+    "APP_DATA_MODE": "database"
+  },
+  "build": {
+    "env": {
+      "APP_DATA_MODE": "database"
+    }
+  },
   "git": {
     "deploymentEnabled": {
       "main": true
