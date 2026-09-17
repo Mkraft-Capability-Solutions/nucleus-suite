@@ -94,7 +94,8 @@ export default function PersonalDashboard({ consoleId, onNavigate, onShowConsole
             const prefs = result?.preferences || sanitizePreferences(null, definitions, fallback);
             setPreferences(prefs);
             const safeLayouts = prefs.layouts || [];
-            const next = safeLayouts.find(layout => layout.id === prefs.activeId) || safeLayouts[0] || fallback;
+            const rawNext = safeLayouts.find(layout => layout.id === prefs.activeId) || safeLayouts[0] || fallback;
+            const next = { ...rawNext, widgets: Array.isArray(rawNext?.widgets) ? rawNext.widgets : fallback.widgets };
             setDraft(next); setHistory([next]); setCursor(0); setEditing(false);
             setError(result?.warning || ''); setSettings(null); setLibrary(false);
         }).catch(() => {
@@ -111,9 +112,13 @@ export default function PersonalDashboard({ consoleId, onNavigate, onShowConsole
         return () => window.removeEventListener('beforeunload', warn);
     }, [editing]);
 
-    function resetDraft(next: DashboardLayout) { setDraft(next); setHistory([next]); setCursor(0); setError(''); }
+    function resetDraft(next: DashboardLayout) {
+        const safe = { ...next, widgets: Array.isArray(next?.widgets) ? next.widgets : [] };
+        setDraft(safe); setHistory([safe]); setCursor(0); setError('');
+    }
     function change(next: DashboardLayout) {
-        const safe = { ...next, widgets: next.widgets.filter(widget => definitions.some(definition => definition.id === widget.id)) };
+        const widgets = Array.isArray(next?.widgets) ? next.widgets : [];
+        const safe = { ...next, widgets: widgets.filter(widget => definitions.some(definition => definition.id === widget.id)) };
         const updated = [...history.slice(0, cursor + 1), safe].slice(-40);
         setHistory(updated); setCursor(updated.length - 1); setDraft(safe); setNotice('');
     }
@@ -175,7 +180,7 @@ export default function PersonalDashboard({ consoleId, onNavigate, onShowConsole
         } catch (error) { setError((error as Error).message); }
         if (fileInput.current) fileInput.current.value = '';
     }
-    if (!preferences || !draft) return <p role="status">{translateText("components.Dashboard.Personalization.PersonalDashboard","text_ac6f7ef8d2")}</p>;
+    if (!preferences || !draft || !Array.isArray(draft.widgets)) return <p role="status">{translateText("components.Dashboard.Personalization.PersonalDashboard","text_ac6f7ef8d2")}</p>;
     const visible = (draft.widgets || []).filter(instance => definitions.some(definition => definition.id === instance.id));
     return <div className={styles.dashboard} data-personal-dashboard data-dashboard-editing={editing} data-admin-overview={user.role === 'SUPER_ADMIN' ? '' : undefined} data-accent={draft.accent || 'sapphire'} data-density={draft.density || 'comfortable'}>
         <header className={styles.header}><div><div className={styles.eyebrow}>{catalog.copy.eyebrow}</div><h1>{user.name}</h1><p>{catalog.copy.subtitle}</p></div><span className={styles.role}><ShieldOutlined sx={{ fontSize: 15 }} />{catalog.copy.roles[user.role]}</span></header>
