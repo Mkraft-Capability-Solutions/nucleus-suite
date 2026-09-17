@@ -381,3 +381,35 @@
 .letterPreviewCard{color-scheme:light;--text:#1a202c;--text-2:#475569;--text-3:#475569}
 
 .modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}
+
+@media print {
+    :global(body) {
+        background: #ffffff !important;
+        color: #1a202c !important;
+    }
+    :global(nav),
+    :global(aside),
+    :global(header),
+    .headerRow,
+    .tabNav,
+    .card {
+        display: none !important;
+    }
+    .letterStudioGrid {
+        display: block !important;
+    }
+    .letterStudioGrid > *:first-child {
+        display: none !important;
+    }
+    .letterStudioGrid > *:last-child {
+        display: block !important;
+        width: 100% !important;
+    }
+    .letterPreviewCard {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+}

@@ -50,6 +50,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ mo
   return NextResponse.json({ data: updated });
 }
 
+export const PUT = PATCH;
+
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ moduleId: string, id: string }> }) {
   const { moduleId, id } = await params;
   const access = await requireAccess(req);

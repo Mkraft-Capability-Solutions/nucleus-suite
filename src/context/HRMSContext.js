@@ -466,7 +466,8 @@ const HRMS_SYNC_TTL_MS = 30000;
                         fetch('/api/v1/loans?pageSize=100'),
                         fetch('/api/v1/announcements'),
                         fetch('/api/v1/regularizations'),
-                        fetch('/api/v1/assets?pageSize=100')
+                        fetch('/api/v1/assets?pageSize=100'),
+                        fetch('/api/v1/candidates')
                     ]);
                 } finally {
                     setTimeout(() => { globalHrmsSyncPromise = null; }, 5000);
@@ -476,13 +477,14 @@ const HRMS_SYNC_TTL_MS = 30000;
             try {
                 const results = await globalHrmsSyncPromise;
                 if (!active || !results) return;
-                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes] = results;
+                const [empRes, leaveRes, reqRes, loanRes, annRes, regRes, assetRes, candRes] = results;
 
                 // 1. Employees from Database
                 if (empRes.status === 'fulfilled' && empRes.value.ok) {
                     const json = await empRes.value.json().catch(() => null);
-                    if (Array.isArray(json?.data) && json.data.length > 0) {
-                        const dbPeople = json.data.map(item => ({
+                    const empList = Array.isArray(json?.items) ? json.items : (Array.isArray(json?.data) ? json.data : []);
+                    if (empList.length > 0) {
+                        const dbPeople = empList.map(item => ({
                             id: item.employeeCode || item.id,
                             dbId: item.id,
                             name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
@@ -542,8 +544,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 2. Leaves from Database
                 if (leaveRes.status === 'fulfilled' && leaveRes.value.ok) {
                     const leaveJson = await leaveRes.value.json().catch(() => null);
-                    if (Array.isArray(leaveJson?.data) && leaveJson.data.length > 0) {
-                        const mappedRequests = leaveJson.data.map(lr => ({
+                    const rawLeaves = Array.isArray(leaveJson?.data) ? leaveJson.data : (Array.isArray(leaveJson?.items) ? leaveJson.items : []);
+                    if (rawLeaves.length > 0) {
+                        const mappedRequests = rawLeaves.map(lr => ({
                             id: lr.id,
                             dbId: lr.id,
                             employee_id: lr.employee_id,
@@ -569,8 +572,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 3. Requisitions from Database
                 if (reqRes.status === 'fulfilled' && reqRes.value.ok) {
                     const reqJson = await reqRes.value.json().catch(() => null);
-                    if (Array.isArray(reqJson?.data) && reqJson.data.length > 0) {
-                        const dbPositions = reqJson.data.map(r => ({
+                    const rawReqs = Array.isArray(reqJson?.data) ? reqJson.data : (Array.isArray(reqJson?.items) ? reqJson.items : []);
+                    if (rawReqs.length > 0) {
+                        const dbPositions = rawReqs.map(r => ({
                             id: r.id,
                             dbId: r.id,
                             code: r.code || r.positionCode,
@@ -594,8 +598,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 3B. Loans from Database
                 if (loanRes.status === 'fulfilled' && loanRes.value.ok) {
                     const loanJson = await loanRes.value.json().catch(() => null);
-                    if (Array.isArray(loanJson?.data) && loanJson.data.length > 0) {
-                        const dbLoans = loanJson.data.map(l => ({
+                    const rawLoans = Array.isArray(loanJson?.data) ? loanJson.data : (Array.isArray(loanJson?.items) ? loanJson.items : []);
+                    if (rawLoans.length > 0) {
+                        const dbLoans = rawLoans.map(l => ({
                             id: l.id,
                             dbId: l.id,
                             borrowerId: l.employee_id || 'E1001',
@@ -624,8 +629,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 4. Announcements from Database
                 if (annRes.status === 'fulfilled' && annRes.value.ok) {
                     const annJson = await annRes.value.json().catch(() => null);
-                    if (Array.isArray(annJson?.data) && annJson.data.length > 0) {
-                        const dbAnn = annJson.data.map(a => ({
+                    const rawAnn = Array.isArray(annJson?.data) ? annJson.data : (Array.isArray(annJson?.items) ? annJson.items : []);
+                    if (rawAnn.length > 0) {
+                        const dbAnn = rawAnn.map(a => ({
                             id: a.id,
                             title: a.attributes?.Title || a.attributes?.title || 'Notice',
                             category: a.attributes?.Type || a.attributes?.category || 'General',
@@ -646,8 +652,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 5. Attendance Regularizations from Database
                 if (regRes.status === 'fulfilled' && regRes.value.ok) {
                     const regJson = await regRes.value.json().catch(() => null);
-                    if (Array.isArray(regJson?.data) && regJson.data.length > 0) {
-                        const dbRegs = regJson.data.map(r => ({
+                    const rawRegs = Array.isArray(regJson?.data) ? regJson.data : (Array.isArray(regJson?.items) ? regJson.items : []);
+                    if (rawRegs.length > 0) {
+                        const dbRegs = rawRegs.map(r => ({
                             id: r.id,
                             dbId: r.id,
                             employee_id: r.employeeCode || 'EMP-101',
@@ -674,8 +681,9 @@ const HRMS_SYNC_TTL_MS = 30000;
                 // 6. Assets from Database
                 if (assetRes.status === 'fulfilled' && assetRes.value.ok) {
                     const assetJson = await assetRes.value.json().catch(() => null);
-                    if (Array.isArray(assetJson?.data) && assetJson.data.length > 0) {
-                        const dbAssets = assetJson.data.map(a => ({
+                    const rawAssets = Array.isArray(assetJson?.data) ? assetJson.data : (Array.isArray(assetJson?.items) ? assetJson.items : []);
+                    if (rawAssets.length > 0) {
+                        const dbAssets = rawAssets.map(a => ({
                             id: a.id,
                             dbId: a.id,
                             assetType: a.attributes?.asset_type || a.asset_type || 'Hardware',
@@ -695,6 +703,30 @@ const HRMS_SYNC_TTL_MS = 30000;
                             prev.forEach(item => assetMap.set(item.id, item));
                             dbAssets.forEach(item => assetMap.set(item.id, { ...assetMap.get(item.id), ...item }));
                             return Array.from(assetMap.values());
+                        });
+                    }
+                }
+
+                // 7. Candidates from Database
+                if (candRes?.status === 'fulfilled' && candRes.value.ok) {
+                    const candJson = await candRes.value.json().catch(() => null);
+                    const rawCands = Array.isArray(candJson?.data) ? candJson.data : (Array.isArray(candJson?.items) ? candJson.items : []);
+                    if (rawCands.length > 0 && typeof setCandidates === 'function') {
+                        const dbCands = rawCands.map(c => ({
+                            id: c.id,
+                            name: c.name || 'Candidate',
+                            role: c.role || c.targetRole || 'Specialist',
+                            dept: c.dept || c.department || 'Operations',
+                            stage: c.stage || 'sourced',
+                            rating: c.rating || 4.5,
+                            appliedDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : 'Recent',
+                            source: c.source || 'Referral'
+                        }));
+                        setCandidates(prev => {
+                            const candMap = new Map();
+                            (prev || []).forEach(item => candMap.set(item.id, item));
+                            dbCands.forEach(item => candMap.set(item.id, { ...candMap.get(item.id), ...item }));
+                            return Array.from(candMap.values());
                         });
                     }
                 }

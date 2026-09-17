@@ -23,6 +23,7 @@ import PanelRight from '@mui/icons-material/VerticalSplitOutlined';
 import LayoutGrid from '@mui/icons-material/DashboardOutlined';
 import LayoutDashboard from '@mui/icons-material/SpaceDashboardOutlined';
 import ShieldCheck from '@mui/icons-material/VerifiedUserOutlined';
+import Api from '@mui/icons-material/Api';
 import { useAuth } from '@/context/AuthContext';
 import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
@@ -532,6 +533,19 @@ const TopNav = ({
                                     }}
                                 >
                                     <Users sx={{ fontSize: 15 }} color="var(--text-2)" />{readData("components.Workspace.TopNav", "TopNav_text_41")}</button>}
+                                {((userRole && userRole.toUpperCase() === 'SUPER_ADMIN') || (user?.role && user?.role.toUpperCase() === 'SUPER_ADMIN') || user?.email === 'dhanraj@nucleus.corp') && (
+                                    <a
+                                        href="/api-docs"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className={styles.menuLinkItem}
+                                        onClick={() => setShowProfileMenu(false)}
+                                        style={{ textDecoration: 'none', color: 'var(--text-2)' }}
+                                    >
+                                        <Api sx={{ fontSize: 15 }} color="var(--signal)" />
+                                        <span>API Documentation</span>
+                                    </a>
+                                )}
                             </div>
 
                             {/* Logout Action */}

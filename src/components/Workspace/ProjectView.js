@@ -40,6 +40,69 @@ const ProjectView = () => {
     const [projectList, setProjectList] = useState(DEFAULT_PROJECTS);
     const [kanbanTasks, setKanbanTasks] = useState(DEFAULT_TASKS);
 
+    useEffect(() => {
+        let active = true;
+        Promise.allSettled([
+            fetch('/api/v1/projects'),
+            fetch('/api/v1/projects/tasks')
+        ]).then(async ([projRes, taskRes]) => {
+            if (!active) return;
+            if (projRes.status === 'fulfilled' && projRes.value.ok) {
+                const projData = await projRes.value.json().catch(() => null);
+                const items = Array.isArray(projData?.items) ? projData.items : (Array.isArray(projData?.data) ? projData.data : []);
+                if (items.length > 0) {
+                    const formattedProjs = items.map(p => ({
+                        id: p.id,
+                        title: p.title || p.name || 'Enterprise Project',
+                        desc: p.desc || p.description || 'Enterprise project workspace',
+                        due: p.due || p.endDate || '2026-12-31',
+                        color: p.color || 'var(--signal)',
+                        visibility: p.visibility || 'all',
+                        members: Array.isArray(p.members) ? p.members : ['Alex Morgan']
+                    }));
+                    setProjectList(prev => {
+                        const dbIds = new Set(formattedProjs.map(f => f.id));
+                        const remaining = DEFAULT_PROJECTS.filter(d => !dbIds.has(d.id));
+                        return [...formattedProjs, ...remaining];
+                    });
+                }
+            }
+
+            if (taskRes.status === 'fulfilled' && taskRes.value.ok) {
+                const taskData = await taskRes.value.json().catch(() => null);
+                const taskItems = Array.isArray(taskData?.items) ? taskData.items : (Array.isArray(taskData?.data) ? taskData.data : []);
+                if (taskItems.length > 0) {
+                    setKanbanTasks(prev => {
+                        const next = {
+                            todo: [...(DEFAULT_TASKS.todo || [])],
+                            inprogress: [...(DEFAULT_TASKS.inprogress || [])],
+                            review: [...(DEFAULT_TASKS.review || [])],
+                            done: [...(DEFAULT_TASKS.done || [])]
+                        };
+                        taskItems.forEach(t => {
+                            const col = (t.column || 'todo').toLowerCase().replace('-', '');
+                            const targetCol = next[col] ? col : 'todo';
+                            const formattedTask = {
+                                id: t.id,
+                                title: t.title || 'Task',
+                                project: t.project || 'Platform Core',
+                                assignee: t.assignee || 'Alex Morgan',
+                                priority: (t.priority || 'medium').toLowerCase(),
+                                due: t.due || 'Upcoming',
+                                tag: t.tag || 'Ops'
+                            };
+                            if (!next[targetCol].some(ex => ex.id === formattedTask.id)) {
+                                next[targetCol].unshift(formattedTask);
+                            }
+                        });
+                        return next;
+                    });
+                }
+            }
+        }).catch(err => console.warn('Project view db sync notice:', err));
+        return () => { active = false; };
+    }, []);
+
     const [selectedProjectId, setSelectedProjectId] = useState('proj-1');
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [isCreateProjectModalOpen, setIsCreateProjectModalOpen] = useState(false);

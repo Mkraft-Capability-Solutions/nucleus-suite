@@ -23,7 +23,7 @@ export async function GET(request: Request) {
         select id, status, attributes, created_at
         from project_workforce
         where tenant_id = ${access.tenantId}
-          and attributes->>'entry_kind' = 'project'
+          and (attributes->>'entry_kind' = 'project' or attributes->>'kind' = 'project')
         order by created_at desc
       `,
     ]);
@@ -71,6 +71,7 @@ export async function POST(request: Request) {
     const projectId = crypto.randomUUID();
     const attributes = {
       kind: "project",
+      entry_kind: "project",
       ...parsed.data,
       created_by: access.context.actorUserId,
     };

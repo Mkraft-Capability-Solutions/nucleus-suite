@@ -78,11 +78,12 @@ export function fail(error: unknown, requestId: string): NextResponse {
       { status: error.status, headers: { "cache-control": "no-store", "x-request-id": requestId } },
     );
   }
+  console.error('[API Error in ' + requestId + ']:', error);
   return NextResponse.json(
     {
       error: {
         code: "INTERNAL_ERROR",
-        message: "The request could not be completed.",
+        message: (error as Error)?.message || "The request could not be completed.",
         status: 500,
         requestId,
         retryable: false,

@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Briefcase, Sparkles, UserPlus, FileCheck, CheckCircle2,
     Shield, Filter, Plus, MessageCircle, ExternalLink, ChevronRight, Search,
@@ -24,6 +24,51 @@ const RecruitmentView = ({ onNavigate, onSelectConsole }) => {
 
     const [candidateList, setCandidateList] = useState(initialCandidates || []);
     const candidates = candidateList;
+    const [referralList, setReferralList] = useState(employeeReferrals || []);
+
+    useEffect(() => {
+        let active = true;
+        Promise.allSettled([
+            fetch('/api/v1/candidates'),
+            fetch('/api/v1/referrals')
+        ]).then(async ([candRes, refRes]) => {
+            if (!active) return;
+            if (candRes.status === 'fulfilled' && candRes.value.ok) {
+                const candData = await candRes.value.json().catch(() => null);
+                const items = Array.isArray(candData?.items) ? candData.items : (Array.isArray(candData?.data) ? candData.data : []);
+                if (items.length > 0) {
+                    const formattedCands = items.map(c => ({
+                        id: c.id,
+                        name: c.name || 'Candidate',
+                        role: c.role || c.targetRole || 'Specialist',
+                        dept: c.dept || c.department || 'Operations',
+                        stage: c.stage || 'sourced',
+                        rating: c.rating || 4.5,
+                        appliedDate: c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-GB') : 'Recent',
+                        source: c.source || 'Referral'
+                    }));
+                    setCandidateList(prev => {
+                        const dbIds = new Set(formattedCands.map(f => f.id));
+                        const remaining = prev.filter(p => !dbIds.has(p.id));
+                        return [...formattedCands, ...remaining];
+                    });
+                }
+            }
+            if (refRes.status === 'fulfilled' && refRes.value.ok) {
+                const refData = await refRes.value.json().catch(() => null);
+                const refItems = Array.isArray(refData?.items) ? refData.items : (Array.isArray(refData?.data) ? refData.data : []);
+                if (refItems.length > 0) {
+                    setReferralList(prev => {
+                        const dbIds = new Set(refItems.map(f => f.id));
+                        const remaining = (employeeReferrals || []).filter(r => !dbIds.has(r.id));
+                        return [...refItems, ...remaining];
+                    });
+                }
+            }
+        }).catch(err => console.warn('Recruitment db load notice:', err));
+        return () => { active = false; };
+    }, []);
+
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.RecruitmentView", "initialState_1")); // pipeline, establishment, referrals, interviews, bias
 
     // Requisition Modal State

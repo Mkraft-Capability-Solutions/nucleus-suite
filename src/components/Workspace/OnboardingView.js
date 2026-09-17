@@ -158,6 +158,231 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         return generateHRLetter ? generateHRLetter(selectedTemplateId, selectedEmpId, letterCustomFields) : null;
     }, [generateHRLetter, selectedTemplateId, selectedEmpId, letterCustomFields]);
 
+    // Dedicated Print & PDF Export Handler for Formatted Letterhead
+    const handlePrintOrExportLetter = (isExportPdf = false) => {
+        const letterTitle = renderedLetter?.title || 'HR Letter';
+        const letterEmployee = selectedEmployeeObj?.name || 'Employee';
+        const docTitle = `${letterTitle} - ${letterEmployee}`;
+        const rawContent = renderedLetter?.renderedText || '';
+
+        // Open print/export window with isolated letterhead formatting
+        const printWin = typeof window !== 'undefined' ? window.open('', '_blank', 'width=850,height=950') : null;
+
+        const letterheadHtml = `
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <title>${docTitle}</title>
+                <style>
+                    @page {
+                        size: A4 portrait;
+                        margin: 18mm 16mm;
+                    }
+                    * {
+                        box-sizing: border-box;
+                    }
+                    body {
+                        font-family: 'Times New Roman', Times, Georgia, serif;
+                        color: #1a202c;
+                        background: #ffffff;
+                        margin: 0;
+                        padding: ${isExportPdf ? '20px 24px' : '0'};
+                        font-size: 11pt;
+                        line-height: 1.65;
+                        position: relative;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
+                    }
+                    .top-bar {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        background: #f8fafc;
+                        border: 1px solid #e2e8f0;
+                        padding: 12px 18px;
+                        border-radius: 8px;
+                        margin-bottom: 24px;
+                        font-family: system-ui, -apple-system, sans-serif;
+                    }
+                    .top-bar strong {
+                        color: #0F6E5C;
+                        font-size: 14px;
+                    }
+                    .top-bar span {
+                        color: #64748b;
+                        font-size: 12px;
+                    }
+                    .top-bar button {
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        background: #0F6E5C;
+                        color: #ffffff;
+                        border: none;
+                        padding: 8px 18px;
+                        border-radius: 6px;
+                        font-weight: 600;
+                        font-size: 13px;
+                        cursor: pointer;
+                        box-shadow: 0 2px 4px rgba(15,110,92,0.2);
+                    }
+                    .top-bar button:hover {
+                        background: #0b5346;
+                    }
+                    @media print {
+                        .top-bar {
+                            display: none !important;
+                        }
+                        body {
+                            padding: 0 !important;
+                        }
+                    }
+                    .sheet {
+                        position: relative;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        background: #ffffff;
+                    }
+                    .watermark-layer {
+                        position: fixed;
+                        top: 50%;
+                        left: 50%;
+                        transform: translate(-50%, -50%) rotate(-32deg);
+                        font-size: 40pt;
+                        font-family: system-ui, sans-serif;
+                        color: rgba(15, 110, 92, 0.05);
+                        font-weight: 900;
+                        letter-spacing: 0.12em;
+                        pointer-events: none;
+                        white-space: nowrap;
+                        z-index: 0;
+                        user-select: none;
+                    }
+                    .header-box {
+                        border-bottom: 2.5px solid #10222f;
+                        padding-bottom: 12px;
+                        margin-bottom: 24px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                    }
+                    .brand-title {
+                        font-size: 24pt;
+                        font-weight: 800;
+                        color: #0F6E5C;
+                        letter-spacing: 0.08em;
+                        font-family: 'Times New Roman', Times, serif;
+                        line-height: 1.1;
+                    }
+                    .brand-subtitle {
+                        font-size: 8.5pt;
+                        color: #5A6B78;
+                        margin-top: 4px;
+                        font-family: system-ui, sans-serif;
+                    }
+                    .brand-office {
+                        text-align: right;
+                        font-size: 8.5pt;
+                        color: #5A6B78;
+                        line-height: 1.4;
+                        font-family: system-ui, sans-serif;
+                    }
+                    .letter-text {
+                        position: relative;
+                        z-index: 1;
+                        white-space: pre-wrap;
+                        font-size: 11pt;
+                        line-height: 1.7;
+                        text-align: justify;
+                    }
+                    .footer-box {
+                        margin-top: 40px;
+                        padding-top: 12px;
+                        border-top: 1px solid #e2e8f0;
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 8pt;
+                        color: #94a3b8;
+                        font-family: system-ui, sans-serif;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="top-bar">
+                    <div>
+                        <strong>${letterTitle}</strong>
+                        <br />
+                        <span>${isExportPdf ? 'Select "Save as PDF" in the destination dropdown to export this document' : 'Letterhead document preview ready for printing'}</span>
+                    </div>
+                    <button onclick="window.print()">
+                        ${isExportPdf ? '💾 Save as PDF' : '🖨️ Print Document'}
+                    </button>
+                </div>
+                <div class="sheet">
+                    <div class="watermark-layer">NUCLEUS OFFICIAL DOCUMENT</div>
+                    <div class="header-box">
+                        <div>
+                            <div class="brand-title">N U C L E U S</div>
+                            <div class="brand-subtitle">Nucleus Technologies India Pvt Ltd • Corporate Human Resources</div>
+                        </div>
+                        <div class="brand-office">
+                            Registered Office: Manyata Tech Park,<br />
+                            Bengaluru<br />
+                            CIN: U72200KA2021PTC148892
+                        </div>
+                    </div>
+                    <div class="letter-text">${rawContent.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                    <div class="footer-box">
+                        <span>Nucleus Enterprise Solutions • System Generated Authentic Document</span>
+                        <span>Verification Ref: NUC-${selectedTemplateId}-${selectedEmpId}</span>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 300);
+                    };
+                </script>
+            </body>
+            </html>
+        `;
+
+        if (printWin) {
+            printWin.document.open();
+            printWin.document.write(letterheadHtml);
+            printWin.document.close();
+        } else {
+            // Fallback to invisible iframe if popups blocked
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
+            const iframeDoc = iframe.contentWindow.document;
+            iframeDoc.open();
+            iframeDoc.write(letterheadHtml);
+            iframeDoc.close();
+            setTimeout(() => {
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+                setTimeout(() => {
+                    document.body.removeChild(iframe);
+                }, 1000);
+            }, 500);
+        }
+
+        showToast(
+            isExportPdf ? 'PDF Export Ready' : 'Print Document',
+            `${letterTitle} for ${letterEmployee} formatted on corporate letterhead.`,
+            'success'
+        );
+    };
+
     return (
         <div className={styles.container}>
             {/* Header */}
@@ -321,29 +546,12 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div style={{ display: 'flex', gap: '0.5rem' }}>
                                 <button
                                     className={styles.btnSecondary}
-                                    onClick={() => {
-                                        if (typeof window !== 'undefined') window.print();
-                                    }}
+                                    onClick={() => handlePrintOrExportLetter(false)}
                                 >
                                     <Printer size={14} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_45")}</button>
                                 <button
                                     className={styles.btnPrimary}
-                                    onClick={() => {
-                                        const letterTitle = renderedLetter?.title || 'HR_Letter';
-                                        const letterEmployee = selectedEmployeeObj?.name || 'Employee';
-                                        downloadPrintableDocument(letterTitle, {
-                                            'Recipient': letterEmployee,
-                                            'Employee ID': selectedEmpId,
-                                            'Date': new Date().toLocaleDateString('en-IN'),
-                                            'Letter Type': selectedTemplateId,
-                                            'Organization': 'Nucleus Enterprise Solutions'
-                                        }, ['Clause / Item', 'Details'], [
-                                            ['Status', 'Approved & Released'],
-                                            ['Issued By', 'Head of Human Resources'],
-                                            ['Verification Ref', `NUC-${selectedTemplateId}-${selectedEmpId}-${Date.now().toString(36).toUpperCase()}`]
-                                        ]);
-                                        showToast(translateText("components.Workspace.OnboardingView","text_f2d1f36de1"),translateText("components.Workspace.OnboardingView","text_5e9be7e2b6", {value1: String(renderedLetter?.title || 'Letter')}), 'success');
-                                    }}
+                                    onClick={() => handlePrintOrExportLetter(true)}
                                 >
                                     <Download size={14} />{readData("components.Workspace.OnboardingView", "OnboardingView_text_46")}</button>
                             </div>
@@ -463,7 +671,7 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 <span className={`${styles.badge} ${styles.badgeSuccess}`}>{readData("components.Workspace.OnboardingView", "OnboardingView_text_65")}</span>
                             </div>
 
-                            <div className={styles.letterPreviewCard}>
+                            <div className={styles.letterPreviewCard} id="formatted-letterhead-preview">
                                 <div style={{ borderBottom: '2px solid #10222f', paddingBottom: '0.75rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <div>
                                         <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F6E5C', letterSpacing: '0.05em' }}>{readData("components.Workspace.OnboardingView", "OnboardingView_text_66")}</div>

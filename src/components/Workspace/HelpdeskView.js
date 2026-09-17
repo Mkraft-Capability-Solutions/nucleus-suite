@@ -1,7 +1,7 @@
 "use client";
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     HelpCircle, MessageSquare, Search, BookOpen, AlertCircle,
     Clock, CheckCircle2, ChevronRight, User, Plus, Filter,
@@ -25,6 +25,43 @@ const HelpdeskView = () => {
     const [ticketList, setTicketList] = useState(initialTickets);
     const tickets = ticketList;
     const [replyText, setReplyText] = useState('');
+
+    useEffect(() => {
+        let active = true;
+        fetch('/api/v1/helpdesk/tickets')
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+                if (!active || !data) return;
+                const items = Array.isArray(data.items) ? data.items : (Array.isArray(data.data) ? data.data : []);
+                if (items.length > 0) {
+                    const formatted = items.map(t => ({
+                        id: t.id,
+                        category: t.category || 'General',
+                        priority: (t.priority || 'MEDIUM').toUpperCase(),
+                        subject: t.subject || 'Support Ticket',
+                        description: t.description || '',
+                        status: (t.status || 'OPEN').toUpperCase(),
+                        slaHours: t.slaHours || 24,
+                        messages: t.messages || [
+                            {
+                                sender: 'You',
+                                role: 'Requester',
+                                time: 'Recorded',
+                                text: t.description || 'Ticket initialized.'
+                            }
+                        ],
+                        createdAt: t.createdAt
+                    }));
+                    setTicketList(prev => {
+                        const dbIds = new Set(formatted.map(f => f.id));
+                        const remainingInitial = initialTickets.filter(init => !dbIds.has(init.id));
+                        return [...formatted, ...remainingInitial];
+                    });
+                }
+            })
+            .catch(err => console.warn('Helpdesk ticket load notice:', err));
+        return () => { active = false; };
+    }, []);
 
     // Modal Form State
     const [modalCategory, setModalCategory] = useState('Payroll & Tax');
@@ -87,7 +124,7 @@ const HelpdeskView = () => {
         setTicketList(prev => [newT, ...prev]);
 
         try {
-            await fetch('/api/v1/helpdesk/tickets', {
+            const res = await fetch('/api/v1/helpdesk/tickets', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
                 body: JSON.stringify({
@@ -97,6 +134,13 @@ const HelpdeskView = () => {
                     description: modalDescription.trim()
                 })
             });
+            if (res.ok) {
+                const json = await res.json().catch(() => null);
+                const rec = json?.data || json;
+                if (rec?.id) {
+                    setTicketList(prev => prev.map(t => t.id === newT.id ? { ...t, id: rec.id } : t));
+                }
+            }
         } catch (err) {
             console.warn('Ticket creation sync warning:', err);
         } finally {

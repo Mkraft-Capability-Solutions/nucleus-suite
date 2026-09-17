@@ -33,9 +33,8 @@ export function middleware(request: NextRequest) {
     request.cookies.get('nucleus_token')?.value ||
     request.cookies.get('better-auth.session_token')?.value;
 
-  // 3. For protected routes (like /workspace), if no session cookie exists, allow client hydration to check localStorage
-  // or redirect if it's an explicit /admin or restricted path
-  if (pathname.startsWith('/admin') && !sessionCookie) {
+  // 3. For protected routes (like /workspace and /admin), if no session cookie exists, redirect to /login
+  if ((pathname.startsWith('/workspace') || pathname.startsWith('/admin')) && !sessionCookie) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);

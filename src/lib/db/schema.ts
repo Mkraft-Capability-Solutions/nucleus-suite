@@ -644,7 +644,18 @@ export const schema = {
   statutoryRegister,
 };
 
-export const onboardingInstances = pgTable("onboarding_instances", moduleTableConfig);
+export const onboardingInstances = pgTable("onboarding_instances", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  tenantId: uuid("tenant_id").notNull(),
+  employeeId: uuid("employee_id"),
+  employmentId: uuid("employment_id"),
+  onboardingTemplateId: uuid("onboarding_template_id"),
+  workflowInstanceId: uuid("workflow_instance_id"),
+  recordStatus: text("record_status").default("active"),
+  attributes: jsonb("attributes").default({}).notNull(),
+  version: bigint("version", { mode: "number" }).default(1),
+  ...timestamps,
+});
 export const jobRequisitions = pgTable("job_requisitions", moduleTableConfig);
 export const performanceReviews = pgTable("performance_reviews", moduleTableConfig);
 export const learningPaths = pgTable("learning_paths", moduleTableConfig);

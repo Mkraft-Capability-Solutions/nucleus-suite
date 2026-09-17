@@ -87,24 +87,49 @@ export const AuthProvider = ({ children }) => {
         };
     }, []);
     
-    const fallbackUser = {
-        id: 'usr-admin',
-        name: 'Dhanraj Dadhich',
-        email: 'dhanraj@nucleus.corp',
-        role: 'SUPER_ADMIN'
-    };
+    const [savedUser, setSavedUser] = useState(() => {
+        if (typeof window === 'undefined') return null;
+        try {
+            const hasCookie = document.cookie.includes('nucleus_session');
+            if (!hasCookie) return null;
+            const item = localStorage.getItem('nucleus_user');
+            return item ? JSON.parse(item) : null;
+        } catch {
+            return null;
+        }
+    });
 
-    const user = {
-        ...fallbackUser,
-        ...(session?.user || {}),
+    const activeIdentity = isSigningOut ? null : (session?.user || (typeof document !== 'undefined' && document.cookie.includes('nucleus_session') ? savedUser : null));
+
+    const user = activeIdentity ? {
+        id: activeIdentity.id || 'usr-admin',
+        name: liveProfile?.name || activeIdentity.name || 'Dhanraj Dadhich',
+        email: activeIdentity.email || 'dhanraj@nucleus.corp',
+        role: (activeIdentity.role || liveProfile?.role || 'SUPER_ADMIN').toUpperCase(),
+        ...(savedUser || {}),
+        ...(activeIdentity || {}),
         ...(liveProfile || {})
-    };
+    } : null;
 
     const login = async (email, password) => {
         try {
-            const { data, error } = await signIn.email({ email, password });
-            if (error || !data) return false;
-            return true;
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+            if (!res.ok) return false;
+            const json = await res.json();
+            if (json?.user) {
+                setSavedUser(json.user);
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem('nucleus_user', JSON.stringify(json.user));
+                    document.cookie = `nucleus_session=${encodeURIComponent(json.user.id)}; path=/; max-age=604800; SameSite=Lax`;
+                }
+                signIn.email({ email, password }).catch(() => {});
+                return true;
+            }
+            return false;
         } catch {
             return false;
         }
@@ -112,10 +137,24 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         setIsSigningOut(true);
+        setSavedUser(null);
+        setLiveProfile(null);
+        if (typeof window !== 'undefined') {
+            try {
+                localStorage.removeItem('nucleus_user');
+                sessionStorage.clear();
+                document.cookie = 'nucleus_session=; path=/; max-age=0';
+                document.cookie = 'better-auth.session_token=; path=/; max-age=0';
+            } catch {}
+        }
+        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
         try {
             await betterAuthSignOut();
         } catch {}
-        router.replace('/');
+        router.replace('/login');
+        if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+        }
     };
 
     const hasPermission = (permission) => {
