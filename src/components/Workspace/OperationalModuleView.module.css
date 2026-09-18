@@ -31,10 +31,55 @@
 .detailText { min-height: 3.4rem; margin: .35rem 0 1rem; color: var(--text-2); font-size: .84rem; line-height: 1.5; }
 .timeline, .audit { border-top: 1px solid var(--line); padding-top: .9rem; margin-top: .9rem; }
 .timeline h3, .audit h3 { margin: 0 0 .6rem; font-size: .82rem; color: var(--text); }
-.timeline button { display: flex; align-items: center; width: 100%; gap: .55rem; padding: .45rem 0; border: 0; background: transparent; color: var(--text-2); text-align: left; cursor: pointer; font: inherit; font-size: .8rem; }
-.timeline button span { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--card-2); border: 1px solid var(--line); font-size: .68rem; color: var(--text-2); }
-.timeline .currentState { color: var(--signal); font-weight: 800; }
-.timeline .currentState span { border-color: var(--signal); background: var(--signal); color: var(--on-signal, #ffffff); }
+.timeline button {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    gap: 0.65rem !important;
+    padding: 0.45rem 0.5rem !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--text-2) !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    font: inherit !important;
+    font-size: 0.82rem !important;
+    line-height: 1.3 !important;
+    border-radius: 6px !important;
+    min-height: 32px !important;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+.timeline button:hover {
+    background: var(--card-2, rgba(255, 255, 255, 0.05)) !important;
+    color: var(--text) !important;
+}
+.timeline button span.stepNum {
+    display: grid !important;
+    place-items: center !important;
+    width: 22px !important;
+    height: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    border-radius: 50% !important;
+    background: var(--card-2) !important;
+    border: 1px solid var(--line) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: var(--text-2) !important;
+    flex-shrink: 0 !important;
+    overflow: visible !important;
+}
+.timeline button span.stateLabel {
+    flex: 1 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    font-size: 0.82rem !important;
+}
+.timeline .currentState { color: var(--signal) !important; font-weight: 700 !important; }
+.timeline .currentState span.stepNum { border-color: var(--signal) !important; background: var(--signal) !important; color: var(--on-signal, #ffffff) !important; }
 .audit p { margin: .45rem 0; color: var(--text-2); font-size: .76rem; line-height: 1.4; }
 .overlay { position: fixed; inset: 0; z-index: 1400; display: grid; place-items: center; padding: 1rem; background: var(--overlay); backdrop-filter: blur(6px); }
 .formDialog { width: min(760px, 100%); max-height: calc(100vh - 2rem); overflow: auto; border: 1px solid var(--line); border-radius: var(--r-card, 12px); background: var(--card); color: var(--text); }

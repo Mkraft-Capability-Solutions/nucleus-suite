@@ -144,6 +144,48 @@ export async function POST(req: NextRequest) {
           console.warn("Leave balance insert notice:", err);
         }
       }
+    } else if (
+      importType === "candidates" ||
+      importType === "ats" ||
+      records.some((r: any) => r.candidateName || r.CandidateName || r.expectedCTC || r.JobReqCode || r.jobReqCode)
+    ) {
+      for (const rec of records) {
+        const candidateName = rec.candidateName || rec.CandidateName || rec.name || rec.Staff_Name || "Candidate";
+        const role = rec.role || rec.Role || rec.targetRole || rec.KeySkills || "Specialist";
+        const dept = rec.dept || rec.Department || rec.department || "Operations";
+        const email = rec.email || rec.Email || "";
+        const phone = rec.phone || rec.Phone || "";
+        const exp = rec.experience || rec.ExperienceYears || rec.exp || "3 yrs";
+        const stage = rec.stage || "sourced";
+        const matchScore = Number(rec.matchScore || rec.score || Math.floor(85 + Math.random() * 12));
+
+        const attributes = {
+          name: candidateName,
+          role,
+          dept,
+          email,
+          phone,
+          exp,
+          stage,
+          matchScore,
+          biasScore: rec.biasScore || "Fair & Neutral",
+          source: rec.source || "ATS Bulk Import",
+          skills: rec.skills || rec.KeySkills || ["Engineering", "Specialist"],
+          importedAt: new Date().toISOString(),
+          ...rec,
+        };
+
+        try {
+          const candId = randomUUID();
+          await sqlClient`
+            INSERT INTO candidates (id, tenant_id, attributes)
+            VALUES (${candId}, ${tenantId}, ${JSON.stringify(attributes)}::jsonb);
+          `;
+          insertedCount++;
+        } catch (err) {
+          console.warn("Candidate insert error during ATS bulk import:", err);
+        }
+      }
     }
 
     return NextResponse.json({

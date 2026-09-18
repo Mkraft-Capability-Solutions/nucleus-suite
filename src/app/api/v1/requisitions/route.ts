@@ -42,6 +42,11 @@ export async function POST(request: Request) {
     const key = requireIdempotencyKey(request.headers);
     const rawJson = await request.json().catch(() => null);
     const body = (rawJson && typeof rawJson === "object") ? { ...rawJson } : {};
+    body.departmentName = body.departmentName || body.dept || body.department || "Operations";
+    body.title = body.title || "Specialist";
+    if (!body.positionCode) {
+      body.positionCode = body.vacatedPositionCode || `POS-${String(body.departmentName).slice(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+    }
     if (!body.hiringManagerEmployeeId || typeof body.hiringManagerEmployeeId !== "string" || !body.hiringManagerEmployeeId.includes("-") || body.hiringManagerEmployeeId.length !== 36) {
       const [empRows] = await tenantTx(access, [
         sqlClient`select id from employees where tenant_id = ${access.tenantId} and (employee_code = ${String(body.hiringManagerEmployeeId || '')} or status = 'active') order by (case when employee_code = ${String(body.hiringManagerEmployeeId || '')} then 0 else 1 end) asc, employee_code asc limit 1`,

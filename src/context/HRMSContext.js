@@ -1,4 +1,3 @@
-import { getHrmsDefault } from './hrms-defaults';
 "use client";
 import { readData } from '../services/workspace-data.mjs';
 
@@ -57,7 +56,7 @@ export const HRMSProvider = ({ children }) => {
 
     // --- TOAST NOTIFICATIONS ---
     const [toasts, setToasts] = useState([]);
-    const showToast = (title, message, type = getHrmsDefault("defaultValue_1")) => {
+    const showToast = (title, message, type = 'info') => {
         const id = crypto.randomUUID();
         setToasts(prev => [...prev, { id, title, message, type }].slice(-3));
     };
@@ -67,7 +66,7 @@ export const HRMSProvider = ({ children }) => {
 
     // --- 1. USER PROFILE ---
     const { user: authUser } = useAuth();
-    const [user, setUser] = useState(() => authUser || authenticatedUser || getHrmsDefault("user_1"));
+    const [user, setUser] = useState(() => authUser || authenticatedUser || { name: 'System User', role: 'EMPLOYEE', email: '', dept: 'General', location: 'HQ' });
     useEffect(() => {
         if (authUser) {
             setUser(authUser);
@@ -98,28 +97,28 @@ export const HRMSProvider = ({ children }) => {
     }, []);
 
     // --- 2. ATTENDANCE & SHIFTS (Module 6) ---
-    const [attendance, setAttendance] = useState(getHrmsDefault("attendance_2"));
+    const [attendance, setAttendance] = useState({ status: 'absent', punchInTime: null, punchOutTime: null, totalHours: '0h 00m', history: [] });
 
-    const [attendanceAnomalies] = useState(getHrmsDefault("attendanceAnomalies_3"));
+    const [attendanceAnomalies] = useState([]);
 
     const punchIn = (log = '') => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString([], getHrmsDefault("timeStr_4"));
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         setAttendance(prev => ({
             ...prev,
-            ...getHrmsDefault("punchIn_fields_5"),
+            status: 'present',
             punchInTime: timeStr,
-            history: [{ ...getHrmsDefault("history_fields_6"), in: timeStr, ...getHrmsDefault("history_fields_7"), log }, ...prev.history]
+            history: [{ date: 'Today', in: timeStr, status: 'Present', source: 'Web Portal', log }, ...prev.history]
         }));
         showToast('Punched In', `Attendance recorded at ${timeStr}`, 'success');
     };
 
     const punchOut = (log = '') => {
         const now = new Date();
-        const timeStr = now.toLocaleTimeString([], getHrmsDefault("timeStr_8"));
+        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         setAttendance(prev => ({
             ...prev,
-            ...getHrmsDefault("punchOut_fields_9"),
+            status: 'punched_out',
             punchOutTime: timeStr,
             history: prev.history.map((h, i) => i === 0 ? { ...h, out: timeStr, log: log || h.log } : h)
         }));
@@ -127,15 +126,86 @@ export const HRMSProvider = ({ children }) => {
     };
 
     // --- 2B. TIME-OFFICE & GATE PASS SUBSYSTEM (Blueprint Addendum G1 & G2) ---
-    const [gatePasses, setGatePasses] = useState(getHrmsDefault("gatePasses_10"));
+    const [gatePasses, setGatePasses] = useState([
+        {
+            id: 'GP-2026-0141',
+            employee_id: 'EMP-101',
+            employee_name: 'Amit Verma',
+            date: '2026-09-04',
+            from: '12:00',
+            to: '14:00',
+            minutes: 120,
+            type: 'PERSONAL',
+            reason: 'Bank work & Document verification',
+            status: 'APPROVED',
+            approved_by: 'Policy Engine Auto-Rule',
+            applied_at: '2026-09-04T10:00:00.000Z'
+        },
+        {
+            id: 'GP-2026-0155',
+            employee_id: 'EMP-101',
+            employee_name: 'Amit Verma',
+            date: '2026-09-11',
+            from: '11:30',
+            to: '13:30',
+            minutes: 120,
+            type: 'PERSONAL',
+            reason: 'School admission counselling',
+            status: 'APPROVED',
+            approved_by: 'Policy Engine Auto-Rule',
+            applied_at: '2026-09-11T09:30:00.000Z'
+        },
+        {
+            id: 'GP-2026-0163',
+            employee_id: 'E1023',
+            employee_name: 'Kavya Venkatesh',
+            date: '2026-09-15',
+            from: '15:00',
+            to: '17:00',
+            minutes: 120,
+            type: 'PERSONAL',
+            reason: 'Medical checkup',
+            status: 'APPROVED',
+            approved_by: 'E1024',
+            applied_at: '2026-09-15T14:15:00.000Z'
+        },
+        {
+            id: 'GP-2026-0172',
+            employee_id: 'E1005',
+            employee_name: 'Siddharth Rao',
+            date: '2026-09-16',
+            from: '13:00',
+            to: '15:00',
+            minutes: 120,
+            type: 'OFFICIAL',
+            reason: 'Client plant audit site visit',
+            status: 'APPROVED',
+            approved_by: 'Operations Head',
+            applied_at: '2026-09-16T11:00:00.000Z'
+        },
+        {
+            id: 'GP-2026-0189',
+            employee_id: 'E1012',
+            employee_name: 'Pooja Sharma',
+            date: '2026-09-18',
+            from: '16:00',
+            to: '18:00',
+            minutes: 120,
+            type: 'PERSONAL',
+            reason: 'Personal emergency',
+            status: 'PENDING',
+            approved_by: 'Pending Supervisor',
+            applied_at: '2026-09-18T08:30:00.000Z'
+        }
+    ]);
 
-    const requestGatePass = ({ employeeId = getHrmsDefault("defaultValue_2"), employeeName = getHrmsDefault("defaultValue_3"), date = getHrmsDefault("defaultValue_4"), type = getHrmsDefault("defaultValue_5"), minutes = getHrmsDefault("defaultValue_6"), reason = '' }) => {
+    const requestGatePass = ({ employeeId = (user?.id || 'EMP-101'), employeeName = (user?.name || 'Employee'), date = new Date().toISOString().split('T')[0], type = 'PERSONAL', minutes = 60, reason = '' }) => {
         const approvedAndPending = gatePasses.filter(gp => gp.employee_id === employeeId && gp.status !== 'REJECTED');
         const quotaCheck = validateGatePassQuota(approvedAndPending, minutes);
 
         if (!quotaCheck.allowed) {
             showToast('Gate Pass Rejected', quotaCheck.reason, 'error');
-            return { ...getHrmsDefault("requestGatePass_fields_11"), reason: quotaCheck.reason };
+            return { success: false, reason: quotaCheck.reason };
         }
 
         const newPass = {
@@ -146,17 +216,17 @@ export const HRMSProvider = ({ children }) => {
             type,
             minutes,
             reason,
-            ...getHrmsDefault("newPass_fields_12"),
+            status: 'APPROVED', approved_by: 'Policy Engine Auto-Rule',
             applied_at: new Date().toISOString()
         };
 
         setGatePasses(prev => [newPass, ...prev]);
         showToast('Gate Pass Approved', `${minutes} mins approved. ${quotaCheck.remaining_minutes} mins remaining in monthly quota.`, 'success');
-        return { ...getHrmsDefault("requestGatePass_fields_13"), gatePass: newPass };
+        return { success: true, gatePass: newPass };
     };
 
     const approveGatePass = (gatePassId) => {
-        setGatePasses(prev => prev.map(gp => gp.id === gatePassId ? { ...gp, ...getHrmsDefault("approveGatePass_fields_14") } : gp));
+        setGatePasses(prev => prev.map(gp => gp.id === gatePassId ? { ...gp, status: 'APPROVED' } : gp));
         showToast('Gate Pass Approved', 'Pass updated and minutes added to attendance net span.', 'success');
     };
 
@@ -267,9 +337,143 @@ export const HRMSProvider = ({ children }) => {
     };
 
     // Precomputed initial ledger covering all 7 Sprint 1 HR Demo points
-    const [timeOfficeLedger, setTimeOfficeLedger] = useState(getHrmsDefault("timeOfficeLedger_15"));
+    const [timeOfficeLedger, setTimeOfficeLedger] = useState([
+        {
+            id: 'TOL-0001',
+            employee_id: 'E1001',
+            employee_name: 'Rajesh Kumar',
+            designation: 'Senior Production Engineer',
+            worker_category_code: 'PERM',
+            attendance_date: '2026-09-02',
+            shift_id_inferred: 'SHIFT-8H (09:00 - 17:30)',
+            shift_inferred: false,
+            gross_minutes: 1160,
+            break_minutes: 60,
+            gate_pass_minutes: 0,
+            net_minutes: 1100,
+            formatted_net: '18h 20m',
+            ot_minutes: 440,
+            formatted_ot: '7h 20m',
+            status: 'present',
+            status_reason: 'Cross-midnight shift completed with verified dinner break and 7h20m OT credit'
+        },
+        {
+            id: 'TOL-0002',
+            employee_id: 'E1018',
+            employee_name: 'Sunil Jadhav',
+            designation: 'Contractual Machine Operator',
+            worker_category_code: 'CONTRACT',
+            attendance_date: '2026-09-06',
+            shift_id_inferred: 'SHIFT-8H (08:00 - 16:30)',
+            shift_inferred: false,
+            gross_minutes: 510,
+            break_minutes: 30,
+            gate_pass_minutes: 0,
+            net_minutes: 480,
+            formatted_net: '8h 00m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'present',
+            status_reason: 'Daily wage contractor (no rest day restriction) - standard shift validated'
+        },
+        {
+            id: 'TOL-0003',
+            employee_id: 'E1029',
+            employee_name: 'Mahesh Patil',
+            designation: 'Third-Party Loading Helper',
+            worker_category_code: 'THIRD_PARTY_HELPER',
+            attendance_date: '2026-09-07',
+            shift_id_inferred: 'SHIFT-ROT (14:00 - 22:30)',
+            shift_inferred: true,
+            gross_minutes: 540,
+            break_minutes: 45,
+            gate_pass_minutes: 0,
+            net_minutes: 495,
+            formatted_net: '8h 15m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'present',
+            status_reason: 'Third-party group helper auto-assigned rotational shift without rest day wage credit'
+        },
+        {
+            id: 'TOL-0004',
+            employee_id: 'EMP-101',
+            employee_name: 'Amit Verma',
+            designation: 'Assembly Specialist',
+            worker_category_code: 'PERM',
+            attendance_date: '2026-09-11',
+            shift_id_inferred: 'SHIFT-8H (09:00 - 17:30)',
+            shift_inferred: false,
+            gross_minutes: 480,
+            break_minutes: 45,
+            gate_pass_minutes: 120,
+            net_minutes: 480,
+            formatted_net: '8h 00m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'present',
+            status_reason: 'Approved 2h Personal Gate Pass (GP-2026-0155) credited back to net duration'
+        },
+        {
+            id: 'TOL-0005',
+            employee_id: 'E1023',
+            employee_name: 'Kavya Venkatesh',
+            designation: 'Operations Coordinator',
+            worker_category_code: 'PERM',
+            attendance_date: '2026-09-14',
+            shift_id_inferred: 'SHIFT-8H (09:00 - 17:30)',
+            shift_inferred: false,
+            gross_minutes: 360,
+            break_minutes: 30,
+            gate_pass_minutes: 0,
+            net_minutes: 330,
+            formatted_net: '5h 30m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'half_day',
+            status_reason: '4th monthly late clock-in (10:18 AM vs 09:00 AM) — Converted to Half-Day'
+        },
+        {
+            id: 'TOL-0006',
+            employee_id: 'E1005',
+            employee_name: 'Siddharth Rao',
+            designation: 'Plant Assistant Manager',
+            worker_category_code: 'PERM',
+            attendance_date: '2026-09-15',
+            shift_id_inferred: 'SHIFT-8H (09:00 - 17:30)',
+            shift_inferred: false,
+            gross_minutes: 500,
+            break_minutes: 30,
+            gate_pass_minutes: 0,
+            net_minutes: 470,
+            formatted_net: '7h 50m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'present',
+            status_reason: 'Grace exempt role (Assistant Manager) — late deduction waived per ruleset'
+        },
+        {
+            id: 'TOL-0007',
+            employee_id: 'E1012',
+            employee_name: 'Pooja Sharma',
+            designation: 'Warehouse Supervisor',
+            worker_category_code: 'PERM',
+            attendance_date: '2026-09-16',
+            shift_id_inferred: 'SHIFT-8H (09:00 - 17:30)',
+            shift_inferred: false,
+            gross_minutes: 490,
+            break_minutes: 35,
+            gate_pass_minutes: 0,
+            net_minutes: 455,
+            formatted_net: '7h 35m',
+            ot_minutes: 0,
+            formatted_ot: '0m',
+            status: 'present',
+            status_reason: 'Long-Night Relief applied (Prior night shift ended past 03:00 AM)'
+        }
+    ]);
 
-    const recomputeAttendanceRecord = ({ employee, dateStr, rawPunches, shiftId = getHrmsDefault("defaultValue_7"), priorDay = null, monthlyLateCount = getHrmsDefault("defaultValue_8") }) => {
+    const recomputeAttendanceRecord = ({ employee, dateStr, rawPunches, shiftId = 'SHIFT-8H', priorDay = null, monthlyLateCount = 0 }) => {
         const approvedPasses = gatePasses.filter(gp => gp.employee_id === employee.id && gp.date === dateStr && gp.status === 'APPROVED');
         const computed = computeAttendanceDay({
             employee,
@@ -289,9 +493,9 @@ export const HRMSProvider = ({ children }) => {
                 employee_id: employee.id,
                 employee_name: employee.name,
                 designation: employee.role || employee.designation,
-                worker_category_code: employee.worker_category_code || getHrmsDefault("fallback_1"),
+                worker_category_code: employee.worker_category_code || 'PERM',
                 wage_type: (WORKER_CATEGORIES[employee.worker_category_code] || WORKER_CATEGORIES.PERM).wage_type,
-                location_id: employee.location_id || getHrmsDefault("fallback_2"),
+                location_id: employee.location_id || 'LOC-BLR-01',
                 ...computed
             };
             if (exists >= 0) {
@@ -309,15 +513,15 @@ export const HRMSProvider = ({ children }) => {
     // --- 3. LEAVES & ENTERPRISE ACCRUAL SUBSYSTEM (Blueprint Addendum G3) ---
     const leaveActor = authenticatedUser ?? {id: '', employeeId: null, role: '', name: ''};
     const [leaveService] = useState(() => createLeavePreviewService({
-        requests: [...getHrmsDefault("leaveApplications_18").map(app => ({...app, version:1, contact:app.contact??'',reference_only:true})),...workbookLeaveReferences()],
+        requests: [...[].map(app => ({...app, version:1, contact:app.contact??'',reference_only:true})),...workbookLeaveReferences()],
         balances: readData('leave.workflow', 'accounts'),
-        credits: [...getHrmsDefault("compOffCredits_17"),...workbookCompOffCredits()],
+        credits: [...[],...workbookCompOffCredits()],
         events: [],
     }));
     const [leaveState, setLeaveState] = useState(() => leaveService.snapshot());
     const leaveApplications = leaveState.requests.filter(app => ['HR_MANAGER','SUPER_ADMIN'].includes(leaveActor.role) || app.employee_id===leaveActor.employeeId || (leaveActor.role==='MANAGER' && readData('leave.workflow','reportingManagers')[app.employee_id]===leaveActor.employeeId));
     const compOffCredits = evaluateCompOffValidity(leaveState.credits.filter(credit=>credit.employee_id===leaveActor.employeeId)).credits;
-    const emptyBalances = Object.fromEntries(Object.keys(getHrmsDefault("leaves_16")).filter(key=>key!=='history').map(key=>[key,{available:0,total:0}]));
+    const emptyBalances = Object.fromEntries(Object.keys({ casual: { available: 0, total: 0 }, sick: { available: 0, total: 0 }, privilege: { available: 0, total: 0 } }).filter(key=>key!=='history').map(key=>[key,{available:0,total:0}]));
     const leaves = {...emptyBalances, ...leaveState.balances[leaveActor.employeeId], history:leaveApplications.filter(app=>app.employee_id===leaveActor.employeeId).map(app=>({id:app.id,type:app.leave_type_label,date:`${app.start_date} – ${app.end_date}`,duration:app.chargeable_days,status:app.status,reason:app.reason}))};
     const runLeave = async operation => {
         try {
@@ -806,11 +1010,11 @@ const HRMS_SYNC_TTL_MS = 30000;
     }, []);
 
     // --- 4B. MY TEAM PODS (Module 1 / Pod Directory) ---
-    const [teamMembers, setTeamMembers] = useState(getHrmsDefault("teamMembers_29"));
+    const [teamMembers, setTeamMembers] = useState([]);
 
     // --- 4C. POSITIONS & ESTABLISHMENT CONTROL (Sprint 4: Demo Points 24 & 25) ---
     const [sanctionedQuotas, setSanctionedQuotas] = useState(DEFAULT_SANCTIONED_QUOTAS);
-    const [positions, setPositions] = useState(getHrmsDefault("positions_30"));
+    const [positions, setPositions] = useState([]);
 
     const createJobRequisition = async (reqData) => {
         const validation = validateRequisitionCreation({
@@ -822,17 +1026,17 @@ const HRMS_SYNC_TTL_MS = 30000;
 
         if (!validation.isValid) {
             showToast('Requisition Creation Blocked', validation.errors[0], 'error');
-            return { ...getHrmsDefault("createJobRequisition_fields_31"), errors: validation.errors };
+            return { success: false, errors: validation.errors };
         }
 
         const newPos = {
             id: `POS-${Date.now().toString().slice(-4)}`,
             title: reqData.title,
             dept: reqData.dept,
-            ...getHrmsDefault("newPos_fields_32"),
-            budget: reqData.budget || getHrmsDefault("fallback_6"),
-            ...getHrmsDefault("newPos_fields_33"),
-            requisitionType: reqData.requisitionType || getHrmsDefault("fallback_7"),
+            openSlots: 1, filled: 0,
+            budget: reqData.budget || '₹20,00,000 / yr',
+            status: 'Hiring Active',
+            requisitionType: reqData.requisitionType || 'NEW_ADDITION',
             vacatedPositionCode: reqData.vacatedPositionCode || null,
             previousIncumbentId: reqData.previousIncumbentId || null,
             isExecutiveWaiver: reqData.isExecutiveWaiver || false,
@@ -873,7 +1077,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             `${newPos.title} created under ${newPos.dept} (${newPos.requisitionType}).`,
             'success'
         );
-        return { ...getHrmsDefault("createJobRequisition_fields_34"), position: newPos };
+        return { success: true, position: newPos };
     };
 
     // --- 4D. HARDWARE ASSET ALLOCATION & SERIAL TRACKING (Sprint 4: Demo Point 23) ---
@@ -882,17 +1086,17 @@ const HRMS_SYNC_TTL_MS = 30000;
     const allocateHardwareAsset = async (assetData) => {
         const newAsset = {
             id: `AST-${crypto.randomUUID()}`,
-            assetType: assetData.assetType || getHrmsDefault("fallback_8"),
-            brand: assetData.brand || getHrmsDefault("fallback_9"),
+            assetType: assetData.assetType || 'LAPTOP',
+            brand: assetData.brand || 'Corporate Hardware',
             model: assetData.model,
             serialNumber: assetData.serialNumber,
             assetTag: assetData.assetTag || `NUC-IT-${crypto.randomUUID().slice(0, 8)}`,
             assignedToEmployeeId: assetData.assignedToEmployeeId,
-            assignedToName: employees.find(e => e.id === assetData.assignedToEmployeeId)?.name || getHrmsDefault("fallback_10"),
+            assignedToName: employees.find(e => e.id === assetData.assignedToEmployeeId)?.name || 'Employee',
             assignedDate: new Date().toISOString().split('T')[0],
-            ...getHrmsDefault("newAsset_fields_35"),
-            condition: assetData.condition || getHrmsDefault("fallback_11"),
-            replacementValue: Number(assetData.replacementValue) || getHrmsDefault("fallback_12")
+            status: 'ASSIGNED',
+            condition: assetData.condition || 'New',
+            replacementValue: Number(assetData.replacementValue) || 100000
         };
 
         setHardwareAssets(prev => [newAsset, ...prev]);
@@ -925,12 +1129,12 @@ const HRMS_SYNC_TTL_MS = 30000;
         return newAsset;
     };
 
-    const markAssetReturned = (assetId, condition = getHrmsDefault("defaultValue_10"), remarks = '') => {
+    const markAssetReturned = (assetId, condition = 'Good', remarks = '') => {
         setHardwareAssets(prev => prev.map(a => {
             if (a.id !== assetId) return a;
             return {
                 ...a,
-                ...getHrmsDefault("markAssetReturned_fields_36"),
+                status: 'RETURNED_AVAILABLE',
                 returnDate: new Date().toISOString().split('T')[0],
                 condition,
                 returnRemarks: remarks
@@ -948,14 +1152,14 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newAward = {
             id: `AWD-${Date.now().toString().slice(-4)}`,
             employeeId: awardData.employeeId,
-            employeeName: emp ? emp.name : awardData.employeeName || getHrmsDefault("fallback_13"),
+            employeeName: emp ? emp.name : awardData.employeeName || 'Staff Member',
             dept: emp ? emp.dept : 'General',
-            awardType: awardData.awardType || getHrmsDefault("fallback_14"),
+            awardType: awardData.awardType || 'SPOT_AWARD',
             citation: awardData.citation,
-            rewardAmount: Number(awardData.rewardAmount) || getHrmsDefault("fallback_15"),
-            awardedBy: user?.name || getHrmsDefault("fallback_16"),
-            date: new Date().toLocaleDateString('en-GB', getHrmsDefault("date_38")),
-            ...getHrmsDefault("newAward_fields_37")
+            rewardAmount: Number(awardData.rewardAmount) || 10000,
+            awardedBy: user?.name || 'Executive Leadership',
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            status: 'APPROVED_AND_BROADCAST'
         };
 
         setRecognitionAwards(prev => [newAward, ...prev]);
@@ -968,10 +1172,10 @@ const HRMS_SYNC_TTL_MS = 30000;
             id: `REF-${crypto.randomUUID()}`,
             candidateName: refData.candidateName,
             role: refData.role,
-            dept: refData.dept || getHrmsDefault("fallback_17"),
-            referredByEmployeeId: user?.id || getHrmsDefault("fallback_18"),
-            referredByName: user?.name || getHrmsDefault("fallback_19"),
-            ...getHrmsDefault("newRef_fields_39")
+            dept: refData.dept || 'Engineering',
+            referredByEmployeeId: user?.id || (user?.id || 'EMP-101'),
+            referredByName: user?.name || (user?.name || 'Employee'),
+            status: 'Under Review'
         };
 
         setEmployeeReferrals(prev => [newRef, ...prev]);
@@ -1015,34 +1219,35 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     const generateHRLetter = (templateId, employeeId, customFields = {}) => {
-        const emp = employees.find(e => e.id === employeeId) || employees[0];
+        const defaultEmp = { id: 'EMP-001', name: 'Staff Member', role: 'Specialist', dept: 'Operations' };
+        const emp = (Array.isArray(employees) && employees.length > 0 ? (employees.find(e => e.id === employeeId) || employees[0]) : null) || defaultEmp;
         return renderLetterTemplate(templateId, emp, customFields);
     };
 
-    const [documents] = useState(getHrmsDefault("documents_40"));
+    const [documents] = useState([]);
 
-    const [auditLogs] = useState(getHrmsDefault("auditLogs_41"));
+    const [auditLogs] = useState([]);
 
     // --- 5. PAYROLL & EARNED WAGE ACCESS (Module 2) ---
-    const [payrollSummary] = useState(getHrmsDefault("payrollSummary_42"));
+    const [payrollSummary] = useState({ grossPay: 0, netPay: 0, deductions: 0, taxes: 0, reimbursements: 0, period: 'Current Month' });
 
-    const [ewaTransactions, setEwaTransactions] = useState(getHrmsDefault("ewaTransactions_43"));
+    const [ewaTransactions, setEwaTransactions] = useState([]);
 
     const requestEWA = (amount) => {
         const num = parseFloat(amount);
         if (isNaN(num) || num <= 0) return;
         setEwaTransactions(prev => [{
             id: `EWA-${crypto.randomUUID()}`,
-            ...getHrmsDefault("requestEWA_fields_44"),
+            date: 'Today',
             amount: `₹ ${num.toLocaleString()}`,
-            ...getHrmsDefault("requestEWA_fields_45")
+            status: 'Instant Disbursed to Bank', fee: '₹ 0'
         }, ...prev]);
         showToast('EWA Transfer Complete', `₹ ${num.toLocaleString()} instant credited to your salary account.`, 'success');
     };
 
     // --- 5B. ADVANCED PAYROLL ADJACENCIES & LOCATION SCOPING (Sprint 3: Demo Points 8, 9, 10, 16) ---
     // User Role Context (For Demo Point 8 Location Scoping Simulation)
-    const [currentRoleContext, setCurrentRoleContext] = useState(getHrmsDefault("currentRoleContext_46"));
+    const [currentRoleContext, setCurrentRoleContext] = useState({ role: 'HO_HR_ADMIN', scope: 'ENTERPRISE', location: 'Corporate Head Office' });
 
     const switchUserRole = (newRole, newScope, newLocation) => {
         setCurrentRoleContext({
@@ -1058,7 +1263,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 9: Company Loan Scheme with Dual-Guarantor Lock
-    const [companyLoans, setCompanyLoans] = useState(getHrmsDefault("companyLoans_47"));
+    const [companyLoans, setCompanyLoans] = useState([]);
 
     const applyForCompanyLoan = (loanRequest) => {
         const validation = validateLoanApplication({
@@ -1069,27 +1274,27 @@ const HRMS_SYNC_TTL_MS = 30000;
 
         if (!validation.isValid) {
             showToast('Loan Application Rejected', validation.errors[0], 'error');
-            return { ...getHrmsDefault("applyForCompanyLoan_fields_48"), errors: validation.errors };
+            return { success: false, errors: validation.errors };
         }
 
         const newLoan = {
             id: `LOAN-${crypto.randomUUID()}`,
             borrowerId: loanRequest.applicantId,
             borrowerName: validation.computed.applicantName,
-            borrowerRole: employees.find(e => e.id === loanRequest.applicantId)?.role || getHrmsDefault("fallback_20"),
-            borrowerDept: employees.find(e => e.id === loanRequest.applicantId)?.dept || getHrmsDefault("fallback_21"),
+            borrowerRole: employees.find(e => e.id === loanRequest.applicantId)?.role || 'Employee',
+            borrowerDept: employees.find(e => e.id === loanRequest.applicantId)?.dept || 'General',
             principalAmount: validation.computed.requestedAmount,
             remainingBalance: validation.computed.requestedAmount,
             monthlyEMI: validation.computed.monthlyEMI,
             tenureMonths: validation.computed.tenureMonths,
-            ...getHrmsDefault("newLoan_fields_49"),
-            purpose: loanRequest.purpose || getHrmsDefault("fallback_22"),
+            paidInstallments: 0, disbursedAt: 'Today',
+            purpose: loanRequest.purpose || 'Personal Welfare',
             guarantors: validation.computed.guarantors,
             guarantorNames: validation.computed.guarantors.map(gid => {
                 const emp = employees.find(e => e.id === gid);
                 return `${emp?.name || gid} (${gid})`;
             }),
-            ...getHrmsDefault("newLoan_fields_50"),
+            status: 'ACTIVE',
             isManagementOverride: validation.computed.isManagementOverride,
             overrideReason: validation.computed.overrideReason
         };
@@ -1129,7 +1334,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             `₹${newLoan.principalAmount.toLocaleString()} loan created. Both guarantors are now LOCKED from raising loans.`,
             'success'
         );
-        return { ...getHrmsDefault("applyForCompanyLoan_fields_51"), loan: newLoan };
+        return { success: true, loan: newLoan };
     };
 
     const repayLoanEMI = (loanId) => {
@@ -1149,30 +1354,30 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 10: Off-Cycle Payroll Runs
-    const [payrollRuns, setPayrollRuns] = useState(getHrmsDefault("payrollRuns_52"));
+    const [payrollRuns, setPayrollRuns] = useState([]);
 
     const createOffCycleRun = (type, customParams = {}) => {
         let newRun;
         if (type === 'OFF_CYCLE_OT') {
-            const otRecords = getHrmsDefault("otRecords_53");
+            const otRecords = [];
             newRun = generateOffCycleOTRun({
-                cyclePeriod: customParams.period || getHrmsDefault("fallback_23"),
+                cyclePeriod: customParams.period || 'Feb 2026 OT',
                 otRecords,
                 employees
             });
         } else if (type === 'ARREARS') {
             newRun = generateArrearsRun({
-                cyclePeriod: customParams.period || getHrmsDefault("fallback_24"),
-                ...getHrmsDefault("createOffCycleRun_fields_54")
+                cyclePeriod: customParams.period || 'Feb 2026 Arrears',
+                arrearsItems: []
             });
         } else {
             newRun = {
                 id: `RUN-${type}-${Date.now().toString().slice(-4)}`,
                 type,
                 label: `${type} Cycle Run`,
-                cyclePeriod: customParams.period || getHrmsDefault("fallback_25"),
+                cyclePeriod: customParams.period || 'Current Period',
                 batchDate: new Date().toISOString().split('T')[0],
-                ...getHrmsDefault("createOffCycleRun_fields_56"),
+                status: 'Draft', totalDisbursement: 0,
                 bankFileRef: `NEFT_${type}_${Date.now().toString().slice(-4)}.txt`
             };
         }
@@ -1183,7 +1388,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // Demo Point 16: Same-Day Full & Final (F&F) Settlement & 4-Department No-Dues
-    const [fnfSettlements, setFnfSettlements] = useState(getHrmsDefault("fnfSettlements_57"));
+    const [fnfSettlements, setFnfSettlements] = useState([]);
 
     const updateDepartmentNoDues = (settlementId, deptKey, newStatus, remarks, serialNo) => {
         setFnfSettlements(prev => prev.map(s => {
@@ -1267,7 +1472,7 @@ const HRMS_SYNC_TTL_MS = 30000;
             'success'
         );
     };
-    const [candidates, setCandidates] = useState(getHrmsDefault("candidates_59"));
+    const [candidates, setCandidates] = useState([]);
 
     const moveCandidate = async (id, newStage) => {
         setCandidates(prev => prev.map(c => c.id === id ? { ...c, stage: newStage } : c));
@@ -1287,43 +1492,43 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 7. ONBOARDING & LIFECYCLE (Module 4) ---
-    const [onboardingTasks, setOnboardingTasks] = useState(getHrmsDefault("onboardingTasks_60"));
+    const [onboardingTasks, setOnboardingTasks] = useState([]);
 
     const completeOnboardingTask = (id) => {
-        setOnboardingTasks(prev => prev.map(t => t.id === id ? { ...t, ...getHrmsDefault("completeOnboardingTask_fields_61") } : t));
+        setOnboardingTasks(prev => prev.map(t => t.id === id ? { ...t, status: 'Completed' } : t));
         showToast('Onboarding Progress Updated', 'Milestone marked as complete.', 'success');
     };
 
     // --- 8. PERFORMANCE & OKR CASCADE (Module 5) ---
-    const [okrs, setOkrs] = useState(getHrmsDefault("okrs_62"));
+    const [okrs, setOkrs] = useState([]);
 
-    const [talentMatrix] = useState(getHrmsDefault("talentMatrix_63"));
+    const [talentMatrix] = useState([]);
 
     const addGoal = () => {
         const newGoal = {
             id: Date.now(),
-            ...getHrmsDefault("newGoal_fields_64"),
+            id: 'okr-' + Date.now(), title: 'New Strategic Objective', category: 'Operational Excellence', progress: 0,
             owner: user.name,
-            ...getHrmsDefault("newGoal_fields_65")
+            keyResults: []
         };
         setOkrs([...okrs, newGoal]);
     };
 
     // --- 9. PEOPLE INTELLIGENCE & ANALYTICS (Module 7) ---
-    const [analyticsData] = useState(getHrmsDefault("analyticsData_67"));
+    const [analyticsData] = useState({});
 
     // --- 10. LEARNING & DEVELOPMENT (Module 8) ---
-    const [courses, setCourses] = useState(getHrmsDefault("courses_68"));
+    const [courses, setCourses] = useState([]);
 
     // --- 11. COMPENSATION & BENEFITS (Module 9) ---
-    const [compensationData] = useState(getHrmsDefault("compensationData_69"));
+    const [compensationData] = useState({});
 
     // --- 12. EMPLOYEE EXPERIENCE, MCI & VEDIC WELLBEING (Module 10) ---
-    const [mciScore] = useState(getHrmsDefault("mciScore_70"));
+    const [mciScore] = useState(85);
 
-    const [vedicFramework, setVedicFramework] = useState(getHrmsDefault("vedicFramework_71"));
+    const [vedicFramework, setVedicFramework] = useState({});
 
-    const [socialFeed, setSocialFeed] = useState(getHrmsDefault("socialFeed_72"));
+    const [socialFeed, setSocialFeed] = useState([]);
 
     const addKudos = (id) => {
         setSocialFeed(prev => prev.map(p => p.id === id ? { ...p, kudos: p.kudos + 1 } : p));
@@ -1331,14 +1536,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 13. INTEGRATIONS & API PLATFORM (Module 11) ---
-    const [connectors, setConnectors] = useState(getHrmsDefault("connectors_73"));
+    const [connectors, setConnectors] = useState([]);
 
-    const [apiKeys, setApiKeys] = useState(getHrmsDefault("apiKeys_74"));
+    const [apiKeys, setApiKeys] = useState([]);
 
     // --- PROJECTS / TASKS (Kanban) ---
-    const [projects, setProjects] = useState(getHrmsDefault("projects_75"));
+    const [projects, setProjects] = useState([]);
 
-    const [kanbanTasks, setKanbanTasks] = useState(getHrmsDefault("kanbanTasks_76"));
+    const [kanbanTasks, setKanbanTasks] = useState({ backlog: [], in_progress: [], review: [], done: [] });
 
     const moveTask = (taskId, fromCol, toCol) => {
         const task = kanbanTasks[fromCol]?.find(t => t.id === taskId);
@@ -1353,12 +1558,12 @@ const HRMS_SYNC_TTL_MS = 30000;
     const addTask = (taskData) => {
         const newTask = {
             id: 't-' + Date.now(),
-            title: taskData.title || getHrmsDefault("fallback_26"),
-            tag: taskData.tag || getHrmsDefault("fallback_27"),
-            assignee: taskData.assignee || getHrmsDefault("fallback_28"),
-            project: taskData.project || getHrmsDefault("fallback_29"),
-            due: taskData.due || getHrmsDefault("fallback_30"),
-            priority: taskData.priority || getHrmsDefault("fallback_31")
+            title: taskData.title || 'New Task',
+            tag: taskData.tag || 'General',
+            assignee: taskData.assignee || (user?.name || 'Employee'),
+            project: taskData.project || 'General Tasks',
+            due: taskData.due || 'In 3 days',
+            priority: taskData.priority || 'Medium'
         };
         setKanbanTasks(prev => ({
             ...prev,
@@ -1386,14 +1591,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     const addProject = (projectData) => {
         const newProj = {
             id: 'proj-' + Date.now(),
-            title: projectData.title || getHrmsDefault("fallback_32"),
-            desc: projectData.desc || getHrmsDefault("fallback_33"),
+            title: projectData.title || 'New Project',
+            desc: projectData.desc || 'Sprint deliverables and milestone tracking.',
             progress: Number(projectData.progress) || 0,
-            color: projectData.color || getHrmsDefault("fallback_34"),
-            due: projectData.due || getHrmsDefault("fallback_35"),
-            members: projectData.members && projectData.members.length > 0 ? projectData.members : getHrmsDefault("members_77"),
-            createdBy: user?.name || getHrmsDefault("fallback_36"),
-            visibility: projectData.visibility || getHrmsDefault("fallback_37") // 'all', 'team', 'private'
+            color: projectData.color || '#2DD4A8',
+            due: projectData.due || 'In 30 days',
+            members: projectData.members && projectData.members.length > 0 ? projectData.members : [],
+            createdBy: user?.name || (user?.name || 'Employee'),
+            visibility: projectData.visibility || 'team' // 'all', 'team', 'private'
         };
         setProjects(prev => [...prev, newProj]);
         showToast('Project Created', `Project "${newProj.title}" successfully created.`, 'success');
@@ -1411,14 +1616,14 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- DASHBOARD FOCUS TASKS ---
-    const [focusTasks, setFocusTasks] = useState(getHrmsDefault("focusTasks_78"));
+    const [focusTasks, setFocusTasks] = useState([]);
 
     const completeFocusTask = (id) => {
-        setFocusTasks(prev => prev.map(t => t.id === id ? { ...t, ...getHrmsDefault("completeFocusTask_fields_79") } : t));
+        setFocusTasks(prev => prev.map(t => t.id === id ? { ...t, done: true } : t));
     };
 
     // --- SETTINGS ---
-    const [settings, setSettings] = useState(getHrmsDefault("settings_80"));
+    const [settings, setSettings] = useState({ theme: 'system', notifications: true, autoSave: true });
 
     const updateSettings = (key, value) => {
         setSettings(prev => ({ ...prev, [key]: value }));
@@ -1426,12 +1631,12 @@ const HRMS_SYNC_TTL_MS = 30000;
 
 
     // --- 14. CMS: ANNOUNCEMENTS & BROADCASTS ---
-    const [announcements, setAnnouncements] = useState(getHrmsDefault("announcements_81"));
+    const [announcements, setAnnouncements] = useState([]);
 
     const addAnnouncement = async (newAnn) => {
         const item = {
             id: `ANN-${Date.now().toString().slice(-4)}`,
-            ...getHrmsDefault("item_fields_82"),
+            date: 'Just now', status: 'Published',
             ...newAnn
         };
         setAnnouncements(prev => [item, ...prev]);
@@ -1467,13 +1672,13 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 15. CMS: POLICY DOCUMENTS & KNOWLEDGE BASE ---
-    const [policyDocuments, setPolicyDocuments] = useState(getHrmsDefault("policyDocuments_83"));
+    const [policyDocuments, setPolicyDocuments] = useState([]);
 
     const addPolicyDocument = (newDoc) => {
         const item = {
             id: `DOC-POL-${Date.now().toString().slice(-4)}`,
-            effectiveDate: new Date().toLocaleDateString('en-GB', getHrmsDefault("effectiveDate_85")),
-            ...getHrmsDefault("item_fields_84"),
+            effectiveDate: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            fileSize: '1.2 MB', format: 'PDF', author: 'HR Admin',
             ...newDoc
         };
         setPolicyDocuments(prev => [item, ...prev]);
@@ -1481,9 +1686,9 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 16. CUSTOM MIS REPORTS & INGESTION MASTER RECORDS ---
-    const [misMasterData, setMisMasterData] = useState(getHrmsDefault("misMasterData_86"));
+    const [misMasterData, setMisMasterData] = useState([]);
 
-    const ingestMappedData = (importType, newRecords, fileName = getHrmsDefault("defaultValue_11")) => {
+    const ingestMappedData = (importType, newRecords, fileName = 'external_dataset.xlsx') => {
         setMisMasterData(prev => {
             const merged = [...prev];
             newRecords.forEach(rec => {
@@ -1526,6 +1731,23 @@ const HRMS_SYNC_TTL_MS = 30000;
             });
             return copy;
         });
+        if (importType === 'candidates' || importType === 'ats') {
+            const mappedCandidates = newRecords.map((r, i) => ({
+                id: r.id || `CAND-${Date.now()}-${i}`,
+                name: r.name || r.candidateName || r.CandidateName || 'Candidate',
+                role: r.role || r.Role || r.targetRole || 'Specialist',
+                dept: r.dept || r.department || r.Department || 'Operations',
+                email: r.email || r.Email || '',
+                phone: r.phone || r.Phone || '',
+                stage: r.stage || 'sourced',
+                matchScore: Number(r.matchScore || Math.floor(88 + Math.random() * 10)),
+                biasScore: r.biasScore || 'Fair & Neutral',
+                skills: Array.isArray(r.skills) ? r.skills : (typeof r.skills === 'string' ? r.skills.split(',').map(s => s.trim()) : ['Engineering', 'Specialist']),
+                exp: r.experience || r.exp || '3 yrs',
+                source: r.source || 'ATS Bulk Import'
+            }));
+            setCandidates(prev => [...mappedCandidates, ...prev]);
+        }
         showToast(
             'Bulk Ingestion Completed',
             `Successfully processed & synchronized ${newRecords.length} records from ${fileName}.`,
@@ -1534,7 +1756,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     };
 
     // --- 17. WORKFLOW AUTOMATION ENGINE & NODE PIPELINES ---
-    const [workflows, setWorkflows] = useState(getHrmsDefault("workflows_87"));
+    const [workflows, setWorkflows] = useState([]);
 
     const updateWorkflowNode = (workflowId, nodeId, updatedFields) => {
         setWorkflows(prev => prev.map(wf => {
@@ -1584,8 +1806,8 @@ const HRMS_SYNC_TTL_MS = 30000;
     const [factoryInspections, setFactoryInspections] = useState(INITIAL_INSPECTION_BOOK_FORM36);
     const [statutoryMusterRoll, setStatutoryMusterRoll] = useState(() => generateForm28MusterRoll('March', 2026));
 
-    const triggerErpSync = (connector = getHrmsDefault("defaultValue_12")) => {
-        const inboundBatch = getHrmsDefault("inboundBatch_88");
+    const triggerErpSync = (connector = 'SAP S/4HANA (BAPI_EMPLOYEE_GETDATA)') => {
+        const inboundBatch = [];
 
         const { updatedEmployees, syncReport } = executeErpEmployeeSync(inboundBatch, employees, connector);
         setEmployees(updatedEmployees);
@@ -1603,7 +1825,7 @@ const HRMS_SYNC_TTL_MS = 30000;
         return syncReport;
     };
 
-    const dispatchGLPostingBatch = (batchId, targetErp = getHrmsDefault("defaultValue_13")) => {
+    const dispatchGLPostingBatch = (batchId, targetErp = 'SAP S/4HANA') => {
         const batch = erpPostingQueue.find(b => b.batchId === batchId);
         if (!batch) return false;
 
@@ -1620,10 +1842,10 @@ const HRMS_SYNC_TTL_MS = 30000;
             if (b.batchId !== batchId) return b;
             return {
                 ...b,
-                ...getHrmsDefault("dispatchGLPostingBatch_fields_89"),
+                status: 'ACKNOWLEDGED',
                 ackReceiptId,
                 ackTimestamp,
-                ...getHrmsDefault("dispatchGLPostingBatch_fields_90")
+                reconciledBy: 'Pending Month-End Close'
             };
         }));
 
@@ -1636,8 +1858,8 @@ const HRMS_SYNC_TTL_MS = 30000;
             if (b.batchId !== batchId) return b;
             return {
                 ...b,
-                ...getHrmsDefault("reconcileGLBatch_fields_91"),
-                reconciledBy: `${user?.name || getHrmsDefault("fallback_38")} (Reconciled)`
+                status: 'RECONCILED',
+                reconciledBy: `${user?.name || 'Finance Controller'} (Reconciled)`
             };
         }));
         showToast('GL Batch Reconciled', `Batch ${batchId} marked as fully closed & reconciled with ERP general ledger.`, 'success');
@@ -1648,22 +1870,22 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newRecord = {
             noticeId,
             dateOfOccurrence: accidentData.dateOfOccurrence || new Date().toISOString().split('T')[0],
-            exactTime: accidentData.exactTime || getHrmsDefault("fallback_39"),
-            exactPlace: accidentData.exactPlace || getHrmsDefault("fallback_40"),
+            exactTime: accidentData.exactTime || '10:00 AM',
+            exactPlace: accidentData.exactPlace || 'Plant Unit-1 (Shop Floor)',
             injuredPerson: {
-                name: accidentData.injuredPersonName || getHrmsDefault("fallback_41"),
-                tokenNo: accidentData.tokenNo || getHrmsDefault("fallback_42"),
-                age: accidentData.age || getHrmsDefault("fallback_43"),
-                sex: accidentData.sex || getHrmsDefault("fallback_44"),
-                occupation: accidentData.occupation || getHrmsDefault("fallback_45")
+                name: accidentData.injuredPersonName || 'Shop Floor Operator',
+                tokenNo: accidentData.tokenNo || 'TK-0199',
+                age: accidentData.age || 35,
+                sex: accidentData.sex || 'Male',
+                occupation: accidentData.occupation || 'Operator'
             },
-            natureOfInjury: accidentData.natureOfInjury || getHrmsDefault("fallback_46"),
-            causeOfAccident: accidentData.causeOfAccident || getHrmsDefault("fallback_47"),
-            lostWorkdays: Number(accidentData.lostWorkdays) || getHrmsDefault("fallback_48"),
-            ...getHrmsDefault("newRecord_fields_92"),
+            natureOfInjury: accidentData.natureOfInjury || 'Contusion / First Aid',
+            causeOfAccident: accidentData.causeOfAccident || 'Equipment handling incident',
+            lostWorkdays: Number(accidentData.lostWorkdays) || 1,
+            reportedToInspector: true,
             inspectorateFilingDate: new Date().toISOString().split('T')[0],
-            investigatingOfficer: accidentData.investigatingOfficer || getHrmsDefault("fallback_49"),
-            remedialActions: accidentData.remedialActions || getHrmsDefault("fallback_50")
+            investigatingOfficer: accidentData.investigatingOfficer || 'R. K. Nair (Factory Safety Manager)',
+            remedialActions: accidentData.remedialActions || 'Immediate SOP reinforcement and PPE checklist verification.'
         };
 
         setStatutoryAccidents(prev => [newRecord, ...prev]);
@@ -1676,13 +1898,13 @@ const HRMS_SYNC_TTL_MS = 30000;
         const newRecord = {
             inspectionId,
             inspectionDate: inspectionData.inspectionDate || new Date().toISOString().split('T')[0],
-            inspectorName: inspectionData.inspectorName || getHrmsDefault("fallback_51"),
-            inspectorOffice: inspectionData.inspectorOffice || getHrmsDefault("fallback_52"),
-            statutoryObservations: inspectionData.statutoryObservations || getHrmsDefault("fallback_53"),
-            remedialDirections: inspectionData.remedialDirections || getHrmsDefault("fallback_54"),
-            complianceStatus: inspectionData.complianceStatus || getHrmsDefault("fallback_55"),
+            inspectorName: inspectionData.inspectorName || 'Senior Inspector of Factories',
+            inspectorOffice: inspectionData.inspectorOffice || 'Directorate of Industrial Safety & Health',
+            statutoryObservations: inspectionData.statutoryObservations || 'Statutory records inspected and verified compliant.',
+            remedialDirections: inspectionData.remedialDirections || 'None. Maintain current standard.',
+            complianceStatus: inspectionData.complianceStatus || 'CLOSED',
             closureDate: inspectionData.closureDate || new Date().toISOString().split('T')[0],
-            certifyingManager: user?.name || getHrmsDefault("fallback_56")
+            certifyingManager: user?.name || 'Pradeep Shenoy (Works Director)'
         };
 
         setFactoryInspections(prev => [newRecord, ...prev]);
@@ -1693,7 +1915,7 @@ const HRMS_SYNC_TTL_MS = 30000;
     const generateFormFGratuity = (employeeId, nominees, witnesses) => {
         const targetEmp = employees.find(e => e.id === employeeId) || {
             id: employeeId,
-            ...getHrmsDefault("targetEmp_fields_93")
+            name: 'Selected Employee', department: 'Plant Operations'
         };
         return generateFormFDeclaration(targetEmp, nominees, witnesses);
     };

@@ -153,10 +153,11 @@ const OnboardingView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     };
 
     // Rendered letter preview
-    const selectedEmployeeObj = employees.find(e => e.id === selectedEmpId) || employees[0];
+    const selectedEmployeeObj = (employees && employees.length > 0) ? (employees.find(e => e.id === selectedEmpId) || employees[0]) : null;
     const renderedLetter = useMemo(() => {
-        return generateHRLetter ? generateHRLetter(selectedTemplateId, selectedEmpId, letterCustomFields) : null;
-    }, [generateHRLetter, selectedTemplateId, selectedEmpId, letterCustomFields]);
+        if (!generateHRLetter || !selectedEmployeeObj) return null;
+        return generateHRLetter(selectedTemplateId, selectedEmpId, letterCustomFields);
+    }, [generateHRLetter, selectedTemplateId, selectedEmpId, selectedEmployeeObj, letterCustomFields]);
 
     // Dedicated Print & PDF Export Handler for Formatted Letterhead
     const handlePrintOrExportLetter = (isExportPdf = false) => {

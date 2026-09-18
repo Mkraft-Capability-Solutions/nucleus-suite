@@ -217,30 +217,31 @@ Authorized Signatory — People Operations`
 /**
  * Merges variables into an HR letter template.
  */
-export function renderLetterTemplate(templateId, employee, customFields = {}) {
+export function renderLetterTemplate(templateId, employee = {}, customFields = {}) {
     const template = LETTER_TEMPLATES[templateId] || LETTER_TEMPLATES.APPOINTMENT;
     let rendered = template.templateText;
+    const emp = employee || {};
 
     const data = {
         ref_code: Math.floor(10000 + Math.random() * 90000),
         current_date: new Date().toLocaleDateString('en-GB', readData("services.establishmentService", "current_date_14")),
-        employee_name: employee.name || 'Employee',
-        employee_id: employee.id || 'EMP-000',
-        designation: employee.role || 'Staff Specialist',
-        department: employee.dept || 'Engineering',
-        location: employee.location || 'Bengaluru HQ',
-        join_date: employee.joinDate || '01 Jan 2024',
-        annual_ctc: ((employee.grossSalaryNumeric || 80000) * 12).toLocaleString(),
+        employee_name: emp.name || 'Employee',
+        employee_id: emp.id || 'EMP-000',
+        designation: emp.role || 'Staff Specialist',
+        department: emp.dept || 'Engineering',
+        location: emp.location || 'Bengaluru HQ',
+        join_date: emp.joinDate || '01 Jan 2024',
+        annual_ctc: ((emp.grossSalaryNumeric || 80000) * 12).toLocaleString(),
         ...readData("services.establishmentService", "data_fields_13"),
-        monthly_gross: (employee.grossSalaryNumeric || 80000).toLocaleString(),
-        reporting_manager: employee.manager || 'Executive Leadership',
+        monthly_gross: (emp.grossSalaryNumeric || 80000).toLocaleString(),
+        reporting_manager: emp.manager || 'Executive Leadership',
         effective_date: customFields.effective_date || '01 March 2026',
-        current_ctc: customFields.current_ctc || ((employee.grossSalaryNumeric || 80000) * 12).toLocaleString(),
-        revised_ctc: customFields.revised_ctc || Math.round((employee.grossSalaryNumeric || 80000) * 12 * 1.15).toLocaleString(),
+        current_ctc: customFields.current_ctc || ((emp.grossSalaryNumeric || 80000) * 12).toLocaleString(),
+        revised_ctc: customFields.revised_ctc || Math.round((emp.grossSalaryNumeric || 80000) * 12 * 1.15).toLocaleString(),
         hike_percentage: customFields.hike_percentage || '15',
         performance_band: customFields.performance_band || 'Exceptional (Band A1)',
-        previous_designation: employee.role || 'Developer',
-        promoted_designation: customFields.promoted_designation || `Lead ${employee.role || 'Specialist'}`,
+        previous_designation: emp.role || 'Developer',
+        promoted_designation: customFields.promoted_designation || `Lead ${emp.role || 'Specialist'}`,
         new_band: customFields.new_band || 'L5 - Lead Principal',
         relieving_date: customFields.relieving_date || new Date().toLocaleDateString('en-GB'),
         ...customFields

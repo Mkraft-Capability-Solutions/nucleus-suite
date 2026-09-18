@@ -19,6 +19,15 @@
     border-radius: var(--r-card);
     border: 1px solid var(--line);
     box-shadow: var(--shadow-raise);
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
 }
 
 .titleBlock h2 {
@@ -75,32 +84,20 @@
 
 .tabNav {
     display: flex;
-    gap: 0.35rem;
+    gap: 0.4rem;
     background: var(--card-2);
-    padding: 0.25rem 0.35rem;
+    padding: 0.35rem 0.5rem;
     border-radius: var(--r-control);
     border: 1px solid var(--line);
     width: 100%;
     max-width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scrollbar-width: thin;
-    scrollbar-color: var(--line) transparent;
-    -webkit-overflow-scrolling: touch;
-    flex-wrap: nowrap;
-}
-
-.tabNav::-webkit-scrollbar {
-    height: 4px;
-}
-
-.tabNav::-webkit-scrollbar-thumb {
-    background: var(--line);
-    border-radius: 4px;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: var(--shadow-raise);
 }
 
 .tabBtn {
-    padding: 0.4rem 0.85rem;
+    padding: 0.45rem 0.9rem;
     border-radius: var(--r-data);
     border: 1px solid transparent;
     background: transparent;
@@ -110,22 +107,22 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    transition: all 0.12s ease;
+    gap: 0.45rem;
+    transition: all 0.15s ease;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .tabBtn:hover {
     color: var(--text);
     background: var(--card);
+    border-color: var(--line-soft);
 }
 
 .tabBtn.activeTab {
-    background: var(--signal-wash);
-    color: var(--signal-ink);
-    box-shadow: var(--shadow-raise);
-    border-color: var(--line-soft);
+    background: var(--card);
+    color: var(--signal);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border-color: var(--line);
     font-weight: 600;
 }
 
@@ -417,9 +414,14 @@
     border-radius: 0 0 var(--r-control) var(--r-control);
 }
 
-/* Reflow within the available workspace width, including an open navigation panel. */
-.tabNav{max-width:100%;overflow-x:auto;flex-wrap:nowrap}
-.tabNav > *{flex-shrink:0}
+@media (max-width: 640px) {
+    .tabNav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: thin;
+        -webkit-overflow-scrolling: touch;
+    }
+}
 @container (max-width: 760px){
 .cardHeader, .filterBar, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
 .cardHeader > *, .filterBar > *, .headerRow > *{min-width:0;max-width:100%}

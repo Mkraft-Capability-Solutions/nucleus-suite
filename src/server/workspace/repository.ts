@@ -2,17 +2,26 @@ import 'server-only';
 import { workspaceResources } from './manifest';
 import { pool } from '@/lib/db';
 
+let cachedWorkspaceData: { data: any; expiresAt: number } | null = null;
+const CACHE_TTL_MS = 60_000; // 60 seconds cache
+
 /**
  * Serves workspace data dynamically.
  * In JSON mode: returns canonical UI manifest.
  * In Database mode: aggregates live records from PostgreSQL tables (tenants, employees, departments, attendance, leaves, loans, payroll, learning).
  */
 export async function getWorkspaceData() {
+    if (cachedWorkspaceData && Date.now() < cachedWorkspaceData.expiresAt) {
+        return cachedWorkspaceData.data;
+    }
+
     const mode = process.env.APP_DATA_MODE || 'database';
     const liveResources = { ...workspaceResources };
 
     if (mode === 'json') {
-        return { version: 1, resources: liveResources };
+        const result = { version: 1, resources: liveResources };
+        cachedWorkspaceData = { data: result, expiresAt: Date.now() + CACHE_TTL_MS };
+        return result;
     }
 
     try {
@@ -73,5 +82,7 @@ export async function getWorkspaceData() {
         console.warn('Database aggregation fallback to canonical manifest:', error);
     }
 
-    return { version: 1, resources: liveResources };
+    const payload = { version: 1, resources: liveResources };
+    cachedWorkspaceData = { data: payload, expiresAt: Date.now() + CACHE_TTL_MS };
+    return payload;
 }

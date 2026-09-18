@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     X, UploadCloud, ArrowRight, ArrowLeft, CheckCircle2,
     AlertTriangle, RefreshCw, FileSpreadsheet, Check, Sparkles,
@@ -48,16 +48,24 @@ function inferMappings(currentFile) {
     return autoMap;
 }
 
-const DataImportModal = ({ isOpen, onClose }) => {
+const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
     const {t: translateText}=useTranslation();
 
     const { ingestMappedData, showToast } = useHRMS();
 
     const [step, setStep] = useState(readData("components.Workspace.DataImportModal", "initialState_1")); // 1: Upload, 2: Mapping, 3: Validation, 4: Complete
-    const [selectedPreset, setSelectedPreset] = useState(readData("components.Workspace.DataImportModal", "initialState_2"));
-    const [currentFile, setCurrentFile] = useState(PRESET_DATASETS.biometric);
-    const [mappings, setMappings] = useState(() => inferMappings(PRESET_DATASETS.biometric));
+    const [selectedPreset, setSelectedPreset] = useState(() => initialPreset || readData("components.Workspace.DataImportModal", "initialState_2"));
+    const [currentFile, setCurrentFile] = useState(() => (initialPreset && PRESET_DATASETS[initialPreset]) ? PRESET_DATASETS[initialPreset] : PRESET_DATASETS.biometric);
+    const [mappings, setMappings] = useState(() => inferMappings((initialPreset && PRESET_DATASETS[initialPreset]) ? PRESET_DATASETS[initialPreset] : PRESET_DATASETS.biometric));
     const fileInputRef = useRef(null);
+
+    useEffect(() => {
+        if (isOpen && initialPreset && PRESET_DATASETS[initialPreset]) {
+            setSelectedPreset(initialPreset);
+            setCurrentFile(PRESET_DATASETS[initialPreset]);
+            setMappings(inferMappings(PRESET_DATASETS[initialPreset]));
+        }
+    }, [isOpen, initialPreset]);
 
     if (!isOpen) return null;
 
@@ -87,8 +95,17 @@ const DataImportModal = ({ isOpen, onClose }) => {
 
     const handleIngestCommit = () => {
         const mappedRows = getMappedRows();
-        if (!mappedRows.some(r => r.empId)) {
-            showToast(translateText("components.Workspace.DataImportModal","text_7742f74fef"),translateText("components.Workspace.DataImportModal","text_30bad5d803"), 'warning');
+        const isCandidateImport = selectedPreset === 'candidates' || selectedPreset === 'ats';
+        const hasValidRows = isCandidateImport
+            ? mappedRows.some(r => r.name || r.candidateName || r.email || r.empId)
+            : mappedRows.some(r => r.empId);
+
+        if (!hasValidRows) {
+            showToast(
+                translateText("components.Workspace.DataImportModal","text_7742f74fef"),
+                isCandidateImport ? 'Candidate rows must include candidate name, role, or email.' : translateText("components.Workspace.DataImportModal","text_30bad5d803"),
+                'warning'
+            );
             return;
         }
 

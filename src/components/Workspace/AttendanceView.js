@@ -304,7 +304,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         'Idempotency-Key': crypto.randomUUID(),
                     },
                     body: JSON.stringify({
-                        employeeId: user?.id || 'c668678c-ed74-4dbb-a98b-0287afc8f286',
+                        employeeId: user?.id || 'EMP-101',
+                        passType: gpType || 'Official Duty',
+                        purpose: gpReason.trim() || gpType,
                         date: todayStr,
                         minutes: Number(gpDuration) === 240 ? 240 : 120,
                         reason: gpReason.trim()

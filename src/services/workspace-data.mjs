@@ -76,6 +76,18 @@ export function createWorkspaceDataService(transport) {
 }
 
 async function httpTransport() {
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+        try {
+            const cached = window.sessionStorage.getItem('nucleus:workspace_data');
+            if (cached) {
+                const { payload, expiresAt } = JSON.parse(cached);
+                if (Date.now() < expiresAt) {
+                    return validateWorkspaceData(payload, workspaceContract);
+                }
+            }
+        } catch {}
+    }
+
     let response;
     let lastError;
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -102,7 +114,17 @@ async function httpTransport() {
         error.code = payload?.error?.code;
         throw error;
     }
-    return validateWorkspaceData(await response.json(), workspaceContract);
+    const rawData = await response.json();
+    const validated = validateWorkspaceData(rawData, workspaceContract);
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+        try {
+            window.sessionStorage.setItem('nucleus:workspace_data', JSON.stringify({
+                payload: validated,
+                expiresAt: Date.now() + 60_000,
+            }));
+        } catch {}
+    }
+    return validated;
 }
 
 let service = createWorkspaceDataService(httpTransport);

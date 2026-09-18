@@ -88,6 +88,11 @@
   --row-h: 38px;
   --pad-cell: 10px;
 
+  /* Standard Unified Control Heights across all tabs and pages */
+  --ctrl-h-sm: 32px;
+  --ctrl-h-md: 38px;
+  --ctrl-h-lg: 44px;
+
   /* Legacy aliases mapping to Nucleus tokens */
   --primary: var(--signal);
   --secondary: var(--slate);
@@ -338,7 +343,27 @@ a {
 /* Fluid Soft Buttons */
 button, .btn, [class*="btn"], [class*="Btn"] {
   border-radius: var(--r-control);
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  line-height: 1.2;
   transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Compact controls: card actions, table row actions, pagination */
+.btn-sm,
+[class*="btnSm"],
+[class*="btn-sm"],
+[class*="btnPrev"],
+[class*="btnNext"],
+[class*="rowActionBtn"] {
+  min-height: var(--ctrl-h-sm) !important;
+  height: var(--ctrl-h-sm);
+  font-size: var(--t-small) !important;
+  padding: 0 0.65rem !important;
+  line-height: 1;
 }
 
 button:hover:not(:disabled) { filter: brightness(.98); }
@@ -386,7 +411,12 @@ textarea:focus {
    keep controls, content width and tables usable in both themes and on small screens. */
 button svg { flex: 0 0 auto; }
 button > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-input, select, textarea { font-size: max(16px, var(--t-body)); min-height: 2.4rem; }
+input:not([class*="sm"]):not([class*="Sm"]):not([class*="compact"]):not([class*="stageSelect"]):not([class*="pageSize"]),
+select:not([class*="sm"]):not([class*="Sm"]):not([class*="compact"]):not([class*="stageSelect"]):not([class*="pageSize"]),
+textarea {
+  font-size: max(16px, var(--t-body));
+  min-height: 2.4rem;
+}
 textarea { min-height: 5.5rem; line-height: 1.45; }
 table { color: var(--text); }
 th { color: var(--text-2); }

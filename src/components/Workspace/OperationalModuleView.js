@@ -869,7 +869,8 @@ function OperationalModuleContent({ module, onNavigate }) {
                                 className={selectedRecord?.status === state || (selectedRecord && recordValue(selectedRecord, 'Status', module, liveReferences).toLowerCase() === state.toLowerCase()) ? styles.currentState : ''}
                                 onClick={() => transition(state)}
                             >
-                                <span>{index + 1}</span>{state}
+                                <span className={styles.stepNum}>{index + 1}</span>
+                                <span className={styles.stateLabel}>{state}</span>
                             </button>
                         ))}
                     </div>

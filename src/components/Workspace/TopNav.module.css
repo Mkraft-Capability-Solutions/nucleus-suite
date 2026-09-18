@@ -550,7 +550,8 @@
     position: absolute;
     top: 48px;
     right: 0;
-    width: 300px;
+    width: 320px;
+    max-width: calc(100vw - 1.5rem);
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: var(--r-card);
@@ -651,31 +652,37 @@
 }
 
 .roleItem {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.45rem 0.6rem;
-    border-radius: var(--r-control);
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-align: left;
-    transition: all 0.12s ease;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0.45rem 0.6rem !important;
+    border-radius: var(--r-control) !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    text-align: left !important;
+    line-height: normal !important;
+    min-height: auto !important;
+    transition: all 0.12s ease !important;
 }
 
 .roleItem:hover {
-    background: var(--card-2);
+    background: var(--card-2) !important;
 }
 
 .roleItem.roleActive {
-    background: var(--signal-wash);
+    background: var(--signal-wash) !important;
 }
 
 .roleLeft {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    text-align: left !important;
 }
 
 .roleIconWrap {
@@ -689,19 +696,31 @@
 }
 
 .roleText {
-    display: flex;
-    flex-direction: column;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    text-align: left !important;
+    flex: 1 !important;
+    min-width: 0 !important;
 }
 
 .roleLabel {
-    font-size: var(--t-small);
-    font-weight: 600;
-    color: var(--text);
+    font-size: var(--t-small) !important;
+    font-weight: 600 !important;
+    color: var(--text) !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .roleDesc {
-    font-size: var(--t-micro);
-    color: var(--text-2);
+    font-size: var(--t-micro) !important;
+    color: var(--text-2) !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 
 .roleActiveCheck {
@@ -717,25 +736,28 @@
 }
 
 .menuLinkItem {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.45rem 0.6rem;
-    border-radius: var(--r-control);
-    border: none;
-    background: transparent;
-    color: var(--text-2);
-    font-size: var(--t-small);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.12s ease;
-    text-align: left;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem !important;
+    padding: 0.45rem 0.6rem !important;
+    border-radius: var(--r-control) !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-2) !important;
+    font-size: var(--t-small) !important;
+    font-weight: 500 !important;
+    cursor: pointer !important;
+    transition: all 0.12s ease !important;
+    text-align: left !important;
+    line-height: normal !important;
+    min-height: auto !important;
 }
 
 .menuLinkItem:hover {
-    background: var(--card-2);
-    color: var(--text);
+    background: var(--card-2) !important;
+    color: var(--text) !important;
 }
 
 /* LOGOUT SECTION */
@@ -745,25 +767,28 @@
 }
 
 .logoutBtn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.45rem 0.6rem;
-    border-radius: var(--r-control);
-    border: none;
-    background: transparent;
-    color: var(--flag);
-    font-size: var(--t-small);
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.12s ease;
-    text-align: left;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.6rem !important;
+    padding: 0.45rem 0.6rem !important;
+    border-radius: var(--r-control) !important;
+    border: none !important;
+    background: transparent !important;
+    color: var(--flag) !important;
+    font-size: var(--t-small) !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.12s ease !important;
+    text-align: left !important;
+    line-height: normal !important;
+    min-height: auto !important;
 }
 
 .logoutBtn:hover {
-    background: var(--flag-wash);
-    color: var(--flag);
+    background: var(--flag-wash) !important;
+    color: var(--flag) !important;
 }
 
 /* Keep navigation controls reachable at compact widths. */

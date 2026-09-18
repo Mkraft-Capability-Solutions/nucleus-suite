@@ -39,6 +39,7 @@ export default function TablePagination({
                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                     <span>Rows:</span>
                     <select
+                        className="pageSize"
                         value={pageSize}
                         onChange={(e) => {
                             if (onPageSizeChange) onPageSizeChange(Number(e.target.value));
@@ -49,8 +50,11 @@ export default function TablePagination({
                             color: 'var(--text)',
                             border: '1px solid var(--line)',
                             borderRadius: 'var(--r-control)',
-                            padding: '0.2rem 0.45rem',
-                            fontSize: '0.82rem',
+                            padding: '0 0.55rem',
+                            height: 'var(--ctrl-h-sm, 32px)',
+                            minHeight: 'var(--ctrl-h-sm, 32px)',
+                            fontSize: '0.8rem',
+                            fontWeight: 500,
                             cursor: 'pointer'
                         }}
                     >
@@ -61,43 +65,55 @@ export default function TablePagination({
                 </label>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <button
                     type="button"
+                    className="btnPrev"
                     disabled={currentPage <= 1}
                     onClick={() => onPageChange && onPageChange(currentPage - 1)}
                     style={{
-                        padding: '0.25rem 0.6rem',
+                        padding: '0 0.75rem',
+                        height: 'var(--ctrl-h-sm, 32px)',
+                        minHeight: 'var(--ctrl-h-sm, 32px)',
                         borderRadius: 'var(--r-control)',
                         border: '1px solid var(--line)',
                         background: currentPage <= 1 ? 'var(--card-2)' : 'var(--paper)',
                         color: currentPage <= 1 ? 'var(--text-3)' : 'var(--text)',
                         cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
                         fontSize: '0.8rem',
-                        fontWeight: 500,
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         transition: 'all 0.15s ease'
                     }}
                 >
                     &larr; Prev
                 </button>
 
-                <span style={{ padding: '0 0.4rem', color: 'var(--text)' }}>
+                <span style={{ padding: '0 0.4rem', color: 'var(--text)', fontSize: '0.82rem' }}>
                     Page <strong style={{ color: 'var(--signal-ink)' }}>{currentPage}</strong> of <strong>{totalPages}</strong>
                 </span>
 
                 <button
                     type="button"
+                    className="btnNext"
                     disabled={currentPage >= totalPages}
                     onClick={() => onPageChange && onPageChange(currentPage + 1)}
                     style={{
-                        padding: '0.25rem 0.6rem',
+                        padding: '0 0.75rem',
+                        height: 'var(--ctrl-h-sm, 32px)',
+                        minHeight: 'var(--ctrl-h-sm, 32px)',
                         borderRadius: 'var(--r-control)',
                         border: '1px solid var(--line)',
                         background: currentPage >= totalPages ? 'var(--card-2)' : 'var(--paper)',
                         color: currentPage >= totalPages ? 'var(--text-3)' : 'var(--text)',
                         cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
                         fontSize: '0.8rem',
-                        fontWeight: 500,
+                        fontWeight: 600,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
                         transition: 'all 0.15s ease'
                     }}
                 >

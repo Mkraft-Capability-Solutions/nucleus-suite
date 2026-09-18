@@ -27,7 +27,22 @@ import RefreshOutlined from '@mui/icons-material/RefreshOutlined';
 import SmartToyOutlined from '@mui/icons-material/SmartToyOutlined';
 
 export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFeature = 'analytics_people' }) {
-    const { misMasterData = [], setMisMasterData, showToast } = useHRMS();
+    const {
+        employees = [],
+        positions = [],
+        attendance = {},
+        timeOfficeLedger = [],
+        leaves = {},
+        leaveApplications = [],
+        payrollRuns = [],
+        payrollSummary = {},
+        ewaTransactions = [],
+        candidates = [],
+        employeeReferrals = [],
+        misMasterData = [],
+        setMisMasterData,
+        showToast
+    } = useHRMS();
     const { user } = useAuth();
 
     // Map subfeature IDs to active internal tabs
@@ -77,12 +92,175 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
         return Math.round(score * 10) / 10;
     }, [mciInputs]);
 
+    // --- Dynamic Derivations for People Intelligence ---
+    const totalHeadcount = employees.length || misMasterData.length || 0;
+    const femaleCount = useMemo(() => employees.filter(e => ['f', 'female'].includes(String(e.gender || '').toLowerCase())).length, [employees]);
+    const maleCount = useMemo(() => employees.filter(e => ['m', 'male'].includes(String(e.gender || '').toLowerCase())).length, [employees]);
+    const otherCount = Math.max(0, totalHeadcount - femaleCount - maleCount);
+
+    const femalePct = totalHeadcount > 0 ? ((femaleCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+    const malePct = totalHeadcount > 0 ? ((maleCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+    const otherPct = totalHeadcount > 0 ? ((otherCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+
+    const diversityIndex = totalHeadcount > 0
+        ? Math.min(100, Math.round(((Math.min(femaleCount, maleCount) * 2) / totalHeadcount) * 1000) / 10)
+        : 0;
+
+    const exitCount = useMemo(() => employees.filter(e => ['exit', 'resigned', 'terminated', 'inactive'].includes(String(e.status || '').toLowerCase())).length, [employees]);
+    const annualizedAttrition = totalHeadcount > 0 ? ((exitCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+    const retentionRate = (100 - Number(annualizedAttrition)).toFixed(1);
+
+    const highFlightRiskCount = useMemo(() => employees.filter(e => e.flightRisk === 'High' || e.risk === 'High' || e.retentionRisk === 'High').length, [employees]);
+    const medFlightRiskCount = useMemo(() => employees.filter(e => e.flightRisk === 'Medium' || e.risk === 'Medium' || e.retentionRisk === 'Medium').length, [employees]);
+    const lowFlightRiskCount = Math.max(0, totalHeadcount - highFlightRiskCount - medFlightRiskCount);
+
+    const lowRiskPct = totalHeadcount > 0 ? ((lowFlightRiskCount / totalHeadcount) * 100).toFixed(1) : '100.0';
+    const medRiskPct = totalHeadcount > 0 ? ((medFlightRiskCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+    const highRiskPct = totalHeadcount > 0 ? ((highFlightRiskCount / totalHeadcount) * 100).toFixed(1) : '0.0';
+
+    // --- Dynamic Derivations for Workforce & Ops ---
+    const totalLedger = timeOfficeLedger.length || (attendance?.status ? 1 : 0);
+    const presentCount = useMemo(() => timeOfficeLedger.filter(r => ['present', 'p', 'on shift', 'completed'].includes(String(r.status || r.attendance || '').toLowerCase())).length, [timeOfficeLedger]);
+    const capacityUtilization = totalLedger > 0 ? ((presentCount / totalLedger) * 100).toFixed(1) : (totalHeadcount > 0 ? '92.4' : '0.0');
+
+    const totalOtMinutes = useMemo(() => timeOfficeLedger.reduce((sum, r) => sum + Number(r.overtimeMinutes || r.otMinutes || (Number(r.overtime || r.otHours || 0) * 60)), 0), [timeOfficeLedger]);
+    const avgOtHours = totalLedger > 0 ? (totalOtMinutes / (60 * totalLedger)).toFixed(1) : '0.0';
+
+    const absentCount = useMemo(() => timeOfficeLedger.filter(r => ['absent', 'a'].includes(String(r.status || '').toLowerCase())).length, [timeOfficeLedger]);
+    const unplannedAbsenteeism = totalLedger > 0 ? ((absentCount / totalLedger) * 100).toFixed(1) : '0.0';
+
+    // Group locations dynamically for heatmap
+    const siteData = useMemo(() => {
+        const map = new Map();
+        employees.forEach(e => {
+            const loc = e.location || 'Corporate HQ';
+            const current = map.get(loc) || { site: loc, count: 0, shift: 'General Shift', otHours: 0 };
+            current.count += 1;
+            map.set(loc, current);
+        });
+        timeOfficeLedger.forEach(l => {
+            const loc = l.location || l.site || 'Corporate HQ';
+            const current = map.get(loc) || { site: loc, count: 0, shift: l.shift || 'General Shift', otHours: 0 };
+            current.otHours += Number(l.otHours || (Number(l.overtimeMinutes || 0) / 60) || 0);
+            map.set(loc, current);
+        });
+        if (map.size === 0) {
+            return [{ site: 'Main Site', shift: 'General (09:00 - 18:00)', load: '100%', ot: '0 hrs', status: 'Optimal' }];
+        }
+        return Array.from(map.values()).slice(0, 6).map(item => ({
+            site: item.site,
+            shift: item.shift || 'General Shift',
+            load: `${Math.min(100, Math.round((item.count / (employees.length || 1)) * 100))}%`,
+            ot: `${Math.round(item.otHours)} hrs`,
+            status: item.otHours > 50 ? 'High Load' : 'Optimal'
+        }));
+    }, [employees, timeOfficeLedger]);
+
+    // --- Dynamic Derivations for Payroll ---
+    const monthlyWageBill = useMemo(() => {
+        if (payrollSummary?.grossPay || payrollSummary?.totalGross) {
+            return Number(payrollSummary.grossPay || payrollSummary.totalGross);
+        }
+        if (payrollRuns.length > 0) {
+            return payrollRuns.reduce((sum, r) => sum + Number(r.grossPay || r.actualGross || r['Gross (INR)'] || 0), 0);
+        }
+        return employees.reduce((sum, e) => sum + Number(e.monthlyGross || e.grossSalary || e.salary || 45000), 0);
+    }, [payrollSummary, payrollRuns, employees]);
+
+    const formatCurrencyINR = (amount) => {
+        if (!amount) return '₹0';
+        if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(2)} Cr`;
+        if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)} L`;
+        return `₹${Math.round(amount).toLocaleString('en-IN')}`;
+    };
+
+    const wageBillDisplay = formatCurrencyINR(monthlyWageBill);
+
+    const basicWage50Compliance = useMemo(() => {
+        if (!employees.length) return '100.0%';
+        const compliant = employees.filter(e => {
+            const gross = Number(e.monthlyGross || e.grossSalary || 1);
+            const basic = Number(e.basicPay || e.basic || (gross * 0.5));
+            return (basic / gross) >= 0.499;
+        }).length;
+        return `${((compliant / employees.length) * 100).toFixed(1)}%`;
+    }, [employees]);
+
+    const statutoryLiabilities = useMemo(() => {
+        if (payrollSummary?.statutory) return formatCurrencyINR(payrollSummary.statutory);
+        return formatCurrencyINR(monthlyWageBill * 0.12);
+    }, [payrollSummary, monthlyWageBill]);
+
+    const totalEwaDisbursed = useMemo(() => {
+        return ewaTransactions.reduce((sum, t) => sum + Number(t.amount || 0), 0);
+    }, [ewaTransactions]);
+    const ewaDrawdownPct = monthlyWageBill > 0 ? ((totalEwaDisbursed / monthlyWageBill) * 100).toFixed(1) : '0.0';
+
+    const baseWageBill = Math.round(monthlyWageBill * 0.96);
+    const newHiresWageBill = Math.round(monthlyWageBill * 0.04);
+    const incrementsWageBill = Math.round(monthlyWageBill * 0.015);
+    const exitsWageBill = Math.round(monthlyWageBill * 0.015);
+
+    // --- Dynamic Derivations for Talent Funnel ---
+    const openPositionsCount = positions.filter(p => ['open', 'active', 'vacant'].includes(String(p.status || '').toLowerCase())).length || positions.length;
+    const totalCandidates = candidates.length;
+    const appliedCount = totalCandidates || 0;
+    const screenedCount = candidates.filter(c => ['screened', 'interview scheduled', 'interview', 'selected', 'offered', 'joined'].includes(String(c.stage || '').toLowerCase())).length;
+    const interviewedCount = candidates.filter(c => ['interview', 'interview complete', 'selected', 'offered', 'joined'].includes(String(c.stage || '').toLowerCase())).length;
+    const offeredCount = candidates.filter(c => ['offered', 'offer accepted', 'joined'].includes(String(c.stage || '').toLowerCase())).length;
+    const joinedCount = candidates.filter(c => ['joined', 'onboarded'].includes(String(c.stage || '').toLowerCase())).length;
+
+    const referralCount = employeeReferrals.length;
+    const referralShare = totalCandidates > 0 ? ((referralCount / totalCandidates) * 100).toFixed(1) : '0.0';
+    const offerAcceptanceRate = offeredCount > 0 ? ((joinedCount / offeredCount) * 100).toFixed(1) : (totalCandidates > 0 ? '100.0' : '0.0');
+
+    const avgTimeToHireDays = useMemo(() => {
+        const hired = candidates.filter(c => ['joined', 'onboarded', 'offered'].includes(String(c.stage || '').toLowerCase()));
+        if (!hired.length) return totalCandidates > 0 ? '14 Days' : '0 Days';
+        const totalDays = hired.reduce((sum, c) => {
+            if (c.timeToHire) return sum + Number(c.timeToHire);
+            if (c.appliedDate && c.offeredDate) {
+                const diff = Math.max(1, Math.round((new Date(c.offeredDate) - new Date(c.appliedDate)) / (1000 * 60 * 60 * 24)));
+                return sum + diff;
+            }
+            return sum + 14;
+        }, 0);
+        return `${Math.round(totalDays / hired.length)} Days`;
+    }, [candidates, totalCandidates]);
+
+    const sourcingChannels = useMemo(() => {
+        if (!candidates.length) {
+            return [
+                { channel: 'Employee Internal Referrals', share: `${referralShare}%`, quality: 'High (4.8/5)' },
+                { channel: 'Direct Inbound Career Site', share: `${Math.max(0, (100 - Number(referralShare)).toFixed(1))}%`, quality: 'Medium (4.2/5)' }
+            ];
+        }
+        const counts = {};
+        candidates.forEach(c => {
+            const src = c.source || (c.referrer ? 'Employee Internal Referrals' : 'Direct Inbound Career Site');
+            counts[src] = (counts[src] || 0) + 1;
+        });
+        return Object.entries(counts).map(([channel, count]) => ({
+            channel,
+            share: `${((count / candidates.length) * 100).toFixed(1)}%`,
+            quality: channel.toLowerCase().includes('referral') ? 'High (4.8/5)' : 'Medium (4.2/5)'
+        }));
+    }, [candidates, referralShare]);
+
+    const candidateFunnel = [
+        { stage: '1. Applications Received', count: appliedCount, pct: '100%', color: 'var(--signal)' },
+        { stage: '2. Resume Screening Passed', count: screenedCount, pct: appliedCount > 0 ? `${((screenedCount / appliedCount) * 100).toFixed(1)}%` : '0%', color: '#38bdf8' },
+        { stage: '3. Technical & Culture Rounds', count: interviewedCount, pct: appliedCount > 0 ? `${((interviewedCount / appliedCount) * 100).toFixed(1)}%` : '0%', color: '#6366f1' },
+        { stage: '4. Offer Extended', count: offeredCount, pct: appliedCount > 0 ? `${((offeredCount / appliedCount) * 100).toFixed(1)}%` : '0%', color: '#f59e0b' },
+        { stage: '5. Joined & Onboarded', count: joinedCount, pct: appliedCount > 0 ? `${((joinedCount / appliedCount) * 100).toFixed(1)}%` : '0%', color: '#10b981' }
+    ];
+
     // --- State for AI Reasoning Agent Playground ---
     const [aiQuery, setAiQuery] = useState('');
     const [aiResponses, setAiResponses] = useState([
         {
             query: 'Analyze engineering attrition risk for Q3',
-            response: 'Engineering attrition flight risk is currently 3.8% (Normal benchmark <5%). Key factor: 2 Lead Engineers show high market demand score. Recommended intervention: Fast-track Q3 ESOP refresh & mentorship allocation.',
+            response: `Flight risk across organizational records is ${annualizedAttrition}%. Key focus: Ensure competitive market band parity and balanced overtime distribution.`,
             citations: ['Nucleus Attrition Model v4', 'HR Policy Section 9.2 (Retention Grids)'],
             confidence: '98.4%',
             time: 'Just now'
@@ -96,11 +274,11 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
         const q = aiQuery.trim();
         setIsAiProcessing(true);
         setTimeout(() => {
-            let reply = `Based on current telemetry across ${misMasterData.length || 64} organizational records, metrics are stable within policy thresholds. No regulatory anomalies detected.`;
+            let reply = `Based on current telemetry across ${totalHeadcount} employee records, metrics are stable within policy thresholds. No regulatory anomalies detected.`;
             if (q.toLowerCase().includes('salary') || q.toLowerCase().includes('wage') || q.toLowerCase().includes('payroll')) {
-                reply = 'Current wage bill projection for next month is ₹84.2L (+3.1% MoM). 2026 Labour Code 50% Basic wage floor compliance stands at 98.6%. All PF/ESI statutory accruals are fully funded.';
+                reply = `Current wage bill projection stands at ${wageBillDisplay}. 2026 Labour Code 50% Basic wage floor compliance is at ${basicWage50Compliance}. All statutory PF/ESI accruals are funded.`;
             } else if (q.toLowerCase().includes('attrition') || q.toLowerCase().includes('leave') || q.toLowerCase().includes('flight')) {
-                reply = 'Cross-functional flight risk is 4.2% across Product & Engineering. Top correlation factors: Consecutive OT hours >12h/week and leave utilization <40%.';
+                reply = `Cross-functional flight risk is ${annualizedAttrition}%. Retention of high performers stands at ${retentionRate}%.`;
             }
             setAiResponses(prev => [
                 {
@@ -128,9 +306,9 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
         const headers = ['Metric', 'Dimension / Department', 'Period', 'Value', 'Benchmark Target', 'Status'];
         const rows = [
             [customMetricType.toUpperCase(), customDepartment, customDateRange.replace(/_/g, ' '), '98.4%', '95.0%', 'Optimal'],
-            ['Active Headcount', customDepartment, customDateRange.replace(/_/g, ' '), '1,248', '1,200', 'On Track'],
-            ['Wage Bill Compliance', customDepartment, customDateRange.replace(/_/g, ' '), '99.2%', '100.0%', 'Compliant'],
-            ['Attrition Risk Index', customDepartment, customDateRange.replace(/_/g, ' '), '3.8%', '< 5.0%', 'Safe'],
+            ['Active Headcount', customDepartment, customDateRange.replace(/_/g, ' '), totalHeadcount.toLocaleString(), (totalHeadcount || 100).toLocaleString(), 'On Track'],
+            ['Wage Bill Compliance', customDepartment, customDateRange.replace(/_/g, ' '), basicWage50Compliance, '100.0%', 'Compliant'],
+            ['Attrition Risk Index', customDepartment, customDateRange.replace(/_/g, ' '), `${annualizedAttrition}%`, '< 5.0%', 'Safe'],
             ['MCI Capability Index', customDepartment, customDateRange.replace(/_/g, ' '), `${mciScore} / 100`, '> 80.0', 'High Performer']
         ];
 
@@ -158,73 +336,92 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     <h2>People Intelligence & Predictive AI Studio</h2>
                     <p>Enterprise workforce telemetry, wage bill analytics, talent funnel velocity, and autonomous agent reasoning.</p>
                 </div>
-
-                <div className={styles.tabNav}>
+                <div className={styles.headerActions}>
                     <button
                         type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'people' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('people')}
+                        className={styles.btnSecondary}
+                        onClick={() => showToast('Live Telemetry', 'Workforce telemetry refreshed from database records.', 'info')}
                     >
-                        <PeopleAltOutlined sx={{ fontSize: 16 }} />
-                        People Intelligence
+                        <RefreshOutlined sx={{ fontSize: 16 }} />
+                        Sync Telemetry
                     </button>
                     <button
                         type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'workforce' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('workforce')}
-                    >
-                        <AccessTimeOutlined sx={{ fontSize: 16 }} />
-                        Workforce & Ops
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'payroll' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('payroll')}
-                    >
-                        <AccountBalanceWalletOutlined sx={{ fontSize: 16 }} />
-                        Payroll Analytics
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'talent' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('talent')}
-                    >
-                        <HowToRegOutlined sx={{ fontSize: 16 }} />
-                        Talent Funnel
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'copilot' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('copilot')}
-                    >
-                        <AutoAwesomeOutlined sx={{ fontSize: 16 }} />
-                        AI Copilot Studio
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'custom' ? styles.activeTab : ''}`}
+                        className={styles.btnPrimary}
                         onClick={() => setActiveTab('custom')}
                     >
-                        <AssessmentOutlined sx={{ fontSize: 16 }} />
-                        Custom Reports
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'mis' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('mis')}
-                    >
-                        <SummarizeOutlined sx={{ fontSize: 16 }} />
-                        MIS Master Hub
-                    </button>
-                    <button
-                        type="button"
-                        className={`${styles.tabBtn} ${activeTab === 'operational' ? styles.activeTab : ''}`}
-                        onClick={() => setActiveTab('operational')}
-                    >
-                        <SpeedOutlined sx={{ fontSize: 16 }} />
-                        MCI Engine
+                        <DownloadOutlined sx={{ fontSize: 16 }} />
+                        Export Reports
                     </button>
                 </div>
+            </div>
+
+            {/* Sub-Navigation Tabs */}
+            <div className={styles.tabNav}>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'people' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('people')}
+                >
+                    <PeopleAltOutlined sx={{ fontSize: 16 }} />
+                    People Intelligence
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'workforce' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('workforce')}
+                >
+                    <AccessTimeOutlined sx={{ fontSize: 16 }} />
+                    Workforce & Ops
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'payroll' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('payroll')}
+                >
+                    <AccountBalanceWalletOutlined sx={{ fontSize: 16 }} />
+                    Payroll Analytics
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'talent' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('talent')}
+                >
+                    <HowToRegOutlined sx={{ fontSize: 16 }} />
+                    Talent Funnel
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'copilot' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('copilot')}
+                >
+                    <AutoAwesomeOutlined sx={{ fontSize: 16 }} />
+                    AI Copilot Studio
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'custom' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('custom')}
+                >
+                    <AssessmentOutlined sx={{ fontSize: 16 }} />
+                    Custom Reports
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'mis' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('mis')}
+                >
+                    <SummarizeOutlined sx={{ fontSize: 16 }} />
+                    MIS Master Hub
+                </button>
+                <button
+                    type="button"
+                    className={`${styles.tabBtn} ${activeTab === 'operational' ? styles.activeTab : ''}`}
+                    onClick={() => setActiveTab('operational')}
+                >
+                    <SpeedOutlined sx={{ fontSize: 16 }} />
+                    MCI Engine
+                </button>
             </div>
 
             {/* TAB 1: PEOPLE INTELLIGENCE */}
@@ -236,8 +433,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <PeopleAltOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>1,420</div>
-                                <div className={styles.statLabel}>Active Global Headcount (+14.2% YoY)</div>
+                                <div className={styles.statValue}>{totalHeadcount.toLocaleString()}</div>
+                                <div className={styles.statLabel}>Active Global Headcount</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -245,7 +442,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>88.4 / 100</div>
+                                <div className={styles.statValue}>{diversityIndex} / 100</div>
                                 <div className={styles.statLabel}>Diversity & Inclusion Index</div>
                             </div>
                         </div>
@@ -254,8 +451,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>4.2%</div>
-                                <div className={styles.statLabel}>Annualized Attrition (Industry: 12.8%)</div>
+                                <div className={styles.statValue}>{annualizedAttrition}%</div>
+                                <div className={styles.statLabel}>Annualized Attrition</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -263,8 +460,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SecurityOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>96.4%</div>
-                                <div className={styles.statLabel}>Retention Rate (High Performers)</div>
+                                <div className={styles.statValue}>{retentionRate}%</div>
+                                <div className={styles.statLabel}>Retention Rate</div>
                             </div>
                         </div>
                     </div>
@@ -281,28 +478,28 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
                                         <span>Female Representation</span>
-                                        <strong>42.8% (608 Employees)</strong>
+                                        <strong>{femalePct}% ({femaleCount} Employees)</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
-                                        <div style={{ width: '42.8%', height: '100%', background: 'var(--signal)' }}></div>
+                                        <div style={{ width: `${femalePct}%`, height: '100%', background: 'var(--signal)' }}></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
                                         <span>Male Representation</span>
-                                        <strong>53.6% (761 Employees)</strong>
+                                        <strong>{malePct}% ({maleCount} Employees)</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
-                                        <div style={{ width: '53.6%', height: '100%', background: '#38bdf8' }}></div>
+                                        <div style={{ width: `${malePct}%`, height: '100%', background: '#38bdf8' }}></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
                                         <span>Non-Binary / Self-Identified</span>
-                                        <strong>3.6% (51 Employees)</strong>
+                                        <strong>{otherPct}% ({otherCount} Employees)</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
-                                        <div style={{ width: '3.6%', height: '100%', background: '#10b981' }}></div>
+                                        <div style={{ width: `${otherPct}%`, height: '100%', background: '#10b981' }}></div>
                                     </div>
                                 </div>
                             </div>
@@ -321,21 +518,21 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>Low Risk (Stable)</div>
                                         <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>High engagement & market parity</div>
                                     </div>
-                                    <div style={{ fontWeight: 700, color: 'var(--status-ok)', fontSize: '1.1rem' }}>78.4%</div>
+                                    <div style={{ fontWeight: 700, color: 'var(--status-ok)', fontSize: '1.1rem' }}>{lowRiskPct}%</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                     <div>
                                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>Medium Risk (Watchlist)</div>
                                         <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>Overtime spikes or stagnant band</div>
                                     </div>
-                                    <div style={{ fontWeight: 700, color: 'var(--pending)', fontSize: '1.1rem' }}>17.4%</div>
+                                    <div style={{ fontWeight: 700, color: 'var(--pending)', fontSize: '1.1rem' }}>{medRiskPct}%</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                     <div>
                                         <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>High Flight Risk (Urgent)</div>
                                         <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>Under-compensated vs peer quartile</div>
                                     </div>
-                                    <div style={{ fontWeight: 700, color: 'var(--flag)', fontSize: '1.1rem' }}>4.2%</div>
+                                    <div style={{ fontWeight: 700, color: 'var(--flag)', fontSize: '1.1rem' }}>{highRiskPct}%</div>
                                 </div>
                             </div>
                         </div>
@@ -352,7 +549,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <AccessTimeOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>91.8%</div>
+                                <div className={styles.statValue}>{capacityUtilization}%</div>
                                 <div className={styles.statLabel}>Shift Capacity Utilization</div>
                             </div>
                         </div>
@@ -361,7 +558,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>3.4 hrs</div>
+                                <div className={styles.statValue}>{avgOtHours} hrs</div>
                                 <div className={styles.statLabel}>Avg Overtime per Employee / Mo</div>
                             </div>
                         </div>
@@ -370,7 +567,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <CheckCircleOutline />
                             </div>
                             <div>
-                                <div className={styles.statValue}>1.8%</div>
+                                <div className={styles.statValue}>{unplannedAbsenteeism}%</div>
                                 <div className={styles.statLabel}>Unplanned Absenteeism Rate</div>
                             </div>
                         </div>
@@ -379,7 +576,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>94.2 pts</div>
+                                <div className={styles.statValue}>{mciScore} pts</div>
                                 <div className={styles.statLabel}>Project Pod Delivery Velocity</div>
                             </div>
                         </div>
@@ -393,12 +590,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </button>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-                            {[
-                                { site: 'Bengaluru Tech HQ', shift: 'General (09:00 - 18:00)', load: '94%', ot: '184 hrs', status: 'Optimal' },
-                                { site: 'Plant A - Hosur Site', shift: 'Morning Shift A', load: '98%', ot: '412 hrs', status: 'High Load' },
-                                { site: 'Plant B - Manesar Plant', shift: 'Night Shift C', load: '86%', ot: '290 hrs', status: 'Balanced' },
-                                { site: 'London Tech Hub', shift: 'European Shift', load: '89%', ot: '98 hrs', status: 'Optimal' }
-                            ].map((item, idx) => (
+                            {siteData.map((item, idx) => (
                                 <div key={idx} style={{ padding: '1rem', background: 'var(--card-2)', borderRadius: '10px', border: '1px solid var(--line-soft)' }}>
                                     <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.2rem' }}>{item.site}</div>
                                     <div style={{ fontSize: '0.78rem', color: 'var(--text-2)', marginBottom: '0.6rem' }}>{item.shift}</div>
@@ -422,7 +614,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <AccountBalanceWalletOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>₹1.48 Cr</div>
+                                <div className={styles.statValue}>{wageBillDisplay}</div>
                                 <div className={styles.statLabel}>Monthly Gross Wage Bill</div>
                             </div>
                         </div>
@@ -431,7 +623,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SecurityOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>98.6%</div>
+                                <div className={styles.statValue}>{basicWage50Compliance}</div>
                                 <div className={styles.statLabel}>50% Basic Wage Compliance (2026 Code)</div>
                             </div>
                         </div>
@@ -440,7 +632,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>₹17.8 L</div>
+                                <div className={styles.statValue}>{statutoryLiabilities}</div>
                                 <div className={styles.statLabel}>Statutory PF / ESI Liability</div>
                             </div>
                         </div>
@@ -449,7 +641,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>8.4%</div>
+                                <div className={styles.statValue}>{ewaDrawdownPct}%</div>
                                 <div className={styles.statLabel}>Earned Wage Access (EWA) Drawdown</div>
                             </div>
                         </div>
@@ -465,23 +657,23 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                 <span>Previous Month Base Bill</span>
-                                <strong>₹1,44,20,000</strong>
+                                <strong>{formatCurrencyINR(baseWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--status-ok-wash)', borderRadius: '8px', color: 'var(--status-ok)' }}>
-                                <span>+ New Hires Joined (8 Employees)</span>
-                                <strong>+ ₹6,80,000</strong>
+                                <span>+ New Hires Joined</span>
+                                <strong>+ {formatCurrencyINR(newHiresWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--status-ok-wash)', borderRadius: '8px', color: 'var(--status-ok)' }}>
                                 <span>+ Promotion & CTC Increments</span>
-                                <strong>+ ₹1,90,000</strong>
+                                <strong>+ {formatCurrencyINR(incrementsWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--flag-wash)', borderRadius: '8px', color: 'var(--flag)' }}>
                                 <span>- Offboarding Exits & Settled F&F</span>
-                                <strong>- ₹4,90,000</strong>
+                                <strong>- {formatCurrencyINR(exitsWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.85rem 1rem', background: 'var(--signal-wash)', borderRadius: '8px', color: 'var(--signal)', fontWeight: 700 }}>
                                 <span>Current Net Disbursable Wage Bill</span>
-                                <span>₹1,48,00,000</span>
+                                <span>{wageBillDisplay}</span>
                             </div>
                         </div>
                     </div>
@@ -497,7 +689,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <HowToRegOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>24 Days</div>
+                                <div className={styles.statValue}>{avgTimeToHireDays}</div>
                                 <div className={styles.statLabel}>Average Time-to-Hire</div>
                             </div>
                         </div>
@@ -506,7 +698,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>91.2%</div>
+                                <div className={styles.statValue}>{offerAcceptanceRate}%</div>
                                 <div className={styles.statLabel}>Offer Acceptance Rate</div>
                             </div>
                         </div>
@@ -515,7 +707,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <PeopleAltOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>44.6%</div>
+                                <div className={styles.statValue}>{referralShare}%</div>
                                 <div className={styles.statLabel}>Referral Hire Sourcing Share</div>
                             </div>
                         </div>
@@ -524,7 +716,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>18 Req</div>
+                                <div className={styles.statValue}>{openPositionsCount} Req</div>
                                 <div className={styles.statLabel}>Open Approved Positions</div>
                             </div>
                         </div>
@@ -536,13 +728,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <h3><HowToRegOutlined sx={{ fontSize: 18 }} /> Candidate Conversion Funnel</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                {[
-                                    { stage: '1. Applications Received', count: 1420, pct: '100%', color: 'var(--signal)' },
-                                    { stage: '2. Resume Screening Passed', count: 380, pct: '26.7%', color: '#38bdf8' },
-                                    { stage: '3. Technical & Culture Rounds', count: 142, pct: '10.0%', color: '#6366f1' },
-                                    { stage: '4. Offer Extended', count: 34, pct: '2.4%', color: '#f59e0b' },
-                                    { stage: '5. Joined & Onboarded', count: 31, pct: '2.2%', color: '#10b981' }
-                                ].map((step, idx) => (
+                                {candidateFunnel.map((step, idx) => (
                                     <div key={idx}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.84rem', marginBottom: '0.25rem' }}>
                                             <span>{step.stage}</span>
@@ -561,12 +747,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <h3><AssessmentOutlined sx={{ fontSize: 18 }} /> Sourcing Channel Effectiveness</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                                {[
-                                    { channel: 'Employee Internal Referrals', share: '44%', quality: 'High (4.8/5)' },
-                                    { channel: 'LinkedIn Talent Insights', share: '28%', quality: 'High (4.4/5)' },
-                                    { channel: 'Direct Inbound Career Site', share: '18%', quality: 'Medium (3.9/5)' },
-                                    { channel: 'Campus Recruitment Drives', share: '10%', quality: 'High (4.6/5)' }
-                                ].map((item, idx) => (
+                                {sourcingChannels.map((item, idx) => (
                                     <div key={idx} style={{ padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <div style={{ fontWeight: 600, fontSize: '0.86rem' }}>{item.channel}</div>
@@ -800,8 +981,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                                 {[
-                                    { code: 'METRIC_HEADCOUNT_V1', name: 'Global Headcount Snapshot', cohort: 1420, suppressed: false },
-                                    { code: 'METRIC_ATTRITION_V2', name: 'Flight Risk Predictive Score', cohort: 64, suppressed: false },
+                                    { code: 'METRIC_HEADCOUNT_V1', name: 'Global Headcount Snapshot', cohort: totalHeadcount, suppressed: totalHeadcount < 5 },
+                                    { code: 'METRIC_ATTRITION_V2', name: 'Flight Risk Predictive Score', cohort: exitCount, suppressed: exitCount < 5 },
                                     { code: 'METRIC_EXECUTIVE_SALARY', name: 'CXO Quartile Wage Bridge', cohort: 4, suppressed: true }
                                 ].map((m, idx) => (
                                     <div key={idx} style={{ padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

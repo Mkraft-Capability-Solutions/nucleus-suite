@@ -34,6 +34,23 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
   const handleAction = async (decision) => {
     setIsSubmitting(true);
     try {
+      await fetch('/api/v1/operations/ctc-exceptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+        body: JSON.stringify({
+          id: data.id,
+          candidateName: data.candidateName,
+          role: data.role,
+          department: data.department,
+          approvedBandMax: data.approvedBandMax,
+          requestedCtc: data.requestedCtc,
+          justification: data.justification,
+          action: decision,
+          remarks
+        })
+      }).catch(() => null);
+    } catch {}
+    try {
       fetch('/api/v1/workspace/approvals', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },

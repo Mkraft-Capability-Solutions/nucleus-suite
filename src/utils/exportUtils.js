@@ -8,8 +8,20 @@ import { csvCell, csvRows } from './csv';
  * @param {string[]} headers Array of column header labels
  * @param {Array<Array<any>>} dataRows Array of row arrays matching the headers
  */
+/**
+ * Checks whether the dataset contains exportable row records.
+ * @param {Array<Array<any>>|Array<object>} dataRows
+ * @returns {boolean}
+ */
+export function hasExportableData(dataRows) {
+    return Boolean(Array.isArray(dataRows) && dataRows.length > 0);
+}
+
 export function downloadCSV(filename, headers, dataRows) {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return { success: false, reason: 'SSR' };
+    if (!hasExportableData(dataRows)) {
+        return { success: false, reason: 'NO_DATA', message: 'No data records available to export.' };
+    }
     const formattedRows = [headers, ...dataRows];
     const csvContent = csvRows(formattedRows);
     const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -21,6 +33,7 @@ export function downloadCSV(filename, headers, dataRows) {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    return { success: true };
 }
 
 /**
@@ -33,7 +46,10 @@ export function downloadCSV(filename, headers, dataRows) {
  * @param {string} [sheetName='Workforce Data'] Sheet title in workbook
  */
 export function downloadXLSX(filename, headers, dataRows, sheetName = 'Workforce Data') {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') return { success: false, reason: 'SSR' };
+    if (!hasExportableData(dataRows)) {
+        return { success: false, reason: 'NO_DATA', message: 'No data records available to export.' };
+    }
     
     const escapeXml = (str) => String(str ?? '')
         .replace(/&/g, '&amp;')

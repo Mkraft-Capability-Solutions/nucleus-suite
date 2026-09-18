@@ -3,14 +3,17 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Briefcase, Sparkles, UserPlus, FileCheck, CheckCircle2,
-    Shield, Filter, Plus, MessageCircle, ExternalLink, ChevronRight, Search,
-    Building2, Users, AlertTriangle, CheckSquare, Award, ArrowUpRight, Lock, DollarSign, UploadCloud
+    Shield, Filter, Plus, MessageCircle, ExternalLink, ChevronRight, ChevronLeft, GripVertical, Search,
+    Building2, Users, AlertTriangle, CheckSquare, Award, ArrowUpRight, Lock, DollarSign, UploadCloud, Download
 } from 'lucide-react';
 import styles from './RecruitmentView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
+import { downloadCSV } from '@/utils/exportUtils';
+import DataImportModal from './DataImportModal';
+import CtcExceptionModal from '../Dashboard/Modals/CtcExceptionModal';
 
 const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
     const {t: translateText}=useTranslation();
@@ -39,13 +42,19 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         return ['Operations', 'Specialist', 'Enterprise'];
     };
 
-    useEffect(() => {
-        let active = true;
-        Promise.allSettled([
-            fetch('/api/v1/candidates'),
-            fetch('/api/v1/referrals')
-        ]).then(async ([candRes, refRes]) => {
-            if (!active) return;
+    // Additional modals state
+    const [isAtsModalOpen, setIsAtsModalOpen] = useState(false);
+    const [isCtcModalOpen, setIsCtcModalOpen] = useState(false);
+    const [ctcData, setCtcData] = useState(null);
+    const [requisitionsList, setRequisitionList] = useState([]);
+
+    const fetchTalentData = useCallback(async () => {
+        try {
+            const [candRes, refRes, reqRes] = await Promise.allSettled([
+                fetch('/api/v1/candidates'),
+                fetch('/api/v1/referrals'),
+                fetch('/api/v1/requisitions')
+            ]);
             if (candRes.status === 'fulfilled' && candRes.value.ok) {
                 const candData = await candRes.value.json().catch(() => null);
                 const items = Array.isArray(candData?.items) ? candData.items : (Array.isArray(candData?.data) ? candData.data : []);
@@ -82,9 +91,43 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     });
                 }
             }
-        }).catch(err => console.warn('Recruitment db load notice:', err));
-        return () => { active = false; };
-    }, []);
+            if (reqRes.status === 'fulfilled' && reqRes.value.ok) {
+                const reqData = await reqRes.value.json().catch(() => null);
+                const reqItems = Array.isArray(reqData?.items) ? reqData.items : (Array.isArray(reqData?.data) ? reqData.data : []);
+                if (reqItems.length > 0) {
+                    setRequisitionList(reqItems);
+                }
+            }
+        } catch (err) {
+            console.warn('Recruitment db load notice:', err);
+        }
+    }, [employeeReferrals]);
+
+    useEffect(() => {
+        fetchTalentData();
+    }, [fetchTalentData]);
+
+    const exportCandidatesCSV = () => {
+        if (!candidateList || candidateList.length === 0) {
+            showToast('Export Unavailable', 'No candidate records in pipeline to export. Import or refer candidates first.', 'warning');
+            return;
+        }
+        const headers = ['Candidate ID', 'Name', 'Role / Position', 'Department', 'Current Stage', 'Match Score', 'Experience', 'Source'];
+        const rows = candidateList.map(c => [
+            c.id,
+            c.name,
+            c.role,
+            c.dept,
+            c.stage,
+            `${c.matchScore}%`,
+            c.exp || '—',
+            c.source || 'Direct'
+        ]);
+        const res = downloadCSV('nucleus_candidate_pipeline.csv', headers, rows);
+        if (res?.success) {
+            showToast('Export Complete', 'Candidate Pipeline CSV downloaded.', 'success');
+        }
+    };
 
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.RecruitmentView", "initialState_1")); // pipeline, establishment, referrals, interviews, bias
 
@@ -122,17 +165,30 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
     const stages = readData("components.Workspace.RecruitmentView", "stages_1");
 
+    const [draggingCandId, setDraggingCandId] = useState(null);
+    const [dragOverStage, setDragOverStage] = useState(null);
+
     const handleMoveCandidate = async (candidateId, nextStageKey) => {
+        if (!candidateId || !nextStageKey) return;
         setCandidateList(prev => prev.map(c => c.id === candidateId ? { ...c, stage: nextStageKey } : c));
         try {
-            await fetch(`/api/v1/applications/${candidateId}/advance`, {
-                method: 'POST',
+            const candRes = await fetch(`/api/v1/candidates/${candidateId}`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
-                body: JSON.stringify({ to: nextStageKey })
-            });
-            showToast?.('Candidate Advanced', `Candidate moved to stage: ${nextStageKey}`, 'success');
+                body: JSON.stringify({ stage: nextStageKey })
+            }).catch(() => null);
+
+            if (!candRes || !candRes.ok) {
+                await fetch(`/api/v1/applications/${candidateId}/advance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+                    body: JSON.stringify({ to: nextStageKey })
+                }).catch(() => null);
+            }
+            const targetStageObj = stages.find(s => s.key === nextStageKey);
+            showToast?.('Candidate Stage Updated', `Candidate moved to: ${targetStageObj?.label || nextStageKey}`, 'success');
         } catch (err) {
-            console.warn('Candidate advance warning:', err);
+            console.warn('Candidate advance notice:', err);
         }
     };
 
@@ -179,6 +235,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             const res = await createJobRequisition({
                 title: reqTitle,
                 dept: reqDept,
+                departmentName: reqDept,
                 requisitionType: reqType,
                 vacatedPositionCode: reqType === 'REPLACEMENT' ? vacatedCode : null,
                 previousIncumbentId: reqType === 'REPLACEMENT' ? prevIncumbent : null,
@@ -189,12 +246,12 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
             if (res?.success) {
                 try {
-                    fetch('/api/v1/requisitions', {
+                    await fetch('/api/v1/requisitions', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
                         body: JSON.stringify({
                             title: reqTitle,
-                            dept: reqDept,
+                            departmentName: reqDept,
                             requisitionType: reqType,
                             budget: budgetNum,
                             isExecutiveWaiver: isExecWaiver,
@@ -202,10 +259,12 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         })
                     }).catch(() => null);
                 } catch {}
+                showToast('Requisition Created', `Requisition for "${reqTitle}" (${reqDept}) created successfully.`, 'success');
                 setIsReqModalOpen(false);
                 setReqTitle('');
                 setIsExecWaiver(false);
                 setWaiverReason('');
+                fetchTalentData();
             }
         } finally {
             setTimeout(() => { isSubmittingReq.current = false; }, 600);
@@ -241,24 +300,46 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                 return;
             }
 
-            await submitEmployeeReferral({
-                candidateName: refCandidateName,
-                role: refRole,
-                dept: refDept
-            });
+            let createdReferral = null;
             try {
-                fetch('/api/v1/referrals', {
+                const postRes = await fetch('/api/v1/referrals', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
                     body: JSON.stringify({
-                        candidateName: refCandidateName,
+                        candidateName: refCandidateName.trim(),
                         role: refRole,
                         dept: refDept
                     })
-                }).catch(() => null);
-            } catch {}
+                });
+                if (postRes.ok) {
+                    const json = await postRes.json().catch(() => null);
+                    if (json?.data?.attributes) {
+                        createdReferral = json.data.attributes;
+                    }
+                    if (json?.candidate) {
+                        setCandidateList(prev => [json.candidate, ...prev]);
+                    }
+                }
+            } catch (err) {
+                console.warn('Referral post error:', err);
+            }
+
+            const localRef = createdReferral || {
+                id: `REF-${Date.now().toString().slice(-4)}`,
+                candidateName: refCandidateName.trim(),
+                role: refRole,
+                dept: refDept,
+                bonus: '₹25,000',
+                status: 'referred',
+                referredDate: new Date().toLocaleDateString('en-GB')
+            };
+
+            await submitEmployeeReferral?.(localRef);
+            setReferralList(prev => [localRef, ...prev]);
+            showToast('Referral Submitted', `${refCandidateName} referred for ${refRole} role.`, 'success');
             setIsRefModalOpen(false);
             setRefCandidateName('');
+            fetchTalentData();
         } finally {
             setTimeout(() => { isSubmittingRef.current = false; }, 600);
         }
@@ -295,11 +376,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     )}
                     <button
                         className={styles.btnSecondary}
-                        onClick={() => {
-                            if (typeof window !== 'undefined') {
-                                window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
-                            }
-                        }}
+                        onClick={() => setIsAtsModalOpen(true)}
                         title="Upload ATS Candidate Resumes & CSV Profiles in Bulk"
                     >
                         <UploadCloud size={15} /> Bulk ATS Import
@@ -307,23 +384,31 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     <button
                         className={styles.btnSecondary}
                         onClick={() => {
-                            if (typeof window !== 'undefined') {
-                                window.dispatchEvent(new CustomEvent('nucleus:open_ctc_exception', {
-                                    detail: {
-                                        candidateName: 'Vikram Malhotra',
-                                        jobRole: 'Lead Distributed Systems Architect',
-                                        department: 'Engineering',
-                                        budgetedCtc: 3800000,
-                                        requestedCtc: 4600000,
-                                        variancePercent: 21.05
-                                    }
-                                }));
-                            }
+                            const firstCand = candidateList?.[0] || { name: 'Aarav Singhania', role: 'Lead Fullstack Architect', dept: 'Engineering' };
+                            setCtcData({
+                                id: `CTC-EXC-${Date.now().toString().slice(-4)}`,
+                                candidateName: firstCand.name,
+                                role: firstCand.role,
+                                department: firstCand.dept || 'Engineering',
+                                hiringManager: 'Ramesh Nair',
+                                approvedBandMax: 2200000,
+                                requestedCtc: 2650000,
+                                justification: 'Exceptional domain architecture talent exceeding approved salary bands.'
+                            });
+                            setIsCtcModalOpen(true);
                         }}
                         style={{ border: '1px solid rgba(245, 158, 11, 0.4)', color: '#d97706' }}
                         title="Raise or Review Talent CTC Exception for Out-of-Budget Candidates"
                     >
                         <DollarSign size={15} /> CTC Exception Workflow
+                    </button>
+                    <button
+                        className={`${styles.btnSecondary} ${candidateList.length === 0 ? styles.btnExportDisabled : ''}`}
+                        onClick={exportCandidatesCSV}
+                        disabled={candidateList.length === 0}
+                        title={candidateList.length === 0 ? "No candidates in pipeline to export" : "Export Candidate Pipeline CSV"}
+                    >
+                        <Download size={15} /> Export Candidates
                     </button>
                     <button className={styles.btnSecondary} onClick={() => setIsRefModalOpen(true)}>
                         <UserPlus size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_8")}</button>
@@ -339,7 +424,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <Briefcase size={22} />
                     </div>
                     <div>
-                        <div className={styles.statValue}>{positions ? positions.length : readData("components.Workspace.RecruitmentView", "display_9")}</div>
+                        <div className={styles.statValue}>{(candidateList.length > 0 ? candidateList : (candidates || [])).length}</div>
                         <div className={styles.statLabel}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_10")}</div>
                     </div>
                 </div>
@@ -348,7 +433,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <Building2 size={22} />
                     </div>
                     <div>
-                        <div className={styles.statValue}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_11")}</div>
+                        <div className={styles.statValue}>{positions ? positions.length : readData("components.Workspace.RecruitmentView", "display_9")}</div>
                         <div className={styles.statLabel}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_12")}</div>
                     </div>
                 </div>
@@ -357,7 +442,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <UserPlus size={22} />
                     </div>
                     <div>
-                        <div className={styles.statValue}>{employeeReferrals ? employeeReferrals.length : readData("components.Workspace.RecruitmentView", "display_10")}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_13")}</div>
+                        <div className={styles.statValue}>{referralList.length}</div>
                         <div className={styles.statLabel}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_14")}</div>
                     </div>
                 </div>
@@ -375,83 +460,181 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {/* Navigation Tabs */}
             <div className={styles.tabNav}>
                 <button
-                    className={`${styles.tabBtn} ${activeTab === 'pipeline' ? styles.activeTab : ''}`}
+                    className={`${styles.tabBtn} ${styles.tabPipeline} ${activeTab === 'pipeline' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('pipeline')}
                 >
-                    <Briefcase size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_17")}{candidates.length}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_18")}</button>
+                    <Briefcase size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_17")}{(candidateList.length > 0 ? candidateList : (candidates || [])).length}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_18")}</button>
                 <button
-                    className={`${styles.tabBtn} ${activeTab === 'establishment' ? styles.activeTab : ''}`}
+                    className={`${styles.tabBtn} ${styles.tabEstablishment} ${activeTab === 'establishment' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('establishment')}
                 >
                     <Building2 size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_19")}<span className={`${styles.badge} ${styles.badgeSuccess}`}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_20")}</span>
                 </button>
                 <button
-                    className={`${styles.tabBtn} ${activeTab === 'referrals' ? styles.activeTab : ''}`}
+                    className={`${styles.tabBtn} ${styles.tabReferrals} ${activeTab === 'referrals' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('referrals')}
                 >
-                    <Award size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_21")}<span className={`${styles.badge} ${styles.badgePurple}`}>{employeeReferrals.length}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_22")}</span>
+                    <Award size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_21")}<span className={`${styles.badge} ${styles.badgePurple}`}>{referralList.length}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_22")}</span>
                 </button>
                 <button
-                    className={`${styles.tabBtn} ${activeTab === 'interviews' ? styles.activeTab : ''}`}
+                    className={`${styles.tabBtn} ${styles.tabInterviews} ${activeTab === 'interviews' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('interviews')}
                 >
                     <FileCheck size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_23")}</button>
                 <button
-                    className={`${styles.tabBtn} ${activeTab === 'bias' ? styles.activeTab : ''}`}
+                    className={`${styles.tabBtn} ${styles.tabBias} ${activeTab === 'bias' ? styles.activeTab : ''}`}
                     onClick={() => setActiveTab('bias')}
                 >
                     <Shield size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_24")}</button>
             </div>
 
             {/* ========================================================================= */}
-            {/* TAB 1: PIPELINE KANBAN                                                    */}
+            {/* TAB 1: PIPELINE KANBAN (DRAG & DROP + FORWARD & BACKWARD STAGE CONTROL)   */}
             {/* ========================================================================= */}
             {activeTab === 'pipeline' && (
                 <div className={styles.pipelineGrid}>
-                    {stages.map((stage) => {
+                    {stages.map((stage, stageIdx) => {
                         const stageCandidates = (candidateList.length > 0 ? candidateList : (candidates || [])).filter(c => c.stage === stage.key);
+                        const isDragTarget = dragOverStage === stage.key;
                         return (
-                            <div key={stage.key} className={styles.column}>
+                            <div
+                                key={stage.key}
+                                className={`${styles.column} ${isDragTarget ? styles.columnDragOver : ''}`}
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                    e.dataTransfer.dropEffect = 'move';
+                                    if (dragOverStage !== stage.key) setDragOverStage(stage.key);
+                                }}
+                                onDragEnter={(e) => {
+                                    e.preventDefault();
+                                    setDragOverStage(stage.key);
+                                }}
+                                onDragLeave={(e) => {
+                                    if (e.currentTarget.contains(e.relatedTarget)) return;
+                                    if (dragOverStage === stage.key) setDragOverStage(null);
+                                }}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    setDragOverStage(null);
+                                    setDraggingCandId(null);
+                                    const candId = e.dataTransfer.getData('text/plain');
+                                    if (candId) {
+                                        handleMoveCandidate(candId, stage.key);
+                                    }
+                                }}
+                            >
                                 <div className={styles.colHeader}>
                                     <span className={styles.colTitle}>{stage.label}</span>
                                     <span className={styles.countBadge}>{stageCandidates.length}</span>
                                 </div>
 
-                                {stageCandidates.map((cand) => (
-                                    <div key={cand.id} className={styles.candidateCard}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                            <strong style={{ color: 'var(--text)', fontSize: '0.95rem' }}>{cand.name}</strong>
-                                            <span className={styles.matchScoreBadge}>
-                                                <Sparkles size={12} /> {cand.matchScore ?? 92}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_25")}</span>
-                                        </div>
-                                        <div style={{ fontSize: '0.82rem', color: 'var(--info)', fontWeight: '600' }}>{cand.role}</div>
-                                        <div style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_26")}{cand.exp || '3 yrs'}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_27")}{cand.biasScore || 'Fair & Neutral'}</div>
+                                {stageCandidates.map((cand) => {
+                                    const isBeingDragged = draggingCandId === cand.id;
+                                    return (
+                                        <div
+                                            key={cand.id}
+                                            className={`${styles.candidateCard} ${isBeingDragged ? styles.candidateCardDragging : ''}`}
+                                            draggable={true}
+                                            onDragStart={(e) => {
+                                                e.dataTransfer.setData('text/plain', cand.id);
+                                                e.dataTransfer.effectAllowed = 'move';
+                                                setDraggingCandId(cand.id);
+                                            }}
+                                            onDragEnd={() => {
+                                                setDraggingCandId(null);
+                                                setDragOverStage(null);
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                                    <span className={styles.dragGrip} title="Drag and drop card across any of the 4 stages">
+                                                        <GripVertical size={14} />
+                                                    </span>
+                                                    <strong style={{ color: 'var(--text)', fontSize: '0.95rem' }}>{cand.name}</strong>
+                                                </div>
+                                                <span className={styles.matchScoreBadge}>
+                                                    <Sparkles size={12} /> {cand.matchScore ?? 92}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_25")}
+                                                </span>
+                                            </div>
 
-                                        <div className={styles.skillTags}>
-                                            {(Array.isArray(cand.skills)
-                                                ? cand.skills
-                                                : typeof cand.skills === 'string' && cand.skills.trim()
-                                                    ? cand.skills.split(',').map(s => s.trim()).filter(Boolean)
-                                                    : (cand.attributes?.skills || ['Engineering', 'Specialist'])
-                                            ).map((s, i) => (
-                                                <span key={i} className={styles.skillTag}>{s}</span>
-                                            ))}
-                                        </div>
+                                            <div style={{ fontSize: '0.82rem', color: 'var(--info)', fontWeight: '600' }}>{cand.role}</div>
+                                            <div style={{ fontSize: '0.78rem', color: 'var(--text-2)' }}>
+                                                {readData("components.Workspace.RecruitmentView", "RecruitmentView_text_26")}{cand.exp || '3 yrs'}{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_27")}{cand.biasScore || 'Fair & Neutral'}
+                                            </div>
 
-                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                                            {stage.key !== 'offer' && (
-                                                <button
-                                                    className={styles.btnPrimary}
-                                                    style={{ width: '100%', padding: '0.4rem', fontSize: '0.78rem', justifyContent: 'center' }}
-                                                    onClick={() => {
-                                                        const nextIdx = stages.findIndex(s => s.key === stage.key) + 1;
-                                                        if (nextIdx < stages.length) handleMoveCandidate(cand.id, stages[nextIdx].key);
-                                                    }}
-                                                >{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_28")}</button>
-                                            )}
+                                            <div className={styles.skillTags}>
+                                                {(Array.isArray(cand.skills)
+                                                    ? cand.skills
+                                                    : typeof cand.skills === 'string' && cand.skills.trim()
+                                                        ? cand.skills.split(',').map(s => s.trim()).filter(Boolean)
+                                                        : (cand.attributes?.skills || ['Engineering', 'Specialist'])
+                                                ).map((s, i) => (
+                                                    <span key={i} className={styles.skillTag}>{s}</span>
+                                                ))}
+                                            </div>
+
+                                            {/* Stage Controls: Dedicated Stage Jumper + Bottom Prev/Next Controls */}
+                                            <div className={styles.cardFooter}>
+                                                <div className={styles.stageSelectWrapper}>
+                                                    <span className={styles.stageSelectLabel}>Stage</span>
+                                                    <select
+                                                        className={styles.stageSelect}
+                                                        value={cand.stage || stage.key}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation();
+                                                            handleMoveCandidate(cand.id, e.target.value);
+                                                        }}
+                                                        title="Jump directly to any stage"
+                                                    >
+                                                        {stages.map(s => (
+                                                            <option key={s.key} value={s.key}>{s.label}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+
+                                                <div className={styles.cardNavRow}>
+                                                    {stageIdx > 0 ? (
+                                                        <button
+                                                            type="button"
+                                                            className={styles.btnPrevStage}
+                                                            title={`Move back to ${stages[stageIdx - 1]?.label}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleMoveCandidate(cand.id, stages[stageIdx - 1].key);
+                                                            }}
+                                                        >
+                                                            <ChevronLeft size={14} /> Prev
+                                                        </button>
+                                                    ) : (
+                                                        <div />
+                                                    )}
+
+                                                    {stageIdx < stages.length - 1 ? (
+                                                        <button
+                                                            type="button"
+                                                            className={styles.btnNextStage}
+                                                            title={`Advance to ${stages[stageIdx + 1]?.label}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleMoveCandidate(cand.id, stages[stageIdx + 1].key);
+                                                            }}
+                                                        >
+                                                            Next <ChevronRight size={14} />
+                                                        </button>
+                                                    ) : (
+                                                        <div />
+                                                    )}
+                                                </div>
+                                            </div>
                                         </div>
+                                    );
+                                })}
+
+                                {isDragTarget && (
+                                    <div className={styles.dropPlaceholder}>
+                                        Drop candidate to move to {stage.label}
                                     </div>
-                                ))}
+                                )}
                             </div>
                         );
                     })}
@@ -947,6 +1130,36 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         </form>
                     </div>
                 </div>
+            )}
+
+            {/* ATS Bulk Data Import Modal */}
+            <DataImportModal
+                isOpen={isAtsModalOpen}
+                onClose={() => {
+                    setIsAtsModalOpen(false);
+                    fetchTalentData();
+                }}
+                initialPreset="candidates"
+            />
+
+            {/* Talent CTC Exception Modal */}
+            {isCtcModalOpen && (
+                <CtcExceptionModal
+                    isOpen={isCtcModalOpen}
+                    onClose={() => {
+                        setIsCtcModalOpen(false);
+                        fetchTalentData();
+                    }}
+                    requestData={ctcData}
+                    onApprove={() => {
+                        showToast('CTC Exception Approved', 'Candidate compensation variance authorized and persisted.', 'success');
+                        fetchTalentData();
+                    }}
+                    onReject={() => {
+                        showToast('CTC Exception Rejected', 'Candidate compensation exception declined.', 'info');
+                        fetchTalentData();
+                    }}
+                />
             )}
         </div>
     );

@@ -294,9 +294,12 @@ export default function VoiceNavigator({ isOpen, onClose, onNavigate, onSelectCo
       speakAloud(greeting, () => setIsSpeaking(false));
     }
 
-    // Automatically start listening immediately on open
-    startListening();
-  }, [isOpen, initialDetail, startListening, user]);
+    if (initialDetail?.startLiveAi) {
+      switchToAI(initialDetail?.initialMessage);
+    } else {
+      startListening();
+    }
+  }, [isOpen, initialDetail, startListening, switchToAI, user]);
 
   if (!isOpen) return null;
 

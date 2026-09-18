@@ -165,9 +165,15 @@ const MainWorkspace = ({
             leaveDecision: '/api/v1/leave-requests/decide',
             benefitLock: '/api/v1/benefits/plans',
             payrollPreview: '/api/v1/payroll-runs',
-            payrollRelease: '/api/v1/payroll-runs',
             actionReversal: '/api/v1/ai/actions',
-            anomalyReview: '/api/v1/payroll-anomalies'
+            anomalyReview: '/api/v1/payroll-anomalies',
+            offer: '/api/v1/ops/modules/offer_management/records',
+            create_offer: '/api/v1/ops/modules/offer_management/records',
+            offer_management: '/api/v1/ops/modules/offer_management/records',
+            gate_pass: '/api/v1/gate-passes',
+            gatePass: '/api/v1/gate-passes',
+            leave: '/api/v1/leave-requests',
+            leave_request: '/api/v1/leave-requests'
         };
 
         const targetEndpoint = endpointMap[action] || `/api/v1/operations/${action}`;

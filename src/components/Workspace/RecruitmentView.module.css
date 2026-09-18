@@ -103,33 +103,115 @@
 }
 
 .tabBtn {
-    padding: 0.4rem 0.85rem;
-    border-radius: var(--r-data);
-    border: 1px solid transparent;
-    background: transparent;
-    color: var(--text-2);
-    font-weight: 500;
-    font-size: var(--t-small);
+    padding: 0.45rem 0.95rem;
+    border-radius: 9999px;
+    border: 1px solid var(--line-soft, #e2e8f0);
+    background: var(--card, #ffffff);
+    color: var(--text-2, #64748b);
+    font-weight: 600;
+    font-size: var(--t-small, 0.82rem);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    transition: all 0.15s ease;
+    gap: 0.45rem;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 .tabBtn:hover {
-    color: var(--text);
-    background: var(--card);
+    color: var(--text, #0f172a);
+    background: var(--card-2, #f8fafc);
+    transform: translateY(-1px);
 }
 
-.tabBtn.activeTab {
-    background: var(--signal-wash);
-    color: var(--signal-ink);
-    box-shadow: var(--shadow-raise);
-    border-color: var(--line-soft);
-    font-weight: 600;
+/* Vibrant Colorful Theme Tabs */
+.tabPipeline {
+    border-color: rgba(5, 205, 153, 0.3);
+    color: #059669;
+}
+.tabPipeline:hover {
+    background: rgba(5, 205, 153, 0.08);
+    border-color: #05CD99;
+}
+.tabPipeline.activeTab {
+    background: linear-gradient(135deg, rgba(5, 205, 153, 0.18), rgba(16, 185, 129, 0.25));
+    color: #065f46;
+    border-color: #05CD99;
+    box-shadow: 0 3px 10px rgba(5, 205, 153, 0.25);
+    font-weight: 700;
+}
+
+.tabEstablishment {
+    border-color: rgba(14, 165, 233, 0.3);
+    color: #0284c7;
+}
+.tabEstablishment:hover {
+    background: rgba(14, 165, 233, 0.08);
+    border-color: #0ea5e9;
+}
+.tabEstablishment.activeTab {
+    background: linear-gradient(135deg, rgba(14, 165, 233, 0.18), rgba(2, 132, 199, 0.25));
+    color: #0369a1;
+    border-color: #0284c7;
+    box-shadow: 0 3px 10px rgba(14, 165, 233, 0.25);
+    font-weight: 700;
+}
+
+.tabReferrals {
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #d97706;
+}
+.tabReferrals:hover {
+    background: rgba(245, 158, 11, 0.08);
+    border-color: #f59e0b;
+}
+.tabReferrals.activeTab {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(217, 119, 6, 0.25));
+    color: #92400e;
+    border-color: #d97706;
+    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+    font-weight: 700;
+}
+
+.tabInterviews {
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #7c3aed;
+}
+.tabInterviews:hover {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: #8b5cf6;
+}
+.tabInterviews.activeTab {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(124, 58, 237, 0.25));
+    color: #5b21b6;
+    border-color: #7c3aed;
+    box-shadow: 0 3px 10px rgba(139, 92, 246, 0.25);
+    font-weight: 700;
+}
+
+.tabBias {
+    border-color: rgba(244, 63, 94, 0.3);
+    color: #e11d48;
+}
+.tabBias:hover {
+    background: rgba(244, 63, 94, 0.08);
+    border-color: #f43f5e;
+}
+.tabBias.activeTab {
+    background: linear-gradient(135deg, rgba(244, 63, 94, 0.18), rgba(225, 29, 72, 0.25));
+    color: #9f1239;
+    border-color: #e11d48;
+    box-shadow: 0 3px 10px rgba(244, 63, 94, 0.25);
+    font-weight: 700;
+}
+
+.btnExportDisabled,
+.btnSecondary:disabled,
+.btnPrimary:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+    filter: grayscale(0.6);
 }
 
 .pipelineGrid {
@@ -153,6 +235,31 @@
     flex-direction: column;
     gap: 0.75rem;
     min-height: 400px;
+    transition: all 0.2s ease;
+}
+
+.columnDragOver {
+    border: 2px dashed var(--signal, #05CD99) !important;
+    background: var(--signal-wash, #E4F0EC) !important;
+    box-shadow: 0 0 14px rgba(5, 205, 153, 0.25);
+}
+
+.dropPlaceholder {
+    border: 2px dashed var(--signal, #05CD99);
+    background: rgba(5, 205, 153, 0.08);
+    color: var(--signal-ink, #0A5546);
+    border-radius: var(--r-control, 6px);
+    padding: 0.75rem;
+    text-align: center;
+    font-size: 0.76rem;
+    font-weight: 600;
+    margin-top: auto;
+    animation: pulseDrop 1.5s infinite;
+}
+
+@keyframes pulseDrop {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.01); }
 }
 
 .colHeader {
@@ -183,13 +290,156 @@
 
 .candidateCard {
     background: var(--card, #FFFFFF);
-    border-radius: var(--r-control, 5px);
-    padding: 1rem;
+    border-radius: var(--r-control, 8px);
+    padding: 0.9rem 1rem;
     border: 1px solid var(--line, #D8DEDA);
     box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    cursor: grab;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    user-select: none;
+    min-height: 220px;
+}
+
+.candidateCard:hover {
+    box-shadow: 0 3px 8px rgba(16, 34, 47, 0.1);
+    border-color: var(--line-focus, #05CD99);
+}
+
+.candidateCard:active {
+    cursor: grabbing;
+}
+
+.candidateCardDragging {
+    opacity: 0.45;
+    transform: scale(0.97);
+    border: 1px dashed var(--signal, #05CD99);
+    box-shadow: none;
+}
+
+.dragGrip {
+    color: var(--text-3, #8A9CA8);
+    display: inline-flex;
+    align-items: center;
+    cursor: grab;
+    padding: 2px;
+    border-radius: 3px;
+    transition: color 0.15s ease;
+}
+
+.dragGrip:hover {
+    color: var(--signal, #05CD99);
+}
+
+/* Candidate Card Footer with Dedicated Stage Dropdown + Bottom Nav */
+.cardFooter {
+    margin-top: auto;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--line-soft, #EEF2F0);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stageSelectWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    width: 100%;
+}
+
+.stageSelectLabel {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-3, #8A9CA8);
+    flex-shrink: 0;
+}
+
+.stageSelect {
+    background: var(--card-2, #F6F8F6);
+    color: var(--text, #10222F);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 6px);
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 0.55rem;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    outline: none;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stageSelect:focus {
+    border-color: var(--signal, #05CD99);
+    box-shadow: 0 0 0 2px var(--signal-wash, #E4F0EC);
+}
+
+.cardNavRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.btnPrevStage {
+    background: var(--card-2, #F6F8F6);
+    color: var(--text, #10222F);
+    border: 1px solid var(--line, #D8DEDA);
+    border-radius: var(--r-control, 6px);
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.btnPrevStage:hover {
+    background: var(--card, #FFFFFF);
+    color: var(--signal-ink, #0A5546);
+    border-color: var(--signal, #05CD99);
+    box-shadow: 0 1px 3px rgba(16, 34, 47, 0.08);
+}
+
+.btnNextStage {
+    background: var(--signal, #05CD99);
+    color: var(--on-signal, #FFFFFF);
+    border: 1px solid transparent;
+    border-radius: var(--r-control, 6px);
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 0.75rem !important;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    margin-left: auto;
+    line-height: 1;
+}
+
+.btnNextStage:hover {
+    background: var(--signal-ink, #0A5546);
+    box-shadow: 0 2px 6px rgba(5, 205, 153, 0.3);
 }
 
 .matchScoreBadge {
