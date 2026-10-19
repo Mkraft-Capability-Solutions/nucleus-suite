@@ -1,0 +1,280 @@
+/* Appearance picker: header icon button or floating button + popover panel. Tokens only. */
+
+/* Wrapper: scopes the trigger rules so host-page resets (e.g. the landing's button reset) cannot override them. */
+.switcher {
+  display: contents;
+}
+
+/* Header placement: a quiet icon button sized like the bar's controls. */
+.switcher .triggerHeader {
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--control-touch-target);
+  block-size: var(--control-touch-target);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+.switcher .triggerHeader:hover {
+  background-color: var(--color-surface-sunken);
+  border-color: var(--color-border-strong);
+}
+
+.switcher .triggerHeader:focus-visible {
+  outline: var(--control-focus-ring-width) solid var(--color-border-focus);
+  outline-offset: var(--control-focus-ring-offset);
+}
+
+.switcher .triggerHeader .triggerIcon {
+  inline-size: var(--space-5);
+  block-size: var(--space-5);
+}
+
+/* Floating placement: fixed accent button at the bottom inline end. */
+.switcher .triggerFloating {
+  position: fixed;
+  inset-block-end: calc(var(--space-6) + env(safe-area-inset-bottom, 0px));
+  inset-inline-end: var(--space-6);
+  z-index: var(--z-popover);
+  display: grid;
+  place-items: center;
+  inline-size: var(--control-height-lg);
+  block-size: var(--control-height-lg);
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+  box-shadow: var(--shadow-lg);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.switcher .triggerFloating:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.switcher .triggerFloating:active {
+  background-color: var(--color-accent-active);
+  transform: scale(0.96);
+}
+
+.switcher .triggerFloating:focus-visible {
+  outline: var(--control-focus-ring-width) solid var(--color-border-focus);
+  outline-offset: var(--control-focus-ring-offset);
+}
+
+.triggerIcon {
+  inline-size: var(--space-6);
+  block-size: var(--space-6);
+}
+
+.panelHeader,
+.panelFloating {
+  position: fixed;
+  inset: auto;
+  margin: 0;
+  inline-size: min(22rem, calc(100vw - 2 * var(--space-6)));
+  max-block-size: calc(100dvh - 8rem);
+  overflow: auto;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-2xl);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Opens below its trigger, aligned with the trigger's inline end (measured when it opens). */
+.panelHeader {
+  inset-block-start: var(--panel-block-start, calc(var(--space-16) + var(--space-2)));
+  inset-inline-end: var(--panel-inline-end, var(--layout-gutter));
+}
+
+.panelFloating {
+  inset-block-end: calc(var(--space-6) + var(--control-height-lg) + var(--space-3) + env(safe-area-inset-bottom, 0px));
+  inset-inline-end: var(--space-6);
+}
+
+.title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+}
+
+.group {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-block-end: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+/* The native radio stays in the accessibility tree and tab order; the label is its visual. */
+.radio {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-1);
+}
+
+.swatchOption {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-block-size: var(--control-touch-target);
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.swatchOption:hover {
+  background-color: var(--color-surface-sunken);
+}
+
+.swatchOption:has(.radio:checked) {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-accent-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.swatchOption:has(.radio:focus-visible),
+.modeOption:has(.radio:focus-visible) {
+  outline: var(--control-focus-ring-width) solid var(--color-border-focus);
+  outline-offset: var(--control-focus-ring-offset);
+}
+
+.swatch {
+  flex: none;
+  inline-size: var(--space-6);
+  block-size: var(--space-6);
+  border-radius: var(--radius-full);
+  background-color: var(--swatch);
+  box-shadow: inset 0 0 0 1px var(--color-border-default);
+}
+
+.swatchOption:has(.radio:checked) .swatch {
+  box-shadow:
+    0 0 0 2px var(--color-surface-raised),
+    0 0 0 4px var(--color-border-focus);
+}
+
+.swatchLabel {
+  min-inline-size: 0;
+}
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface-sunken);
+}
+
+.modeOption {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  min-block-size: var(--control-height-lg);
+  padding: var(--space-1-5) var(--space-1);
+  border-radius: var(--radius-lg);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard);
+}
+
+.modeOption:hover {
+  color: var(--color-text-primary);
+}
+
+.modeOption:has(.radio:checked) {
+  background-color: var(--color-surface-raised);
+  color: var(--color-accent-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.modeIcon {
+  inline-size: var(--space-4);
+  block-size: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .triggerFloating {
+    inset-block-end: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+    inset-inline-end: var(--space-4);
+  }
+
+  .panelHeader,
+  .panelFloating {
+    inset-inline: var(--space-4);
+    inline-size: auto;
+  }
+
+  .panelFloating {
+    inset-block-end: calc(var(--space-4) + var(--control-height-lg) + var(--space-3) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Each swatch previews its theme's accent in the active mode (generated --theme-swatch-<id> tokens). */
+.swatch[data-theme-id="horizon"] {
+  --swatch: var(--theme-swatch-horizon);
+}
+
+.swatch[data-theme-id="signature"] {
+  --swatch: var(--theme-swatch-signature);
+}
+
+.swatch[data-theme-id="sapphire-tide"] {
+  --swatch: var(--theme-swatch-sapphire-tide);
+}
+
+.swatch[data-theme-id="emerald-grove"] {
+  --swatch: var(--theme-swatch-emerald-grove);
+}
+
+.swatch[data-theme-id="saffron-ember"] {
+  --swatch: var(--theme-swatch-saffron-ember);
+}
+
+.swatch[data-theme-id="rose-quartz"] {
+  --swatch: var(--theme-swatch-rose-quartz);
+}
+
+.swatch[data-theme-id="platinum"] {
+  --swatch: var(--theme-swatch-platinum);
+}

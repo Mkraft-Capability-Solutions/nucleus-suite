@@ -1,0 +1,257 @@
+/*
+ * Landing page primitives (Horizon). Every value is a design token (packages/design-tokens) or derived from one with
+ * color-mix(); no colour literals. Class prefix: lp-.
+ *
+ * Grid: 12 columns, var(--layout-grid-gutter) gutters, var(--layout-container) container; content sits between side
+ * margins of var(--layout-page-margin) so it shares the header logo's left line. Backgrounds are full-bleed.
+ * Spacing follows the 8px grid (--space-2 = 8px … --space-32 = 128px).
+ */
+
+.lp {
+  --lp-gradient: linear-gradient(110deg, var(--color-brand-1) 0%, var(--color-brand-2) 50%, var(--color-brand-3) 100%);
+  --lp-header-h: 72px;
+  --lp-banner-h: 38px;
+  --lp-glow: var(--color-brand-glow);
+  position: relative;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+/* ── Layout ─────────────────────────────────────────────────────────────────────────────────────────────────── */
+.lp-wrap {
+  padding-inline: var(--layout-page-margin);
+}
+
+.lp-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--layout-grid-gutter);
+}
+
+.lp-section {
+  position: relative;
+  padding-block: var(--layout-section-padding);
+  /* Background glows may drift past the sides; never let them create horizontal scroll. */
+  overflow-x: clip;
+}
+
+/* Section content sits above its background glow. */
+.lp-section > .lp-wrap {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Type ───────────────────────────────────────────────────────────────────────────────────────────────────── */
+.lp-h2 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+  font-size: var(--font-size-display-section);
+  line-height: 1.02;
+  letter-spacing: var(--letter-spacing-display-section);
+}
+
+/* One heading style (owner decision 2026-10-19): the plain and the gradient part of every heading share the
+   gradient part's face (display italic, emphasis weight); the only difference is colour. */
+.lp-h2,
+h1.lp-hero-title {
+  font-style: italic;
+  font-weight: var(--font-weight-display-emphasis);
+}
+
+.lp-grad {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: var(--lp-gradient);
+  color: transparent;
+  font-style: italic;
+  font-weight: var(--font-weight-display-emphasis);
+  padding-inline-end: 0.08em;
+}
+
+.lp-lead {
+  font-size: var(--font-size-lead);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+.lp-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px var(--space-4);
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-accent-tag) 45%, transparent);
+  color: var(--color-accent-tag);
+  font-size: 0.71875rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.lp-kicker::before {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-tag);
+  box-shadow: 0 0 10px var(--color-accent-tag);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────────────────────────────────────────────── */
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  block-size: var(--control-height-lg);
+  padding-inline: var(--space-6);
+  border-radius: var(--radius-full);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.lp-btn svg {
+  inline-size: 16px;
+  block-size: 16px;
+  flex: none;
+}
+
+.lp-btn-sm {
+  block-size: var(--control-height-md);
+  padding-inline: 18px;
+  font-size: var(--font-size-sm);
+}
+
+.lp-btn-primary {
+  background-color: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+  box-shadow:
+    0 12px 30px -12px color-mix(in oklch, var(--lp-glow) 80%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--color-text-on-accent) 20%, transparent);
+}
+
+.lp-btn-primary:hover {
+  background-color: var(--color-accent-hover);
+}
+
+.lp-btn-primary:active {
+  background-color: var(--color-accent-active);
+}
+
+.lp-btn-ghost {
+  box-shadow: inset 0 0 0 1px var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.lp-btn-ghost:hover {
+  background-color: var(--color-border-subtle);
+}
+
+/* ── Surfaces ───────────────────────────────────────────────────────────────────────────────────────────────── */
+.lp-glass {
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  background-color: var(--color-glass);
+  border-radius: var(--radius-2xl);
+  box-shadow:
+    0 24px 60px -24px var(--color-shadow),
+    inset 0 0 0 1px var(--color-border-default);
+}
+
+/* Directional glyphs point along the reading direction. */
+:root[dir="rtl"] .lp-flip-rtl {
+  transform: scaleX(-1);
+}
+
+@media (max-width: 1023px) {
+  .lp {
+    --lp-header-h: 64px;
+  }
+
+  .lp-wrap {
+    padding-inline: var(--space-6);
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-wrap {
+    padding-inline: var(--space-4);
+  }
+}
+
+/* ── Shared section motion (motion/use-section-motion.ts) ─────────────────────────────────────────────────── */
+
+/* Split headings: every word sits in a mask; the engine raises each line in turn. */
+.lp-split-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+  vertical-align: top;
+}
+
+.lp-split-word {
+  display: inline-block;
+}
+
+/* Card hover lift: −4 px and a deeper shadow over 200 ms. */
+.lp-lift {
+  transition:
+    transform var(--duration-normal) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.lp-lift:hover {
+  box-shadow: 0 18px 40px -18px var(--color-shadow), inset 0 0 0 1px var(--color-border-default);
+  transform: translateY(-4px);
+}
+
+/* Per-section background glow, moved by the engine at 0.2–0.35× scroll (transform only). */
+.lp-glow {
+  position: absolute;
+  inset-block-start: -10%;
+  inset-inline-start: 50%;
+  z-index: 0;
+  inline-size: min(900px, 80vw);
+  aspect-ratio: 3 / 2;
+  margin-inline-start: max(-450px, -40vw);
+  border-radius: var(--radius-full);
+  background-image: radial-gradient(closest-side, color-mix(in oklch, var(--lp-glow) 14%, transparent), transparent);
+  pointer-events: none;
+}
+
+.lp-glow-start {
+  inset-inline-start: 0;
+  margin-inline-start: -20%;
+}
+
+.lp-glow-end {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  margin-inline-start: 0;
+  margin-inline-end: -20%;
+}
+
+/* Progress fills grow from the inline start. */
+[data-progress-to] {
+  transform-origin: 0 50%;
+}
+
+:root[dir="rtl"] [data-progress-to] {
+  transform-origin: 100% 50%;
+}
+
+/* No CSS start states: every section's motion is computed from the scroll position and applied before the first paint
+   (motion/use-section-motion.ts), so content is never hidden while waiting for JavaScript. */
+
+/* Not-yet-loaded section (motion/deferred-hydration.tsx): reserves one viewport so the page keeps a sensible length. */
+.lp-deferred {
+  min-block-size: 100vh;
+}

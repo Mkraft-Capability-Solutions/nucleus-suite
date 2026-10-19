@@ -1,0 +1,151 @@
+/*
+ * Global reset, base typography and layout primitives. Every value comes from the design tokens (src/styles/tokens.css);
+ * no colours, sizes or fonts are defined here.
+ */
+
+/* ── Reset (stands in for the Tailwind preflight the ported landing page relies on) ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+}
+
+html {
+  line-height: var(--line-height-normal);
+  tab-size: 4;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6, p, blockquote, figure, dl, dd, pre, hr {
+  margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+ol, ul, menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  vertical-align: middle;
+}
+
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+button, input, optgroup, select, textarea {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+}
+
+button, [role="button"] {
+  cursor: pointer;
+}
+
+:disabled {
+  cursor: default;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/* ── Base typography and colour ── */
+html {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 100%;
+  font-feature-settings: "cv11", "ss01";
+}
+
+body {
+  min-block-size: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-normal);
+}
+
+code, kbd, samp, pre {
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-text-primary);
+}
+
+:focus-visible {
+  outline: var(--control-focus-ring-width) solid var(--color-border-focus);
+  outline-offset: var(--control-focus-ring-offset);
+}
+
+/* Scripts without Latin-style tracking: never letter-space Arabic (it breaks the joins); tall scripts get room for marks. */
+:root:is(:lang(ar), :lang(zh), :lang(ja), :lang(ko), :lang(th)) * {
+  letter-spacing: 0;
+}
+
+:root:is(:lang(hi), :lang(mr), :lang(bn), :lang(as), :lang(te), :lang(ta), :lang(gu), :lang(pa), :lang(kn), :lang(or), :lang(ml), :lang(mai), :lang(ne), :lang(kok), :lang(sat), :lang(th), :lang(ar)) body {
+  line-height: var(--line-height-relaxed);
+}
+
+/* ── Layout primitives: every page uses the full viewport width ── */
+
+/** Full-width block with responsive inline gutters (never a centred max-width page wrapper). */
+.layout-fluid {
+  inline-size: 100%;
+  padding-inline: var(--layout-gutter);
+}
+
+/** Vertical rhythm between page sections. */
+.layout-section {
+  inline-size: 100%;
+  padding-block: var(--layout-section-gap);
+  padding-inline: var(--layout-gutter);
+}
+
+/** Long-form reading text only: caps the line length for readability; the container stays full width. */
+.layout-measure {
+  max-inline-size: var(--layout-measure);
+}
+
+/** Tabular figures for numbers that line up in tables and KPIs. */
+.numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+/** Visually hidden but announced by screen readers. */
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,0 +1,8 @@
+/*
+ * Design tokens for the web app: the generated @nucleus/design-tokens stylesheet (7 themes × light/dark, system mode
+ * via prefers-color-scheme, type, spacing, elevation, motion) plus the monospace face. Never define colours here:
+ * change packages/design-tokens/src and rebuild.
+ * JetBrains Mono is unicode-range sliced; its files download only when monospace text is rendered.
+ */
+@import "@nucleus/design-tokens/tokens.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";

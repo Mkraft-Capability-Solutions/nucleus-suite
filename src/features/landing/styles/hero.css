@@ -1,0 +1,842 @@
+/*
+ * Section 1 · Hero. Pinned for 220vh (≥ 1024 × 760 px): the sticky .lp-hero-pin fills the small viewport (svh) under
+ * the bar; the trust block (partner marquee + module strip) is its bottom row. Below that size the layout stacks
+ * (copy, trust, stage) and the trust block is anchored to the bottom of the first screen, or follows the CTAs when the
+ * copy is taller than the screen. Entrance start states apply only under html[data-lp-motion] (set before first paint
+ * when motion is allowed); hero-motion.tsx animates every value with transform and opacity.
+ */
+
+.lp-hero {
+  /* The visible first screen under the banner and the bar (small viewport: browser chrome expanded). */
+  --lp-first-screen: calc(100svh - var(--lp-header-h) - var(--lp-banner-h));
+  /* Trust block: logo row + module strip + top border + the bottom safe-area inset (home indicator). */
+  --lp-trust-row-h: 88px;
+  --lp-strip-h: 44px;
+  --lp-trust-h: calc(var(--lp-trust-row-h) + var(--lp-strip-h) + 1px + env(safe-area-inset-bottom, 0px));
+  /* Inline padding of the hero; the inline end keeps 56 px clear for the fixed section-dot rail (≥ 768 px). */
+  --lp-hero-pad-start: var(--layout-page-margin);
+  --lp-hero-pad-end: max(var(--layout-page-margin), 56px);
+  --lp-stage-h: min(620px, 74svh, calc(var(--lp-first-screen) - var(--lp-trust-h) - var(--space-6)));
+  position: relative;
+  block-size: 220vh;
+}
+
+.lp-hero-pin {
+  position: sticky;
+  inset-block-start: var(--lp-header-h);
+  /* The first screen holds banner + bar + hero, so the trust block is fully visible before any scroll. */
+  block-size: var(--lp-first-screen);
+  overflow: hidden;
+}
+
+.lp-hero-bg {
+  position: absolute;
+  inset: -20% 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(720px 520px at 70% 50%, color-mix(in oklch, var(--lp-glow) 16%, transparent), transparent 70%),
+    radial-gradient(500px 380px at 15% 85%, color-mix(in oklch, var(--color-brand-1) 12%, transparent), transparent 70%),
+    linear-gradient(var(--color-border-subtle) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-border-subtle) 1px, transparent 1px);
+  background-size: auto, auto, 64px 64px, 64px 64px;
+  -webkit-mask-image: radial-gradient(1100px 760px at 58% 45%, var(--color-text-primary) 35%, transparent 85%);
+  mask-image: radial-gradient(1100px 760px at 58% 45%, var(--color-text-primary) 35%, transparent 85%);
+}
+
+/* Row 1: copy and stage; row 2: the trust block, in flow, so it can never overlap the copy: a copy taller than the
+   screen pushes it down instead. */
+.lp-hero-grid {
+  position: relative;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  block-size: 100%;
+  padding-inline: var(--lp-hero-pad-start) var(--lp-hero-pad-end);
+}
+
+/* ── Copy (columns 1–6) ── */
+.lp-hero-copy {
+  grid-row: 1;
+  grid-column: 1 / 7;
+}
+
+.lp-hero-title {
+  margin-block-start: var(--space-8);
+  font-family: var(--font-display);
+  font-size: var(--font-size-display-hero);
+  line-height: var(--line-height-display);
+  letter-spacing: var(--letter-spacing-display);
+}
+
+.lp-line {
+  display: block;
+  overflow: hidden;
+  /* Mask with room for descenders; the negative margin keeps the 0.98 line rhythm. */
+  padding-block-end: 0.18em;
+  margin-block-end: -0.12em;
+}
+
+.lp-line > span {
+  display: inline-block;
+}
+
+/* One-time shimmer over the gradient words: a soft light band translated across them (transform only). Soft-light
+   blending brightens the gradient glyphs and leaves the near-black / near-white page almost untouched. */
+.lp-hero-shimmer {
+  position: relative;
+  display: inline-block;
+  /* Room for descenders and the italic overhang inside the clipping box. */
+  padding-block-end: 0.16em;
+  margin-block-end: -0.16em;
+  padding-inline-start: 0.04em;
+  margin-inline-start: -0.04em;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.lp-shimmer-band {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: 34%;
+  background-image: linear-gradient(100deg, transparent, color-mix(in oklch, var(--color-sphere-specular) 85%, transparent), transparent);
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-100%);
+}
+
+.lp-hero-lead {
+  margin-block-start: var(--space-8);
+  max-inline-size: 31em;
+}
+
+.lp-hero-lead b {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.lp-hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-block-start: var(--space-12);
+}
+
+.lp-play-icon {
+  fill: currentcolor;
+}
+
+.lp-hero-assure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-8);
+  margin-block-start: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: 0.84375rem;
+}
+
+.lp-hero-assure li {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.lp-hero-assure li::before {
+  content: "";
+  inline-size: 4px;
+  block-size: 4px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-2);
+}
+
+/* ── Stage (columns 7–12) ── */
+.lp-stage {
+  grid-row: 1;
+  grid-column: 7 / 13;
+  position: relative;
+  block-size: var(--lp-stage-h);
+}
+
+.lp-orbits {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+}
+
+.lp-orbit ellipse {
+  fill: none;
+  stroke: var(--color-brand-1);
+  stroke-opacity: 0.45;
+  stroke-width: 1;
+}
+
+.lp-orbit-dashed ellipse {
+  stroke: var(--color-brand-3);
+  stroke-opacity: 0.35;
+  stroke-dasharray: 3 7;
+}
+
+/* Core: positioned at the stage centre; every layer is centred on that point. */
+.lp-core {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  z-index: 2;
+  inline-size: 0;
+  block-size: 0;
+}
+
+.lp-core > * {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  border-radius: var(--radius-full);
+  translate: -50% -50%;
+}
+
+:root[dir="rtl"] .lp-core > * {
+  translate: 50% -50%;
+}
+
+.lp-core-bloom {
+  inline-size: 392px;
+  block-size: 392px;
+  background-image: radial-gradient(closest-side, color-mix(in oklch, var(--lp-glow) 38%, transparent), color-mix(in oklch, var(--lp-glow) 8%, transparent) 55%, transparent);
+}
+
+.lp-core-halo {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--lp-glow) 26%, transparent);
+}
+
+.lp-core-halo-1 {
+  inline-size: 162px;
+  block-size: 162px;
+}
+
+.lp-core-halo-2 {
+  inline-size: 208px;
+  block-size: 208px;
+  opacity: 0.6;
+}
+
+.lp-core-halo-3 {
+  inline-size: 259px;
+  block-size: 259px;
+  opacity: 0.3;
+}
+
+/*
+ * The lit sphere (116 px; halos, bloom and contact shadow are scaled with it): specular highlight (upper left), inner light from below, violet rim tint, body gradient
+ * sky → indigo → deep; inset shadows give ambient occlusion and a soft fill; outer shadows give glow and lift.
+ */
+.lp-sphere {
+  inline-size: 88px;
+  block-size: 88px;
+  background-image:
+    radial-gradient(circle at 33% 26%, var(--color-sphere-specular) 0, color-mix(in oklch, var(--color-sphere-specular) 50%, transparent) 4%, transparent 14%),
+    radial-gradient(circle at 52% 88%, var(--color-sphere-light) 0, color-mix(in oklch, var(--color-sphere-light) 50%, transparent) 16%, transparent 44%),
+    radial-gradient(circle at 70% 30%, color-mix(in oklch, var(--color-brand-3) 70%, transparent) 0, transparent 45%),
+    radial-gradient(circle at 42% 40%, var(--color-sphere-body) 0, var(--color-sphere-mid) 52%, var(--color-sphere-deep) 100%);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--color-sphere-specular) 20%, transparent),
+    inset -12px -15px 29px color-mix(in oklch, var(--color-sphere-deep) 75%, transparent),
+    inset 7px 9px 20px color-mix(in oklch, var(--color-sphere-specular) 12%, transparent),
+    0 0 0 7px color-mix(in oklch, var(--lp-glow) 10%, transparent),
+    0 0 43px color-mix(in oklch, var(--lp-glow) 60%, transparent),
+    0 26px 51px -17px var(--color-contact-shadow);
+}
+
+.lp-sphere-rim {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 -3px 8px color-mix(in oklch, var(--color-sphere-light) 35%, transparent);
+}
+
+.lp-sphere-label {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--color-sphere-specular);
+  font-family: var(--font-display);
+  font-size: 1.0rem;
+  font-weight: 560;
+  text-shadow: 0 1px 12px color-mix(in oklch, var(--color-sphere-deep) 60%, transparent);
+}
+
+.lp-contact-shadow {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  inline-size: 136px;
+  block-size: 22px;
+  margin-block-start: -11px;
+  margin-inline-start: -68px;
+  border-radius: var(--radius-full);
+  background-image: radial-gradient(closest-side, var(--color-contact-shadow), transparent);
+  filter: blur(5px);
+}
+
+/* Orbit nodes: links to their module (positioned by the ring's centre; ltr box so the maths is direction-independent).
+   36 px ring with a 12 px dot inside a 40 px hit area; hover / focus brightens the ring, blooms an outer glow in the
+   module colour (transform + opacity), and the engine scales the node to 1.12 at full contrast and pauses its orbit. */
+.lp-node {
+  position: absolute;
+  inset-block-start: 0;
+  left: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-block-size: 40px;
+  padding: 2px;
+  border-radius: var(--radius-full);
+  direction: ltr;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  transform-origin: 20px 20px;
+}
+
+.lp-node-behind {
+  z-index: 1;
+}
+
+.lp-node:hover,
+.lp-node:focus-visible {
+  z-index: 4;
+}
+
+.lp-node-hidden {
+  pointer-events: none;
+}
+
+.lp-node i {
+  position: relative;
+  display: grid;
+  place-items: center;
+  inline-size: 36px;
+  block-size: 36px;
+  flex: none;
+  border-radius: var(--radius-full);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background-color: var(--color-glass);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--lp-node) 60%, transparent),
+    0 0 16px color-mix(in oklch, var(--lp-node) 45%, transparent);
+  transition: box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.lp-node i::after {
+  content: "";
+  position: relative;
+  inline-size: 12px;
+  block-size: 12px;
+  border-radius: var(--radius-full);
+  background-color: var(--lp-node);
+  box-shadow: 0 0 10px var(--lp-node);
+}
+
+.lp-node-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: var(--radius-full);
+  background-image: radial-gradient(closest-side, color-mix(in oklch, var(--lp-node) 55%, transparent), transparent);
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity var(--duration-slow) var(--ease-out-quart),
+    transform var(--duration-slow) var(--ease-out-quart);
+}
+
+.lp-node:hover i,
+.lp-node:focus-visible i {
+  box-shadow:
+    inset 0 0 0 1.5px var(--lp-node),
+    0 0 24px color-mix(in oklch, var(--lp-node) 70%, transparent);
+}
+
+.lp-node:hover .lp-node-glow,
+.lp-node:focus-visible .lp-node-glow {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.lp-node-label {
+  padding-inline-end: var(--space-2);
+}
+
+.lp-node-sky { --lp-node: var(--color-module-sky); }
+.lp-node-violet { --lp-node: var(--color-module-violet); }
+.lp-node-emerald { --lp-node: var(--color-module-emerald); }
+.lp-node-amber { --lp-node: var(--color-module-amber); }
+.lp-node-rose { --lp-node: var(--color-module-rose); }
+.lp-node-indigo { --lp-node: var(--color-module-indigo); }
+.lp-node-cyan { --lp-node: var(--color-module-cyan); }
+
+/* Chaos labels: loose requests scattered round the core (decorative). The layer is an ltr box like the nodes, so the
+   anchors (−1…1 of the free half-extent, hero-geometry.ts) and the engine's maths are direction-independent; CSS alone
+   places them, so the first paint is already the rest layout. Each label is centred on its anchor with `translate`;
+   hero-motion.tsx adds the bob, the step-aside and the scroll-driven pull into the core with `transform`. */
+.lp-chaos {
+  position: absolute;
+  inset: 0;
+  direction: ltr;
+  pointer-events: none;
+}
+
+.lp-chaos-label {
+  position: absolute;
+  inset-block-start: calc(50% + var(--lp-chaos-y) * (50% - 18px));
+  inset-inline-start: calc(50% + var(--lp-chaos-x) * (50% - 64px));
+  z-index: 1;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-warning-wash);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--color-signal-pending) 45%, transparent),
+    0 6px 16px -10px color-mix(in oklch, var(--color-signal-pending) 60%, transparent);
+  color: var(--color-warning-text);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.4;
+  white-space: nowrap;
+  unicode-bidi: plaintext;
+  translate: -50% -50%;
+}
+
+/* Status cards: anchored as a fraction of the stage; the motion engine adds landing, bob and fly-out. */
+.lp-card {
+  position: absolute;
+  z-index: 3;
+  inline-size: max-content;
+  padding: 14px 18px;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.lp-card-hire {
+  inset-block-start: 8%;
+  inset-inline-start: 4%;
+}
+
+.lp-card-perform {
+  display: flex;
+  align-items: center;
+  inset-block-start: 20%;
+  /* Flush with the stage's inline end (≈ 60% from the start) so it never passes that edge: the page edge beyond it
+     stays clear for the section-dot rail. */
+  inset-inline-end: 0;
+}
+
+.lp-card-pay {
+  inset-block-start: 68%;
+  inset-inline-start: 2%;
+  min-inline-size: 224px;
+}
+
+.lp-card-volt {
+  inset-block-start: 82%;
+  inset-inline-start: 58%;
+}
+
+.lp-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-block-end: var(--space-1);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+}
+
+.lp-card-figure {
+  margin-block-end: 2px;
+  font-size: 1.625rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.lp-card-dot {
+  display: grid;
+  place-items: center;
+  inline-size: 18px;
+  block-size: 18px;
+  flex: none;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-module-emerald) 60%, transparent);
+  color: var(--color-module-emerald);
+  font-size: 0.6875rem;
+}
+
+.lp-card-dot svg {
+  inline-size: 11px;
+  block-size: 11px;
+}
+
+.lp-card-dot-pending {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-signal-pending) 60%, transparent);
+  color: var(--color-signal-pending);
+}
+
+.lp-ring {
+  inline-size: 46px;
+  block-size: 46px;
+  flex: none;
+  margin-inline-end: 14px;
+  transform: rotate(-90deg);
+}
+
+.lp-ring circle {
+  fill: none;
+  stroke-width: 6;
+}
+
+.lp-ring-track {
+  stroke: var(--color-border-default);
+}
+
+.lp-ring-fill {
+  stroke: url("#lp-ring-gradient");
+  stroke-dasharray: 100;
+  stroke-dashoffset: 8;
+}
+
+.lp-ring-stop-start {
+  stop-color: var(--color-brand-1);
+}
+
+.lp-ring-stop-end {
+  stop-color: var(--color-brand-3);
+}
+
+.lp-meter {
+  display: block;
+  block-size: 4px;
+  margin-block-start: 10px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: var(--color-border-default);
+}
+
+.lp-meter i {
+  display: block;
+  block-size: 100%;
+  background-image: var(--lp-gradient);
+  transform-origin: 0 50%;
+}
+
+:root[dir="rtl"] .lp-meter i {
+  transform-origin: 100% 50%;
+}
+
+/* ── Trust block (the first screen's bottom row): partner marquee + module strip ── */
+.lp-trust {
+  position: relative;
+  z-index: 1;
+  grid-row: 2;
+  grid-column: 1 / -1;
+  align-self: end;
+  margin-inline: calc(-1 * var(--lp-hero-pad-start)) calc(-1 * var(--lp-hero-pad-end));
+  padding-block-end: env(safe-area-inset-bottom, 0px);
+  border-block-start: 1px solid var(--color-border-subtle);
+  background-color: color-mix(in oklch, var(--color-bg) 70%, transparent);
+}
+
+.lp-trust > .lp-wrap {
+  padding-inline-end: var(--lp-hero-pad-end);
+}
+
+.lp-trust-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  block-size: var(--lp-trust-row-h);
+}
+
+/* The label always stays on one line (≥ 768 px it sits beside the marquee; below, above it). */
+.lp-trust-label {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.lp-marquee {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, var(--color-text-primary) 8%, var(--color-text-primary) 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, var(--color-text-primary) 8%, var(--color-text-primary) 92%, transparent);
+}
+
+.lp-marquee-track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 72px;
+  /* Trailing gap = item gap, so the doubled track's −50% shift lands exactly on the copy's first logo (seamless). */
+  padding-inline-end: 72px;
+  inline-size: max-content;
+  animation: lp-marquee 42s linear infinite;
+}
+
+.lp-marquee:hover .lp-marquee-track,
+.lp-marquee:focus-within .lp-marquee-track {
+  animation-play-state: paused;
+}
+
+:root[dir="rtl"] .lp-marquee-track {
+  animation-name: lp-marquee-rtl;
+}
+
+.lp-marquee-item {
+  flex: none;
+}
+
+/* Logos as one neutral tone: dark ink multiplies onto light grounds; in dark mode it is inverted and screened, so
+   neither white nor black logo backgrounds ever show as blocks. Light-ink marks take the opposite treatment. */
+.lp-logo {
+  max-inline-size: none;
+  filter: grayscale(1);
+  mix-blend-mode: multiply;
+  opacity: 0.6;
+}
+
+.lp-logo-light-ink {
+  filter: grayscale(1) invert(1);
+}
+
+:root[data-mode="dark"] .lp-logo {
+  filter: grayscale(1) invert(1);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+:root[data-mode="dark"] .lp-logo-light-ink {
+  filter: grayscale(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode="light"]) .lp-logo {
+    filter: grayscale(1) invert(1);
+    mix-blend-mode: screen;
+    opacity: 0.55;
+  }
+
+  :root:not([data-mode="light"]) .lp-logo-light-ink {
+    filter: grayscale(1);
+  }
+}
+
+/* Module strip: same loop, mask and hover pause as the logo marquee; names separated by a brand dot. It keeps moving
+   under reduced motion (owner decision), so it does not share .lp-marquee-track's reduced-motion rule. */
+.lp-module-strip {
+  display: flex;
+  align-items: center;
+  block-size: var(--lp-strip-h);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.lp-module-track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--space-10);
+  /* Trailing gap = item gap, so the doubled track's −50% shift lands exactly on the copy's first name (seamless). */
+  padding-inline-end: var(--space-10);
+  inline-size: max-content;
+  animation: lp-marquee 64s linear infinite;
+}
+
+.lp-module-marquee:hover .lp-module-track {
+  animation-play-state: paused;
+}
+
+:root[dir="rtl"] .lp-module-track {
+  animation-name: lp-marquee-rtl;
+}
+
+.lp-module-item {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-10);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.lp-module-item::after {
+  content: "";
+  inline-size: 5px;
+  block-size: 5px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-2);
+}
+
+@keyframes lp-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes lp-marquee-rtl {
+  to {
+    transform: translateX(50%);
+  }
+}
+
+/* ── Entrance start states (only when motion is allowed and the engine will animate them in) ── */
+:root[data-lp-motion] .lp-hero [data-enter] {
+  opacity: 0.01;
+  transform: translateY(14px);
+}
+
+:root[data-lp-motion] .lp-hero [data-rise] {
+  transform: translateY(110%);
+}
+
+:root[data-lp-motion] .lp-hero [data-pop] {
+  opacity: 0.01;
+  transform: scale(0.96);
+}
+
+:root[data-lp-motion] .lp-core,
+:root[data-lp-motion] .lp-contact-shadow,
+:root[data-lp-motion] .lp-card,
+:root[data-lp-motion] .lp-orbit-dashed {
+  opacity: 0;
+}
+
+:root[data-lp-motion] .lp-orbit:not(.lp-orbit-dashed) ellipse {
+  stroke-dasharray: 4000;
+  stroke-dashoffset: 4000;
+}
+
+:root[data-lp-motion] .lp-ring-fill {
+  stroke-dashoffset: 100;
+}
+
+:root[data-lp-motion] .lp-meter i {
+  transform: scaleX(0);
+}
+
+
+/* Shorter pinned screens: a more compact trust block and tighter copy gaps, so copy + trust fit the first screen. */
+@media (max-height: 899px) {
+  .lp-hero {
+    --lp-trust-row-h: 68px;
+    --lp-strip-h: 38px;
+  }
+
+  .lp-hero-title,
+  .lp-hero-lead {
+    margin-block-start: var(--space-5);
+  }
+
+  .lp-hero-ctas {
+    margin-block-start: var(--space-6);
+  }
+
+  .lp-hero-assure {
+    margin-block-start: var(--space-4);
+  }
+}
+
+@media (max-height: 799px) {
+  .lp-hero {
+    --lp-trust-row-h: 60px;
+    --lp-strip-h: 36px;
+  }
+
+  .lp-hero-title,
+  .lp-hero-lead {
+    margin-block-start: var(--space-4);
+  }
+}
+
+/* ── Below 1024 × 760 px: no pin; copy, trust block, then a shorter stage. ──
+   The grid's first two rows fill the first screen (its min size is the screen plus the gap, stage and end padding
+   below it), so the trust block sits on the screen's bottom edge; when the copy is taller, the 1fr row collapses and
+   the block follows the CTAs. The block bleeds to the page edges through the grid's inline padding. */
+@media (max-width: 1023px), (max-height: 759px) {
+  .lp-hero {
+    --lp-hero-gap: var(--space-12);
+    --lp-hero-pad-top: var(--space-16);
+    --lp-stage-h: 480px;
+    block-size: auto;
+  }
+
+  .lp-hero-pin {
+    position: static;
+    block-size: auto;
+  }
+
+  .lp-hero-grid {
+    grid-template-rows: auto 1fr auto;
+    row-gap: var(--lp-hero-gap);
+    min-block-size: calc(var(--lp-first-screen) + 2 * var(--lp-hero-gap) + var(--lp-stage-h));
+    padding-block: var(--lp-hero-pad-top) var(--lp-hero-gap);
+  }
+
+  .lp-hero-copy,
+  .lp-stage,
+  .lp-trust {
+    grid-row: auto;
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 1023px) {
+  .lp-hero {
+    --lp-hero-pad-start: var(--space-6);
+    --lp-hero-pad-end: max(var(--space-6), 56px);
+  }
+}
+
+/* Short screens: tighter gaps (the trust block is already compact from the 799 px tier). */
+@media (max-height: 699px) {
+  .lp-hero {
+    --lp-hero-gap: var(--space-8);
+    --lp-hero-pad-top: var(--space-8);
+  }
+}
+
+@media (max-width: 767px) {
+  .lp-hero {
+    --lp-hero-pad-end: var(--space-6);
+  }
+
+  .lp-trust-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    block-size: auto;
+    padding-block: var(--space-6);
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-hero {
+    --lp-hero-pad-start: var(--space-4);
+    --lp-hero-pad-end: var(--space-4);
+    --lp-stage-h: 400px;
+  }
+
+  .lp-card-perform,
+  .lp-card-pay {
+    display: none;
+  }
+}

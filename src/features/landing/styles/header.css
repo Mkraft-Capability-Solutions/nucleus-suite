@@ -1,0 +1,301 @@
+/* Landing header: skip link, announcement banner, sticky bar, collapsed menu, scroll-progress hairline, footer. */
+
+.lp-skip {
+  position: absolute;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-tooltip);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+  font-weight: var(--font-weight-semibold);
+  transform: translateY(-200%);
+}
+
+.lp-skip:focus-visible {
+  transform: none;
+}
+
+/* ── Banner ── */
+.lp-banner {
+  position: relative;
+  border-block-end: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  text-align: center;
+}
+
+.lp-banner p {
+  padding-block: 10px;
+  line-height: 16px;
+}
+
+.lp-banner b {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.lp-banner-tag {
+  margin-inline-end: var(--space-2);
+  padding: 2px 7px;
+  border-radius: var(--radius-md);
+  background-color: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-caps);
+}
+
+.lp-banner-link {
+  margin-inline-start: var(--space-2);
+  color: var(--color-accent-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+.lp-banner-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ── Sticky bar ── */
+.lp-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+  border-block-end: 1px solid var(--color-border-subtle);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  background-color: color-mix(in oklch, var(--color-bg) 78%, transparent);
+}
+
+.lp-header-grid {
+  align-items: center;
+  block-size: calc(var(--lp-header-h) - 1px);
+}
+
+.lp-brand {
+  grid-column: 1 / 4;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  border-radius: var(--radius-full);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: 1.3125rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.lp-mark {
+  inline-size: 30px;
+  block-size: 30px;
+  flex: none;
+  border-radius: var(--radius-full);
+  background-image:
+    radial-gradient(circle at 33% 27%, var(--color-sphere-specular) 0 5%, transparent 18%),
+    radial-gradient(circle at 50% 85%, var(--color-sphere-light), transparent 50%),
+    radial-gradient(circle at 42% 38%, var(--color-sphere-body), var(--color-sphere-mid) 55%, var(--color-sphere-deep));
+  box-shadow: 0 0 16px color-mix(in oklch, var(--lp-glow) 60%, transparent);
+}
+
+.lp-nav {
+  grid-column: 4 / 10;
+  justify-self: center;
+}
+
+.lp-nav ul {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.lp-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-height-md);
+  color: var(--color-text-secondary);
+  font-size: 0.90625rem;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.lp-nav a:hover,
+.lp-nav a[aria-current="location"] {
+  color: var(--color-text-primary);
+}
+
+.lp-nav a[aria-current="location"] {
+  font-weight: var(--font-weight-medium);
+}
+
+.lp-actions {
+  grid-column: 10 / 13;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-6);
+  font-size: 0.90625rem;
+}
+
+.lp-login {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--control-height-md);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.lp-login:hover {
+  color: var(--color-accent-text);
+}
+
+.lp-menu-button {
+  display: none;
+  place-items: center;
+  inline-size: var(--control-touch-target);
+  block-size: var(--control-touch-target);
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border-default);
+  color: var(--color-text-primary);
+}
+
+.lp-menu-button svg {
+  inline-size: 20px;
+  block-size: 20px;
+}
+
+.lp-menu {
+  position: fixed;
+  inset: auto;
+  inset-block-start: calc(var(--lp-header-h) + var(--space-2));
+  inset-inline: var(--space-4);
+  margin: 0;
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-2xl);
+  background-color: var(--color-surface-raised);
+  color: var(--color-text-primary);
+  box-shadow: 0 24px 60px -24px var(--color-shadow), inset 0 0 0 1px var(--color-border-default);
+}
+
+.lp-menu ul {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.lp-menu a:not(.lp-btn) {
+  display: flex;
+  align-items: center;
+  min-block-size: var(--control-touch-target);
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.lp-menu a[aria-current="location"] {
+  background-color: var(--color-accent-subtle);
+  color: var(--color-accent-text);
+}
+
+.lp-menu-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-block-start: var(--space-2);
+  padding: var(--space-2);
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+/* ── Scroll progress hairline ── */
+.lp-progress {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--z-overlay);
+  block-size: 2px;
+  background-image: var(--lp-gradient);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+:root[dir="rtl"] .lp-progress {
+  transform-origin: 100% 50%;
+}
+
+/* ── Anchors land below the sticky bar ── */
+.lp [id] {
+  scroll-margin-block-start: var(--lp-header-h);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :root:has(.lp) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ── Footer ── */
+.lp-footer {
+  border-block-start: 1px solid var(--color-border-subtle);
+}
+
+.lp-footer-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-8);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.lp-footer-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+}
+
+.lp-footer-brand .lp-mark {
+  inline-size: 22px;
+  block-size: 22px;
+}
+
+/* ── Narrow layouts: section links move into the menu (< 1024 px); Log in and the CTA too (< 768 px). ── */
+@media (max-width: 1023px) {
+  .lp-brand {
+    grid-column: 1 / 7;
+  }
+
+  .lp-nav {
+    display: none;
+  }
+
+  .lp-actions {
+    grid-column: 6 / 12;
+    gap: var(--space-4);
+  }
+
+  .lp-menu-button {
+    display: grid;
+    grid-row: 1;
+    grid-column: 12 / 13;
+    justify-self: end;
+  }
+}
+
+@media (min-width: 768px) {
+  .lp-menu-actions {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .lp-wide-only {
+    display: none;
+  }
+}

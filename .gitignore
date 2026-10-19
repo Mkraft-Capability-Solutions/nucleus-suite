@@ -68,3 +68,6 @@ next-panic-*.log
 /docs/
 /plan/
 /internal-data/
+
+# Local workspace packages install their own dev dependencies
+/packages/*/node_modules/

@@ -1,0 +1,259 @@
+/* Section 2 · The 90-second story: video panel (columns 1–8, 16:9), copy (columns 9–12). */
+
+.lp-story-grid {
+  align-items: center;
+}
+
+.lp-story-media {
+  grid-column: 1 / 9;
+  perspective: 1400px;
+}
+
+.lp-story-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 22px;
+  background-image:
+    radial-gradient(600px 300px at 30% 20%, color-mix(in oklch, var(--lp-glow) 35%, transparent), transparent 70%),
+    linear-gradient(160deg, var(--color-stage), var(--color-stage-2));
+  box-shadow:
+    0 40px 100px -40px color-mix(in oklch, var(--lp-glow) 60%, transparent),
+    inset 0 0 0 1px var(--color-border-default);
+  transform-origin: 50% 100%;
+}
+
+.lp-film {
+  position: absolute;
+  inset: 0;
+  color: var(--color-stage-text);
+}
+
+.lp-film-poster {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: none;
+  object-fit: cover;
+}
+
+.lp-film-embed {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 0;
+}
+
+.lp-file-chip {
+  position: absolute;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 10px;
+  background-color: color-mix(in oklch, var(--color-stage-text) 7%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-stage-text) 14%, transparent);
+  color: var(--color-stage-text);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.lp-file-chip-attendance {
+  inset-block-start: 14%;
+  inset-inline-start: 8%;
+}
+
+.lp-file-chip-appraisal {
+  inset-block-start: 10%;
+  inset-inline-start: 58%;
+}
+
+.lp-file-chip-whatsapp {
+  inset-block-start: 72%;
+  inset-inline-start: 12%;
+}
+
+.lp-file-chip-payroll {
+  inset-block-start: 76%;
+  inset-inline-start: 60%;
+}
+
+.lp-play {
+  position: absolute;
+  inset-block-start: calc(50% - 42px);
+  inset-inline-start: calc(50% - 42px);
+  display: grid;
+  place-items: center;
+  inline-size: 84px;
+  block-size: 84px;
+  border-radius: var(--radius-full);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: color-mix(in oklch, var(--color-stage-text) 12%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-stage-text) 30%, transparent);
+  color: var(--color-stage-text);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.lp-play:hover {
+  background-color: color-mix(in oklch, var(--color-stage-text) 20%, transparent);
+}
+
+.lp-play svg {
+  position: relative;
+  inline-size: 26px;
+  block-size: 26px;
+  fill: currentcolor;
+}
+
+/* "Watch the film · 1:33 · sound on" pill under the play button (part of the same button, so it is clickable too). */
+.lp-play-meta {
+  position: absolute;
+  inset-block-start: calc(100% + var(--space-4));
+  inset-inline-start: 50%;
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  padding: 9px 18px;
+  border-radius: var(--radius-full);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  background-color: color-mix(in oklch, var(--color-stage) 78%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-stage-text) 22%, transparent);
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+[dir="rtl"] .lp-play-meta {
+  transform: translateX(50%);
+}
+
+.lp-play-meta b {
+  font-size: 1rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-stage-text);
+}
+
+.lp-play-meta span {
+  font-size: 0.875rem;
+  color: color-mix(in oklch, var(--color-stage-text) 72%, transparent);
+}
+
+@media (width <= 600px) {
+  .lp-play-meta {
+    padding: 6px 12px;
+  }
+
+  .lp-play-meta b {
+    font-size: 0.875rem;
+  }
+
+  .lp-play-meta span {
+    font-size: 0.75rem;
+  }
+}
+
+.lp-play-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background-color: color-mix(in oklch, var(--lp-glow) 55%, transparent);
+  opacity: 0;
+}
+
+.lp-film-end {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  background-color: color-mix(in oklch, var(--color-stage-2) 88%, transparent);
+  color: var(--color-stage-text);
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  text-align: center;
+}
+
+.lp-film-end-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+  font-family: var(--font-sans);
+}
+
+.lp-btn-on-stage {
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-stage-text) 35%, transparent);
+  color: var(--color-stage-text);
+}
+
+.lp-btn-on-stage svg {
+  fill: currentcolor;
+}
+
+.lp-story-copy {
+  grid-column: 9 / 13;
+}
+
+.lp-story-copy .lp-h2 {
+  margin-block-start: var(--space-6);
+}
+
+.lp-story-lead {
+  margin-block-start: var(--space-6);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+}
+
+.lp-story-points {
+  display: grid;
+  gap: var(--space-4);
+  margin-block-start: var(--space-8);
+}
+
+.lp-story-points li {
+  display: flex;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.lp-story-points li::before {
+  content: "";
+  flex: none;
+  inline-size: 8px;
+  block-size: 8px;
+  margin-block-start: 7px;
+  border-radius: var(--radius-full);
+  background-image: var(--lp-gradient);
+}
+
+:root[data-lp-motion] .lp-story [data-story-reveal],
+:root[data-lp-motion] .lp-file-chip {
+  opacity: 0;
+}
+
+:root[data-lp-motion] .lp-story-frame {
+  transform: rotateX(18deg) scale(0.88);
+}
+
+@media (max-width: 1023px) {
+  .lp-story-grid {
+    row-gap: var(--space-12);
+  }
+
+  .lp-story-media,
+  .lp-story-copy {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 639px) {
+  .lp-file-chip-appraisal,
+  .lp-file-chip-payroll {
+    display: none;
+  }
+}

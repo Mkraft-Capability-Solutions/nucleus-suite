@@ -1,0 +1,392 @@
+/*
+ * Section 3 · From chaos to clarity. A rounded panel holding a 12-column board: tasks (columns 1–4), the Nucleus hub
+ * (5–7), results (8–12). Amber = manual / pending, teal = automated / resolved (semantic signal tokens).
+ */
+
+.lp-flow-head {
+  max-inline-size: 880px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.lp-flow-head .lp-h2 {
+  margin-block-start: var(--space-6);
+}
+
+.lp-flow-head .lp-lead {
+  max-inline-size: 34em;
+  margin-block-start: var(--space-4);
+  margin-inline: auto;
+}
+
+.lp-flow-panel {
+  margin-block-start: var(--space-16);
+  padding: var(--space-10);
+  border-radius: 32px;
+  background-color: var(--color-glass);
+  box-shadow: inset 0 0 0 1px var(--color-border-default);
+}
+
+.lp-flow-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--layout-grid-gutter);
+  align-items: center;
+}
+
+.lp-flow-links {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Smooth solid connectors, amber into the hub and teal out of it, ending exactly on the ring's ports. */
+.lp-link {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0.45;
+  transition: opacity var(--duration-normal) var(--ease-standard);
+}
+
+.lp-link-in {
+  stroke: var(--color-signal-pending);
+}
+
+.lp-link-out {
+  stroke: var(--color-signal-resolved);
+}
+
+.lp-link.is-hot {
+  stroke-width: 2;
+  opacity: 1;
+}
+
+.lp-link-cross {
+  fill: none;
+  stroke: none;
+}
+
+/* Ports on the outer ring: small open circles; the active one grows, fills and glows. */
+.lp-port {
+  fill: var(--color-surface);
+  stroke-width: 1.5;
+  transition: transform var(--duration-normal) var(--ease-out-quart);
+}
+
+.lp-port-in {
+  stroke: var(--color-signal-pending);
+}
+
+.lp-port-out {
+  stroke: var(--color-signal-resolved);
+}
+
+.lp-port-out.is-done {
+  fill: color-mix(in oklch, var(--color-signal-resolved) 35%, var(--color-surface));
+}
+
+.lp-port.is-active {
+  transform: scale(1.6);
+}
+
+.lp-port-in.is-active {
+  fill: var(--color-signal-pending);
+  filter: drop-shadow(0 0 6px var(--color-signal-pending));
+}
+
+.lp-port-out.is-active {
+  fill: var(--color-signal-resolved);
+  filter: drop-shadow(0 0 6px var(--color-signal-resolved));
+}
+
+.lp-pulse {
+  opacity: 0;
+}
+
+.lp-pulse-glow {
+  fill: color-mix(in oklch, var(--color-brand-2) 35%, transparent);
+}
+
+.lp-pulse-dot {
+  fill: var(--color-sphere-specular);
+  stroke: var(--color-brand-2);
+  stroke-width: 2;
+}
+
+.lp-flow-col {
+  position: relative;
+}
+
+.lp-flow-today {
+  grid-column: 1 / 5;
+}
+
+.lp-flow-core-cell {
+  grid-column: 5 / 8;
+  display: grid;
+  place-items: center;
+}
+
+.lp-flow-auto {
+  grid-column: 8 / 13;
+}
+
+.lp-flow-col-title {
+  margin-block-end: 14px;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.02em;
+}
+
+.lp-flow-col ul {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.lp-task,
+.lp-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  inline-size: 100%;
+  min-block-size: 60px;
+  padding: 14px var(--space-4);
+  border-radius: 14px;
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border-default);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  text-align: start;
+  transition:
+    box-shadow var(--duration-normal) var(--ease-standard),
+    color var(--duration-slow) var(--ease-standard),
+    transform var(--duration-normal) var(--ease-standard);
+}
+
+.lp-task {
+  color: var(--color-text-primary);
+}
+
+.lp-task:hover {
+  box-shadow: inset 0 0 0 1px var(--color-border-strong);
+}
+
+.lp-task.is-active {
+  box-shadow:
+    inset 0 0 0 1px var(--color-signal-pending),
+    0 10px 30px -12px color-mix(in oklch, var(--color-signal-pending) 60%, transparent);
+  transform: translateX(6px);
+}
+
+:root[dir="rtl"] .lp-task.is-active {
+  transform: translateX(-6px);
+}
+
+/* Active rows get a filled tile in their signal colour (icon in the page ink for contrast). */
+.lp-task.is-active .lp-row-icon {
+  background-color: var(--color-signal-pending);
+  color: var(--color-bg);
+}
+
+.lp-result.is-lit .lp-row-icon-resolved {
+  background-color: var(--color-signal-resolved);
+  color: var(--color-bg);
+}
+
+.lp-result {
+  color: var(--color-text-muted);
+}
+
+.lp-result.is-done {
+  color: var(--color-text-primary);
+}
+
+.lp-result.is-lit {
+  color: var(--color-text-primary);
+  box-shadow:
+    inset 0 0 0 1px var(--color-signal-resolved),
+    0 12px 34px -12px color-mix(in oklch, var(--color-signal-resolved) 55%, transparent);
+  transform: translateX(-6px);
+}
+
+:root[dir="rtl"] .lp-result.is-lit {
+  transform: translateX(6px);
+}
+
+.lp-row-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 30px;
+  block-size: 30px;
+  flex: none;
+  border-radius: 9px;
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-secondary);
+}
+
+.lp-row-icon svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.lp-row-icon-resolved {
+  background-color: var(--color-signal-resolved-wash);
+  color: var(--color-signal-resolved-text);
+  opacity: 0.5;
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+.lp-result.is-done .lp-row-icon-resolved,
+.lp-result.is-lit .lp-row-icon-resolved {
+  opacity: 1;
+}
+
+.lp-row-label {
+  flex: 1;
+}
+
+.lp-badge-pending {
+  flex: none;
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-md);
+  background-color: var(--color-signal-pending-wash);
+  color: var(--color-signal-pending-text);
+  font-size: 0.6875rem;
+  font-weight: var(--font-weight-bold);
+}
+
+/* The hub: outer gradient ring (rotated slightly by the engine), inner dashed ring, and the disc. */
+.lp-hub {
+  position: relative;
+  inline-size: 248px;
+  block-size: 248px;
+  border-radius: var(--radius-full);
+}
+
+.lp-hub-glow {
+  position: absolute;
+  inset: -36px;
+  border-radius: var(--radius-full);
+  background-image: radial-gradient(circle, color-mix(in oklch, var(--lp-glow) 32%, transparent), transparent 66%);
+  opacity: 0.3;
+}
+
+.lp-hub-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background-image: conic-gradient(from 200deg, var(--color-brand-gold), var(--color-brand-1), var(--color-brand-2), var(--color-brand-3), var(--color-brand-gold));
+  -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - 3px), var(--color-text-primary) calc(100% - 3px));
+  mask-image: radial-gradient(farthest-side, transparent calc(100% - 3px), var(--color-text-primary) calc(100% - 3px));
+}
+
+.lp-hub-dashed {
+  position: absolute;
+  inset: 14px;
+  border: 1px dashed color-mix(in oklch, var(--color-border-strong) 70%, transparent);
+  border-radius: var(--radius-full);
+}
+
+.lp-hub-disc {
+  position: absolute;
+  inset: 24px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border-subtle), 0 18px 40px -20px var(--color-shadow);
+  text-align: center;
+}
+
+.lp-hub-chip {
+  display: grid;
+  place-items: center;
+  inline-size: 30px;
+  block-size: 30px;
+  margin-block-end: var(--space-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-accent-subtle);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-brand-2) 35%, transparent);
+  color: var(--color-accent-text);
+}
+
+.lp-hub-chip svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.lp-hub-word {
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: var(--lp-gradient);
+  color: transparent;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-style: italic;
+  font-weight: var(--font-weight-display-emphasis);
+  line-height: 1.1;
+  padding-inline: 0.14em;
+}
+
+.lp-hub-status {
+  color: var(--color-signal-resolved-text);
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.lp-hub-count {
+  margin-block-start: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-flow-note {
+  margin-block-start: 26px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+:root[data-lp-motion] .lp-flow-col li,
+:root[data-lp-motion] .lp-hub {
+  opacity: 0;
+}
+
+@media (max-width: 1023px) {
+  .lp-flow-panel {
+    padding: var(--space-6);
+  }
+
+  .lp-flow-board {
+    row-gap: var(--space-8);
+  }
+
+  .lp-flow-today,
+  .lp-flow-core-cell,
+  .lp-flow-auto {
+    grid-column: 1 / -1;
+  }
+
+  .lp-flow-links {
+    display: none;
+  }
+
+  .lp-task.is-active,
+  .lp-result.is-lit,
+  :root[dir="rtl"] .lp-task.is-active,
+  :root[dir="rtl"] .lp-result.is-lit {
+    transform: none;
+  }
+}

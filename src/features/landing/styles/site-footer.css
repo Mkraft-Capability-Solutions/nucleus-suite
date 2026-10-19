@@ -1,0 +1,470 @@
+/*
+ * Site footer (sections/site-footer.tsx): the MultipliersKraft website footer (new/sections.css .mk-nh-footer and
+ * brand/bigword.css) rebuilt on the Nucleus design tokens: the site's gold accents map to --color-brand-gold, its
+ * surfaces and borders to the surface / border tokens. Social icons take the accent on hover (the original's per-network
+ * brand colours are literals, which tokens-only styling does not allow). Class prefix: ft-.
+ */
+.ft {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block-start: clamp(80px, 10vw, 140px);
+  border-block-start: 1px solid var(--color-border-subtle);
+  background-color: var(--color-surface-sunken);
+  color: var(--color-text-primary);
+}
+
+.ft-container {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  max-inline-size: 1320px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 44px);
+}
+
+.ft :focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── CTA row ───────────────────────────────────────────────────────────────────────────────────────────────── */
+.ft-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding-block-end: clamp(48px, 6vw, 80px);
+  border-block-end: 1px solid var(--color-border-strong);
+}
+
+.ft-big {
+  flex: 1 1 32rem;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.6rem, 7vw, 6.4rem);
+  font-weight: var(--font-weight-display);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.ft-cta-btn {
+  block-size: 58px;
+  padding-inline: var(--space-8);
+  font-size: var(--font-size-md);
+}
+
+.ft-cta-btn svg {
+  transition: transform var(--duration-normal) var(--ease-standard);
+}
+
+.ft-cta-btn:hover svg {
+  transform: translateX(calc(3px * var(--lp-dir, 1)));
+}
+
+/* ── Brand column and link columns ─────────────────────────────────────────────────────────────────────────── */
+.ft-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(0, 1fr));
+  gap: var(--space-8);
+  padding-block: clamp(40px, 5vw, 64px);
+}
+
+.ft-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-inline-size: 0;
+}
+
+.ft-logo {
+  display: inline-flex;
+  align-self: flex-start;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-primary);
+}
+
+.mk-logo {
+  --mk-brand-size: 40px;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: calc(var(--mk-brand-size) * 0.18);
+}
+
+.mk-logo-mark {
+  display: block;
+  flex: none;
+  block-size: var(--mk-brand-size);
+  inline-size: auto;
+  aspect-ratio: 2534 / 2263;
+  fill: var(--color-brand-gold);
+  transform-origin: 50% 100%;
+  transition: transform var(--duration-normal) var(--ease-standard);
+}
+
+.mk-logo-text {
+  display: block;
+  flex: 0 1 auto;
+  min-inline-size: 0;
+  block-size: calc(var(--mk-brand-size) * 0.62);
+  inline-size: auto;
+  aspect-ratio: 7236 / 1002;
+  margin-block-end: calc(var(--mk-brand-size) * 0.62 * -0.2535);
+  fill: currentColor;
+}
+
+.ft-logo:hover .mk-logo-mark {
+  transform: translateY(-2px) scale(1.05);
+}
+
+.ft-about {
+  max-inline-size: 40ch;
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Newsletter: one pill, the button seated inside the field. */
+.ft-news {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-inline-size: 400px;
+  margin-block-start: 10px;
+}
+
+.ft-news-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.76rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ft-news-label svg {
+  inline-size: 15px;
+  block-size: 15px;
+  color: var(--color-brand-gold);
+}
+
+.ft-news-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-inline-size: 0;
+  block-size: 54px;
+  padding-block: 5px;
+  padding-inline: 18px 5px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-normal) var(--ease-standard),
+    box-shadow var(--duration-normal) var(--ease-standard);
+}
+
+.ft-news-field:focus-within {
+  border-color: var(--color-brand-gold);
+  box-shadow:
+    0 0 0 4px color-mix(in oklch, var(--color-brand-gold) 28%, transparent),
+    var(--shadow-sm);
+}
+
+.ft-news-field[data-error] {
+  border-color: var(--color-danger);
+}
+
+.ft-news-field input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  block-size: 100%;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--color-text-primary);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+}
+
+.ft-news-field input:focus-visible {
+  outline: none;
+}
+
+.ft-news-field input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.ft-news-go {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+  block-size: 100%;
+  padding-inline: 18px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-accent-default);
+  color: var(--color-text-on-accent);
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-semibold);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.ft-news-go:hover:not(:disabled) {
+  background-color: var(--color-accent-hover);
+}
+
+.ft-news-go:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.ft-news-go svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.ft-news-hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.ft-news-status {
+  margin: 0;
+  color: var(--color-success-text);
+  font-size: 0.85rem;
+}
+
+.ft-news-status[data-error] {
+  color: var(--color-danger-text);
+}
+
+.ft-news-status:empty {
+  display: none;
+}
+
+.ft-social {
+  display: flex;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ft-social-link {
+  display: grid;
+  place-items: center;
+  inline-size: 42px;
+  block-size: 42px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition:
+    color var(--duration-normal) var(--ease-standard),
+    background-color var(--duration-normal) var(--ease-standard),
+    border-color var(--duration-normal) var(--ease-standard),
+    transform var(--duration-normal) var(--ease-standard);
+}
+
+.ft-social-link svg {
+  inline-size: 17px;
+  block-size: 17px;
+  fill: currentColor;
+}
+
+.ft-social-link:hover,
+.ft-social-link:focus-visible {
+  border-color: transparent;
+  background-color: var(--color-accent-default);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-on-accent);
+  transform: translateY(-3px);
+}
+
+.ft-col {
+  min-inline-size: 0;
+}
+
+.ft-overline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: 0.76rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.ft-overline::before {
+  content: "";
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-brand-gold);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-brand-gold) 22%, transparent);
+}
+
+.ft-col ul {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ft-col a {
+  display: inline-flex;
+  align-items: center;
+  padding-block-end: 2px;
+  background-image: linear-gradient(var(--color-brand-gold), var(--color-brand-gold));
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  background-size: 0 1px;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.4;
+  transition:
+    color var(--duration-normal) var(--ease-standard),
+    transform var(--duration-normal) var(--ease-standard),
+    background-size var(--duration-normal) var(--ease-standard);
+}
+
+.ft-col a:hover,
+.ft-col a:focus-visible {
+  background-size: 100% 1px;
+  color: var(--color-text-primary);
+  transform: translateX(calc(4px * var(--lp-dir, 1)));
+}
+
+/* ── Contact cards ─────────────────────────────────────────────────────────────────────────────────────────── */
+.ft-contact {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 8px;
+  font-style: normal;
+}
+
+.ft-contact > * {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-inline-size: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.ft-contact svg {
+  flex: none;
+  inline-size: 34px;
+  block-size: 34px;
+  padding: var(--space-2);
+  border-radius: var(--radius-full);
+  background-color: color-mix(in oklch, var(--color-brand-gold) 18%, transparent);
+  color: var(--color-brand-gold);
+  fill: none;
+}
+
+.ft-contact a:last-child svg {
+  fill: currentColor;
+}
+
+.ft-contact a:hover,
+.ft-contact a:focus-visible {
+  border-color: color-mix(in oklch, var(--color-brand-gold) 45%, var(--color-border-default));
+  color: var(--color-text-primary);
+}
+
+/* ── Big wordmark (reads "Nucleus") ───────────────────────────────────────────────────────────────────────── */
+.ft-bigword {
+  position: relative;
+  display: block;
+  inline-size: 100%;
+  margin-block: clamp(24px, 4vw, 56px) clamp(16px, 2.4vw, 32px);
+  padding-inline: clamp(8px, 2vw, 28px);
+  overflow: hidden;
+  line-height: 0;
+  text-align: center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.ft-bigword-text {
+  --bw-top: color-mix(in oklch, var(--color-brand-gold) 26%, transparent);
+  --bw-mid: color-mix(in oklch, var(--color-accent-default) 16%, transparent);
+  --bw-sheen: color-mix(in oklch, var(--color-text-primary) 26%, transparent);
+  --k: 1;
+  display: inline-block;
+  max-inline-size: 100%;
+  padding-block: 0.02em 0.16em;
+  padding-inline: 0 0.06em;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image:
+    linear-gradient(100deg, transparent 38%, var(--bw-sheen) 50%, transparent 62%),
+    linear-gradient(180deg, var(--bw-top) 0%, var(--bw-mid) 52%, transparent 96%);
+  background-position:
+    calc(100% - var(--k) * 100%) 0,
+    0 0;
+  background-repeat: no-repeat;
+  background-size:
+    260% 100%,
+    100% 100%;
+  color: transparent;
+  font-family: var(--font-sans);
+  font-size: clamp(64px, 21vw, 420px);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: calc(0.35 + var(--k) * 0.65);
+  translate: 0 calc((1 - var(--k)) * 0.22em);
+}
+
+/* ── Legal row ─────────────────────────────────────────────────────────────────────────────────────────────── */
+.ft-legal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  padding-block: 22px 28px;
+  border-block-start: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+  font-size: 0.84rem;
+}
+
+@media (max-width: 1023px) {
+  .ft-grid,
+  .ft-contact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ft-brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 639px) {
+  .ft-contact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (forced-colors: active) {
+  .ft-bigword {
+    display: none;
+  }
+}

@@ -1,0 +1,100 @@
+/*
+ * Section dot rail (SectionDots): fixed on the inline-end edge, vertically centred, tablet and laptop only (≥ 768 px).
+ * Dot 8 px → current 10 px with an accent ring; the label sits beside the dot and shows for the current section, on
+ * hover and on keyboard focus. Colours are semantic tokens only; logical properties keep it mirrored in RTL.
+ */
+.lp-dots {
+  position: fixed;
+  inset-block-start: 50%;
+  inset-inline-end: max(12px, env(safe-area-inset-right, 0px));
+  z-index: var(--z-sticky);
+  display: none;
+  transform: translateY(-50%);
+}
+
+@media (width >= 768px) {
+  .lp-dots {
+    display: block;
+  }
+}
+
+.lp-dots ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lp-dots a {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-block-size: 26px;
+  padding-inline: var(--space-2);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+}
+
+.lp-dots-dot {
+  flex: none;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: var(--radius-full);
+  background-color: color-mix(in oklch, var(--color-text-muted) 70%, transparent);
+  transition:
+    transform var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.lp-dots-label {
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-surface-raised);
+  box-shadow: inset 0 0 0 1px var(--color-border-subtle);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(6px);
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+[dir="rtl"] .lp-dots-label {
+  transform: translateX(-6px);
+}
+
+.lp-dots a:hover .lp-dots-dot,
+.lp-dots a:focus-visible .lp-dots-dot {
+  transform: scale(1.3);
+  background-color: var(--color-accent-text);
+}
+
+.lp-dots a:hover .lp-dots-label,
+.lp-dots a:focus-visible .lp-dots-label,
+.lp-dots a[aria-current] .lp-dots-label {
+  opacity: 1;
+  transform: none;
+}
+
+.lp-dots a[aria-current] {
+  color: var(--color-text-primary);
+}
+
+.lp-dots a[aria-current] .lp-dots-dot {
+  transform: scale(1.25);
+  background-color: var(--color-accent-default);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--color-accent-default) 28%, transparent);
+}
+
+.lp-dots a:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-full);
+}

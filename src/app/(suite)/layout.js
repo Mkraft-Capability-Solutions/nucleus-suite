@@ -16,7 +16,7 @@ export const metadata = {
   description: t('metadata','description'),
 };
 
-import { Providers } from '../components/Providers';
+import { Providers } from '@/components/Providers';
 
 export default async function RootLayout({ children }) {
   const {locale,messages}=await loadInterfaceMessages();

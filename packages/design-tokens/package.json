@@ -1,0 +1,29 @@
+{
+  "name": "@nucleus/design-tokens",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Nucleus design tokens: seven OKLCH themes (light and dark), type, spacing, elevation and motion for web and React Native.",
+  "type": "module",
+  "engines": { "node": ">=22.18 <23" },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./dist/tokens.css",
+    "./themes.json": "./dist/themes.json",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "test": "node --test \"src/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "prepare": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "typescript": "5.9.3"
+  }
+}
