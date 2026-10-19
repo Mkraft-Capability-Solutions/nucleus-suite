@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useEffect } from 'react';
@@ -12,6 +14,7 @@ import { launchAction } from '@/lib/action-launcher';
 import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
 
 const ContractWorkforceView = () => {
+  const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.ContractWorkforceView", "initialState_1")); // 'reconciliation' | 'workers' | 'vendors'
     const [selectedRecon, setSelectedRecon] = useState(null);
     const [workerSearch, setWorkerSearch] = useState('');
@@ -171,10 +174,10 @@ const ContractWorkforceView = () => {
                             w.status
                         ]);
                         downloadCSV('contract_workforce_register.csv', headers, rows);
-                    }} title="Export Contract Workforce Register">
+                    }} title={t("components.Workspace.ContractWorkforceView.title_export_contract_workforce_register", "Export Contract Workforce Register")}>
                         <Download size={16} />{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_8")}</button>
                     <button className={styles.btnPrimary} onClick={() => setIsRegisterOpen(true)}>
-                        <Plus size={16} /> Register Contract Worker</button>
+                        <Plus size={16} />  {t("components.Workspace.ContractWorkforceView.text_register_contract_worker", "Register Contract Worker")}</button>
                 </div>
             </div>
 
@@ -346,7 +349,7 @@ const ContractWorkforceView = () => {
                                                 'Approved Invoice Amount': selectedRecon.billAmount,
                                                 'Statutory Compliance Status': selectedRecon.compliancePassed ? 'PF / ESIC Cleared' : 'Action Required'
                                             }, headers, rows);
-                                        }} title="Download Vendor Reconciliation Invoice Sheet">
+                                        }} title={t("components.Workspace.ContractWorkforceView.title_download_vendor_reconciliation_invoice_s", "Download Vendor Reconciliation Invoice Sheet")}>
                                             <Download size={14} />{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_49")}</button>
                                     </div>
                                 </div>
@@ -364,7 +367,7 @@ const ContractWorkforceView = () => {
                             <h3>{readData("components.Workspace.ContractWorkforceView", "ContractWorkforceView_text_50")}</h3>
                             <input
                                 type="text"
-                                placeholder="Search worker by name, trade, vendor, site..."
+                                placeholder={t("components.Workspace.ContractWorkforceView.placeholder_search_worker_by_name_trade_vendor_site", "Search worker by name, trade, vendor, site...")}
                                 className={styles.searchInput}
                                 value={workerSearch}
                                 onChange={(e) => setWorkerSearch(e.target.value)}
@@ -374,12 +377,12 @@ const ContractWorkforceView = () => {
                         <table className={styles.dataTable}>
                             <thead>
                                 <tr>
-                                    <th>Worker Details</th>
-                                    <th>Vendor / Agency</th>
-                                    <th>Statutory KYC (UAN / ESIC)</th>
-                                    <th>Work Site</th>
-                                    <th>Trade & Rest Day Policy</th>
-                                    <th>Compliance</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_worker_details", "Worker Details")}</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_vendor_agency", "Vendor / Agency")}</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_statutory_kyc_uan_esic", "Statutory KYC (UAN / ESIC)")}</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_work_site", "Work Site")}</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_trade_rest_day_policy", "Trade & Rest Day Policy")}</th>
+                                    <th>{t("components.Workspace.ContractWorkforceView.text_compliance", "Compliance")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -391,8 +394,8 @@ const ContractWorkforceView = () => {
                                         </td>
                                         <td>{w.vendor}</td>
                                         <td>
-                                            <div className={styles.uanText}>UAN: {w.uan}</div>
-                                            <div className={styles.uanText}>ESIC: {w.esic || '31-00-123456-000-0001'}</div>
+                                            <div className={styles.uanText}>{t("components.Workspace.ContractWorkforceView.text_uan", "UAN:")} {w.uan}</div>
+                                            <div className={styles.uanText}>{t("components.Workspace.ContractWorkforceView.text_esic", "ESIC:")} {w.esic || '31-00-123456-000-0001'}</div>
                                         </td>
                                         <td>{w.site}</td>
                                         <td>
@@ -408,7 +411,8 @@ const ContractWorkforceView = () => {
                                                         color: 'var(--signal-ink)',
                                                         fontWeight: 700
                                                     }}>
-                                                        Rest Days: Eligible
+                                                        
+                                                        {t("components.Workspace.ContractWorkforceView.text_rest_days_eligible", "Rest Days: Eligible")}
                                                     </span>
                                                 ) : (
                                                     <span style={{
@@ -420,7 +424,8 @@ const ContractWorkforceView = () => {
                                                         fontWeight: 600,
                                                         border: '1px solid var(--line)'
                                                     }}>
-                                                        Daily Wages · No Rest Days
+                                                        
+                                                        {t("components.Workspace.ContractWorkforceView.text_daily_wages_no_rest_days", "Daily Wages · No Rest Days")}
                                                     </span>
                                                 )}
                                             </div>
@@ -476,7 +481,7 @@ const ContractWorkforceView = () => {
                 <div className={styles.modalOverlay} onClick={() => setIsRegisterOpen(false)}>
                     <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                            <h3>Register Contract Worker</h3>
+                            <h3>{t("components.Workspace.ContractWorkforceView.text_register_contract_worker", "Register Contract Worker")}</h3>
                             <button className={styles.modalCloseBtn} onClick={() => setIsRegisterOpen(false)}>
                                 <X size={18} />
                             </button>
@@ -484,40 +489,40 @@ const ContractWorkforceView = () => {
                         <form onSubmit={handleRegisterSubmit}>
                             <div className={styles.formGrid}>
                                 <div className={`${styles.formGroup} ${styles.formFieldFull}`}>
-                                    <label>Worker Full Name *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_worker_full_name", "Worker Full Name *")}</label>
                                     <input
                                         type="text"
                                         name="personName"
                                         required
-                                        placeholder="e.g. Satish Pillai"
+                                        placeholder={t("components.Workspace.ContractWorkforceView.placeholder_eg_satish_pillai", "e.g. Satish Pillai")}
                                         value={formData.personName}
                                         onChange={handleFormChange}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Contractor / Agency *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_contractor_agency", "Contractor / Agency *")}</label>
                                     <select
                                         name="vendorName"
                                         value={formData.vendorName}
                                         onChange={handleFormChange}
                                     >
-                                        <option value="Shree Powerloom Services">Shree Powerloom Services</option>
-                                        <option value="Apex Industrial Facility Mgmt">Apex Industrial Facility Mgmt</option>
-                                        <option value="Dynamic Logistics Manpower">Dynamic Logistics Manpower</option>
+                                        <option value="Shree Powerloom Services">{t("components.Workspace.ContractWorkforceView.text_shree_powerloom_services", "Shree Powerloom Services")}</option>
+                                        <option value="Apex Industrial Facility Mgmt">{t("components.Workspace.ContractWorkforceView.text_apex_industrial_facility_mgmt", "Apex Industrial Facility Mgmt")}</option>
+                                        <option value="Dynamic Logistics Manpower">{t("components.Workspace.ContractWorkforceView.text_dynamic_logistics_manpower", "Dynamic Logistics Manpower")}</option>
                                     </select>
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Worker Category & Rest Day Rules *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_worker_category_rest_day_rules", "Worker Category & Rest Day Rules *")}</label>
                                     <select
                                         name="category"
                                         value={formData.category}
                                         onChange={handleFormChange}
                                     >
-                                        <option value="contract">Contractual Worker (Daily Wages · No Rest Days)</option>
-                                        <option value="third-party-employee">3rd Party Employee (Eligible for Rest Days)</option>
-                                        <option value="third-party-helper">3rd Party Helper (No Rest Days · Daily Wage)</option>
+                                        <option value="contract">{t("components.Workspace.ContractWorkforceView.text_contractual_worker_daily_wages_no_rest_d", "Contractual Worker (Daily Wages · No Rest Days)")}</option>
+                                        <option value="third-party-employee">{t("components.Workspace.ContractWorkforceView.text_3rd_party_employee_eligible_for_rest_day", "3rd Party Employee (Eligible for Rest Days)")}</option>
+                                        <option value="third-party-helper">{t("components.Workspace.ContractWorkforceView.text_3rd_party_helper_no_rest_days_daily_wage", "3rd Party Helper (No Rest Days · Daily Wage)")}</option>
                                     </select>
                                 </div>
 
@@ -531,18 +536,18 @@ const ContractWorkforceView = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Role / Trade *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_role_trade", "Role / Trade *")}</label>
                                     <input
                                         type="text"
                                         name="role"
-                                        placeholder="e.g. Loom Maintenance Specialist"
+                                        placeholder={t("components.Workspace.ContractWorkforceView.placeholder_eg_loom_maintenance_specialist", "e.g. Loom Maintenance Specialist")}
                                         value={formData.role}
                                         onChange={handleFormChange}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Daily Wage Rate (₹) *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_daily_wage_rate", "Daily Wage Rate (₹) *")}</label>
                                     <input
                                         type="number"
                                         name="dailyWage"
@@ -554,42 +559,42 @@ const ContractWorkforceView = () => {
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>UAN (12 digits)</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_uan_12_digits", "UAN (12 digits)")}</label>
                                     <input
                                         type="text"
                                         name="uan"
-                                        placeholder="100982347891"
+                                        placeholder={t("components.Workspace.ContractWorkforceView.placeholder_100982347891", "100982347891")}
                                         value={formData.uan}
                                         onChange={handleFormChange}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Aadhaar (12 digits)</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_aadhaar_12_digits", "Aadhaar (12 digits)")}</label>
                                     <input
                                         type="text"
                                         name="aadhaar"
-                                        placeholder="987654321098"
+                                        placeholder={t("components.Workspace.ContractWorkforceView.placeholder_987654321098", "987654321098")}
                                         value={formData.aadhaar}
                                         onChange={handleFormChange}
                                     />
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Work Site / Plant Location *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_work_site_plant_location", "Work Site / Plant Location *")}</label>
                                     <select
                                         name="site"
                                         value={formData.site}
                                         onChange={handleFormChange}
                                     >
-                                        <option value="Bangalore Electronic City Plant 1">Bangalore Electronic City Plant 1</option>
-                                        <option value="Mumbai BKC Corporate HQ">Mumbai BKC Corporate HQ</option>
-                                        <option value="Delhi Logistics & Warehouse Hub">Delhi Logistics & Warehouse Hub</option>
+                                        <option value="Bangalore Electronic City Plant 1">{t("components.Workspace.ContractWorkforceView.text_bangalore_electronic_city_plant_1", "Bangalore Electronic City Plant 1")}</option>
+                                        <option value="Mumbai BKC Corporate HQ">{t("components.Workspace.ContractWorkforceView.text_mumbai_bkc_corporate_hq", "Mumbai BKC Corporate HQ")}</option>
+                                        <option value="Delhi Logistics & Warehouse Hub">{t("components.Workspace.ContractWorkforceView.text_delhi_logistics_warehouse_hub", "Delhi Logistics & Warehouse Hub")}</option>
                                     </select>
                                 </div>
 
                                 <div className={styles.formGroup}>
-                                    <label>Assignment Start Date *</label>
+                                    <label>{t("components.Workspace.ContractWorkforceView.text_assignment_start_date", "Assignment Start Date *")}</label>
                                     <input
                                         type="date"
                                         name="startsOn"
@@ -606,7 +611,8 @@ const ContractWorkforceView = () => {
                                     onClick={() => setIsRegisterOpen(false)}
                                     disabled={isSubmitting}
                                 >
-                                    Cancel
+                                    
+                                    {t("components.Workspace.ContractWorkforceView.text_cancel", "Cancel")}
                                 </button>
                                 <button
                                     type="submit"

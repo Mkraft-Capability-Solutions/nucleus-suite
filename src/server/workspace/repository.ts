@@ -27,6 +27,7 @@ export async function getWorkspaceData() {
     try {
         if (pool) {
             const [
+                configRows,
                 tenantRows,
                 empRows,
                 deptRows,
@@ -42,6 +43,7 @@ export async function getWorkspaceData() {
                 complianceRows,
                 assetRows,
             ] = await Promise.all([
+                pool.query('SELECT key, value FROM system_configuration_values').catch(() => ({ rows: [] })),
                 pool.query('SELECT id, name, slug, status, legal_name, default_currency, timezone FROM tenants ORDER BY created_at ASC LIMIT 20').catch(() => ({ rows: [] })),
                 pool.query('SELECT e.id, e.employee_code, e.first_name, e.last_name, e.work_email, e.designation, e.department, e.location, e.status, e.joining_date, e.basic_salary_minor, e.metadata FROM employees e ORDER BY e.employee_code ASC LIMIT 200').catch(() => ({ rows: [] })),
                 pool.query('SELECT id, tenant_id, attributes FROM departments ORDER BY created_at ASC LIMIT 100').catch(() => ({ rows: [] })),
@@ -57,6 +59,17 @@ export async function getWorkspaceData() {
                 pool.query('SELECT id, legal_entity_id, attributes FROM compliance_calendar_items ORDER BY created_at ASC LIMIT 50').catch(() => ({ rows: [] })),
                 pool.query('SELECT id, attributes FROM asset_catalog ORDER BY created_at ASC LIMIT 50').catch(() => ({ rows: [] })),
             ]);
+
+            // Hydrate live resources with database configuration and catalog values
+            if (configRows?.rows?.length > 0) {
+                for (const row of configRows.rows) {
+                    try {
+                        liveResources[row.key] = JSON.parse(row.value);
+                    } catch {
+                        liveResources[row.key] = row.value;
+                    }
+                }
+            }
 
             if (tenantRows?.rows?.length > 0 || empRows?.rows?.length > 0) {
                 (liveResources as any)._liveDatabase = {

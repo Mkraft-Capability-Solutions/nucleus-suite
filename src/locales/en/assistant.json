@@ -1,0 +1,87 @@
+{
+  "greeting": "How can I help you navigate the workspace?",
+  "fallback": "Ask me to open a module such as Payroll, Leave, Attendance, or Performance. I cannot confirm personal balances or execute approvals.",
+  "replies": {
+    "payroll": "Opening Payroll.",
+    "leaves": "Opening Leave Management.",
+    "attendance": "Opening Attendance.",
+    "recruitment": "Opening Recruitment.",
+    "performance": "Opening Performance.",
+    "learning": "Opening Learning.",
+    "experience": "Opening Employee Experience.",
+    "team": "Opening Team Directory.",
+    "dashboard": "Opening Dashboard.",
+    "settings": "Opening Settings."
+  },
+  "keywords": {
+    "payroll": [
+      "payroll",
+      "salary",
+      "payslip",
+      "wage",
+      "compensation"
+    ],
+    "leaves": [
+      "leave",
+      "vacation",
+      "holiday",
+      "time off",
+      "pto"
+    ],
+    "attendance": [
+      "attendance",
+      "clock",
+      "punch",
+      "shift",
+      "biometric"
+    ],
+    "recruitment": [
+      "recruit",
+      "hiring",
+      "candidate",
+      "job",
+      "ats"
+    ],
+    "performance": [
+      "performance",
+      "okr",
+      "goal",
+      "9-box",
+      "appraisal"
+    ],
+    "learning": [
+      "learn",
+      "course",
+      "training",
+      "magnetix",
+      "skill"
+    ],
+    "experience": [
+      "mci",
+      "wellbeing",
+      "vedic",
+      "experience",
+      "mental"
+    ],
+    "team": [
+      "team",
+      "pod",
+      "directory",
+      "colleague",
+      "who is",
+      "people"
+    ],
+    "dashboard": [
+      "dashboard",
+      "console",
+      "home"
+    ],
+    "settings": [
+      "setting",
+      "security",
+      "rbac",
+      "profile",
+      "config"
+    ]
+  }
+}

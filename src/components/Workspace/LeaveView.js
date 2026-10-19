@@ -21,6 +21,7 @@ import { useAuth } from '@/context/AuthContext';
 import { workbookLeaveReferences, workbookCompOffCredits } from '@/services/leave-reference';
 
 const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
     const { user: authUser } = useAuth() || {};
 
@@ -167,16 +168,16 @@ const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
                             }
                         }}
-                        title="Upload Leave Balances / Adjustments in Bulk"
+                        title={t("components.Workspace.LeaveView.title_upload_leave_balances_adjustments_in_bul", "Upload Leave Balances / Adjustments in Bulk")}
                     >
-                        <UploadCloud size={15} /> Bulk Balances Upload
+                        <UploadCloud size={15} />  {t("components.Workspace.LeaveView.text_bulk_balances_upload", "Bulk Balances Upload")}
                     </button>
                     <button
                         className={styles.btnSecondary}
                         onClick={() => setIsHandbookModalOpen(true)}
-                        title="Open Enterprise Policy Handbook & Compliance Register"
+                        title={t("components.Workspace.LeaveView.title_open_enterprise_policy_handbook_complian", "Open Enterprise Policy Handbook & Compliance Register")}
                     >
-                        <FileText size={15} /> Policy Handbook
+                        <FileText size={15} />  {t("components.Workspace.LeaveView.text_policy_handbook", "Policy Handbook")}
                     </button>
                     <button
                         className={styles.btnPrimary}
@@ -242,7 +243,7 @@ const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeTab === 'leave_credit' ? styles.tabBtnActive : ''}`}
                     onClick={() => setActiveTab('leave_credit')}
                 >
-                    <Sparkles size={15} /> Auto Credit Allocation</button>
+                    <Sparkles size={15} />  {t("components.Workspace.LeaveView.text_auto_credit_allocation", "Auto Credit Allocation")}</button>
             </div>
 
             {/* TAB 1: Balances & Apply Leave */}
@@ -569,6 +570,7 @@ const LeaveView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
 // Standalone panel to avoid polluting LeaveView with extra hooks
 function LeaveCreditAllocationPanel({ user }) {
+  const { t } = useTranslation();
     const { employees, computeAutoLeaveAllocation, isSeniorManagement, showToast, adjustLeaveAllocation } = useHRMS();
     const [selectedEmpId, setSelectedEmpId] = React.useState(user?.employeeId || (employees[0]?.id ?? ''));
     const [isProcessing, setIsProcessing] = React.useState(false);
@@ -644,16 +646,15 @@ function LeaveCreditAllocationPanel({ user }) {
             <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10, padding: '12px 16px', marginBottom: '1rem', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                 <Info size={18} style={{ color: '#6366f1', marginTop: 2, flexShrink: 0 }} />
                 <div style={{ fontSize: '0.82rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
-                    <strong style={{ color: 'var(--text)' }}>Auto Leave Credit Rules</strong><br />
-                    AGM &amp; above: 18 EL + 6 CL + 6 SL (Jan 1). Regular staff: 1.5 EL/month, CL/SL prorated by joining month.
-                    New joiners: No EL for 6 months, then 9 EL credited. Trainees: CL only. Contractual: No credit.
-                    Birthday Leave: 1 day for all eligible employees. Max 2 CL/month, Max 10 EL/month. CL ≠ EL/SL.
+                    <strong style={{ color: 'var(--text)' }}>{t("components.Workspace.LeaveView.text_auto_leave_credit_rules", "Auto Leave Credit Rules")}</strong><br />
+                    
+                    {t("components.Workspace.LeaveView.text_agm_amp_above_18_el_6_cl_6_sl_jan_1_regu", "AGM &amp; above: 18 EL + 6 CL + 6 SL (Jan 1). Regular staff: 1.5 EL/month, CL/SL prorated by joining month.\n                    New joiners: No EL for 6 months, then 9 EL credited. Trainees: CL only. Contractual: No credit.\n                    Birthday Leave: 1 day for all eligible employees. Max 2 CL/month, Max 10 EL/month. CL ≠ EL/SL.")}
                 </div>
             </div>
 
             {/* Employee Selector & Accrual Actions */}
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: '1rem', flexWrap: 'wrap' }}>
-                <label style={{ color: 'var(--text-2)', fontSize: '0.83rem', fontWeight: 600 }}>Employee:</label>
+                <label style={{ color: 'var(--text-2)', fontSize: '0.83rem', fontWeight: 600 }}>{t("components.Workspace.LeaveView.text_employee", "Employee:")}</label>
                 <select
                     value={selectedEmpId}
                     onChange={e => setSelectedEmpId(e.target.value)}
@@ -663,7 +664,7 @@ function LeaveCreditAllocationPanel({ user }) {
                         <option key={e.id} value={e.id}>{e.name} — {e.role || e.designation} ({e.dept})</option>
                     ))}
                 </select>
-                {isMgmt && <span style={{ background: '#6366f1', color: '#fff', borderRadius: 99, padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700 }}>Senior Management</span>}
+                {isMgmt && <span style={{ background: '#6366f1', color: '#fff', borderRadius: 99, padding: '2px 10px', fontSize: '0.72rem', fontWeight: 700 }}>{t("components.Workspace.LeaveView.text_senior_management", "Senior Management")}</span>}
             </div>
 
             {/* Accrual Actions Row */}
@@ -686,7 +687,7 @@ function LeaveCreditAllocationPanel({ user }) {
                         cursor: isProcessing ? 'not-allowed' : 'pointer'
                     }}
                 >
-                    <CheckCircle2 size={16} /> Credit {selectedEmp.name?.split(' ')[0] || 'Employee'} Allocation
+                    <CheckCircle2 size={16} />  {t("components.Workspace.LeaveView.text_credit", "Credit")} {selectedEmp.name?.split(' ')[0] || 'Employee'}  {t("components.Workspace.LeaveView.text_allocation", "Allocation")}
                 </button>
                 <button
                     type="button"
@@ -706,7 +707,7 @@ function LeaveCreditAllocationPanel({ user }) {
                         cursor: isProcessing ? 'not-allowed' : 'pointer'
                     }}
                 >
-                    <RefreshCw size={15} /> Execute Monthly Accrual Run (All Employees)
+                    <RefreshCw size={15} />  {t("components.Workspace.LeaveView.text_execute_monthly_accrual_run_all_employee", "Execute Monthly Accrual Run (All Employees)")}
                 </button>
                 {lastRunNotice && (
                     <span style={{ fontSize: '0.78rem', color: '#10b981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -729,7 +730,7 @@ function LeaveCreditAllocationPanel({ user }) {
                                 <div style={{ fontSize: '1.5rem' }}>{emoji}</div>
                                 <div style={{ fontSize: '2rem', fontWeight: 800, color, lineHeight: 1.1, marginTop: 4 }}>{days}</div>
                                 <div style={{ color: 'var(--text-2)', fontSize: '0.75rem', marginTop: 4 }}>{label}</div>
-                                <div style={{ color: 'var(--text-3)', fontSize: '0.7rem', marginTop: 2 }}>{code} • Days/Year</div>
+                                <div style={{ color: 'var(--text-3)', fontSize: '0.7rem', marginTop: 2 }}>{code}  {t("components.Workspace.LeaveView.text_daysyear", "• Days/Year")}</div>
                             </div>
                         ))}
                     </div>
@@ -737,7 +738,7 @@ function LeaveCreditAllocationPanel({ user }) {
                     {/* Restrictions */}
                     <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '1rem', marginBottom: '1rem' }}>
                         <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.87rem', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: 6 }}>
-                            <AlertTriangle size={15} color="#d97706" /> Leave Restrictions &amp; Rules
+                            <AlertTriangle size={15} color="#d97706" />  {t("components.Workspace.LeaveView.text_leave_restrictions_amp_rules", "Leave Restrictions &amp; Rules")}
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
                             {[
@@ -758,7 +759,7 @@ function LeaveCreditAllocationPanel({ user }) {
 
                     {/* Calculation Notes */}
                     <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 10, padding: '1rem' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.87rem', marginBottom: '0.6rem' }}>Calculation Basis</div>
+                        <div style={{ fontWeight: 700, color: 'var(--text)', fontSize: '0.87rem', marginBottom: '0.6rem' }}>{t("components.Workspace.LeaveView.text_calculation_basis", "Calculation Basis")}</div>
                         <ul style={{ margin: 0, padding: '0 0 0 16px', color: 'var(--text-2)', fontSize: '0.8rem', lineHeight: 1.8 }}>
                             {allocation.notes.map((note, i) => <li key={i}>{note}</li>)}
                         </ul>
@@ -767,7 +768,7 @@ function LeaveCreditAllocationPanel({ user }) {
             ) : (
                 <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-2)' }}>
                     <AlertCircle size={32} style={{ color: '#dc2626', marginBottom: 8 }} /><br />
-                    <strong style={{ color: 'var(--text)' }}>Not Eligible for Leave Credit</strong><br />
+                    <strong style={{ color: 'var(--text)' }}>{t("components.Workspace.LeaveView.text_not_eligible_for_leave_credit", "Not Eligible for Leave Credit")}</strong><br />
                     <span style={{ fontSize: '0.82rem' }}>{allocation.notes[0]}</span>
                 </div>
             )}

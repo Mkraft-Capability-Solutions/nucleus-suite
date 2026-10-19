@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
@@ -47,6 +49,7 @@ export function StatusPill({
   tone?: "success" | "warning" | "danger" | "info" | "violet" | "neutral";
   dot?: boolean;
 }) {
+    const { t } = useTranslation();
   const stylesByTone: Record<string, { bg: string; border: string; color: string }> = {
     success: { bg: "var(--status-ok-wash, rgba(16, 185, 129, 0.1))", border: "rgba(16, 185, 129, 0.3)", color: "var(--status-ok, #10b981)" },
     warning: { bg: "var(--pending-wash, rgba(245, 158, 11, 0.1))", border: "rgba(245, 158, 11, 0.3)", color: "var(--pending, #f59e0b)" },
@@ -97,6 +100,7 @@ export function Surface({
   style?: React.CSSProperties;
   className?: string;
 }) {
+    const { t } = useTranslation();
   return (
     <div
       className={className}
@@ -116,6 +120,7 @@ export function Surface({
 
 /** Renders a figure with its provenance, or the reason the platform has no figure. */
 function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
+  const { t } = useTranslation();
   const scalar = typeof entry.value === "number" || typeof entry.value === "string";
   if (!entry.available || entry.value === null) {
     return (
@@ -131,7 +136,8 @@ function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
           {label}
         </p>
         <p style={{ margin: "4px 0 0", fontSize: "12px", fontWeight: 600, color: "var(--pending, #f59e0b)" }}>
-          Not recorded
+          
+          {t("components.Workspace.NucleusAiPage.text_not_recorded", "Not recorded")}
         </p>
         {entry.message && (
           <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
@@ -166,6 +172,7 @@ function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
 }
 
 export function NucleusAiPage() {
+    const { t } = useTranslation();
   const {
     status,
     listening,
@@ -248,7 +255,8 @@ export function NucleusAiPage() {
           </div>
           <div>
             <h1 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "var(--text, #10222F)" }}>
-              Nucleus AI
+              
+              {t("components.Workspace.NucleusAiPage.text_nucleus_ai", "Nucleus AI")}
             </h1>
             <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
               {session
@@ -310,7 +318,8 @@ export function NucleusAiPage() {
                 color: "var(--text-3, #888)",
               }}
             >
-              This conversation is not being written to an AI run, because your role cannot open one. Nothing said here will be kept.
+              
+              {t("components.Workspace.NucleusAiPage.text_this_conversation_is_not_being_written_t", "This conversation is not being written to an AI run, because your role cannot open one. Nothing said here will be kept.")}
             </p>
           )}
 
@@ -319,7 +328,7 @@ export function NucleusAiPage() {
             ref={scroller}
             onScroll={onScroll}
             aria-live="polite"
-            aria-label="Conversation transcript"
+            aria-label={t("components.Workspace.NucleusAiPage.aria-label_conversation_transcript", "Conversation transcript")}
             style={{
               flex: 1,
               minHeight: 0,
@@ -398,13 +407,14 @@ export function NucleusAiPage() {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
                 <div>
                   <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text, #10222F)" }}>
-                    Confirm before this is written
+                    
+                    {t("components.Workspace.NucleusAiPage.text_confirm_before_this_is_written", "Confirm before this is written")}
                   </p>
                   <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
                     {draft.action.summary}
                   </p>
                 </div>
-                <StatusPill tone="violet">Draft</StatusPill>
+                <StatusPill tone="violet">{t("components.Workspace.NucleusAiPage.text_draft", "Draft")}</StatusPill>
               </div>
 
               <dl style={{ margin: "12px 0 0", display: "grid", gap: "6px", maxHeight: "24vh", overflowY: "auto" }}>
@@ -423,7 +433,8 @@ export function NucleusAiPage() {
                       {field.label}
                       {field.origin === "default" && (
                         <span style={{ marginLeft: "6px", fontWeight: 400, textTransform: "none" }}>
-                          (not supplied — form default)
+                          
+                          {t("components.Workspace.NucleusAiPage.text_not_supplied_form_default", "(not supplied — form default)")}
                         </span>
                       )}
                     </dt>
@@ -452,7 +463,7 @@ export function NucleusAiPage() {
                     cursor: "pointer",
                   }}
                 >
-                  <Check size={16} /> Confirm and submit
+                  <Check size={16} />  {t("components.Workspace.NucleusAiPage.text_confirm_and_submit", "Confirm and submit")}
                 </button>
                 <button
                   type="button"
@@ -471,11 +482,12 @@ export function NucleusAiPage() {
                     cursor: "pointer",
                   }}
                 >
-                  <X size={16} /> Cancel
+                  <X size={16} />  {t("components.Workspace.NucleusAiPage.text_cancel", "Cancel")}
                 </button>
                 {listening && (
                   <p style={{ margin: 0, fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
-                    Or say <span style={{ fontWeight: 700, color: "var(--text, #10222F)" }}>“confirm”</span> — on its own, so it cannot be mistaken for part of a sentence.
+                    
+                    {t("components.Workspace.NucleusAiPage.text_or_say", "Or say")} <span style={{ fontWeight: 700, color: "var(--text, #10222F)" }}>{t("components.Workspace.NucleusAiPage.text_confirm", "“confirm”")}</span>  {t("components.Workspace.NucleusAiPage.text_on_its_own_so_it_cannot_be_mistaken_for_", "— on its own, so it cannot be mistaken for part of a sentence.")}
                   </p>
                 )}
               </div>
@@ -543,7 +555,7 @@ export function NucleusAiPage() {
                 </p>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                   <input
-                    aria-label="Message Nucleus AI by typing"
+                    aria-label={t("components.Workspace.NucleusAiPage.aria-label_message_nucleus_ai_by_typing", "Message Nucleus AI by typing")}
                     value={typed}
                     onChange={(event) => setTyped(event.target.value)}
                     onKeyDown={(event) => {
@@ -568,7 +580,7 @@ export function NucleusAiPage() {
                   />
                   <button
                     type="button"
-                    aria-label="Send typed message"
+                    aria-label={t("components.Workspace.NucleusAiPage.aria-label_send_typed_message", "Send typed message")}
                     onClick={sendTyped}
                     disabled={!listening || !typed.trim()}
                     style={{
@@ -597,10 +609,12 @@ export function NucleusAiPage() {
           {screens.length > 0 && (
             <Surface>
               <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
-                Screens the assistant opened
+                
+                {t("components.Workspace.NucleusAiPage.text_screens_the_assistant_opened", "Screens the assistant opened")}
               </p>
               <p style={{ margin: "2px 0 10px", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
-                Opening one navigates the workspace behind this conversation. The session stays live, so you can keep talking.
+                
+                {t("components.Workspace.NucleusAiPage.text_opening_one_navigates_the_workspace_behi", "Opening one navigates the workspace behind this conversation. The session stays live, so you can keep talking.")}
               </p>
               <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: "8px" }}>
                 {screens.map((screen) => (
@@ -632,11 +646,13 @@ export function NucleusAiPage() {
 
           <Surface>
             <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
-              Latest analysis
+              
+              {t("components.Workspace.NucleusAiPage.text_latest_analysis", "Latest analysis")}
             </p>
             {!analysis && (
               <p style={{ margin: "6px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
-                Figures appear here as they are read, each labelled with the record it came from.
+                
+                {t("components.Workspace.NucleusAiPage.text_figures_appear_here_as_they_are_read_eac", "Figures appear here as they are read, each labelled with the record it came from.")}
               </p>
             )}
             {analysis && (
@@ -655,14 +671,16 @@ export function NucleusAiPage() {
 
           <Surface>
             <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
-              Tool trace
+              
+              {t("components.Workspace.NucleusAiPage.text_tool_trace", "Tool trace")}
             </p>
             <p style={{ margin: "2px 0 10px", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
-              Every tool the assistant called, in order. A figure with no entry here was not measured.
+              
+              {t("components.Workspace.NucleusAiPage.text_every_tool_the_assistant_called_in_order", "Every tool the assistant called, in order. A figure with no entry here was not measured.")}
             </p>
             <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: "6px" }}>
               {trace.length === 0 && (
-                <li style={{ fontSize: "12px", color: "var(--text-3, #888)" }}>Nothing called yet.</li>
+                <li style={{ fontSize: "12px", color: "var(--text-3, #888)" }}>{t("components.Workspace.NucleusAiPage.text_nothing_called_yet", "Nothing called yet.")}</li>
               )}
               {trace.map((entry) => (
                 <li
@@ -693,8 +711,8 @@ export function NucleusAiPage() {
             <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
               <AlertTriangle size={16} style={{ color: "var(--pending, #f59e0b)", flexShrink: 0, marginTop: "2px" }} />
               <p style={{ margin: 0, fontSize: "11px", lineHeight: "1.4", color: "var(--text-2, #5A6B78)" }}>
-                Nucleus AI reads only what your role may read and writes nothing on its own. A drafted action is submitted by you,
-                through the same checks and audit trail as the form it stands in for.
+                
+                {t("components.Workspace.NucleusAiPage.text_nucleus_ai_reads_only_what_your_role_may", "Nucleus AI reads only what your role may read and writes nothing on its own. A drafted action is submitted by you,\n                through the same checks and audit trail as the form it stands in for.")}
               </p>
             </div>
           </Surface>

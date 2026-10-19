@@ -15,6 +15,7 @@ import { useHRMS } from '@/context/HRMSContext';
 const EMPTY_ARRAY = [];
 
 const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const {
@@ -365,9 +366,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
                             }
                         }}
-                        title="Upload Biometric / Swipe Machine Punches in Bulk"
+                        title={t("components.Workspace.AttendanceView.title_upload_biometric_swipe_machine_punches_i", "Upload Biometric / Swipe Machine Punches in Bulk")}
                     >
-                        <UploadCloud size={15} /> Bulk Punches Upload
+                        <UploadCloud size={15} />  {t("components.Workspace.AttendanceView.text_bulk_punches_upload", "Bulk Punches Upload")}
                     </button>
                     {attendance.status === 'present' ? (
                         <button className={styles.btnPrimary} style={{ background: 'var(--flag)', color: 'var(--on-signal)' }} onClick={punchOut}>
@@ -380,9 +381,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         className={styles.btnSecondary}
                         onClick={() => setIsRegModalOpen(true)}
                         style={{ border: '1px solid var(--line-glow)', color: 'var(--signal)', fontWeight: 600 }}
-                        title="Submit Attendance Regularization Request"
+                        title={t("components.Workspace.AttendanceView.title_submit_attendance_regularization_request", "Submit Attendance Regularization Request")}
                     >
-                        <UserCheck size={15} /> Request Regularization
+                        <UserCheck size={15} />  {t("components.Workspace.AttendanceView.text_request_regularization", "Request Regularization")}
                     </button>
                     <button
                         className={styles.btnSecondary}
@@ -434,9 +435,9 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeTab === 'regularization' ? styles.tabBtnActive : ''}`}
                     onClick={() => setActiveTab('regularization')}
                 >
-                    <UserCheck size={15} /> Regularizations
+                    <UserCheck size={15} />  {t("components.Workspace.AttendanceView.text_regularizations", "Regularizations")}
                     <span className={`${styles.badge} ${styles.badgePurple}`}>
-                        {(attendanceRegularizations || []).filter(r => r.status === 'submitted' || r.status === 'supervisor_approved').length} Active
+                        {(attendanceRegularizations || []).filter(r => r.status === 'submitted' || r.status === 'supervisor_approved').length}  {t("components.Workspace.AttendanceView.text_active", "Active")}
                     </span>
                 </button>
                 <button
@@ -484,7 +485,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div>
                                 <strong style={{ color: 'var(--pending)' }}>{readData("components.Workspace.AttendanceView", "AttendanceView_text_30")}</strong>
                                 <div style={{ fontSize: '0.85rem', color: 'var(--text-2)' }}>
-                                    {anomaliesList.length} potential anomalies flagged for HR review (e.g. Device IP subnet shifts)</div>
+                                    {anomaliesList.length}  {t("components.Workspace.AttendanceView.text_potential_anomalies_flagged_for_hr_revie", "potential anomalies flagged for HR review (e.g. Device IP subnet shifts)")}</div>
                             </div>
                         </div>
                         <button className={styles.anomalyBtn} onClick={() => setIsAnomalyModalOpen(true)}>{readData("components.Workspace.AttendanceView", "AttendanceView_text_32")}</button>
@@ -720,21 +721,22 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                         setActionMenuRowId(actionMenuRowId === rec.id ? null : rec.id);
                                                     }}
                                                 >
-                                                    Actions ▾
+                                                    
+                                                    {t("components.Workspace.AttendanceView.text_actions", "Actions ▾")}
                                                 </button>
                                                 {actionMenuRowId === rec.id && (
                                                     <div className={styles.actionMenuPopover} onClick={e => e.stopPropagation()}>
                                                         <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenRegularize(rec); }}>
-                                                            <CheckSquare size={13} style={{ color: 'var(--signal)' }} /> Regularize Attendance
+                                                            <CheckSquare size={13} style={{ color: 'var(--signal)' }} />  {t("components.Workspace.AttendanceView.text_regularize_attendance", "Regularize Attendance")}
                                                         </button>
                                                         <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenOtTag(rec); }}>
-                                                            <Timer size={13} style={{ color: 'var(--status-ok)' }} /> Tag / Approve OT
+                                                            <Timer size={13} style={{ color: 'var(--status-ok)' }} />  {t("components.Workspace.AttendanceView.text_tag_approve_ot", "Tag / Approve OT")}
                                                         </button>
                                                         <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenPunchTimeline(rec); }}>
-                                                            <History size={13} style={{ color: 'var(--info)' }} /> View Punch Timeline
+                                                            <History size={13} style={{ color: 'var(--info)' }} />  {t("components.Workspace.AttendanceView.text_view_punch_timeline", "View Punch Timeline")}
                                                         </button>
                                                         <button type="button" onClick={() => { setActionMenuRowId(null); handleOpenShiftOverride(rec); }}>
-                                                            <Sliders size={13} style={{ color: 'var(--pending)' }} /> Manual Shift Override
+                                                            <Sliders size={13} style={{ color: 'var(--pending)' }} />  {t("components.Workspace.AttendanceView.text_manual_shift_override", "Manual Shift Override")}
                                                         </button>
                                                     </div>
                                                 )}
@@ -878,9 +880,10 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                                 <UserCheck size={20} color="var(--signal)" />
                                 <div>
-                                    <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Attendance Regularization Register</h3>
+                                    <h3 style={{ margin: 0, fontSize: '1.15rem' }}>{t("components.Workspace.AttendanceView.text_attendance_regularization_register", "Attendance Regularization Register")}</h3>
                                     <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>
-                                        Two-tier approval workflow (Shift Supervisor → Time Office Admin) with automatic gross/net minutes recalculation upon sign-off.
+                                        
+                                        {t("components.Workspace.AttendanceView.text_two-tier_approval_workflow_shift_supervi", "Two-tier approval workflow (Shift Supervisor → Time Office Admin) with automatic gross/net minutes recalculation upon sign-off.")}
                                     </p>
                                 </div>
                             </div>
@@ -889,7 +892,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 onClick={() => setIsRegModalOpen(true)}
                                 style={{ padding: '0.45rem 0.9rem', fontSize: '0.85rem' }}
                             >
-                                <Plus size={15} /> New Request
+                                <Plus size={15} />  {t("components.Workspace.AttendanceView.text_new_request", "New Request")}
                             </button>
                         </div>
 
@@ -921,13 +924,13 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Request ID & Date</th>
-                                        <th>Employee</th>
-                                        <th>Exception Type</th>
-                                        <th>Claimed Punches</th>
-                                        <th>Justification</th>
-                                        <th>Workflow Status</th>
-                                        <th style={{ textAlign: 'right' }}>Actions</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_request_id_date", "Request ID & Date")}</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_employee", "Employee")}</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_exception_type", "Exception Type")}</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_claimed_punches", "Claimed Punches")}</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_justification", "Justification")}</th>
+                                        <th>{t("components.Workspace.AttendanceView.text_workflow_status", "Workflow Status")}</th>
+                                        <th style={{ textAlign: 'right' }}>{t("components.Workspace.AttendanceView.text_actions", "Actions")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -950,10 +953,12 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 </td>
                                                 <td>
                                                     <div style={{ fontSize: '0.8rem', fontFamily: 'var(--f-num, monospace)' }}>
-                                                        In: <strong>{r.claimedIn || '09:00 AM'}</strong>
+                                                        
+                                                        {t("components.Workspace.AttendanceView.text_in", "In:")} <strong>{r.claimedIn || '09:00 AM'}</strong>
                                                     </div>
                                                     <div style={{ fontSize: '0.8rem', fontFamily: 'var(--f-num, monospace)' }}>
-                                                        Out: <strong>{r.claimedOut || '06:00 PM'}</strong>
+                                                        
+                                                        {t("components.Workspace.AttendanceView.text_out", "Out:")} <strong>{r.claimedOut || '06:00 PM'}</strong>
                                                     </div>
                                                 </td>
                                                 <td style={{ maxWidth: '220px' }}>
@@ -962,22 +967,26 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 <td>
                                                     {r.status === 'submitted' && (
                                                         <span className={`${styles.badge} ${styles.badgeAmber}`}>
-                                                            Pending Supervisor
+                                                            
+                                                            {t("components.Workspace.AttendanceView.text_pending_supervisor", "Pending Supervisor")}
                                                         </span>
                                                     )}
                                                     {r.status === 'supervisor_approved' && (
                                                         <span className={`${styles.badge} ${styles.badgePurple}`}>
-                                                            Pending Time Office
+                                                            
+                                                            {t("components.Workspace.AttendanceView.text_pending_time_office", "Pending Time Office")}
                                                         </span>
                                                     )}
                                                     {r.status === 'approved' && (
                                                         <span className={`${styles.badge} ${styles.badgeTeal}`}>
-                                                            Fully Approved
+                                                            
+                                                            {t("components.Workspace.AttendanceView.text_fully_approved", "Fully Approved")}
                                                         </span>
                                                     )}
                                                     {r.status === 'rejected' && (
                                                         <span className={`${styles.badge} ${styles.badgeCoral}`}>
-                                                            Rejected
+                                                            
+                                                            {t("components.Workspace.AttendanceView.text_rejected", "Rejected")}
                                                         </span>
                                                     )}
                                                 </td>
@@ -988,16 +997,16 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                                 className={styles.btnPrimary}
                                                                 style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', background: 'var(--signal)' }}
                                                                 onClick={() => decideRegularization(r.id, 'supervisor', true)}
-                                                                title="Shift Supervisor Tier 1 Approval"
+                                                                title={t("components.Workspace.AttendanceView.title_shift_supervisor_tier_1_approval", "Shift Supervisor Tier 1 Approval")}
                                                             >
-                                                                <CheckCircle2 size={13} /> Supv Approve
+                                                                <CheckCircle2 size={13} />  {t("components.Workspace.AttendanceView.text_supv_approve", "Supv Approve")}
                                                             </button>
                                                             <button
                                                                 className={styles.btnSecondary}
                                                                 style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', color: 'var(--flag)' }}
                                                                 onClick={() => decideRegularization(r.id, 'supervisor', false)}
                                                             >
-                                                                <XCircle size={13} /> Reject
+                                                                <XCircle size={13} />  {t("components.Workspace.AttendanceView.text_reject", "Reject")}
                                                             </button>
                                                         </div>
                                                     )}
@@ -1007,21 +1016,21 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                                 className={styles.btnPrimary}
                                                                 style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', background: 'var(--status-ok)' }}
                                                                 onClick={() => decideRegularization(r.id, 'time_office', true)}
-                                                                title="Time Office Admin Final Recalculation Approval"
+                                                                title={t("components.Workspace.AttendanceView.title_time_office_admin_final_recalculation_ap", "Time Office Admin Final Recalculation Approval")}
                                                             >
-                                                                <CheckCircle2 size={13} /> Admin Settle
+                                                                <CheckCircle2 size={13} />  {t("components.Workspace.AttendanceView.text_admin_settle", "Admin Settle")}
                                                             </button>
                                                             <button
                                                                 className={styles.btnSecondary}
                                                                 style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', color: 'var(--flag)' }}
                                                                 onClick={() => decideRegularization(r.id, 'time_office', false)}
                                                             >
-                                                                <XCircle size={13} /> Reject
+                                                                <XCircle size={13} />  {t("components.Workspace.AttendanceView.text_reject", "Reject")}
                                                             </button>
                                                         </div>
                                                     )}
                                                     {(r.status === 'approved' || r.status === 'rejected') && (
-                                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>Settled</span>
+                                                        <span style={{ fontSize: '0.78rem', color: 'var(--text-3)' }}>{t("components.Workspace.AttendanceView.text_settled", "Settled")}</span>
                                                     )}
                                                 </td>
                                             </tr>
@@ -1061,7 +1070,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     onChange={e => setGpType(e.target.value)}
                                     style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                 >
-                                    <option value="">-- Select Type --</option>
+                                    <option value="">{t("components.Workspace.AttendanceView.text_--_select_type_--", "-- Select Type --")}</option>
                                     <option value="PERSONAL">{readData("components.Workspace.AttendanceView", "AttendanceView_text_122")}</option>
                                     <option value="OFFICIAL">{readData("components.Workspace.AttendanceView", "AttendanceView_text_123")}</option>
                                 </select>
@@ -1074,7 +1083,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     onChange={e => setGpDuration(Number(e.target.value))}
                                     style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                 >
-                                    <option value={0}>-- Select Duration --</option>
+                                    <option value={0}>{t("components.Workspace.AttendanceView.text_--_select_duration_--", "-- Select Duration --")}</option>
                                     <option value={30}>{readData("components.Workspace.AttendanceView", "AttendanceView_text_125")}</option>
                                     <option value={45}>{readData("components.Workspace.AttendanceView", "AttendanceView_text_126")}</option>
                                     <option value={60}>{readData("components.Workspace.AttendanceView", "AttendanceView_text_127")}</option>
@@ -1119,7 +1128,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <UserCheck size={20} color="var(--signal)" />
-                                <h3 style={{ margin: 0, fontSize: '1.15rem' }}>Request Regularization</h3>
+                                <h3 style={{ margin: 0, fontSize: '1.15rem' }}>{t("components.Workspace.AttendanceView.text_request_regularization", "Request Regularization")}</h3>
                             </div>
                             <button
                                 onClick={() => setIsRegModalOpen(false)}
@@ -1130,13 +1139,13 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         </div>
 
                         <div style={{ background: 'var(--card-2)', padding: '0.75rem', borderRadius: 'var(--r-control)', fontSize: '0.78rem', border: '1px solid var(--line)' }}>
-                            <div>Employee: <strong>{user?.name || 'Arjun Sharma'}</strong> ({user?.id || 'EMP-101'})</div>
-                            <div style={{ marginTop: '0.25rem', color: 'var(--text-2)' }}>Policy: Missing punch requests require two-tier approval before net work hours are credited.</div>
+                            <div>{t("components.Workspace.AttendanceView.text_employee", "Employee:")} <strong>{user?.name || 'Arjun Sharma'}</strong> ({user?.id || 'EMP-101'})</div>
+                            <div style={{ marginTop: '0.25rem', color: 'var(--text-2)' }}>{t("components.Workspace.AttendanceView.text_policy_missing_punch_requests_require_tw", "Policy: Missing punch requests require two-tier approval before net work hours are credited.")}</div>
                         </div>
 
                         <form onSubmit={handleCreateRegularization} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div>
-                                <label className={styles.formLabel}>Attendance Exception Date</label>
+                                <label className={styles.formLabel}>{t("components.Workspace.AttendanceView.text_attendance_exception_date", "Attendance Exception Date")}</label>
                                 <input
                                     type="date"
                                     value={regDate}
@@ -1148,35 +1157,35 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             </div>
 
                             <div>
-                                <label className={styles.formLabel}>Exception Category</label>
+                                <label className={styles.formLabel}>{t("components.Workspace.AttendanceView.text_exception_category", "Exception Category")}</label>
                                 <select
                                     value={regKind}
                                     onChange={e => setRegKind(e.target.value)}
                                     style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                 >
-                                    <option value="missing-punch">Missing Punch (Terminal failure / Forgot to punch)</option>
-                                    <option value="official-duty">Official Duty (Client visit / External assignment)</option>
-                                    <option value="late-arrival">Late Arrival (Transit delay / Emergency)</option>
-                                    <option value="system-failure">System / Network Outage at Turnstile</option>
+                                    <option value="missing-punch">{t("components.Workspace.AttendanceView.text_missing_punch_terminal_failure_forgot_to", "Missing Punch (Terminal failure / Forgot to punch)")}</option>
+                                    <option value="official-duty">{t("components.Workspace.AttendanceView.text_official_duty_client_visit_external_assi", "Official Duty (Client visit / External assignment)")}</option>
+                                    <option value="late-arrival">{t("components.Workspace.AttendanceView.text_late_arrival_transit_delay_emergency", "Late Arrival (Transit delay / Emergency)")}</option>
+                                    <option value="system-failure">{t("components.Workspace.AttendanceView.text_system_network_outage_at_turnstile", "System / Network Outage at Turnstile")}</option>
                                 </select>
                             </div>
 
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                                 <div>
-                                    <label className={styles.formLabel}>Claimed In-Time</label>
+                                    <label className={styles.formLabel}>{t("components.Workspace.AttendanceView.text_claimed_in-time", "Claimed In-Time")}</label>
                                     <input
                                         type="text"
-                                        placeholder="09:00 AM"
+                                        placeholder={t("components.Workspace.AttendanceView.placeholder_0900_am", "09:00 AM")}
                                         value={regClaimedIn}
                                         onChange={e => setRegClaimedIn(e.target.value)}
                                         style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
                                     />
                                 </div>
                                 <div>
-                                    <label className={styles.formLabel}>Claimed Out-Time</label>
+                                    <label className={styles.formLabel}>{t("components.Workspace.AttendanceView.text_claimed_out-time", "Claimed Out-Time")}</label>
                                     <input
                                         type="text"
-                                        placeholder="06:00 PM"
+                                        placeholder={t("components.Workspace.AttendanceView.placeholder_0600_pm", "06:00 PM")}
                                         value={regClaimedOut}
                                         onChange={e => setRegClaimedOut(e.target.value)}
                                         style={{ width: '100%', padding: '0.5rem', background: 'var(--card-2)', border: '1px solid var(--line)', borderRadius: 'var(--r-control)', color: 'var(--text)' }}
@@ -1185,11 +1194,11 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             </div>
 
                             <div>
-                                <label className={styles.formLabel}>Justification Reason <span style={{ color: 'var(--flag)' }}>*</span></label>
+                                <label className={styles.formLabel}>{t("components.Workspace.AttendanceView.text_justification_reason", "Justification Reason")} <span style={{ color: 'var(--flag)' }}>*</span></label>
                                 <textarea
                                     className={styles.textarea}
                                     style={{ height: '70px' }}
-                                    placeholder="Explain the circumstance for supervisor and time-office review..."
+                                    placeholder={t("components.Workspace.AttendanceView.placeholder_explain_the_circumstance_for_supervisor_", "Explain the circumstance for supervisor and time-office review...")}
                                     value={regReason}
                                     onChange={e => setRegReason(e.target.value)}
                                     required
@@ -1202,14 +1211,16 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     className={styles.btnSecondary}
                                     onClick={() => setIsRegModalOpen(false)}
                                 >
-                                    Cancel
+                                    
+                                    {t("components.Workspace.AttendanceView.text_cancel", "Cancel")}
                                 </button>
                                 <button
                                     type="submit"
                                     className={styles.btnPrimary}
                                     style={{ background: 'var(--signal)' }}
                                 >
-                                    Submit Request
+                                    
+                                    {t("components.Workspace.AttendanceView.text_submit_request", "Submit Request")}
                                 </button>
                             </div>
                         </form>
@@ -1224,7 +1235,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <Sparkles size={20} color="var(--pending)" />
                                 <h3 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text)' }}>
-                                    AI Shift & Anomaly Intelligence — Review Queue
+                                    
+                                    {t("components.Workspace.AttendanceView.text_ai_shift_anomaly_intelligence_review_que", "AI Shift & Anomaly Intelligence — Review Queue")}
                                 </h3>
                             </div>
                             <button
@@ -1234,16 +1246,18 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         </div>
 
                         <div style={{ fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                            The AI Shift & Anomaly engine flagged the following potential anomalies from biometric logs, IP subnet mismatches, and multi-shift timing heuristics.
+                            
+                            {t("components.Workspace.AttendanceView.text_the_ai_shift_anomaly_engine_flagged_the_", "The AI Shift & Anomaly engine flagged the following potential anomalies from biometric logs, IP subnet mismatches, and multi-shift timing heuristics.")}
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '4px' }}>
                             {anomaliesList.length === 0 ? (
                                 <div style={{ textAlign: 'center', padding: '2.5rem 1rem', background: 'var(--card-2)', borderRadius: 'var(--r-control)', color: 'var(--status-ok)' }}>
                                     <CheckCircle2 size={40} style={{ margin: '0 auto 0.5rem', display: 'block' }} />
-                                    <strong style={{ fontSize: '1rem' }}>All anomalies resolved</strong>
+                                    <strong style={{ fontSize: '1rem' }}>{t("components.Workspace.AttendanceView.text_all_anomalies_resolved", "All anomalies resolved")}</strong>
                                     <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', marginTop: '0.35rem' }}>
-                                        No pending biometric or schedule anomalies require HR review.
+                                        
+                                        {t("components.Workspace.AttendanceView.text_no_pending_biometric_or_schedule_anomali", "No pending biometric or schedule anomalies require HR review.")}
                                     </div>
                                 </div>
                             ) : (
@@ -1257,7 +1271,7 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 </div>
                                             </div>
                                             <span style={{ fontSize: '0.75rem', fontWeight: 700, padding: '3px 8px', borderRadius: '12px', background: 'var(--pending-wash, rgba(245, 158, 11, 0.15))', color: 'var(--pending)' }}>
-                                                {item.confidence} Confidence
+                                                {item.confidence}  {t("components.Workspace.AttendanceView.text_confidence", "Confidence")}
                                             </span>
                                         </div>
                                         <div style={{ fontSize: '0.8rem', color: 'var(--text-2)', background: 'var(--surface)', padding: '0.5rem 0.65rem', borderRadius: '4px', borderLeft: '3px solid var(--pending)' }}>
@@ -1270,7 +1284,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
                                                 onClick={() => handleResolveAnomaly(item, 'WAIVE')}
                                             >
-                                                Waive / False Positive
+                                                
+                                                {t("components.Workspace.AttendanceView.text_waive_false_positive", "Waive / False Positive")}
                                             </button>
                                             <button
                                                 type="button"
@@ -1278,7 +1293,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
                                                 onClick={() => handleResolveAnomaly(item, 'ESCALATE')}
                                             >
-                                                Escalate to Supervisor
+                                                
+                                                {t("components.Workspace.AttendanceView.text_escalate_to_supervisor", "Escalate to Supervisor")}
                                             </button>
                                             <button
                                                 type="button"
@@ -1286,7 +1302,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                 style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem', background: 'var(--signal)' }}
                                                 onClick={() => handleResolveAnomaly(item, 'RESOLVE')}
                                             >
-                                                Resolve & Recompute
+                                                
+                                                {t("components.Workspace.AttendanceView.text_resolve_recompute", "Resolve & Recompute")}
                                             </button>
                                         </div>
                                     </div>
@@ -1305,7 +1322,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                         showToast('All Resolved', 'Batch recomputed all flagged anomalies across shifts.', 'success');
                                     }}
                                 >
-                                    Resolve All Flagged ({anomaliesList.length})
+                                    
+                                    {t("components.Workspace.AttendanceView.text_resolve_all_flagged", "Resolve All Flagged (")}{anomaliesList.length})
                                 </button>
                             ) : <div />}
                             <button
@@ -1314,7 +1332,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 style={{ fontSize: '0.8rem' }}
                                 onClick={() => setIsAnomalyModalOpen(false)}
                             >
-                                Close
+                                
+                                {t("components.Workspace.AttendanceView.text_close", "Close")}
                             </button>
                         </div>
                     </div>
@@ -1327,7 +1346,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <Timer size={18} style={{ color: 'var(--status-ok)' }} />
-                                Tag / Approve Overtime
+                                
+                                {t("components.Workspace.AttendanceView.text_tag_approve_overtime", "Tag / Approve Overtime")}
                             </h4>
                             <button
                                 type="button"
@@ -1340,12 +1360,13 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
                             <div style={{ fontWeight: 600, color: 'var(--text)' }}>{otModalRecord.employee_name} ({otModalRecord.worker_category_code})</div>
                             <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
-                                Date: <strong>{otModalRecord.attendance_date}</strong> · Shift: <strong>{otModalRecord.shift_id_inferred || 'GEN'}</strong> · Net: <strong>{otModalRecord.formatted_net || `${otModalRecord.net_minutes}m`}</strong>
+                                
+                                {t("components.Workspace.AttendanceView.text_date", "Date:")} <strong>{otModalRecord.attendance_date}</strong>  {t("components.Workspace.AttendanceView.text_shift", "· Shift:")} <strong>{otModalRecord.shift_id_inferred || 'GEN'}</strong>  {t("components.Workspace.AttendanceView.text_net", "· Net:")} <strong>{otModalRecord.formatted_net || `${otModalRecord.net_minutes}m`}</strong>
                             </div>
                         </div>
                         <form onSubmit={handleSaveOt} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div className={styles.fieldRow}>
-                                <label>Overtime Hours (Hours)</label>
+                                <label>{t("components.Workspace.AttendanceView.text_overtime_hours_hours", "Overtime Hours (Hours)")}</label>
                                 <input
                                     type="number"
                                     step="0.5"
@@ -1357,30 +1378,32 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 />
                             </div>
                             <div className={styles.fieldRow}>
-                                <label>Overtime Policy & Rate Multiplier</label>
+                                <label>{t("components.Workspace.AttendanceView.text_overtime_policy_rate_multiplier", "Overtime Policy & Rate Multiplier")}</label>
                                 <select value={otRateType} onChange={e => setOtRateType(e.target.value)}>
-                                    <option value="1.5x">Standard Shift Overtime (1.5x Base Rate)</option>
-                                    <option value="2.0x">Weekly Off / Rest Day Overtime (2.0x Double Rate)</option>
-                                    <option value="2.5x">National Holiday Emergency Overtime (2.5x Premium)</option>
-                                    <option value="1.25x">Shift Handover Buffer (1.25x)</option>
+                                    <option value="1.5x">{t("components.Workspace.AttendanceView.text_standard_shift_overtime_15x_base_rate", "Standard Shift Overtime (1.5x Base Rate)")}</option>
+                                    <option value="2.0x">{t("components.Workspace.AttendanceView.text_weekly_off_rest_day_overtime_20x_double_", "Weekly Off / Rest Day Overtime (2.0x Double Rate)")}</option>
+                                    <option value="2.5x">{t("components.Workspace.AttendanceView.text_national_holiday_emergency_overtime_25x_", "National Holiday Emergency Overtime (2.5x Premium)")}</option>
+                                    <option value="1.25x">{t("components.Workspace.AttendanceView.text_shift_handover_buffer_125x", "Shift Handover Buffer (1.25x)")}</option>
                                 </select>
                             </div>
                             <div className={styles.fieldRow}>
-                                <label>Approval Justification / Project Code</label>
+                                <label>{t("components.Workspace.AttendanceView.text_approval_justification_project_code", "Approval Justification / Project Code")}</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Critical deployment / production ramp-up"
+                                    placeholder={t("components.Workspace.AttendanceView.placeholder_eg_critical_deployment_production_ramp-u", "e.g. Critical deployment / production ramp-up")}
                                     value={otReason}
                                     onChange={e => setOtReason(e.target.value)}
                                 />
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
                                 <button type="button" className={styles.btnSecondary} onClick={() => setOtModalRecord(null)}>
-                                    Cancel
+                                    
+                                    {t("components.Workspace.AttendanceView.text_cancel", "Cancel")}
                                 </button>
                                 <button type="submit" className={styles.btnPrimary}>
-                                    Confirm & Tag OT
+                                    
+                                    {t("components.Workspace.AttendanceView.text_confirm_tag_ot", "Confirm & Tag OT")}
                                 </button>
                             </div>
                         </form>
@@ -1395,7 +1418,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <History size={18} style={{ color: 'var(--info)' }} />
-                                Punch Timeline & Device Audit
+                                
+                                {t("components.Workspace.AttendanceView.text_punch_timeline_device_audit", "Punch Timeline & Device Audit")}
                             </h4>
                             <button
                                 type="button"
@@ -1408,48 +1432,50 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
                             <div style={{ fontWeight: 600, color: 'var(--text)' }}>{timelineModalRecord.employee_name}</div>
                             <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
-                                Attendance Date: <strong>{timelineModalRecord.attendance_date}</strong> · Assigned: <strong>{timelineModalRecord.shift_id_inferred}</strong>
+                                
+                                {t("components.Workspace.AttendanceView.text_attendance_date", "Attendance Date:")} <strong>{timelineModalRecord.attendance_date}</strong>  {t("components.Workspace.AttendanceView.text_assigned", "· Assigned:")} <strong>{timelineModalRecord.shift_id_inferred}</strong>
                             </div>
                         </div>
                         <div className={styles.timelineWrapper}>
                             <div className={styles.timelineItem}>
                                 <span className={`${styles.timelineDot} ${styles.timelineDotTeal}`} />
-                                <span className={styles.timelineTime}>08:54 AM · INGRESS SWIPE</span>
-                                <span className={styles.timelineDesc}>Biometric Face Terminal #1 (Main Turnstile Gate) · Verified IP Subnet 10.20.1.x</span>
+                                <span className={styles.timelineTime}>{t("components.Workspace.AttendanceView.text_0854_am_ingress_swipe", "08:54 AM · INGRESS SWIPE")}</span>
+                                <span className={styles.timelineDesc}>{t("components.Workspace.AttendanceView.text_biometric_face_terminal_1_main_turnstile", "Biometric Face Terminal #1 (Main Turnstile Gate) · Verified IP Subnet 10.20.1.x")}</span>
                             </div>
                             <div className={styles.timelineItem}>
                                 <span className={`${styles.timelineDot} ${styles.timelineDotBlue}`} />
-                                <span className={styles.timelineTime}>09:02 AM · GEOFENCE CONFIRM</span>
-                                <span className={styles.timelineDesc}>Nucleus WorkStation WiFi Beacon · Desk Check-in Validated</span>
+                                <span className={styles.timelineTime}>{t("components.Workspace.AttendanceView.text_0902_am_geofence_confirm", "09:02 AM · GEOFENCE CONFIRM")}</span>
+                                <span className={styles.timelineDesc}>{t("components.Workspace.AttendanceView.text_nucleus_workstation_wifi_beacon_desk_che", "Nucleus WorkStation WiFi Beacon · Desk Check-in Validated")}</span>
                             </div>
                             <div className={styles.timelineItem}>
                                 <span className={`${styles.timelineDot} ${styles.timelineDotAmber}`} />
-                                <span className={styles.timelineTime}>13:05 PM - 13:48 PM · MEAL BREAK</span>
-                                <span className={styles.timelineDesc}>Canteen Turnstile Gate #3 · Duration: 43 mins (Deducted from gross span)</span>
+                                <span className={styles.timelineTime}>{t("components.Workspace.AttendanceView.text_1305_pm_-_1348_pm_meal_break", "13:05 PM - 13:48 PM · MEAL BREAK")}</span>
+                                <span className={styles.timelineDesc}>{t("components.Workspace.AttendanceView.text_canteen_turnstile_gate_3_duration_43_min", "Canteen Turnstile Gate #3 · Duration: 43 mins (Deducted from gross span)")}</span>
                             </div>
                             <div className={styles.timelineItem}>
                                 <span className={`${styles.timelineDot} ${styles.timelineDotTeal}`} />
-                                <span className={styles.timelineTime}>18:34 PM · EGRESS SWIPE</span>
-                                <span className={styles.timelineDesc}>Biometric Exit Gate #2 · RFID Tap Confirmed · Shift Completed</span>
+                                <span className={styles.timelineTime}>{t("components.Workspace.AttendanceView.text_1834_pm_egress_swipe", "18:34 PM · EGRESS SWIPE")}</span>
+                                <span className={styles.timelineDesc}>{t("components.Workspace.AttendanceView.text_biometric_exit_gate_2_rfid_tap_confirmed", "Biometric Exit Gate #2 · RFID Tap Confirmed · Shift Completed")}</span>
                             </div>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', background: 'var(--card-2)', padding: '0.75rem', borderRadius: 'var(--r-control)', textAlign: 'center' }}>
                             <div>
-                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Gross Span</div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{t("components.Workspace.AttendanceView.text_gross_span", "Gross Span")}</div>
                                 <div style={{ fontWeight: 600, color: 'var(--text)' }}>{Math.floor(timelineModalRecord.gross_minutes / 60)}h {timelineModalRecord.gross_minutes % 60}m</div>
                             </div>
                             <div>
-                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Breaks/GP</div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{t("components.Workspace.AttendanceView.text_breaksgp", "Breaks/GP")}</div>
                                 <div style={{ fontWeight: 600, color: 'var(--flag)' }}>{timelineModalRecord.break_minutes + timelineModalRecord.gate_pass_minutes}m</div>
                             </div>
                             <div>
-                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>Net Working</div>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-2)' }}>{t("components.Workspace.AttendanceView.text_net_working", "Net Working")}</div>
                                 <div style={{ fontWeight: 600, color: 'var(--signal)' }}>{timelineModalRecord.formatted_net || `${timelineModalRecord.net_minutes}m`}</div>
                             </div>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.25rem' }}>
                             <button type="button" className={styles.btnSecondary} onClick={() => setTimelineModalRecord(null)}>
-                                Close
+                                
+                                {t("components.Workspace.AttendanceView.text_close", "Close")}
                             </button>
                         </div>
                     </div>
@@ -1463,7 +1489,8 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h4 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                 <Sliders size={18} style={{ color: 'var(--pending)' }} />
-                                Manual Shift Override
+                                
+                                {t("components.Workspace.AttendanceView.text_manual_shift_override", "Manual Shift Override")}
                             </h4>
                             <button
                                 type="button"
@@ -1476,35 +1503,38 @@ const AttendanceView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <div style={{ background: 'var(--card-2)', padding: '0.75rem 1rem', borderRadius: 'var(--r-control)', border: '1px solid var(--line-soft)', fontSize: '0.8rem' }}>
                             <div style={{ fontWeight: 600, color: 'var(--text)' }}>{shiftOverrideRecord.employee_name}</div>
                             <div style={{ color: 'var(--text-2)', marginTop: '0.2rem' }}>
-                                Date: <strong>{shiftOverrideRecord.attendance_date}</strong> · Current Shift: <strong>{shiftOverrideRecord.shift_id_inferred}</strong>
+                                
+                                {t("components.Workspace.AttendanceView.text_date", "Date:")} <strong>{shiftOverrideRecord.attendance_date}</strong>  {t("components.Workspace.AttendanceView.text_current_shift", "· Current Shift:")} <strong>{shiftOverrideRecord.shift_id_inferred}</strong>
                             </div>
                         </div>
                         <form onSubmit={handleSaveShiftOverride} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <div className={styles.fieldRow}>
-                                <label>Target Work Shift</label>
+                                <label>{t("components.Workspace.AttendanceView.text_target_work_shift", "Target Work Shift")}</label>
                                 <select value={overrideShiftCode} onChange={e => setOverrideShiftCode(e.target.value)}>
-                                    <option value="GEN">GEN · General Shift (09:00 - 18:00)</option>
-                                    <option value="MORN">MORN · Morning Shift (06:00 - 14:30)</option>
-                                    <option value="EVE">EVE · Evening Shift (14:00 - 22:30)</option>
-                                    <option value="NIGHT">NIGHT · Night Shift (22:00 - 06:30)</option>
+                                    <option value="GEN">{t("components.Workspace.AttendanceView.text_gen_general_shift_0900_-_1800", "GEN · General Shift (09:00 - 18:00)")}</option>
+                                    <option value="MORN">{t("components.Workspace.AttendanceView.text_morn_morning_shift_0600_-_1430", "MORN · Morning Shift (06:00 - 14:30)")}</option>
+                                    <option value="EVE">{t("components.Workspace.AttendanceView.text_eve_evening_shift_1400_-_2230", "EVE · Evening Shift (14:00 - 22:30)")}</option>
+                                    <option value="NIGHT">{t("components.Workspace.AttendanceView.text_night_night_shift_2200_-_0630", "NIGHT · Night Shift (22:00 - 06:30)")}</option>
                                 </select>
                             </div>
                             <div className={styles.fieldRow}>
-                                <label>Reason for Manual Override</label>
+                                <label>{t("components.Workspace.AttendanceView.text_reason_for_manual_override", "Reason for Manual Override")}</label>
                                 <input
                                     type="text"
                                     required
-                                    placeholder="e.g. Approved shift swap with supervisor consent"
+                                    placeholder={t("components.Workspace.AttendanceView.placeholder_eg_approved_shift_swap_with_supervisor_c", "e.g. Approved shift swap with supervisor consent")}
                                     value={overrideReason}
                                     onChange={e => setOverrideReason(e.target.value)}
                                 />
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
                                 <button type="button" className={styles.btnSecondary} onClick={() => setShiftOverrideRecord(null)}>
-                                    Cancel
+                                    
+                                    {t("components.Workspace.AttendanceView.text_cancel", "Cancel")}
                                 </button>
                                 <button type="submit" className={styles.btnPrimary}>
-                                    Apply Shift Override
+                                    
+                                    {t("components.Workspace.AttendanceView.text_apply_shift_override", "Apply Shift Override")}
                                 </button>
                             </div>
                         </form>

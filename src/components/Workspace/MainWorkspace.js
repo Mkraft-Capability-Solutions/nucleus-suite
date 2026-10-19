@@ -74,6 +74,7 @@ const MainWorkspace = ({
     activeConsole = readData("components.Workspace.MainWorkspace", "defaultValue_1"),
     onSelectConsole
 }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const {
@@ -1081,7 +1082,7 @@ const MainWorkspace = ({
                 <>
                     {/* Breadcrumb back to domain/catalog */}
                     {activeTab !== 'dashboard' && (
-                        <div className={styles.breadcrumbBar} aria-label="Breadcrumb">
+                        <div className={styles.breadcrumbBar} aria-label={t("components.Workspace.MainWorkspace.aria-label_breadcrumb", "Breadcrumb")}>
                             <button
                                 className={styles.backToCatalogBtn}
                                 onClick={() => {

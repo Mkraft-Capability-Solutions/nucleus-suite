@@ -3,7 +3,7 @@ import englishInterface from '@/locales/en/interface.json';
 import { locales, defaultLocale, type SupportedLocale } from '@/locales';
 import { publicTranslations } from '@/locales/translations';
 
-export type Messages = Record<string, Record<string, string>>;
+export type Messages = Record<string, any>;
 export type TranslationParams = Record<string, string | number>;
 
 function publicMessages(value: unknown, path = '', output: Record<string, string> = {}): Record<string, string> {
@@ -19,7 +19,8 @@ function publicMessages(value: unknown, path = '', output: Record<string, string
 export function buildLocaleMessages(localeKey: SupportedLocale): Messages {
   const slice = locales[localeKey] || locales[defaultLocale];
   const publicLangDict = publicTranslations[localeKey] || {};
-  const basePublicMessages = publicMessages(publicContent);
+  const currentPublic = (slice as any)?.publicContent || publicContent;
+  const basePublicMessages = publicMessages(currentPublic);
 
   return {
     ...englishInterface,
@@ -27,7 +28,8 @@ export function buildLocaleMessages(localeKey: SupportedLocale): Messages {
     meta: {
       locale: localeKey,
     },
-    publicContent: {
+    publicContent: currentPublic,
+    publicStrings: {
       ...basePublicMessages,
       ...publicLangDict,
     },
@@ -67,40 +69,85 @@ export function translate(
   messages: Messages,
   namespaceOrKey: string,
   keyOrParams?: string | TranslationParams,
-  params?: TranslationParams,
+  paramsOrFallback?: string | TranslationParams,
 ): string {
   if (!namespaceOrKey) return '';
   let namespace = namespaceOrKey;
   let key: string | undefined;
+  let fallback: string | undefined;
   let actualParams: TranslationParams = {};
 
-  if (typeof keyOrParams === 'string') {
-    key = keyOrParams;
-    actualParams = params || {};
-  } else if (typeof keyOrParams === 'object' && keyOrParams !== null) {
-    actualParams = keyOrParams;
-  }
-
-  // Case 1: Dot-notation string like "common.save" or "navigation.dashboard"
-  if (!key && namespace.includes('.')) {
-    const parts = namespace.split('.');
+  if (namespaceOrKey.includes('.')) {
+    // Dotted key call:
+    // e.g. t('errors.something_wrong', 'Something Went Wrong')
+    // or t('components.Workspace.RecruitmentView.text_bulk_ats_import', 'Bulk ATS Import')
+    // or t('common.welcome', { name: 'Alex' })
+    // or t('common.welcome', 'Welcome {name}', { name: 'Alex' })
+    const parts = namespaceOrKey.split('.');
     if (parts.length === 2) {
       namespace = parts[0];
       key = parts[1];
     } else {
-      // Deep nested key like components.Workspace.LeftDock.text_0ab6910b45
       const lastPart = parts.pop()!;
       namespace = parts.join('.');
       key = lastPart;
+    }
+
+    if (typeof keyOrParams === 'string') {
+      fallback = keyOrParams;
+    } else if (typeof keyOrParams === 'object' && keyOrParams !== null) {
+      actualParams = keyOrParams;
+    }
+
+    if (typeof paramsOrFallback === 'string') {
+      fallback = paramsOrFallback;
+    } else if (typeof paramsOrFallback === 'object' && paramsOrFallback !== null) {
+      actualParams = paramsOrFallback;
+    }
+  } else {
+    // Non-dotted call:
+    // e.g. t('common', 'save')
+    // or t('common', 'save', 'Save Now')
+    // or t('common', 'welcome', { name: 'Alex' })
+    // or t('Direct phrase without namespace')
+    if (typeof keyOrParams === 'string') {
+      key = keyOrParams;
+      if (typeof paramsOrFallback === 'string') {
+        fallback = paramsOrFallback;
+      } else if (typeof paramsOrFallback === 'object' && paramsOrFallback !== null) {
+        actualParams = paramsOrFallback;
+      }
+    } else if (typeof keyOrParams === 'object' && keyOrParams !== null) {
+      actualParams = keyOrParams;
     }
   }
 
   // Case 2: Standard lookup (namespace + key)
   if (key) {
-    const template =
+    let template =
       messages[namespace]?.[key] ??
-      defaultMessages[namespace]?.[key] ??
-      `${namespace}.${key}`;
+      defaultMessages[namespace]?.[key];
+
+    if (!template && namespaceOrKey.includes('.')) {
+      // Also try direct dotted key lookup in messages (for flat dictionaries)
+      template =
+        messages[namespaceOrKey]?.[key] ??
+        defaultMessages[namespaceOrKey]?.[key];
+    }
+
+    if (!template) {
+      template = fallback || `${namespace}.${key}`;
+    }
+
+    const activeLocale = (messages.meta?.locale || defaultLocale) as SupportedLocale;
+    if (activeLocale !== 'en' && publicTranslations[activeLocale]) {
+      const translated =
+        publicTranslations[activeLocale][template] ??
+        Object.entries(publicTranslations[activeLocale]).find(
+          ([k]) => k.toLowerCase() === template.toLowerCase(),
+        )?.[1];
+      if (translated) template = translated;
+    }
     return template.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
       Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
     );
@@ -129,12 +176,17 @@ export function translate(
     }
   }
 
-  // 3b. Check in publicContent or any namespace
-  if (messages.publicContent?.[query]) {
-    const template = messages.publicContent[query];
-    return template.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match, name) =>
+  // 3b. Check in publicStrings or publicContent
+  const publicCandidate = messages.publicStrings?.[query] ?? (typeof messages.publicContent?.[query] === 'string' ? messages.publicContent[query] : undefined);
+  if (publicCandidate) {
+    return publicCandidate.replace(/\{([A-Za-z][A-Za-z0-9_]*)\}/g, (match: string, name: string) =>
       Object.hasOwn(actualParams, name) ? String(actualParams[name]) : match,
     );
+  }
+
+  // 3c. Direct lookup in enums namespace
+  if (messages.enums?.[query]) {
+    return messages.enums[query];
   }
 
   const queryLower = query.toLowerCase();

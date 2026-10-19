@@ -5,6 +5,7 @@ import Link from 'next/link';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import HomeIcon from '@mui/icons-material/HomeOutlined';
+import { useTranslation } from '@/context/I18nContext';
 
 export default function GlobalRouteError({
   error,
@@ -13,6 +14,8 @@ export default function GlobalRouteError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useTranslation();
+
   useEffect(() => {
     // Log unexpected client-side exceptions
     console.error('Unhandled route error:', error);
@@ -73,7 +76,7 @@ export default function GlobalRouteError({
               color: 'var(--flag, #ef4444)',
             }}
           >
-            Application Error
+            {t('errors.app_error', 'Application Error')}
           </span>
           <h1
             style={{
@@ -83,7 +86,7 @@ export default function GlobalRouteError({
               margin: '0.5rem 0 0.75rem',
             }}
           >
-            Something Went Wrong
+            {t('errors.something_wrong', 'Something Went Wrong')}
           </h1>
           <p
             style={{
@@ -93,7 +96,7 @@ export default function GlobalRouteError({
               margin: 0,
             }}
           >
-            An unexpected error occurred while rendering this interface. Our systems have logged the event. You can attempt to retry the current action or return to the workspace home.
+            {t('errors.something_wrong_desc', 'An unexpected error occurred while rendering this interface. Our systems have logged the event. You can attempt to retry the current action or return to the workspace home.')}
           </p>
           {error?.digest && (
             <div
@@ -107,7 +110,26 @@ export default function GlobalRouteError({
                 color: 'var(--text-3, #64748b)',
               }}
             >
-              Error Digest: {error.digest}
+              {t('errors.error_digest', 'Error Digest')}: {error.digest}
+            </div>
+          )}
+          {error?.message && (
+            <div
+              style={{
+                marginTop: '0.75rem',
+                padding: '0.5rem 0.75rem',
+                borderRadius: '6px',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                fontSize: '0.8125rem',
+                fontFamily: 'monospace',
+                color: '#f87171',
+                textAlign: 'left',
+                whiteSpace: 'pre-wrap',
+                wordBreak: 'break-word',
+              }}
+            >
+              {error.message}
             </div>
           )}
         </div>
@@ -130,7 +152,7 @@ export default function GlobalRouteError({
               fontFamily: 'inherit',
             }}
           >
-            <RefreshIcon sx={{ fontSize: 16 }} /> Try Again
+            <RefreshIcon sx={{ fontSize: 16 }} /> {t('common.try_again', 'Try Again')}
           </button>
           <Link
             href="/"
@@ -147,7 +169,7 @@ export default function GlobalRouteError({
               fontWeight: 600,
             }}
           >
-            <HomeIcon sx={{ fontSize: 16 }} /> Return to Home
+            <HomeIcon sx={{ fontSize: 16 }} /> {t('common.return_home', 'Return to Home')}
           </Link>
         </div>
       </div>

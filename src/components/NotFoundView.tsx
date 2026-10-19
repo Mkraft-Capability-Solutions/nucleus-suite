@@ -4,8 +4,10 @@ import Link from 'next/link';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DashboardIcon from '@mui/icons-material/SpaceDashboardOutlined';
+import { useTranslation } from '@/context/I18nContext';
 
 export default function NotFoundView() {
+  const { t } = useTranslation();
   return (
     <main
       style={{
@@ -61,7 +63,7 @@ export default function NotFoundView() {
               color: 'var(--signal, #6366f1)',
             }}
           >
-            404 Not Found
+            {t('errors.not_found', '404 Not Found')}
           </span>
           <h1
             style={{
@@ -71,7 +73,7 @@ export default function NotFoundView() {
               margin: '0.5rem 0 0.75rem',
             }}
           >
-            Resource Not Found
+            {t('errors.page_not_found', 'Resource Not Found')}
           </h1>
           <p
             style={{
@@ -81,7 +83,7 @@ export default function NotFoundView() {
               margin: 0,
             }}
           >
-            The page, record, or operational view you are looking for might have been relocated, archived, or is temporarily inaccessible.
+            {t('errors.not_found_desc', 'The page, record, or operational view you are looking for might have been relocated, archived, or is temporarily inaccessible.')}
           </p>
         </div>
 
@@ -101,7 +103,7 @@ export default function NotFoundView() {
               fontWeight: 600,
             }}
           >
-            <ArrowBackIcon sx={{ fontSize: 16 }} /> Return to Home
+            <ArrowBackIcon sx={{ fontSize: 16 }} /> {t('common.return_home', 'Return to Home')}
           </Link>
           <Link
             href="/workspace"
@@ -118,7 +120,7 @@ export default function NotFoundView() {
               fontWeight: 600,
             }}
           >
-            <DashboardIcon sx={{ fontSize: 16 }} /> Open Workspace
+            <DashboardIcon sx={{ fontSize: 16 }} /> {t('common.open_workspace', 'Open Workspace')}
           </Link>
         </div>
       </div>

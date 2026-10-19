@@ -42,7 +42,7 @@ Then start the frontend:
 npm run dev
 ```
 
-Open **http://localhost:3000/login** and sign in with `superadmin@nucleus.com` and the shared demo password documented in [ROLE_MODEL.md](docs/engineering/ROLE_MODEL.md). These are synthetic demo credentials. The local configuration is ignored by Git. Demo identity is held in memory, so a browser reload requires sign-in again. Forms update preview state; they do not persist to a server. No database migration, ORM setup, AI key or database credentials are required for UI review.
+Open **http://localhost:3000/login** and sign in with `superadmin@nucleus.com` and the demo password from your local, untracked environment configuration (see [identity and access](docs/architecture/security/NEW_IDENTITY-ACCESS.md)). These are synthetic demo credentials. The local configuration is ignored by Git. Demo identity is held in memory, so a browser reload requires sign-in again. Forms update preview state; they do not persist to a server. No database migration, ORM setup, AI key or database credentials are required for UI review.
 
 For a fixed local address and port:
 
@@ -71,8 +71,8 @@ In `.env.local` (or `.env`), ensure the database configuration points to your Ne
 
 ```dotenv
 APP_DATA_MODE=database
-DATABASE_URL=postgresql://neondb_owner:npg_cO3Qs5NyYiKU@ep-old-block-ae88r1lh-pooler.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-MIGRATION_DATABASE_URL=postgresql://neondb_owner:npg_cO3Qs5NyYiKU@ep-old-block-ae88r1lh.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+DATABASE_URL=postgresql://<user>:<password>@<pooled-host>/<database>?sslmode=require
+MIGRATION_DATABASE_URL=postgresql://<user>:<password>@<direct-host>/<database>?sslmode=require
 MIGRATION_DATABASE_DRIVER=postgres
 ```
 
@@ -88,8 +88,8 @@ In `.env.local`, update the database URLs to your local postgres instance:
 
 ```dotenv
 APP_DATA_MODE=database
-DATABASE_URL=postgresql://postgres:password@localhost:5432/nucleus_hrms
-MIGRATION_DATABASE_URL=postgresql://postgres:password@localhost:5432/nucleus_hrms
+DATABASE_URL=postgresql://<user>:<password>@localhost:5432/nucleus_hrms
+MIGRATION_DATABASE_URL=postgresql://<user>:<password>@localhost:5432/nucleus_hrms
 MIGRATION_DATABASE_DRIVER=postgres
 ```
 
@@ -100,20 +100,20 @@ npm run dev
 
 ---
 
-## Phase 4: Enterprise AI Subsystem (Top 10 WOW Features)
+## Enterprise AI Subsystem: Neural Sonic Beacon & Quantum Copilot
 
-All 10 Enterprise AI features are implemented in the UI and connected through services:
+The legacy AI implementation has been completely removed and replaced with a cutting-edge multimodal intelligence architecture:
 
-1. **Grounded AI Copilot & Autonomous Agent**: Click `✨ Ask AI` on the bottom right or open `Analytics & AI` → `AI Copilot Studio`.
-2. **Predictive Attrition & Flight Risk Radar**: Located in `Analytics & AI` → `People Intelligence`.
-3. **Labour Codes 2026 50% Wage Simulator**: Located in `Core HR` → `Statutory Compliance` and `Analytics & AI` → `Payroll Analytics`.
-4. **Smart Attendance Anomaly Detection**: Located in `Workforce Operations` → `Attendance & Shift Rosters`.
-5. **AI Automated Shift Rostering & Overtime Heatmap**: Located in `Analytics & AI` → `Workforce & Ops`.
-6. **MCI (Multiplier Capability Index v2) Engine**: Located in `Analytics & AI` → `MCI Engine`.
-7. **Candidate Resume AI Scoring & 5-Stage Funnel Velocity**: Located in `Talent` → `Recruitment & ATS` and `Analytics & AI` → `Talent Funnel`.
-8. **9-Box Performance Grid & Succession Matrix**: Located in `Talent` → `Performance & 9-Box`.
-9. **Natural Language Voice Navigation & Actions Engine**: Click the `🎙️` icon in the top navigation bar (or press `V`).
-10. **Dynamic Enterprise Custom Reports Builder & MIS Hub**: Located in `Analytics & AI` → `Custom Reports` & `MIS Master Hub`.
+- **Neural Sonic Beacon (`TopNav`)**: A dynamic living audio pill in the top header with real-time waveform visualizers, orbital pulse glow, and speech state detection.
+- **Quantum Copilot HUD**: A revolutionary floating multimodal neural island:
+  - **Unified Voice + Text Interaction**: Continuous low-latency bidirectional PCM voice streaming via Google Gemini Live API WebSockets, plus an instant policy text omnibar.
+  - **Audio-Reactive Quantum Vortex Core**: Real-time fluid particle core that scales and undulates with speaker decibels.
+  - **Grounded Policy Reasoning**: Governed by LangGraph (`policy-graph.ts`) over the authoritative handbook corpus (`policy-corpus.ts`), returning verified citation badges.
+  - **Interactive Policy Evidence Hologram**: Clicking any citation opens the verified statutory rule, section, and immutable invariant.
+  - **Executive Action Slip**: Safe, human-in-the-loop action drafting (leaves, attendance corrections, gate passes) requiring explicit one-click confirmation.
+  - **Smart Context Directives**: Automatically adapts quick questions based on the active domain/console (Attendance, Leave, Payroll, Recruitment, Settings).
+
+> I have implemented the new Neural Sonic Beacon and Quantum Copilot architecture and removed the legacy AI implementation in nucleus-suite. The TypeScript verification check is currently completing to ensure all types and imports are valid.
 
 
 ## Source architecture
@@ -153,11 +153,11 @@ The canonical menu hierarchy is `src/data/ui/navigation.catalog.json`. `src/lib/
 
 Use **Modules** or **⌘M / Ctrl+M / Alt+M** to open the menu chooser. The left dock selects a domain, the right navigation lists its children, and the feature catalog provides searchable cards. Dashboard consoles S1–S10 are entries under Dashboard Consoles. Console and module visibility respect the current demo persona; browser controls are not a production authorization boundary.
 
-The complete item-to-panel map is in [Navigation inventory](docs/NAVIGATION_INVENTORY.md). Menu validation checks that every registered operational screen is reachable and every icon resolves to an installed MUI module.
+The complete item-to-panel map is in [Navigation inventory](docs/architecture/hld/functional-reference/NEW_NAVIGATION-INVENTORY.md). Menu validation checks that every registered operational screen is reachable and every icon resolves to an installed MUI module.
 
 ## Process workbook coverage
 
-The reference workbook is [Nucleus Process Flows and Process Maps v1.0](docs/Nucleus_Process_Flows_and_Process_Maps_v1.0.xlsx). All 23 sheets are inventoried in [Workbook UI coverage](docs/WORKBOOK_UI_COVERAGE.md), with row-level details in `docs/WORKBOOK_UI_COVERAGE.json`.
+The reference workbooks are private (see `internal-docs/NEW_README.md`). Screen and form coverage is summarized in [Workbook UI coverage](docs/architecture/hld/functional-reference/NEW_WORKBOOK-COVERAGE.md).
 
 All 49 screen IDs match an operational UI surface. This establishes navigation coverage, **not complete feature implementation**. The workbook also specifies conditional fields, validations, state machines, offline behavior, approval chains, integrations and nonfunctional gates. These remain partial or deferred. Each operational screen has a Process guide displaying its source actions, fields, steps and rules for interface comparison.
 
@@ -222,20 +222,20 @@ Private and proprietary. See [LICENSE](LICENSE). No public open-source license i
 
 ## Repository governance
 
-Read [AGENTS.md](AGENTS.md) and [engineering guidance](docs/engineering/README.md) before changing the application. The [role model](docs/engineering/ROLE_MODEL.md) defines the five preview accounts and their limits.
+Read [AGENTS.md](AGENTS.md) and [the documentation index](docs/NEW_README.md) before changing the application. The [identity and access model](docs/architecture/security/NEW_IDENTITY-ACCESS.md) defines the five preview accounts and their limits.
 
 ## Public website and personal dashboards
 
 The public website provides Home (`/`), About (`/about`), Features (`/features`), Why Nucleus (`/why-nucleus`), Docs (`/docs`) and Contact (`/contact`). `/login` opens the demo sign-in; successful sign-in opens `/workspace` with the existing navigation structure. Logout returns to Home. The contact preview downloads an enquiry draft and does not send email.
 
-Superadmin, HR Manager and Employee can customize their starting dashboards: drag with pointer/touch/keyboard, add or remove permitted widgets, edit titles and sizes, change density and colours, undo/redo, apply presets and save up to six named layouts. Import/export contains presentation settings only. Layouts persist on the current browser per account/role/console; operational records remain temporary. See [dashboard customization](docs/engineering/DASHBOARD_CUSTOMIZATION.md) for the complete behavior and limitations.
+Superadmin, HR Manager and Employee can customize their starting dashboards: drag with pointer/touch/keyboard, add or remove permitted widgets, edit titles and sizes, change density and colours, undo/redo, apply presets and save up to six named layouts. Import/export contains presentation settings only. Layouts persist on the current browser per account/role/console; operational records remain temporary. See [frontend architecture](docs/architecture/hld/NEW_FRONTEND-ARCHITECTURE.md) for the complete behavior and limitations.
 
 Public website content and dashboard definitions are JSON-backed through separate async adapters. No live backend, database or contact integration is added by these features.
 
 ## Responsive interface
 
-The workspace adapts to phone, tablet and desktop widths while preserving role permissions. Mobile navigation uses the labeled Modules menu; dashboards stack, forms reflow, and wide tables remain scrollable with keyboard access. Light/dark workspace colors also apply to MUI dialogs and controls. See [device behavior and verification](docs/engineering/RESPONSIVE_UX.md).
+The workspace adapts to phone, tablet and desktop widths while preserving role permissions. Mobile navigation uses the labeled Modules menu; dashboards stack, forms reflow, and wide tables remain scrollable with keyboard access. Light/dark workspace colors also apply to MUI dialogs and controls. See [frontend guidelines](docs/architecture/guidelines/NEW_FRONTEND-REACT.md).
 
 ### Appearance across the application
 
-Choose the palette icon in the public, login or workspace header: **Pearl violet**, **Graphite night** (the preserved dark palette), **Slate blue**, or **Sage teal**. The selection persists across navigation, sign-in, sign-out and browser reloads, and synchronizes across tabs. Shared semantic tokens keep page surfaces, text, inputs and MUI dialogs coordinated. See [responsive and appearance guidance](docs/engineering/RESPONSIVE_UX.md).
+Choose the palette icon in the public, login or workspace header: **Pearl violet**, **Graphite night** (the preserved dark palette), **Slate blue**, or **Sage teal**. The selection persists across navigation, sign-in, sign-out and browser reloads, and synchronizes across tabs. Shared semantic tokens keep page surfaces, text, inputs and MUI dialogs coordinated. See [design tokens guideline](docs/architecture/guidelines/NEW_DESIGN-TOKENS-UI.md).

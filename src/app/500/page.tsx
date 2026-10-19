@@ -2,8 +2,10 @@
 import Link from 'next/link';
 import DnsIcon from '@mui/icons-material/Dns';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { useTranslation } from '@/context/I18nContext';
 
 export default function InternalErrorPage() {
+  const { t } = useTranslation();
   return (
     <main
       style={{
@@ -58,7 +60,7 @@ export default function InternalErrorPage() {
               color: 'var(--alert, #f59e0b)',
             }}
           >
-            500 Internal Error
+            {t('errors.server_error', '500 Internal Error')}
           </span>
           <h1
             style={{
@@ -68,7 +70,7 @@ export default function InternalErrorPage() {
               margin: '0.5rem 0 0.75rem',
             }}
           >
-            Server Interrupted
+            {t('errors.server_interrupted', 'Server Interrupted')}
           </h1>
           <p
             style={{
@@ -78,7 +80,7 @@ export default function InternalErrorPage() {
               margin: 0,
             }}
           >
-            The system encountered an unexpected condition that prevented it from fulfilling your request. Our technical operations team has been automatically flagged. Please try reloading or checking back shortly.
+            {t('errors.server_interrupted_desc', 'The system encountered an unexpected condition that prevented it from fulfilling your request. Our technical operations team has been automatically flagged. Please try reloading or checking back shortly.')}
           </p>
         </div>
 
@@ -100,7 +102,7 @@ export default function InternalErrorPage() {
               fontFamily: 'inherit',
             }}
           >
-            <RefreshIcon sx={{ fontSize: 16 }} /> Reload Page
+            <RefreshIcon sx={{ fontSize: 16 }} /> {t('common.reload_page', 'Reload Page')}
           </button>
           <Link
             href="/"
@@ -117,7 +119,7 @@ export default function InternalErrorPage() {
               fontWeight: 600,
             }}
           >
-            Return to Home
+            {t('common.return_home', 'Return to Home')}
           </Link>
         </div>
       </div>

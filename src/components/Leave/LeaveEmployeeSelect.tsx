@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import { Autocomplete, TextField } from "@mui/material";
 import type { LeaveEmployee } from "@/app/actions/leaveActions";
 export default function LeaveEmployeeSelect({
@@ -14,6 +16,7 @@ export default function LeaveEmployeeSelect({
   label: string;
   required?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <Autocomplete
       fullWidth
@@ -31,7 +34,7 @@ export default function LeaveEmployeeSelect({
         )
       }
       renderInput={(params) => (
-        <TextField {...params} label={label} placeholder="Select Employee" required={required} />
+        <TextField {...params} label={label} placeholder={t("components.Leave.LeaveEmployeeSelect.placeholder_select_employee", "Select Employee")} required={required} />
       )}
     />
   );

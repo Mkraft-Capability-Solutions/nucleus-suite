@@ -67,9 +67,18 @@ export class SpeechPlayer {
   private playHead = 0;
   private active: AudioBufferSourceNode[] = [];
 
-  private ensureContext(): AudioContext {
+  ensureContext(): AudioContext {
     if (!this.context) this.context = new AudioContext({ sampleRate: OUTPUT_SAMPLE_RATE });
     return this.context;
+  }
+
+  unlock(): void {
+    try {
+      const context = this.ensureContext();
+      if (context.state === 'suspended') void context.resume();
+    } catch {
+      // AudioContext init fallback
+    }
   }
 
   async enqueue(pcm: ArrayBuffer): Promise<void> {

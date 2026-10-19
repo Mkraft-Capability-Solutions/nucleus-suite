@@ -1,0 +1,14 @@
+{
+  "something_wrong": "Un problème est survenu",
+  "something_wrong_desc": "Une erreur inattendue est survenue lors de l'affichage de cette interface. Vous pouvez réessayer ou revenir à l'espace de travail.",
+  "app_error": "Erreur de l'application",
+  "system_error": "Erreur système",
+  "app_failure": "Échec de l'application",
+  "app_failure_desc": "Une erreur fatale est survenue dans la structure principale. Veuillez redémarrer ou recharger la session.",
+  "retry_recovery": "Réessayer la récupération",
+  "return_home": "Retour à l'accueil",
+  "page_not_found": "Page non trouvée",
+  "page_not_found_desc": "L'itinéraire d'interface demandé est introuvable.",
+  "forbidden": "Accès restreint",
+  "forbidden_desc": "Vous n'avez pas l'autorisation nécessaire pour accéder à cette vue."
+}

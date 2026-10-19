@@ -63,3 +63,8 @@ next-panic-*.log
 /.idea/
 /.claude-/
 
+
+# Documentation, plans and private data are kept out of the code repository
+/docs/
+/plan/
+/internal-data/

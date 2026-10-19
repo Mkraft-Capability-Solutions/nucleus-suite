@@ -3,8 +3,10 @@
 import Link from 'next/link';
 import ShieldAlert from '@mui/icons-material/Shield';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useTranslation } from '@/context/I18nContext';
 
 export default function ForbiddenView() {
+  const { t } = useTranslation();
   return (
     <main
       style={{
@@ -59,7 +61,7 @@ export default function ForbiddenView() {
               color: 'var(--flag, #ef4444)',
             }}
           >
-            403 Forbidden
+            {t('errors.forbidden', '403 Forbidden')}
           </span>
           <h1
             style={{
@@ -69,7 +71,7 @@ export default function ForbiddenView() {
               margin: '0.5rem 0 0.75rem',
             }}
           >
-            Access Denied
+            {t('errors.access_denied', 'Access Denied')}
           </h1>
           <p
             style={{
@@ -79,7 +81,7 @@ export default function ForbiddenView() {
               margin: 0,
             }}
           >
-            You do not have the required permissions or role clearance to access this resource. If you believe this is in error, please contact your Organization Super Administrator or Human Resources Lead.
+            {t('errors.forbidden_desc', 'You do not have the required permissions or role clearance to access this resource. If you believe this is in error, please contact your Organization Super Administrator or Human Resources Lead.')}
           </p>
         </div>
 
@@ -99,7 +101,7 @@ export default function ForbiddenView() {
               fontWeight: 600,
             }}
           >
-            <ArrowBackIcon sx={{ fontSize: 16 }} /> Return to Home
+            <ArrowBackIcon sx={{ fontSize: 16 }} /> {t('common.return_home', 'Return to Home')}
           </Link>
           <Link
             href="/workspace"
@@ -116,7 +118,7 @@ export default function ForbiddenView() {
               fontWeight: 600,
             }}
           >
-            Open Workspace
+            {t('common.open_workspace', 'Open Workspace')}
           </Link>
         </div>
       </div>

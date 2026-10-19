@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -23,6 +25,7 @@ interface Operation {
 }
 
 export default function ApiDocsPage() {
+    const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuth();
   const [localUser, setLocalUser] = useState<any>(null);
   const [loadingTimedOut, setLoadingTimedOut] = useState(false);
@@ -250,7 +253,7 @@ export default function ApiDocsPage() {
   if (!isHydrated) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg, #0f172a)', color: 'var(--text, #f8fafc)' }}>
-        <p>Verifying Super Administrator clearance...</p>
+        <p>{t("app.api-docs.page.text_verifying_super_administrator_clearance", "Verifying Super Administrator clearance...")}</p>
       </div>
     );
   }
@@ -300,9 +303,10 @@ export default function ApiDocsPage() {
           >
             <ApiIcon sx={{ fontSize: 36 }} />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>Super Administrator Clearance Required</h1>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 800, margin: 0 }}>{t("app.api-docs.page.text_super_administrator_clearance_required", "Super Administrator Clearance Required")}</h1>
           <p style={{ color: 'var(--text-2, #94a3b8)', margin: 0, fontSize: '0.925rem', lineHeight: 1.6 }}>
-            The API Specification and Interactive Explorer are restricted to Super Administrators. Please sign in with your administrator credentials (e.g. <code>dhanraj@nucleus.com</code>) to unlock full API documentation and testing capabilities.
+            
+            {t("app.api-docs.page.text_the_api_specification_and_interactive_ex", "The API Specification and Interactive Explorer are restricted to Super Administrators. Please sign in with your administrator credentials (e.g.")} <code>{t("app.api-docs.page.text_dhanrajnucleuscom", "dhanraj@nucleus.com")}</code>{t("app.api-docs.page.text_to_unlock_full_api_documentation_and_tes", ") to unlock full API documentation and testing capabilities.")}
           </p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
             <Link
@@ -320,7 +324,8 @@ export default function ApiDocsPage() {
                 fontSize: '0.875rem',
               }}
             >
-              Sign In as Super Admin
+              
+              {t("app.api-docs.page.text_sign_in_as_super_admin", "Sign In as Super Admin")}
             </Link>
             <Link
               href="/workspace"
@@ -337,7 +342,8 @@ export default function ApiDocsPage() {
                 fontSize: '0.875rem',
               }}
             >
-              Return to Workspace
+              
+              {t("app.api-docs.page.text_return_to_workspace", "Return to Workspace")}
             </Link>
           </div>
         </div>
@@ -386,7 +392,7 @@ export default function ApiDocsPage() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Nucleus API Documentation</h1>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>{t("app.api-docs.page.text_nucleus_api_documentation", "Nucleus API Documentation")}</h1>
               <span
                 style={{
                   fontSize: '0.6875rem',
@@ -398,11 +404,13 @@ export default function ApiDocsPage() {
                   textTransform: 'uppercase',
                 }}
               >
-                SUPERADMIN ACCESS
+                
+                {t("app.api-docs.page.text_superadmin_access", "SUPERADMIN ACCESS")}
               </span>
             </div>
             <p style={{ fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)', margin: '0.25rem 0 0' }}>
-              352 Endpoints • 441 Handlers • OpenAPI 3.0.3 Verified
+              
+              {t("app.api-docs.page.text_352_endpoints_441_handlers_openapi_303_v", "352 Endpoints • 441 Handlers • OpenAPI 3.0.3 Verified")}
             </p>
           </div>
         </div>
@@ -432,7 +440,8 @@ export default function ApiDocsPage() {
                 transition: 'all 0.15s ease',
               }}
             >
-              Interactive Explorer
+              
+              {t("app.api-docs.page.text_interactive_explorer", "Interactive Explorer")}
             </button>
             <button
               type="button"
@@ -449,7 +458,8 @@ export default function ApiDocsPage() {
                 transition: 'all 0.15s ease',
               }}
             >
-              Swagger UI
+              
+              {t("app.api-docs.page.text_swagger_ui", "Swagger UI")}
             </button>
           </div>
 
@@ -469,7 +479,7 @@ export default function ApiDocsPage() {
               fontWeight: 600,
             }}
           >
-            <FileDownloadIcon sx={{ fontSize: 16 }} /> Export OpenAPI Spec
+            <FileDownloadIcon sx={{ fontSize: 16 }} />  {t("app.api-docs.page.text_export_openapi_spec", "Export OpenAPI Spec")}
           </a>
 
           <Link
@@ -487,7 +497,7 @@ export default function ApiDocsPage() {
               fontWeight: 600,
             }}
           >
-            <ArrowBackIcon sx={{ fontSize: 16 }} /> Back to Workspace
+            <ArrowBackIcon sx={{ fontSize: 16 }} />  {t("app.api-docs.page.text_back_to_workspace", "Back to Workspace")}
           </Link>
         </div>
       </header>
@@ -587,7 +597,7 @@ export default function ApiDocsPage() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search endpoints, modules, paths (e.g. /api/v1/helpdesk, roster, attendance)..."
+                  placeholder={t("app.api-docs.page.placeholder_search_endpoints_modules_paths_eg_apiv1h", "Search endpoints, modules, paths (e.g. /api/v1/helpdesk, roster, attendance)...")}
                   style={{
                     width: '100%',
                     padding: '0.65rem 1rem 0.65rem 2.5rem',
@@ -612,7 +622,7 @@ export default function ApiDocsPage() {
                   fontSize: '0.875rem',
                 }}
               >
-                <option value="ALL">All Categories ({allTags.length})</option>
+                <option value="ALL">{t("app.api-docs.page.text_all_categories", "All Categories (")}{allTags.length})</option>
                 {allTags.map((tag) => (
                   <option key={tag} value={tag}>
                     {tag}
@@ -647,7 +657,8 @@ export default function ApiDocsPage() {
                 </button>
               ))}
               <span style={{ marginLeft: 'auto', fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)', alignSelf: 'center' }}>
-                Showing {filteredOps.length} of {operations.length} endpoints
+                
+                {t("app.api-docs.page.text_showing", "Showing")} {filteredOps.length}  {t("app.api-docs.page.text_of", "of")} {operations.length}  {t("app.api-docs.page.text_endpoints", "endpoints")}
               </span>
             </div>
           </div>
@@ -720,7 +731,7 @@ export default function ApiDocsPage() {
                           const curl = `curl -X ${op.method} "http://localhost:3000${op.path}" -H "Content-Type: application/json"`;
                           copyToClipboard(curl, `curl-${idx}`);
                         }}
-                        title="Copy cURL Command"
+                        title={t("app.api-docs.page.title_copy_curl_command", "Copy cURL Command")}
                         style={{
                           padding: '0.35rem 0.6rem',
                           borderRadius: '6px',
@@ -735,7 +746,8 @@ export default function ApiDocsPage() {
                         }}
                       >
                         {copiedId === `curl-${idx}` ? <CheckCircleIcon sx={{ fontSize: 14, color: '#10b981' }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
-                        cURL
+                        
+                        {t("app.api-docs.page.text_curl", "cURL")}
                       </button>
 
                       <button
@@ -755,7 +767,7 @@ export default function ApiDocsPage() {
                           gap: '0.3rem',
                         }}
                       >
-                        <PlayArrowIcon sx={{ fontSize: 14 }} /> Test
+                        <PlayArrowIcon sx={{ fontSize: 14 }} />  {t("app.api-docs.page.text_test", "Test")}
                       </button>
                     </div>
                   </div>
@@ -772,7 +784,8 @@ export default function ApiDocsPage() {
                       {['POST', 'PUT', 'PATCH'].includes(op.method) && (
                         <div style={{ marginBottom: '0.75rem' }}>
                           <label style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)', display: 'block', marginBottom: '0.3rem' }}>
-                            Request Payload (JSON):
+                            
+                            {t("app.api-docs.page.text_request_payload_json", "Request Payload (JSON):")}
                           </label>
                           <textarea
                             value={testPayload}
@@ -793,7 +806,7 @@ export default function ApiDocsPage() {
                       )}
 
                       {testLoading ? (
-                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)' }}>Executing live HTTP call...</div>
+                        <div style={{ fontSize: '0.8125rem', color: 'var(--text-2, #94a3b8)' }}>{t("app.api-docs.page.text_executing_live_http_call", "Executing live HTTP call...")}</div>
                       ) : testResponse ? (
                         <div>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
@@ -804,9 +817,10 @@ export default function ApiDocsPage() {
                                 color: testResponse.status < 400 ? '#10b981' : '#ef4444',
                               }}
                             >
-                              HTTP {testResponse.status} {testResponse.statusText}
+                              
+                              {t("app.api-docs.page.text_http", "HTTP")} {testResponse.status} {testResponse.statusText}
                             </span>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)' }}>Time: {testResponse.duration}</span>
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2, #94a3b8)' }}>{t("app.api-docs.page.text_time", "Time:")} {testResponse.duration}</span>
                           </div>
                           <pre
                             style={{

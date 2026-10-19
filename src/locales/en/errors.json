@@ -1,0 +1,14 @@
+{
+  "something_wrong": "Something Went Wrong",
+  "something_wrong_desc": "An unexpected error occurred while rendering this interface. Our systems have logged the event. You can attempt to retry the current action or return to the workspace home.",
+  "app_error": "Application Error",
+  "system_error": "System Error",
+  "app_failure": "Application Failure",
+  "app_failure_desc": "A fatal error occurred in the core framework layout. Nucleus diagnostic telemetry has captured this state. Please restart or reload the session.",
+  "retry_recovery": "Retry Recovery",
+  "return_home": "Return to Home",
+  "page_not_found": "Page Not Found",
+  "page_not_found_desc": "The requested interface route could not be located in this enterprise build.",
+  "forbidden": "Access Restricted",
+  "forbidden_desc": "You do not have the required role or authorization to access this view."
+}

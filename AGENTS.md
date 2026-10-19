@@ -12,3 +12,9 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - **NEVER run `git commit` or `git push` unless the USER explicitly requests it.**
 - All code changes must remain local and uncommitted until the user explicitly directs you to commit or push.
 - Verify everything locally (via typecheck, unit tests, build, and local preview) and report the results to the user.
+
+# Project docs & rules
+- Current phase: **Platform refactor, local-first (Phase 0 →)**. Roadmap: `docs/plans/NEW_00-MASTER-ROADMAP.md`.
+- Docs index: `docs/NEW_README.md`; architecture: `docs/architecture/NEW_README.md`.
+- Agent rules, skills and subagents: `.claude/CLAUDE.md` (with `.claude/rules/`, `.claude/skills/`, `.claude/agents/`).
+- Definition of done: zero errors from typecheck, lint, tests and build (and ruff, mypy, pytest for `services/api`); see `.claude/rules/NEW_DEFINITION-OF-DONE.md`.

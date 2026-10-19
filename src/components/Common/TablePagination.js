@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { useTranslation } from '@/context/I18nContext';
 
 /**
  * Reusable enterprise table pagination bar conforming to design system tokens.
@@ -12,6 +13,7 @@ export default function TablePagination({
     onPageSizeChange,
     pageSizeOptions = [10, 15, 25, 50]
 }) {
+    const { t } = useTranslation();
     const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
     const startRecord = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
     const endRecord = Math.min(currentPage * pageSize, totalItems);
@@ -33,11 +35,11 @@ export default function TablePagination({
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <span>
-                    Showing <strong style={{ color: 'var(--text)' }}>{startRecord}</strong> to <strong style={{ color: 'var(--text)' }}>{endRecord}</strong> of <strong style={{ color: 'var(--text)' }}>{totalItems}</strong> entries
+                    {t('common.showing', 'Showing')} <strong style={{ color: 'var(--text)' }}>{startRecord}</strong> {t('common.to', 'to')} <strong style={{ color: 'var(--text)' }}>{endRecord}</strong> {t('common.of', 'of')} <strong style={{ color: 'var(--text)' }}>{totalItems}</strong> {t('common.entries', 'entries')}
                 </span>
                 <span style={{ margin: '0 0.35rem', color: 'var(--line)' }}>|</span>
                 <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
-                    <span>Rows:</span>
+                    <span>{t('common.rows', 'Rows')}:</span>
                     <select
                         className="pageSize"
                         value={pageSize}
@@ -88,11 +90,11 @@ export default function TablePagination({
                         transition: 'all 0.15s ease'
                     }}
                 >
-                    &larr; Prev
+                    {t('common.prev', '← Prev')}
                 </button>
 
                 <span style={{ padding: '0 0.4rem', color: 'var(--text)', fontSize: '0.82rem' }}>
-                    Page <strong style={{ color: 'var(--signal-ink)' }}>{currentPage}</strong> of <strong>{totalPages}</strong>
+                    {t('common.page', 'Page')} <strong style={{ color: 'var(--signal-ink)' }}>{currentPage}</strong> {t('common.of', 'of')} <strong>{totalPages}</strong>
                 </span>
 
                 <button
@@ -117,7 +119,7 @@ export default function TablePagination({
                         transition: 'all 0.15s ease'
                     }}
                 >
-                    Next &rarr;
+                    {t('common.next', 'Next →')}
                 </button>
             </div>
         </div>

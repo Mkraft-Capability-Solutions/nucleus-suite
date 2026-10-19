@@ -12,7 +12,7 @@ function WorkspaceRoute() {
 
     useEffect(() => {
         if (isSigningOut) return;
-        if (!user && pathname === '/workspace') {
+        if (!user && pathname !== '/login') {
             router.replace('/login');
         } else if (user && pathname === '/login') {
             router.replace('/workspace');

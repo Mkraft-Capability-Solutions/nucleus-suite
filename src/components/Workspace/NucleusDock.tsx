@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useEffect, useRef, useState } from 'react';
 import { useNucleusSession } from '@/context/NucleusSessionProvider';
 import { NucleusOrb } from './NucleusOrb';
@@ -18,6 +20,7 @@ import OpenInNew from '@mui/icons-material/OpenInNew';
  * allowing continuous conversation, navigation, and live action draft confirmations.
  */
 export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => void }) {
+  const { t } = useTranslation();
   const { status, listening, turns, draft, draftResult, confirmDraft, cancelDraft, disconnect, getLevels } = useNucleusSession();
   const [collapsed, setCollapsed] = useState(false);
   const previousDraft = useRef<string | null>(null);
@@ -36,7 +39,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
 
   return (
     <aside
-      aria-label="Nucleus AI active voice session"
+      aria-label={t("components.Workspace.NucleusDock.aria-label_nucleus_ai_active_voice_session", "Nucleus AI active voice session")}
       style={{
         position: 'fixed',
         bottom: '16px',
@@ -74,7 +77,8 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
 
         <div style={{ flex: 1, minWidth: 0 }}>
           <p style={{ margin: 0, fontSize: '12px', fontWeight: 700, color: 'var(--text, #10222F)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-            Nucleus Talk
+            
+            {t("components.Workspace.NucleusDock.text_nucleus_talk", "Nucleus Talk")}
           </p>
           <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-2, #5A6B78)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {status === 'connecting' ? 'Opening session…' : draft ? 'Awaiting confirmation' : 'Listening…'}
@@ -132,7 +136,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
           >
             {lastUser && (
               <div style={{ alignSelf: 'flex-end', textAlign: 'right', maxWidth: '85%' }}>
-                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>You</span>
+                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_you", "You")}</span>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', fontWeight: 500, color: 'var(--text, #10222F)', background: 'var(--signal-wash, rgba(37, 99, 235, 0.08))', padding: '6px 10px', borderRadius: '8px' }}>
                   {lastUser.text}
                 </p>
@@ -140,7 +144,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
             )}
             {lastAssistant && (
               <div style={{ alignSelf: 'flex-start', textAlign: 'left', maxWidth: '85%' }}>
-                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>Nucleus</span>
+                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_nucleus", "Nucleus")}</span>
                 <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text, #10222F)', background: 'var(--card-2, rgba(0, 0, 0, 0.04))', padding: '6px 10px', borderRadius: '8px' }}>
                   {lastAssistant.text}
                 </p>
@@ -148,7 +152,8 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
             )}
             {!lastUser && !lastAssistant && (
               <p style={{ margin: 0, textAlign: 'center', fontSize: '11px', color: 'var(--text-2, #5A6B78)' }}>
-                Listening… Say a command or ask a question.
+                
+                {t("components.Workspace.NucleusDock.text_listening_say_a_command_or_ask_a_questio", "Listening… Say a command or ask a question.")}
               </p>
             )}
           </div>
@@ -163,7 +168,8 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
               }}
             >
               <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 700, color: 'var(--text, #10222F)' }}>
-                Confirm before this is written
+                
+                {t("components.Workspace.NucleusDock.text_confirm_before_this_is_written", "Confirm before this is written")}
               </p>
               <p style={{ margin: '0 0 8px', fontSize: '11px', color: 'var(--text-2, #5A6B78)' }}>
                 {draft.action.summary}
@@ -173,7 +179,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                   <div key={field.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderBottom: '1px solid var(--line, rgba(0,0,0,0.05))', paddingBottom: '3px' }}>
                     <span style={{ fontWeight: 600, color: 'var(--text-2, #5A6B78)' }}>
                       {field.label}:
-                      {field.origin === 'default' && <span style={{ fontWeight: 400, marginLeft: '4px', opacity: 0.8 }}>(not supplied — form default)</span>}
+                      {field.origin === 'default' && <span style={{ fontWeight: 400, marginLeft: '4px', opacity: 0.8 }}>{t("components.Workspace.NucleusDock.text_not_supplied_form_default", "(not supplied — form default)")}</span>}
                     </span>
                     <span style={{ fontWeight: 600, color: 'var(--text, #10222F)' }}>
                       {typeof field.value === 'object' ? JSON.stringify(field.value) : String(field.value)}
@@ -201,7 +207,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                     cursor: 'pointer',
                   }}
                 >
-                  <Check sx={{ fontSize: 14 }} /> Confirm
+                  <Check sx={{ fontSize: 14 }} />  {t("components.Workspace.NucleusDock.text_confirm", "Confirm")}
                 </button>
                 <button
                   type="button"
@@ -221,7 +227,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                     cursor: 'pointer',
                   }}
                 >
-                  <Close sx={{ fontSize: 14 }} /> Cancel
+                  <Close sx={{ fontSize: 14 }} />  {t("components.Workspace.NucleusDock.text_cancel", "Cancel")}
                 </button>
               </div>
             </div>
@@ -261,7 +267,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                   padding: 0,
                 }}
               >
-                <OpenInNew sx={{ fontSize: 13 }} /> Expand Assistant
+                <OpenInNew sx={{ fontSize: 13 }} />  {t("components.Workspace.NucleusDock.text_expand_assistant", "Expand Assistant")}
               </button>
             )}
             <button
@@ -282,7 +288,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                 marginLeft: 'auto',
               }}
             >
-              <MicOff sx={{ fontSize: 13 }} /> End Session
+              <MicOff sx={{ fontSize: 13 }} />  {t("components.Workspace.NucleusDock.text_end_session", "End Session")}
             </button>
           </div>
         </>

@@ -2,20 +2,38 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
+const developmentScriptPolicy = process.env.NODE_ENV === 'production' ? '' : " 'unsafe-eval'";
+const contentSecurityPolicy = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${developmentScriptPolicy}`,
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://ui-avatars.com",
+  "font-src 'self' data:",
+  "connect-src 'self' https: wss://generativelanguage.googleapis.com",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+  "frame-ancestors 'none'",
+  "upgrade-insecure-requests",
+].join('; ');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   poweredByHeader: false,
   productionBrowserSourceMaps: false,
-  // Isolate local compiler verification from a running development server.
   distDir: process.env.NUCLEUS_ISOLATED_BUILD === 'true' ? 'build' : '.next',
+  turbopack: {},
   async headers() {
-    return [{ source: '/:path*', headers: [
-      { key: 'X-Content-Type-Options', value: 'nosniff' },
-      { key: 'X-Frame-Options', value: 'DENY' },
-      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-      { key: 'Content-Security-Policy', value: "frame-ancestors 'none'; object-src 'none'; base-uri 'self'" },
-    ] }];
+    return [{
+      source: '/(.*)',
+      headers: [
+        { key: 'Content-Security-Policy', value: contentSecurityPolicy },
+        { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+        { key: 'X-Content-Type-Options', value: 'nosniff' },
+        { key: 'X-Frame-Options', value: 'DENY' },
+        { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=(), payment=()' },
+      ],
+    }];
   },
   images: {
     remotePatterns: [
@@ -27,7 +45,6 @@ const nextConfig = {
   },
   reactCompiler: true,
   webpack: (config, { dev, isServer }) => {
-    // Client-only production obfuscation: hard excludes node_modules and server bundles
     if (!dev && !isServer) {
       try {
         const WebpackObfuscator = require('webpack-obfuscator');

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
@@ -27,6 +29,7 @@ import RefreshOutlined from '@mui/icons-material/RefreshOutlined';
 import SmartToyOutlined from '@mui/icons-material/SmartToyOutlined';
 
 export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFeature = 'analytics_people' }) {
+    const { t } = useTranslation();
     const {
         employees = [],
         positions = [],
@@ -333,8 +336,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
             {/* Header Zone */}
             <div className={styles.headerRow}>
                 <div className={styles.titleBlock}>
-                    <h2>People Intelligence & Predictive AI Studio</h2>
-                    <p>Enterprise workforce telemetry, wage bill analytics, talent funnel velocity, and autonomous agent reasoning.</p>
+                    <h2>{t("components.Workspace.AnalyticsView.text_people_intelligence_predictive_ai_studio", "People Intelligence & Predictive AI Studio")}</h2>
+                    <p>{t("components.Workspace.AnalyticsView.text_enterprise_workforce_telemetry_wage_bill", "Enterprise workforce telemetry, wage bill analytics, talent funnel velocity, and autonomous agent reasoning.")}</p>
                 </div>
                 <div className={styles.headerActions}>
                     <button
@@ -343,7 +346,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                         onClick={() => showToast('Live Telemetry', 'Workforce telemetry refreshed from database records.', 'info')}
                     >
                         <RefreshOutlined sx={{ fontSize: 16 }} />
-                        Sync Telemetry
+                        
+                        {t("components.Workspace.AnalyticsView.text_sync_telemetry", "Sync Telemetry")}
                     </button>
                     <button
                         type="button"
@@ -351,7 +355,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                         onClick={() => setActiveTab('custom')}
                     >
                         <DownloadOutlined sx={{ fontSize: 16 }} />
-                        Export Reports
+                        
+                        {t("components.Workspace.AnalyticsView.text_export_reports", "Export Reports")}
                     </button>
                 </div>
             </div>
@@ -364,7 +369,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('people')}
                 >
                     <PeopleAltOutlined sx={{ fontSize: 16 }} />
-                    People Intelligence
+                    
+                    {t("components.Workspace.AnalyticsView.text_people_intelligence", "People Intelligence")}
                 </button>
                 <button
                     type="button"
@@ -372,7 +378,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('workforce')}
                 >
                     <AccessTimeOutlined sx={{ fontSize: 16 }} />
-                    Workforce & Ops
+                    
+                    {t("components.Workspace.AnalyticsView.text_workforce_ops", "Workforce & Ops")}
                 </button>
                 <button
                     type="button"
@@ -380,7 +387,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('payroll')}
                 >
                     <AccountBalanceWalletOutlined sx={{ fontSize: 16 }} />
-                    Payroll Analytics
+                    
+                    {t("components.Workspace.AnalyticsView.text_payroll_analytics", "Payroll Analytics")}
                 </button>
                 <button
                     type="button"
@@ -388,7 +396,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('talent')}
                 >
                     <HowToRegOutlined sx={{ fontSize: 16 }} />
-                    Talent Funnel
+                    
+                    {t("components.Workspace.AnalyticsView.text_talent_funnel", "Talent Funnel")}
                 </button>
                 <button
                     type="button"
@@ -396,7 +405,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('copilot')}
                 >
                     <AutoAwesomeOutlined sx={{ fontSize: 16 }} />
-                    AI Copilot Studio
+                    
+                    {t("components.Workspace.AnalyticsView.text_ai_copilot_studio", "AI Copilot Studio")}
                 </button>
                 <button
                     type="button"
@@ -404,7 +414,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('custom')}
                 >
                     <AssessmentOutlined sx={{ fontSize: 16 }} />
-                    Custom Reports
+                    
+                    {t("components.Workspace.AnalyticsView.text_custom_reports", "Custom Reports")}
                 </button>
                 <button
                     type="button"
@@ -412,7 +423,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('mis')}
                 >
                     <SummarizeOutlined sx={{ fontSize: 16 }} />
-                    MIS Master Hub
+                    
+                    {t("components.Workspace.AnalyticsView.text_mis_master_hub", "MIS Master Hub")}
                 </button>
                 <button
                     type="button"
@@ -420,7 +432,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     onClick={() => setActiveTab('operational')}
                 >
                     <SpeedOutlined sx={{ fontSize: 16 }} />
-                    MCI Engine
+                    
+                    {t("components.Workspace.AnalyticsView.text_mci_engine", "MCI Engine")}
                 </button>
             </div>
 
@@ -434,7 +447,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{totalHeadcount.toLocaleString()}</div>
-                                <div className={styles.statLabel}>Active Global Headcount</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_active_global_headcount", "Active Global Headcount")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -442,8 +455,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>{diversityIndex} / 100</div>
-                                <div className={styles.statLabel}>Diversity & Inclusion Index</div>
+                                <div className={styles.statValue}>{diversityIndex}  {t("components.Workspace.AnalyticsView.text_100", "/ 100")}</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_diversity_inclusion_index", "Diversity & Inclusion Index")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -452,7 +465,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{annualizedAttrition}%</div>
-                                <div className={styles.statLabel}>Annualized Attrition</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_annualized_attrition", "Annualized Attrition")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -461,7 +474,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{retentionRate}%</div>
-                                <div className={styles.statLabel}>Retention Rate</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_retention_rate", "Retention Rate")}</div>
                             </div>
                         </div>
                     </div>
@@ -469,16 +482,17 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     <div className={styles.grid2}>
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><PeopleAltOutlined sx={{ fontSize: 18 }} /> Gender & Demographic Diversity</h3>
+                                <h3><PeopleAltOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_gender_demographic_diversity", "Gender & Demographic Diversity")}</h3>
                                 <span className={styles.badge} style={{ background: 'var(--status-ok-wash)', color: 'var(--status-ok)' }}>
-                                    ESG Compliant
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_esg_compliant", "ESG Compliant")}
                                 </span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-                                        <span>Female Representation</span>
-                                        <strong>{femalePct}% ({femaleCount} Employees)</strong>
+                                        <span>{t("components.Workspace.AnalyticsView.text_female_representation", "Female Representation")}</span>
+                                        <strong>{femalePct}{t("components.Workspace.AnalyticsView.text_text", "% (")}{femaleCount}  {t("components.Workspace.AnalyticsView.text_employees", "Employees)")}</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
                                         <div style={{ width: `${femalePct}%`, height: '100%', background: 'var(--signal)' }}></div>
@@ -486,8 +500,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 </div>
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-                                        <span>Male Representation</span>
-                                        <strong>{malePct}% ({maleCount} Employees)</strong>
+                                        <span>{t("components.Workspace.AnalyticsView.text_male_representation", "Male Representation")}</span>
+                                        <strong>{malePct}{t("components.Workspace.AnalyticsView.text_text", "% (")}{maleCount}  {t("components.Workspace.AnalyticsView.text_employees", "Employees)")}</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
                                         <div style={{ width: `${malePct}%`, height: '100%', background: '#38bdf8' }}></div>
@@ -495,8 +509,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 </div>
                                 <div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}>
-                                        <span>Non-Binary / Self-Identified</span>
-                                        <strong>{otherPct}% ({otherCount} Employees)</strong>
+                                        <span>{t("components.Workspace.AnalyticsView.text_non-binary_self-identified", "Non-Binary / Self-Identified")}</span>
+                                        <strong>{otherPct}{t("components.Workspace.AnalyticsView.text_text", "% (")}{otherCount}  {t("components.Workspace.AnalyticsView.text_employees", "Employees)")}</strong>
                                     </div>
                                     <div style={{ height: '8px', background: 'var(--card-2)', borderRadius: '999px', overflow: 'hidden' }}>
                                         <div style={{ width: `${otherPct}%`, height: '100%', background: '#10b981' }}></div>
@@ -507,30 +521,31 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
 
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><SpeedOutlined sx={{ fontSize: 18 }} /> Flight Risk & Attrition Breakdown</h3>
+                                <h3><SpeedOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_flight_risk_attrition_breakdown", "Flight Risk & Attrition Breakdown")}</h3>
                                 <span className={styles.badge} style={{ background: 'var(--signal-wash)', color: 'var(--signal)' }}>
-                                    Predictive AI
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_predictive_ai", "Predictive AI")}
                                 </span>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                     <div>
-                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>Low Risk (Stable)</div>
-                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>High engagement & market parity</div>
+                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{t("components.Workspace.AnalyticsView.text_low_risk_stable", "Low Risk (Stable)")}</div>
+                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>{t("components.Workspace.AnalyticsView.text_high_engagement_market_parity", "High engagement & market parity")}</div>
                                     </div>
                                     <div style={{ fontWeight: 700, color: 'var(--status-ok)', fontSize: '1.1rem' }}>{lowRiskPct}%</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                     <div>
-                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>Medium Risk (Watchlist)</div>
-                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>Overtime spikes or stagnant band</div>
+                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{t("components.Workspace.AnalyticsView.text_medium_risk_watchlist", "Medium Risk (Watchlist)")}</div>
+                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>{t("components.Workspace.AnalyticsView.text_overtime_spikes_or_stagnant_band", "Overtime spikes or stagnant band")}</div>
                                     </div>
                                     <div style={{ fontWeight: 700, color: 'var(--pending)', fontSize: '1.1rem' }}>{medRiskPct}%</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px' }}>
                                     <div>
-                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>High Flight Risk (Urgent)</div>
-                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>Under-compensated vs peer quartile</div>
+                                        <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{t("components.Workspace.AnalyticsView.text_high_flight_risk_urgent", "High Flight Risk (Urgent)")}</div>
+                                        <div style={{ fontSize: '0.76rem', color: 'var(--text-2)' }}>{t("components.Workspace.AnalyticsView.text_under-compensated_vs_peer_quartile", "Under-compensated vs peer quartile")}</div>
                                     </div>
                                     <div style={{ fontWeight: 700, color: 'var(--flag)', fontSize: '1.1rem' }}>{highRiskPct}%</div>
                                 </div>
@@ -550,7 +565,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{capacityUtilization}%</div>
-                                <div className={styles.statLabel}>Shift Capacity Utilization</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_shift_capacity_utilization", "Shift Capacity Utilization")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -558,8 +573,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <TrendingUpOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>{avgOtHours} hrs</div>
-                                <div className={styles.statLabel}>Avg Overtime per Employee / Mo</div>
+                                <div className={styles.statValue}>{avgOtHours}  {t("components.Workspace.AnalyticsView.text_hrs", "hrs")}</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_avg_overtime_per_employee_mo", "Avg Overtime per Employee / Mo")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -568,7 +583,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{unplannedAbsenteeism}%</div>
-                                <div className={styles.statLabel}>Unplanned Absenteeism Rate</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_unplanned_absenteeism_rate", "Unplanned Absenteeism Rate")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -576,17 +591,18 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>{mciScore} pts</div>
-                                <div className={styles.statLabel}>Project Pod Delivery Velocity</div>
+                                <div className={styles.statValue}>{mciScore}  {t("components.Workspace.AnalyticsView.text_pts", "pts")}</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_project_pod_delivery_velocity", "Project Pod Delivery Velocity")}</div>
                             </div>
                         </div>
                     </div>
 
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
-                            <h3><AccessTimeOutlined sx={{ fontSize: 18 }} /> Shift & Site Overtime Heatmap</h3>
+                            <h3><AccessTimeOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_shift_site_overtime_heatmap", "Shift & Site Overtime Heatmap")}</h3>
                             <button className={styles.btnSecondary} onClick={() => onNavigate && onNavigate('attendance', 'workforce_ops')}>
-                                View Live Rosters
+                                
+                                {t("components.Workspace.AnalyticsView.text_view_live_rosters", "View Live Rosters")}
                             </button>
                         </div>
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
@@ -595,8 +611,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                     <div style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '0.2rem' }}>{item.site}</div>
                                     <div style={{ fontSize: '0.78rem', color: 'var(--text-2)', marginBottom: '0.6rem' }}>{item.shift}</div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.2rem' }}>
-                                        <span>Capacity: <strong>{item.load}</strong></span>
-                                        <span>OT: <strong>{item.ot}</strong></span>
+                                        <span>{t("components.Workspace.AnalyticsView.text_capacity", "Capacity:")} <strong>{item.load}</strong></span>
+                                        <span>{t("components.Workspace.AnalyticsView.text_ot", "OT:")} <strong>{item.ot}</strong></span>
                                     </div>
                                 </div>
                             ))}
@@ -615,7 +631,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{wageBillDisplay}</div>
-                                <div className={styles.statLabel}>Monthly Gross Wage Bill</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_monthly_gross_wage_bill", "Monthly Gross Wage Bill")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -624,7 +640,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{basicWage50Compliance}</div>
-                                <div className={styles.statLabel}>50% Basic Wage Compliance (2026 Code)</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_50_basic_wage_compliance_2026_code", "50% Basic Wage Compliance (2026 Code)")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -633,7 +649,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{statutoryLiabilities}</div>
-                                <div className={styles.statLabel}>Statutory PF / ESI Liability</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_statutory_pf_esi_liability", "Statutory PF / ESI Liability")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -642,37 +658,38 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{ewaDrawdownPct}%</div>
-                                <div className={styles.statLabel}>Earned Wage Access (EWA) Drawdown</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_earned_wage_access_ewa_drawdown", "Earned Wage Access (EWA) Drawdown")}</div>
                             </div>
                         </div>
                     </div>
 
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
-                            <h3><AccountBalanceWalletOutlined sx={{ fontSize: 18 }} /> Monthly Wage Bill Bridge (MoM Variance)</h3>
+                            <h3><AccountBalanceWalletOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_monthly_wage_bill_bridge_mom_variance", "Monthly Wage Bill Bridge (MoM Variance)")}</h3>
                             <button className={styles.btnSecondary} onClick={() => onNavigate && onNavigate('payroll', 'payroll_finance')}>
-                                Open Payroll Room
+                                
+                                {t("components.Workspace.AnalyticsView.text_open_payroll_room", "Open Payroll Room")}
                             </button>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--card-2)', borderRadius: '8px' }}>
-                                <span>Previous Month Base Bill</span>
+                                <span>{t("components.Workspace.AnalyticsView.text_previous_month_base_bill", "Previous Month Base Bill")}</span>
                                 <strong>{formatCurrencyINR(baseWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--status-ok-wash)', borderRadius: '8px', color: 'var(--status-ok)' }}>
-                                <span>+ New Hires Joined</span>
+                                <span>{t("components.Workspace.AnalyticsView.text_new_hires_joined", "+ New Hires Joined")}</span>
                                 <strong>+ {formatCurrencyINR(newHiresWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--status-ok-wash)', borderRadius: '8px', color: 'var(--status-ok)' }}>
-                                <span>+ Promotion & CTC Increments</span>
+                                <span>{t("components.Workspace.AnalyticsView.text_promotion_ctc_increments", "+ Promotion & CTC Increments")}</span>
                                 <strong>+ {formatCurrencyINR(incrementsWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.65rem 1rem', background: 'var(--flag-wash)', borderRadius: '8px', color: 'var(--flag)' }}>
-                                <span>- Offboarding Exits & Settled F&F</span>
+                                <span>{t("components.Workspace.AnalyticsView.text_-_offboarding_exits_settled_ff", "- Offboarding Exits & Settled F&F")}</span>
                                 <strong>- {formatCurrencyINR(exitsWageBill)}</strong>
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.85rem 1rem', background: 'var(--signal-wash)', borderRadius: '8px', color: 'var(--signal)', fontWeight: 700 }}>
-                                <span>Current Net Disbursable Wage Bill</span>
+                                <span>{t("components.Workspace.AnalyticsView.text_current_net_disbursable_wage_bill", "Current Net Disbursable Wage Bill")}</span>
                                 <span>{wageBillDisplay}</span>
                             </div>
                         </div>
@@ -690,7 +707,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{avgTimeToHireDays}</div>
-                                <div className={styles.statLabel}>Average Time-to-Hire</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_average_time-to-hire", "Average Time-to-Hire")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -699,7 +716,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{offerAcceptanceRate}%</div>
-                                <div className={styles.statLabel}>Offer Acceptance Rate</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_offer_acceptance_rate", "Offer Acceptance Rate")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -708,7 +725,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             </div>
                             <div>
                                 <div className={styles.statValue}>{referralShare}%</div>
-                                <div className={styles.statLabel}>Referral Hire Sourcing Share</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_referral_hire_sourcing_share", "Referral Hire Sourcing Share")}</div>
                             </div>
                         </div>
                         <div className={styles.statCard}>
@@ -716,8 +733,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 <SpeedOutlined />
                             </div>
                             <div>
-                                <div className={styles.statValue}>{openPositionsCount} Req</div>
-                                <div className={styles.statLabel}>Open Approved Positions</div>
+                                <div className={styles.statValue}>{openPositionsCount}  {t("components.Workspace.AnalyticsView.text_req", "Req")}</div>
+                                <div className={styles.statLabel}>{t("components.Workspace.AnalyticsView.text_open_approved_positions", "Open Approved Positions")}</div>
                             </div>
                         </div>
                     </div>
@@ -725,7 +742,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     <div className={styles.grid2}>
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><HowToRegOutlined sx={{ fontSize: 18 }} /> Candidate Conversion Funnel</h3>
+                                <h3><HowToRegOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_candidate_conversion_funnel", "Candidate Conversion Funnel")}</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
                                 {candidateFunnel.map((step, idx) => (
@@ -744,14 +761,14 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
 
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><AssessmentOutlined sx={{ fontSize: 18 }} /> Sourcing Channel Effectiveness</h3>
+                                <h3><AssessmentOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_sourcing_channel_effectiveness", "Sourcing Channel Effectiveness")}</h3>
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                 {sourcingChannels.map((item, idx) => (
                                     <div key={idx} style={{ padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <div style={{ fontWeight: 600, fontSize: '0.86rem' }}>{item.channel}</div>
-                                            <div style={{ fontSize: '0.74rem', color: 'var(--text-2)' }}>Quality Score: {item.quality}</div>
+                                            <div style={{ fontSize: '0.74rem', color: 'var(--text-2)' }}>{t("components.Workspace.AnalyticsView.text_quality_score", "Quality Score:")} {item.quality}</div>
                                         </div>
                                         <div style={{ fontWeight: 700, color: 'var(--signal)', fontSize: '1rem' }}>{item.share}</div>
                                     </div>
@@ -767,9 +784,10 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
-                            <h3><AutoAwesomeOutlined sx={{ fontSize: 18, color: 'var(--signal)' }} /> Autonomous Reasoning HR Agent & Policy Grounding</h3>
+                            <h3><AutoAwesomeOutlined sx={{ fontSize: 18, color: 'var(--signal)' }} />  {t("components.Workspace.AnalyticsView.text_autonomous_reasoning_hr_agent_policy_gro", "Autonomous Reasoning HR Agent & Policy Grounding")}</h3>
                             <span className={styles.badge} style={{ background: 'var(--signal-wash)', color: 'var(--signal)' }}>
-                                Zero Hallucination Mode
+                                
+                                {t("components.Workspace.AnalyticsView.text_zero_hallucination_mode", "Zero Hallucination Mode")}
                             </span>
                         </div>
 
@@ -778,7 +796,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 type="text"
                                 value={aiQuery}
                                 onChange={(e) => setAiQuery(e.target.value)}
-                                placeholder="Ask any enterprise question (e.g. 'Summarize engineering retention risks', 'Check 2026 wage bill impact')..."
+                                placeholder={t("components.Workspace.AnalyticsView.placeholder_ask_any_enterprise_question_eg_summarize", "Ask any enterprise question (e.g. 'Summarize engineering retention risks', 'Check 2026 wage bill impact')...")}
                                 style={{
                                     flex: 1,
                                     padding: '0.75rem 1rem',
@@ -805,7 +823,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                             {aiResponses.map((item, idx) => (
                                 <div key={idx} style={{ padding: '1.25rem', background: 'var(--card-2)', borderRadius: '12px', border: '1px solid var(--line-soft)' }}>
                                     <div style={{ fontWeight: 600, fontSize: '0.92rem', color: 'var(--signal)', marginBottom: '0.4rem' }}>
-                                        Q: {item.query}
+                                        
+                                        {t("components.Workspace.AnalyticsView.text_q", "Q:")} {item.query}
                                     </div>
                                     <div style={{ fontSize: '0.86rem', color: 'var(--text)', lineHeight: 1.55, marginBottom: '0.75rem' }}>
                                         {item.response}
@@ -814,11 +833,12 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
                                             {item.citations.map((cite, cIdx) => (
                                                 <span key={cIdx} style={{ background: 'var(--card)', padding: '2px 8px', borderRadius: '4px', border: '1px solid var(--line)' }}>
-                                                    📜 {cite}
+                                                    
+                                                    {t("components.Workspace.AnalyticsView.text_text", "📜")} {cite}
                                                 </span>
                                             ))}
                                         </div>
-                                        <span>Confidence: <strong>{item.confidence}</strong> • {item.time}</span>
+                                        <span>{t("components.Workspace.AnalyticsView.text_confidence", "Confidence:")} <strong>{item.confidence}</strong> • {item.time}</span>
                                     </div>
                                 </div>
                             ))}
@@ -832,58 +852,61 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                     <div className={styles.card}>
                         <div className={styles.cardHeader}>
-                            <h3><AssessmentOutlined sx={{ fontSize: 18 }} /> Dynamic Enterprise Report Generator</h3>
+                            <h3><AssessmentOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_dynamic_enterprise_report_generator", "Dynamic Enterprise Report Generator")}</h3>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.25rem' }}>
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-2)', marginBottom: '0.3rem', fontWeight: 600 }}>
-                                    Department Scope
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_department_scope", "Department Scope")}
                                 </label>
                                 <select
                                     value={customDepartment}
                                     onChange={(e) => setCustomDepartment(e.target.value)}
                                     style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-2)', color: 'var(--text)' }}
                                 >
-                                    <option value="All">All Departments</option>
-                                    <option value="Engineering">Engineering</option>
-                                    <option value="Product">Product & Design</option>
-                                    <option value="Sales">Sales & Marketing</option>
-                                    <option value="Finance">Finance & Payroll</option>
-                                    <option value="Operations">Operations & Plant</option>
+                                    <option value="All">{t("components.Workspace.AnalyticsView.text_all_departments", "All Departments")}</option>
+                                    <option value="Engineering">{t("components.Workspace.AnalyticsView.text_engineering", "Engineering")}</option>
+                                    <option value="Product">{t("components.Workspace.AnalyticsView.text_product_design", "Product & Design")}</option>
+                                    <option value="Sales">{t("components.Workspace.AnalyticsView.text_sales_marketing", "Sales & Marketing")}</option>
+                                    <option value="Finance">{t("components.Workspace.AnalyticsView.text_finance_payroll", "Finance & Payroll")}</option>
+                                    <option value="Operations">{t("components.Workspace.AnalyticsView.text_operations_plant", "Operations & Plant")}</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-2)', marginBottom: '0.3rem', fontWeight: 600 }}>
-                                    Primary Metric
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_primary_metric", "Primary Metric")}
                                 </label>
                                 <select
                                     value={customMetricType}
                                     onChange={(e) => setCustomMetricType(e.target.value)}
                                     style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-2)', color: 'var(--text)' }}
                                 >
-                                    <option value="headcount">Headcount & Attrition</option>
-                                    <option value="compensation">Gross CTC & Wage Distribution</option>
-                                    <option value="attendance">Attendance & Shift Overtime</option>
-                                    <option value="leaves">Leave Accruals & Balance</option>
-                                    <option value="mci_capability">Multiplier Capability Index (MCI)</option>
+                                    <option value="headcount">{t("components.Workspace.AnalyticsView.text_headcount_attrition", "Headcount & Attrition")}</option>
+                                    <option value="compensation">{t("components.Workspace.AnalyticsView.text_gross_ctc_wage_distribution", "Gross CTC & Wage Distribution")}</option>
+                                    <option value="attendance">{t("components.Workspace.AnalyticsView.text_attendance_shift_overtime", "Attendance & Shift Overtime")}</option>
+                                    <option value="leaves">{t("components.Workspace.AnalyticsView.text_leave_accruals_balance", "Leave Accruals & Balance")}</option>
+                                    <option value="mci_capability">{t("components.Workspace.AnalyticsView.text_multiplier_capability_index_mci", "Multiplier Capability Index (MCI)")}</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label style={{ display: 'block', fontSize: '0.78rem', color: 'var(--text-2)', marginBottom: '0.3rem', fontWeight: 600 }}>
-                                    Date Range
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_date_range", "Date Range")}
                                 </label>
                                 <select
                                     value={customDateRange}
                                     onChange={(e) => setCustomDateRange(e.target.value)}
                                     style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1px solid var(--line)', background: 'var(--card-2)', color: 'var(--text)' }}
                                 >
-                                    <option value="current_month">Current Month (MTD)</option>
-                                    <option value="current_quarter">Current Quarter (QTD)</option>
-                                    <option value="ytd">Year to Date (YTD)</option>
-                                    <option value="last_12_months">Last 12 Rolling Months</option>
+                                    <option value="current_month">{t("components.Workspace.AnalyticsView.text_current_month_mtd", "Current Month (MTD)")}</option>
+                                    <option value="current_quarter">{t("components.Workspace.AnalyticsView.text_current_quarter_qtd", "Current Quarter (QTD)")}</option>
+                                    <option value="ytd">{t("components.Workspace.AnalyticsView.text_year_to_date_ytd", "Year to Date (YTD)")}</option>
+                                    <option value="last_12_months">{t("components.Workspace.AnalyticsView.text_last_12_rolling_months", "Last 12 Rolling Months")}</option>
                                 </select>
                             </div>
                         </div>
@@ -896,7 +919,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             >
                                 <DownloadOutlined sx={{ fontSize: 16 }} />
-                                Export CSV
+                                
+                                {t("components.Workspace.AnalyticsView.text_export_csv", "Export CSV")}
                             </button>
                             <button
                                 type="button"
@@ -905,7 +929,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             >
                                 <DownloadOutlined sx={{ fontSize: 16 }} />
-                                Export Excel (XLSX)
+                                
+                                {t("components.Workspace.AnalyticsView.text_export_excel_xlsx", "Export Excel (XLSX)")}
                             </button>
                             <button
                                 type="button"
@@ -914,7 +939,8 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                 style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                             >
                                 <DownloadOutlined sx={{ fontSize: 16 }} />
-                                Export PDF Summary
+                                
+                                {t("components.Workspace.AnalyticsView.text_export_pdf_summary", "Export PDF Summary")}
                             </button>
                         </div>
                     </div>
@@ -937,9 +963,10 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                     <div className={styles.grid2}>
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><SpeedOutlined sx={{ fontSize: 18 }} /> MCI v2 Interactive Capability Index Formula</h3>
+                                <h3><SpeedOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_mci_v2_interactive_capability_index_form", "MCI v2 Interactive Capability Index Formula")}</h3>
                                 <span className={styles.badge} style={{ background: 'var(--signal-wash)', color: 'var(--signal)' }}>
-                                    Live Score: {mciScore} / 100
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_live_score", "Live Score:")} {mciScore}  {t("components.Workspace.AnalyticsView.text_100", "/ 100")}
                                 </span>
                             </div>
 
@@ -971,13 +998,15 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
 
                         <div className={styles.card}>
                             <div className={styles.cardHeader}>
-                                <h3><SecurityOutlined sx={{ fontSize: 18 }} /> Metric Snapshot Privacy & Suppression</h3>
+                                <h3><SecurityOutlined sx={{ fontSize: 18 }} />  {t("components.Workspace.AnalyticsView.text_metric_snapshot_privacy_suppression", "Metric Snapshot Privacy & Suppression")}</h3>
                                 <span className={styles.badge} style={{ background: 'var(--status-ok-wash)', color: 'var(--status-ok)' }}>
-                                    Threshold: N ≥ 5
+                                    
+                                    {t("components.Workspace.AnalyticsView.text_threshold_n_5", "Threshold: N ≥ 5")}
                                 </span>
                             </div>
                             <div style={{ fontSize: '0.84rem', color: 'var(--text-2)', lineHeight: 1.5, marginBottom: '1rem' }}>
-                                To preserve employee confidentiality, metrics with cohort size smaller than 5 are automatically suppressed in exports and public radar charts.
+                                
+                                {t("components.Workspace.AnalyticsView.text_to_preserve_employee_confidentiality_met", "To preserve employee confidentiality, metrics with cohort size smaller than 5 are automatically suppressed in exports and public radar charts.")}
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                                 {[
@@ -988,7 +1017,7 @@ export default function AnalyticsView({ onNavigate, onSelectConsole, activeSubFe
                                     <div key={idx} style={{ padding: '0.75rem', background: 'var(--card-2)', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
                                             <div style={{ fontWeight: 600, fontSize: '0.86rem' }}>{m.name}</div>
-                                            <div style={{ fontSize: '0.74rem', color: 'var(--text-2)' }}><code>{m.code}</code> • Cohort: {m.cohort}</div>
+                                            <div style={{ fontSize: '0.74rem', color: 'var(--text-2)' }}><code>{m.code}</code>  {t("components.Workspace.AnalyticsView.text_cohort", "• Cohort:")} {m.cohort}</div>
                                         </div>
                                         <span className={styles.badge} style={{
                                             background: m.suppressed ? 'var(--flag-wash)' : 'var(--status-ok-wash)',

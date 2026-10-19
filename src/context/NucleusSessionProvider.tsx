@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { MicrophoneCapture, SpeechPlayer, chunkLevel } from '@/lib/ai/nucleus-audio';
 import { NucleusLiveSession } from '@/lib/ai/nucleus-live';
 import { findAction, validateDraft, submitDraft, type ActionDraft, type TraceEntry } from '@/lib/ai/nucleus-catalog';
+import { isServerTool } from '@/lib/ai/nucleus-tools';
 import type { LiveFunctionCall, LiveFunctionResponse } from '@/lib/ai/nucleus-live';
 import { navigationCatalog } from '@/lib/navigation-catalog';
 
@@ -59,6 +60,8 @@ export type NucleusSessionValue = {
   confirmDraft: () => Promise<void>;
   cancelDraft: () => void;
   getLevels: () => OrbLevels;
+  isMuted: boolean;
+  toggleMute: () => void;
 };
 
 const NucleusSessionContext = createContext<NucleusSessionValue | null>(null);
@@ -80,7 +83,9 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
   const [analysis, setAnalysis] = useState<{ tool: string; result: Record<string, unknown> } | null>(null);
   const [screens, setScreens] = useState<OpenedScreen[]>([]);
   const [session, setSession] = useState<SessionAttributes | null>(null);
-
+  const isConnectingRef = useRef(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const isMutedRef = useRef(false);
   const live = useRef<NucleusLiveSession | null>(null);
   const microphone = useRef<MicrophoneCapture | null>(null);
   const speaker = useRef<SpeechPlayer | null>(null);
@@ -94,6 +99,14 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
   const cancelDraftRef = useRef<() => void>(() => {});
 
   useEffect(() => { draftRef.current = draft; }, [draft]);
+
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev;
+      isMutedRef.current = next;
+      return next;
+    });
+  }, []);
 
   const getLevels = useCallback((): OrbLevels => {
     if (assistantDecay.current > 0) {
@@ -126,6 +139,7 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
   }, []);
 
   const teardown = useCallback(async () => {
+    isConnectingRef.current = false;
     live.current?.close();
     live.current = null;
     await microphone.current?.stop();
@@ -134,15 +148,21 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
     speaker.current = null;
     levels.current = { user: 0, assistant: 0 };
     assistantDecay.current = 0;
+    setStatus('idle');
   }, []);
 
   useEffect(() => () => void teardown(), [teardown]);
 
   const connect = useCallback(async () => {
+    // Prevent duplicate concurrent live sessions
+    if (isConnectingRef.current || live.current) return;
+    isConnectingRef.current = true;
     setStatus('connecting');
     setNotice(null);
     setDraftResult(null);
     try {
+      await teardown(); // Ensure no prior connections linger
+      isConnectingRef.current = true;
       const response = await fetch('/api/v1/ai/nucleus/session', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -156,6 +176,7 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
       runId.current = attributes.runId;
 
       const player = new SpeechPlayer();
+      player.unlock();
       speaker.current = player;
 
       // Tool dispatcher: read tools → server analyze endpoint; navigation → router.push; write tools → draft card
@@ -174,37 +195,47 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
               ...current.filter((c) => c.moduleId !== moduleId),
             ].slice(0, 4));
             router.push(href);
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('nucleus:navigate_tab', { detail: moduleId }));
+            }
             setTrace((t) => ([{ tool: call.name, outcome: 'ok' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
             responses.push({ id: call.id, name: call.name, response: { ok: true, screen: label, href } });
             continue;
           }
 
-          try {
-            // Read/analysis tools go to server
-            const response = await analyzeViaApi(call.name, args, runId.current);
-            if (response && typeof response === 'object') {
-              setAnalysis({ tool: call.name, result: response as Record<string, unknown> });
-            }
-            setTrace((t) => ([{ tool: call.name, outcome: 'ok' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
-            responses.push({ id: call.id, name: call.name, response: { result: response } });
-          } catch {
-            // Try as an action draft
-            const action = findAction(call.name);
-            if (action) {
-              const validation = validateDraft(action, args);
-              if (validation.missing.length > 0) {
-                setTrace((t) => ([{ tool: call.name, outcome: 'needs_more_info' as const, detail: validation.missing.map(f => f.label).join(', '), at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
-                responses.push({ id: call.id, name: call.name, response: { status: 'needs_more_info', missing: validation.missing, instruction: 'Ask the person for these values.' } });
-              } else {
-                setDraftResult(null);
-                setDraft({ action, fields: validation.fields, body: validation.body });
-                setTrace((t) => ([{ tool: call.name, outcome: 'draft' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
-                responses.push({ id: call.id, name: call.name, response: { status: 'awaiting_confirmation', instruction: 'The draft is on screen. Tell the person what it says and ask them to confirm or cancel.' } });
+          if (isServerTool(call.name)) {
+            try {
+              // Read/analysis tools go to server
+              const response = await analyzeViaApi(call.name, args, runId.current);
+              if (response && typeof response === 'object') {
+                setAnalysis({ tool: call.name, result: response as Record<string, unknown> });
               }
-            } else {
-              setTrace((t) => ([{ tool: call.name, outcome: 'error' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
-              responses.push({ id: call.id, name: call.name, response: { error: `No tool called ${call.name} exists.` } });
+              setTrace((t) => ([{ tool: call.name, outcome: 'ok' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+              responses.push({ id: call.id, name: call.name, response: { result: response } });
+            } catch (err) {
+              const message = err instanceof Error ? err.message : 'The analysis tool failed.';
+              setTrace((t) => ([{ tool: call.name, outcome: 'error' as const, detail: message, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+              responses.push({ id: call.id, name: call.name, response: { error: message } });
             }
+            continue;
+          }
+
+          // Try as an action draft
+          const action = findAction(call.name);
+          if (action) {
+            const validation = validateDraft(action, args);
+            if (validation.missing.length > 0) {
+              setTrace((t) => ([{ tool: call.name, outcome: 'needs_more_info' as const, detail: validation.missing.map(f => f.label).join(', '), at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+              responses.push({ id: call.id, name: call.name, response: { status: 'needs_more_info', missing: validation.missing, instruction: 'Ask the person for these values.' } });
+            } else {
+              setDraftResult(null);
+              setDraft({ action, fields: validation.fields, body: validation.body });
+              setTrace((t) => ([{ tool: call.name, outcome: 'draft' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+              responses.push({ id: call.id, name: call.name, response: { status: 'awaiting_confirmation', instruction: 'The draft is on screen. Tell the person what it says and ask them to confirm or cancel.' } });
+            }
+          } else {
+            setTrace((t) => ([{ tool: call.name, outcome: 'error' as const, at: Date.now() }, ...t] as TraceEntry[]).slice(0, 25));
+            responses.push({ id: call.id, name: call.name, response: { error: `No tool called ${call.name} exists.` } });
           }
         }
         return responses;
@@ -242,7 +273,10 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
 
       const capture = new MicrophoneCapture((pcm, level) => {
         levels.current.user = level;
-        socket.sendAudio(pcm);
+        // Suppress audio feedback loop if muted or while assistant is actively speaking through speakers
+        if (!isMutedRef.current && assistantDecay.current === 0) {
+          socket.sendAudio(pcm);
+        }
       });
       microphone.current = capture;
       await capture.start();
@@ -300,6 +334,7 @@ export function NucleusSessionProvider({ children }: { children: React.ReactNode
     status, listening: status === 'live', notice, turns, trace,
     draft, draftResult, analysis, screens, session,
     connect, disconnect, sendText, confirmDraft, cancelDraft, getLevels,
+    isMuted, toggleMute,
   };
 
   return (

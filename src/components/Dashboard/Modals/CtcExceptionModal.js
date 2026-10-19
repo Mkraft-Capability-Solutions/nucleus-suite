@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState } from 'react';
 import Close from '@mui/icons-material/Close';
 import CheckCircle from '@mui/icons-material/CheckCircleOutline';
@@ -10,6 +12,7 @@ import AccountBalance from '@mui/icons-material/AccountBalanceOutlined';
 import styles from './CtcExceptionModal.module.css';
 
 export default function CtcExceptionModal({ isOpen, onClose, requestData, onApprove, onReject }) {
+    const { t } = useTranslation();
   const [remarks, setRemarks] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -81,10 +84,12 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text, #0f172a)' }}>
-                Talent CTC Exception Approval
+                
+                {t("components.Dashboard.Modals.CtcExceptionModal.text_talent_ctc_exception_approval", "Talent CTC Exception Approval")}
               </h3>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-2, #64748b)' }}>
-                Request ID: {data.id} • Out-of-Band Budget Authorization
+                
+                {t("components.Dashboard.Modals.CtcExceptionModal.text_request_id", "Request ID:")} {data.id}  {t("components.Dashboard.Modals.CtcExceptionModal.text_out-of-band_budget_authorization", "• Out-of-Band Budget Authorization")}
               </span>
             </div>
           </div>
@@ -102,19 +107,19 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
           {/* Candidate & Role Info */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.82rem' }}>
             <div>
-              <span style={{ color: 'var(--text-2, #64748b)' }}>Candidate: </span>
+              <span style={{ color: 'var(--text-2, #64748b)' }}>{t("components.Dashboard.Modals.CtcExceptionModal.text_candidate", "Candidate:")} </span>
               <strong style={{ color: 'var(--text, #0f172a)' }}>{data.candidateName}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--text-2, #64748b)' }}>Role: </span>
+              <span style={{ color: 'var(--text-2, #64748b)' }}>{t("components.Dashboard.Modals.CtcExceptionModal.text_role", "Role:")} </span>
               <strong style={{ color: 'var(--text, #0f172a)' }}>{data.role}</strong>
             </div>
             <div>
-              <span style={{ color: 'var(--text-2, #64748b)' }}>Department: </span>
+              <span style={{ color: 'var(--text-2, #64748b)' }}>{t("components.Dashboard.Modals.CtcExceptionModal.text_department", "Department:")} </span>
               <span>{data.department}</span>
             </div>
             <div>
-              <span style={{ color: 'var(--text-2, #64748b)' }}>Hiring Manager: </span>
+              <span style={{ color: 'var(--text-2, #64748b)' }}>{t("components.Dashboard.Modals.CtcExceptionModal.text_hiring_manager", "Hiring Manager:")} </span>
               <span>{data.hiringManager}</span>
             </div>
           </div>
@@ -122,19 +127,19 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
           {/* CTC Comparison Card */}
           <div className={styles.compComparisonCard}>
             <div className={styles.statItem}>
-              <span className={styles.statLabel}>Approved Band (Max)</span>
-              <span className={styles.statValue}>₹{(data.approvedBandMax / 100000).toFixed(1)} LPA</span>
+              <span className={styles.statLabel}>{t("components.Dashboard.Modals.CtcExceptionModal.text_approved_band_max", "Approved Band (Max)")}</span>
+              <span className={styles.statValue}>₹{(data.approvedBandMax / 100000).toFixed(1)}  {t("components.Dashboard.Modals.CtcExceptionModal.text_lpa", "LPA")}</span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statLabel}>Requested CTC</span>
+              <span className={styles.statLabel}>{t("components.Dashboard.Modals.CtcExceptionModal.text_requested_ctc", "Requested CTC")}</span>
               <span className={styles.statValue} style={{ color: '#2563eb' }}>
-                ₹{(data.requestedCtc / 100000).toFixed(2)} LPA
+                ₹{(data.requestedCtc / 100000).toFixed(2)}  {t("components.Dashboard.Modals.CtcExceptionModal.text_lpa", "LPA")}
               </span>
             </div>
             <div className={styles.statItem}>
-              <span className={styles.statLabel}>Budget Variance</span>
+              <span className={styles.statLabel}>{t("components.Dashboard.Modals.CtcExceptionModal.text_budget_variance", "Budget Variance")}</span>
               <span className={`${styles.statValue} ${styles.statVariance}`}>
-                +{variancePct}% (+₹{(varianceAmount / 100000).toFixed(1)}L)
+                +{variancePct}{t("components.Dashboard.Modals.CtcExceptionModal.text_text", "% (+₹")}{(varianceAmount / 100000).toFixed(1)}{t("components.Dashboard.Modals.CtcExceptionModal.text_l", "L)")}
               </span>
             </div>
           </div>
@@ -142,7 +147,8 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
           {/* Justification Box */}
           <div style={{ background: 'var(--card-2, #f8fafc)', border: '1px solid var(--line, #e2e8f0)', borderRadius: '12px', padding: '1rem' }}>
             <div style={{ fontSize: '0.76rem', fontWeight: 700, color: 'var(--text-2, #64748b)', marginBottom: '0.4rem', textTransform: 'uppercase' }}>
-              Business Justification & Market Compa-Ratio
+              
+              {t("components.Dashboard.Modals.CtcExceptionModal.text_business_justification_market_compa-rati", "Business Justification & Market Compa-Ratio")}
             </div>
             <p style={{ margin: 0, fontSize: '0.84rem', color: 'var(--text, #334155)', lineHeight: 1.45 }}>
               {data.justification}
@@ -152,26 +158,28 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
           {/* Multi-Level Approval Hierarchy */}
           <div className={styles.approvalSteps}>
             <div style={{ fontSize: '0.74rem', fontWeight: 700, color: 'var(--text-2, #64748b)', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-              Multi-Level Authorization Hierarchy
+              
+              {t("components.Dashboard.Modals.CtcExceptionModal.text_multi-level_authorization_hierarchy", "Multi-Level Authorization Hierarchy")}
             </div>
             <div className={styles.stepRow}>
-              <span>1. Hiring Manager Endorsement ({data.hiringManager})</span>
-              <span className={styles.stepStatusDone}><CheckCircle sx={{ fontSize: 14 }} /> Approved</span>
+              <span>{t("components.Dashboard.Modals.CtcExceptionModal.text_1_hiring_manager_endorsement", "1. Hiring Manager Endorsement (")}{data.hiringManager})</span>
+              <span className={styles.stepStatusDone}><CheckCircle sx={{ fontSize: 14 }} />  {t("components.Dashboard.Modals.CtcExceptionModal.text_approved", "Approved")}</span>
             </div>
             <div className={styles.stepRow}>
-              <span>2. Head of HR Review (Sunita Verma)</span>
-              <span className={styles.stepStatusDone}><CheckCircle sx={{ fontSize: 14 }} /> Recommended</span>
+              <span>{t("components.Dashboard.Modals.CtcExceptionModal.text_2_head_of_hr_review_sunita_verma", "2. Head of HR Review (Sunita Verma)")}</span>
+              <span className={styles.stepStatusDone}><CheckCircle sx={{ fontSize: 14 }} />  {t("components.Dashboard.Modals.CtcExceptionModal.text_recommended", "Recommended")}</span>
             </div>
             <div className={styles.stepRow}>
-              <span>3. Business Unit Head / CFO Sign-off (Current Step)</span>
-              <span className={styles.stepStatusPending}><Shield sx={{ fontSize: 14 }} /> Pending Decision</span>
+              <span>{t("components.Dashboard.Modals.CtcExceptionModal.text_3_business_unit_head_cfo_sign-off_curren", "3. Business Unit Head / CFO Sign-off (Current Step)")}</span>
+              <span className={styles.stepStatusPending}><Shield sx={{ fontSize: 14 }} />  {t("components.Dashboard.Modals.CtcExceptionModal.text_pending_decision", "Pending Decision")}</span>
             </div>
           </div>
 
           {/* Decision Remarks */}
           <div>
             <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: 'var(--text, #0f172a)', marginBottom: '0.35rem' }}>
-              Executive Decision Remarks
+              
+              {t("components.Dashboard.Modals.CtcExceptionModal.text_executive_decision_remarks", "Executive Decision Remarks")}
             </label>
             <textarea
               style={{
@@ -180,7 +188,7 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
                 background: 'var(--card, #ffffff)', color: 'var(--text, #0f172a)'
               }}
               rows={2}
-              placeholder="Enter optional approval justification or rejection rationale..."
+              placeholder={t("components.Dashboard.Modals.CtcExceptionModal.placeholder_enter_optional_approval_justification_or", "Enter optional approval justification or rejection rationale...")}
               value={remarks}
               onChange={(e) => setRemarks(e.target.value)}
             />
@@ -196,7 +204,8 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
             disabled={isSubmitting}
           >
             <Cancel sx={{ fontSize: 16 }} />
-            Reject Exception
+            
+            {t("components.Dashboard.Modals.CtcExceptionModal.text_reject_exception", "Reject Exception")}
           </button>
           <button
             type="button"
@@ -205,7 +214,8 @@ export default function CtcExceptionModal({ isOpen, onClose, requestData, onAppr
             disabled={isSubmitting}
           >
             <CheckCircle sx={{ fontSize: 16 }} />
-            Approve Out-of-Band CTC
+            
+            {t("components.Dashboard.Modals.CtcExceptionModal.text_approve_out-of-band_ctc", "Approve Out-of-Band CTC")}
           </button>
         </div>
       </div>

@@ -1,3 +1,7 @@
+import assistant from './assistant.json';
+import publicContent from './public.json';
+import errors from './errors.json';
+import enums from './enums.json';
 import common from './common.json';
 import auth from './auth.json';
 import leave from './leave.json';
@@ -16,6 +20,10 @@ export const en = {
   people,
   navigation,
   validation,
+  enums,
+  errors,
+  assistant,
+  publicContent,
 };
 
 export default en;

@@ -1,0 +1,14 @@
+{
+  "something_wrong": "Etwas ist schiefgelaufen",
+  "something_wrong_desc": "Beim Rendern dieser Benutzeroberfläche ist ein unerwarteter Fehler aufgetreten. Sie können es erneut versuchen oder zum Arbeitsbereich zurückkehren.",
+  "app_error": "Anwendungsfehler",
+  "system_error": "Systemfehler",
+  "app_failure": "Anwendungsausfall",
+  "app_failure_desc": "Im Kernframework-Layout ist ein schwerwiegender Fehler aufgetreten. Bitte laden Sie die Sitzung neu.",
+  "retry_recovery": "Wiederherstellung versuchen",
+  "return_home": "Zurück zur Startseite",
+  "page_not_found": "Seite nicht gefunden",
+  "page_not_found_desc": "Die angeforderte Route konnte nicht gefunden werden.",
+  "forbidden": "Zugriff eingeschränkt",
+  "forbidden_desc": "Sie verfügen nicht über die erforderliche Berechtigung für diese Ansicht."
+}

@@ -1,0 +1,73 @@
+{
+  "greeting": "Wie kann ich Ihnen bei der Navigation im Arbeitsbereich helfen?",
+  "fallback": "Bitten Sie mich, ein Modul wie Gehaltsabrechnung, Urlaub, Anwesenheit oder Leistung zu öffnen.",
+  "replies": {
+    "payroll": "Gehaltsabrechnung wird geöffnet.",
+    "leaves": "Urlaubsverwaltung wird geöffnet.",
+    "attendance": "Anwesenheit wird geöffnet.",
+    "recruitment": "Personalbeschaffung wird geöffnet.",
+    "performance": "Leistungsmanagement wird geöffnet.",
+    "learning": "Lern- und Schulungsportal wird geöffnet.",
+    "experience": "Mitarbeitererfahrung wird geöffnet.",
+    "team": "Teamverzeichnis wird geöffnet.",
+    "dashboard": "Dashboard wird geöffnet.",
+    "settings": "Einstellungen werden geöffnet."
+  },
+  "keywords": {
+    "payroll": [
+      "gehalt",
+      "lohn",
+      "abrechnung",
+      "vergütung"
+    ],
+    "leaves": [
+      "urlaub",
+      "abwesenheit",
+      "freizeit"
+    ],
+    "attendance": [
+      "anwesenheit",
+      "stempeluhr",
+      "schicht",
+      "zeiterfassung"
+    ],
+    "recruitment": [
+      "recruiting",
+      "bewerbung",
+      "kandidat",
+      "einstellung"
+    ],
+    "performance": [
+      "leistung",
+      "ziel",
+      "beurteilung",
+      "performance"
+    ],
+    "learning": [
+      "lernen",
+      "kurs",
+      "schulung",
+      "training",
+      "kompetenz"
+    ],
+    "experience": [
+      "erfahrung",
+      "wohlbefinden",
+      "kultur"
+    ],
+    "team": [
+      "team",
+      "verzeichnis",
+      "kollegen"
+    ],
+    "dashboard": [
+      "dashboard",
+      "übersicht"
+    ],
+    "settings": [
+      "einstellungen",
+      "sicherheit",
+      "profil"
+    ]
+  }
+}

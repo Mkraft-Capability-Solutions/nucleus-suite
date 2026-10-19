@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Users, ChevronDown, ChevronRight, Search, Building2,
@@ -98,6 +100,7 @@ function getDeptSummary(employees) {
 
 // Hierarchical Node Component
 function TreeNode({ node, searchQuery, activeDept, onOpenDossier, forceExpanded }) {
+  const { t } = useTranslation();
     const [expanded, setExpanded] = useState(true);
 
     useEffect(() => {
@@ -154,9 +157,9 @@ function TreeNode({ node, searchQuery, activeDept, onOpenDossier, forceExpanded 
                 <div className={styles.nodeBottom}>
                     <div className={styles.reportsCount}>
                         {hasReports ? (
-                            <span>{node.reports.length} direct report{node.reports.length !== 1 ? 's' : ''}</span>
+                            <span>{node.reports.length}  {t("components.Workspace.OrgChartView.text_direct_report", "direct report")}{node.reports.length !== 1 ? 's' : ''}</span>
                         ) : (
-                            <span style={{ color: 'var(--text-3)' }}>Individual Contributor</span>
+                            <span style={{ color: 'var(--text-3)' }}>{t("components.Workspace.OrgChartView.text_individual_contributor", "Individual Contributor")}</span>
                         )}
                     </div>
 
@@ -165,9 +168,9 @@ function TreeNode({ node, searchQuery, activeDept, onOpenDossier, forceExpanded 
                             type="button"
                             className={styles.actionBtn}
                             onClick={() => onOpenDossier(node)}
-                            title="View Employee 360 Dossier"
+                            title={t("components.Workspace.OrgChartView.title_view_employee_360_dossier", "View Employee 360 Dossier")}
                         >
-                            <Eye size={12} /> Dossier
+                            <Eye size={12} />  {t("components.Workspace.OrgChartView.text_dossier", "Dossier")}
                         </button>
                         {hasReports && (
                             <button
@@ -207,6 +210,7 @@ function TreeNode({ node, searchQuery, activeDept, onOpenDossier, forceExpanded 
 }
 
 export default function OrgChartView() {
+    const { t } = useTranslation();
     const { employees: contextEmployees = [] } = useHRMS() || {};
     const [employees, setEmployees] = useState(contextEmployees || []);
     const [view, setView] = useState('tree'); // 'tree' | 'dept'
@@ -261,10 +265,11 @@ export default function OrgChartView() {
                 <div className={styles.titleBlock}>
                     <h2>
                         <Users size={24} style={{ color: 'var(--signal)' }} />
-                        Organization Chart & Hierarchy
+                        
+                        {t("components.Workspace.OrgChartView.text_organization_chart_hierarchy", "Organization Chart & Hierarchy")}
                     </h2>
                     <p>
-                        {employees.length} enterprise employees · {deptSummary.length} departments · Interactive Reporting Structure
+                        {employees.length}  {t("components.Workspace.OrgChartView.text_enterprise_employees", "enterprise employees ·")} {deptSummary.length}  {t("components.Workspace.OrgChartView.text_departments_interactive_reporting_struct", "departments · Interactive Reporting Structure")}
                     </p>
                 </div>
 
@@ -276,7 +281,7 @@ export default function OrgChartView() {
                             type="text"
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            placeholder="Search employee, title..."
+                            placeholder={t("components.Workspace.OrgChartView.placeholder_search_employee_title", "Search employee, title...")}
                             className={styles.searchInput}
                         />
                     </div>
@@ -287,7 +292,7 @@ export default function OrgChartView() {
                         value={activeDept}
                         onChange={e => setActiveDept(e.target.value)}
                     >
-                        <option value="ALL">All Departments ({employees.length})</option>
+                        <option value="ALL">{t("components.Workspace.OrgChartView.text_all_departments", "All Departments (")}{employees.length})</option>
                         {deptSummary.map(d => (
                             <option key={d.name} value={d.name}>
                                 {d.name} ({d.count})
@@ -313,14 +318,16 @@ export default function OrgChartView() {
                             className={`${styles.toggleBtn} ${view === 'tree' ? styles.toggleBtnActive : ''}`}
                             onClick={() => setView('tree')}
                         >
-                            Hierarchy Tree
+                            
+                            {t("components.Workspace.OrgChartView.text_hierarchy_tree", "Hierarchy Tree")}
                         </button>
                         <button
                             type="button"
                             className={`${styles.toggleBtn} ${view === 'dept' ? styles.toggleBtnActive : ''}`}
                             onClick={() => setView('dept')}
                         >
-                            By Department
+                            
+                            {t("components.Workspace.OrgChartView.text_by_department", "By Department")}
                         </button>
                     </div>
                 </div>
@@ -333,7 +340,7 @@ export default function OrgChartView() {
                     onClick={() => setActiveDept('ALL')}
                 >
                     <div className={styles.deptCount}>{employees.length}</div>
-                    <div className={styles.deptLabel}>Total Roster</div>
+                    <div className={styles.deptLabel}>{t("components.Workspace.OrgChartView.text_total_roster", "Total Roster")}</div>
                 </div>
                 {deptSummary.slice(0, 6).map(dept => (
                     <div
@@ -353,7 +360,8 @@ export default function OrgChartView() {
                     <div className={styles.treeCanvasInner}>
                         {tree.length === 0 ? (
                             <div style={{ color: 'var(--text-3)', textAlign: 'center', padding: '3rem' }}>
-                                No employees found matching filter criteria.
+                                
+                                {t("components.Workspace.OrgChartView.text_no_employees_found_matching_filter_crite", "No employees found matching filter criteria.")}
                             </div>
                         ) : (
                             tree.map(root => (
@@ -385,7 +393,7 @@ export default function OrgChartView() {
                                         <span>{dept.name}</span>
                                     </div>
                                     <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--signal-ink)', background: 'var(--signal-wash)', padding: '0.2rem 0.65rem', borderRadius: 'var(--r-pill)' }}>
-                                        {dept.count} Members
+                                        {dept.count}  {t("components.Workspace.OrgChartView.text_members", "Members")}
                                     </span>
                                 </div>
                                 <div className={styles.deptCardsGrid}>
@@ -408,7 +416,7 @@ export default function OrgChartView() {
                                                     type="button"
                                                     className={styles.actionBtn}
                                                     onClick={() => setDossierEmployee(emp)}
-                                                    title="View Employee Dossier"
+                                                    title={t("components.Workspace.OrgChartView.title_view_employee_dossier", "View Employee Dossier")}
                                                 >
                                                     <Eye size={12} />
                                                 </button>

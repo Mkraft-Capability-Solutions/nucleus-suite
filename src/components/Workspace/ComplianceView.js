@@ -24,6 +24,7 @@ import styles from './ComplianceView.module.css';
 import { launchAction } from '@/lib/action-launcher';
 
 const ComplianceView = () => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const [activeTab, setActiveTab] = useState(readData("components.Workspace.ComplianceView", "initialState_1")); // 'simulator' | 'calendar' | 'factory_registers' | 'form_f_gratuity' | 'erp_integration' | 'matrix' | 'packs'
@@ -266,7 +267,7 @@ const ComplianceView = () => {
                         ];
                         downloadCSV('statutory_compliance_audit_summary.csv', headers, rows);
                         showToast('Report Exported', 'Statutory compliance summary CSV downloaded.', 'success');
-                    }} title="Export Statutory Compliance Report">
+                    }} title={t("components.Workspace.ComplianceView.title_export_statutory_compliance_report", "Export Statutory Compliance Report")}>
                         <Download size={16} />{readData("components.Workspace.ComplianceView", "ComplianceView_text_8")}</button>
                     <button className={styles.btnPrimary} onClick={() => setActiveTab('simulator')}>
                         <Calculator size={16} />{readData("components.Workspace.ComplianceView", "ComplianceView_text_9")}</button>
@@ -725,7 +726,7 @@ const ComplianceView = () => {
                                         ]);
                                         downloadCSV(`Form_28_Muster_Roll_${statutoryMusterRoll.factoryLocation || 'Plant'}.csv`, headers, rows);
                                         showToast('Muster Roll Exported', 'Form 28 Statutory Adult Worker Register downloaded.', 'success');
-                                    }} title="Export Form 28 Statutory Register">
+                                    }} title={t("components.Workspace.ComplianceView.title_export_form_28_statutory_register", "Export Form 28 Statutory Register")}>
                                         <Download size={14} />{readData("components.Workspace.ComplianceView", "ComplianceView_text_136")}</button>
                                 </div>
 

@@ -1,0 +1,14 @@
+{
+  "something_wrong": "Algo salió mal",
+  "something_wrong_desc": "Ocurrió un error inesperado al renderizar esta interfaz. Puede intentar nuevamente o regresar al espacio de trabajo.",
+  "app_error": "Error de la aplicación",
+  "system_error": "Error del sistema",
+  "app_failure": "Fallo de la aplicación",
+  "app_failure_desc": "Ocurrió un error fatal en el diseño del marco principal. Reinicie o recargue la sesión.",
+  "retry_recovery": "Reintentar recuperación",
+  "return_home": "Volver al inicio",
+  "page_not_found": "Página no encontrada",
+  "page_not_found_desc": "No se pudo localizar la ruta solicitada en esta compilación.",
+  "forbidden": "Acceso restringido",
+  "forbidden_desc": "No tiene los permisos requeridos para acceder a esta vista."
+}

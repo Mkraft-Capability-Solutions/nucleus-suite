@@ -22,6 +22,7 @@ import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
 import { launchAction } from '@/lib/action-launcher';
 
 const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
     const { user } = useAuth() || {};
 
@@ -378,9 +379,9 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 window.dispatchEvent(new CustomEvent('nucleus:open_bulk_upload'));
                             }
                         }}
-                        title="Upload Employee Salary Structures & Pay Slips in Bulk"
+                        title={t("components.Workspace.PayrollView.title_upload_employee_salary_structures_pay_sl", "Upload Employee Salary Structures & Pay Slips in Bulk")}
                     >
-                        <UploadCloud size={15} /> Bulk Structure Upload
+                        <UploadCloud size={15} />  {t("components.Workspace.PayrollView.text_bulk_structure_upload", "Bulk Structure Upload")}
                     </button>
                     <button className={styles.btnSecondary} onClick={() => setIsGLModalOpen(true)}>
                         <FileText size={16} />{readData("components.Workspace.PayrollView", "PayrollView_text_13")}</button>
@@ -1291,13 +1292,13 @@ const PayrollView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                         </select>
                                     </div>
                                     <div className={styles.formGroup}>
-                                        <label>Optional Director (3rd)</label>
+                                        <label>{t("components.Workspace.PayrollView.text_optional_director_3rd", "Optional Director (3rd)")}</label>
                                         <select
                                             value={loanGuarantor3}
                                             onChange={(e) => setLoanGuarantor3(e.target.value)}
                                             className={styles.formInput}
                                         >
-                                            <option value="">-- Optional --</option>
+                                            <option value="">{t("components.Workspace.PayrollView.text_--_optional_--", "-- Optional --")}</option>
                                             {employees.map(e => {
                                                 const isLocked = guarantorLockMap.has(e.id);
                                                 return (

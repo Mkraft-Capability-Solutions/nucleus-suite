@@ -5,6 +5,7 @@ import { readData } from '@/services/workspace-data.mjs';
 import styles from './ProcessGuide.module.css';
 
 export default function ProcessGuide({ screenId }) {
+    const { t } = useTranslation();
   const { t: translateText } = useTranslation();
 
   const guide = readData('process.requirements', 'screens')[screenId];
@@ -38,7 +39,7 @@ export default function ProcessGuide({ screenId }) {
               <tr>
                 <th>{copy.fields}</th>
                 <th>{copy.validation}</th>
-                <th>Specification</th>
+                <th>{t("components.Workspace.ProcessGuide.text_specification", "Specification")}</th>
               </tr>
             </thead>
             <tbody>
@@ -53,7 +54,7 @@ export default function ProcessGuide({ screenId }) {
                     {translateText('components.Workspace.ProcessGuide', 'text_ba5ec51d07')}
                   </td>
                   <td>{cells.Validation}</td>
-                  <td>Field #{row}</td>
+                  <td>{t("components.Workspace.ProcessGuide.text_field", "Field #")}{row}</td>
                 </tr>
               ))}
             </tbody>

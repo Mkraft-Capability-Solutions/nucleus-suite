@@ -1,136 +1,96 @@
 {
+  "greetingKey": "assistant.greeting",
+  "fallbackKey": "assistant.fallback",
   "routes": [
     {
-      "keywords": [],
-      "reply": "Opening Payroll.",
+      "id": "payroll",
+      "replyKey": "assistant.replies.payroll",
+      "keywordsKey": "assistant.keywords.payroll",
       "action": {
         "type": "NAVIGATE",
         "payload": "payroll"
       }
     },
     {
-      "keywords": [
-        "leave",
-        "vacation",
-        "holiday",
-        "time off",
-        "pto"
-      ],
-      "reply": "Opening Leave Management.",
+      "id": "leaves",
+      "replyKey": "assistant.replies.leaves",
+      "keywordsKey": "assistant.keywords.leaves",
       "action": {
         "type": "NAVIGATE",
         "payload": "leaves"
       }
     },
     {
-      "keywords": [
-        "attendance",
-        "clock",
-        "punch",
-        "shift",
-        "biometric"
-      ],
-      "reply": "Opening Attendance.",
+      "id": "attendance",
+      "replyKey": "assistant.replies.attendance",
+      "keywordsKey": "assistant.keywords.attendance",
       "action": {
         "type": "NAVIGATE",
         "payload": "attendance"
       }
     },
     {
-      "keywords": [
-        "recruit",
-        "hiring",
-        "candidate",
-        "job",
-        "ats"
-      ],
-      "reply": "Opening Recruitment.",
+      "id": "recruitment",
+      "replyKey": "assistant.replies.recruitment",
+      "keywordsKey": "assistant.keywords.recruitment",
       "action": {
         "type": "NAVIGATE",
         "payload": "recruitment"
       }
     },
     {
-      "keywords": [
-        "performance",
-        "okr",
-        "goal",
-        "9-box",
-        "appraisal"
-      ],
-      "reply": "Opening Performance.",
+      "id": "performance",
+      "replyKey": "assistant.replies.performance",
+      "keywordsKey": "assistant.keywords.performance",
       "action": {
         "type": "NAVIGATE",
         "payload": "performance"
       }
     },
     {
-      "keywords": [
-        "learn",
-        "course",
-        "training",
-        "magnetix",
-        "skill"
-      ],
-      "reply": "Opening Learning.",
+      "id": "learning",
+      "replyKey": "assistant.replies.learning",
+      "keywordsKey": "assistant.keywords.learning",
       "action": {
         "type": "NAVIGATE",
         "payload": "learning"
       }
     },
     {
-      "keywords": [
-        "mci",
-        "wellbeing",
-        "vedic",
-        "experience",
-        "mental"
-      ],
-      "reply": "Opening Employee Experience.",
+      "id": "experience",
+      "replyKey": "assistant.replies.experience",
+      "keywordsKey": "assistant.keywords.experience",
       "action": {
         "type": "NAVIGATE",
         "payload": "experience"
       }
     },
     {
-      "keywords": [
-        "team",
-        "pod",
-        "directory",
-        "colleague",
-        "who is"
-      ],
-      "reply": "Opening Team Directory.",
+      "id": "team",
+      "replyKey": "assistant.replies.team",
+      "keywordsKey": "assistant.keywords.team",
       "action": {
         "type": "NAVIGATE",
         "payload": "team"
       }
     },
     {
-      "keywords": [
-        "dashboard",
-        "console"
-      ],
-      "reply": "Opening Dashboard.",
+      "id": "dashboard",
+      "replyKey": "assistant.replies.dashboard",
+      "keywordsKey": "assistant.keywords.dashboard",
       "action": {
         "type": "NAVIGATE",
         "payload": "dashboard"
       }
     },
     {
-      "keywords": [
-        "setting",
-        "security",
-        "rbac",
-        "profile"
-      ],
-      "reply": "Opening Settings.",
+      "id": "settings",
+      "replyKey": "assistant.replies.settings",
+      "keywordsKey": "assistant.keywords.settings",
       "action": {
         "type": "NAVIGATE",
         "payload": "settings"
       }
     }
-  ],
-  "greeting": "How can I help you navigate the workspace?",
-  "fallback": "Ask me to open a module such as Payroll, Leave, Attendance, or Performance. I cannot confirm personal balances or execute approvals."
+  ]
 }

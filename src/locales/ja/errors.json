@@ -1,0 +1,14 @@
+{
+  "something_wrong": "問題が発生しました",
+  "something_wrong_desc": "このインターフェースの描画中に予期しないエラーが発生しました。再試行するか、ワークスペースのホームに戻ることができます。",
+  "app_error": "アプリケーションエラー",
+  "system_error": "システムエラー",
+  "app_failure": "アプリケーション障害",
+  "app_failure_desc": "コアフレームワークレイアウトで致命的なエラーが発生しました。セッションを再読み込みしてください。",
+  "retry_recovery": "再試行して回復",
+  "return_home": "ホームに戻る",
+  "page_not_found": "ページが見つかりません",
+  "page_not_found_desc": "要求されたルートは見つかりませんでした。",
+  "forbidden": "アクセス制限",
+  "forbidden_desc": "このビューにアクセスする権限がありません。"
+}

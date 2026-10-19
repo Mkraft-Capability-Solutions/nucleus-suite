@@ -28,6 +28,7 @@ export { default as ActionFormModal } from './ActionFormModal';
 export { default as BulkOnboardingModal } from './BulkOnboardingModal';
 
 // Intelligence & Productivity Panels
-export { default as AIPanel } from './AIPanel';
+export { QuantumCopilot as AIPanel } from '../AI/QuantumCopilot';
+export { QuantumCopilot } from '../AI/QuantumCopilot';
+export { NeuralSonicBeacon } from '../AI/NeuralSonicBeacon';
 export { default as ChatPanel } from './ChatPanel';
-export { default as VoiceNavigator } from '../VoiceNavigator';

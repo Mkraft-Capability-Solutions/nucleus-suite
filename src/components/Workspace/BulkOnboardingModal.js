@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState } from 'react';
 import {
     X, UploadCloud, Download, ArrowRight, ArrowLeft,
@@ -23,6 +25,7 @@ const SAMPLE_BATCH_ROWS = [
 ];
 
 export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
+    const { t } = useTranslation();
     const { showToast } = useHRMS();
     const [step, setStep] = useState(1); // 1: Upload, 2: Column Mapping, 3: Validation, 4: Complete
     const [fileName, setFileName] = useState('employee_bulk_onboarding_sample.csv');
@@ -176,8 +179,8 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                             <FileSpreadsheet size={22} />
                         </div>
                         <div>
-                            <h3>Bulk Employee Onboarding & File Import</h3>
-                            <p>Upload Excel/CSV file to batch create employee master records</p>
+                            <h3>{t("components.Workspace.BulkOnboardingModal.text_bulk_employee_onboarding_file_import", "Bulk Employee Onboarding & File Import")}</h3>
+                            <p>{t("components.Workspace.BulkOnboardingModal.text_upload_excelcsv_file_to_batch_create_emp", "Upload Excel/CSV file to batch create employee master records")}</p>
                         </div>
                     </div>
                     <button className={styles.closeBtn} onClick={resetAndClose}><X size={20} /></button>
@@ -187,22 +190,22 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                 <div className={styles.stepper}>
                     <div className={`${styles.stepItem} ${step >= 1 ? (step > 1 ? styles.completed : styles.active) : ''}`}>
                         <div className={styles.stepNumber}>1</div>
-                        <span>Upload File</span>
+                        <span>{t("components.Workspace.BulkOnboardingModal.text_upload_file", "Upload File")}</span>
                     </div>
                     <div className={styles.stepDivider} />
                     <div className={`${styles.stepItem} ${step >= 2 ? (step > 2 ? styles.completed : styles.active) : ''}`}>
                         <div className={styles.stepNumber}>2</div>
-                        <span>Map Fields</span>
+                        <span>{t("components.Workspace.BulkOnboardingModal.text_map_fields", "Map Fields")}</span>
                     </div>
                     <div className={styles.stepDivider} />
                     <div className={`${styles.stepItem} ${step >= 3 ? (step > 3 ? styles.completed : styles.active) : ''}`}>
                         <div className={styles.stepNumber}>3</div>
-                        <span>Validate Rows</span>
+                        <span>{t("components.Workspace.BulkOnboardingModal.text_validate_rows", "Validate Rows")}</span>
                     </div>
                     <div className={styles.stepDivider} />
                     <div className={`${styles.stepItem} ${step === 4 ? styles.completed : ''}`}>
                         <div className={styles.stepNumber}>4</div>
-                        <span>Batch Ingest</span>
+                        <span>{t("components.Workspace.BulkOnboardingModal.text_batch_ingest", "Batch Ingest")}</span>
                     </div>
                 </div>
 
@@ -214,19 +217,20 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                             <label className={styles.dropzone}>
                                 <input type="file" accept=".csv,.xlsx" onChange={handleFileUpload} style={{ display: 'none' }} />
                                 <UploadCloud size={44} color="#38bdf8" style={{ marginBottom: '0.5rem' }} />
-                                <h4 style={{ margin: 0, fontSize: '1rem', color: '#ffffff' }}>Drag and drop your employee CSV / Excel file here</h4>
+                                <h4 style={{ margin: 0, fontSize: '1rem', color: '#ffffff' }}>{t("components.Workspace.BulkOnboardingModal.text_drag_and_drop_your_employee_csv_excel_fi", "Drag and drop your employee CSV / Excel file here")}</h4>
                                 <p style={{ margin: '0.4rem 0 0', fontSize: '0.8rem', color: '#94a3b8' }}>
-                                    Currently attached: <strong style={{ color: '#38bdf8' }}>{fileName}</strong> ({SAMPLE_BATCH_ROWS.length} rows ready)
+                                    
+                                    {t("components.Workspace.BulkOnboardingModal.text_currently_attached", "Currently attached:")} <strong style={{ color: '#38bdf8' }}>{fileName}</strong> ({SAMPLE_BATCH_ROWS.length}  {t("components.Workspace.BulkOnboardingModal.text_rows_ready", "rows ready)")}
                                 </p>
                             </label>
 
                             <div className={styles.templateBanner}>
                                 <div>
-                                    <strong style={{ fontSize: '0.86rem', color: '#ffffff' }}>Need the official bulk onboarding CSV format?</strong>
-                                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>Download pre-formatted CSV template with all 18 standard header columns.</p>
+                                    <strong style={{ fontSize: '0.86rem', color: '#ffffff' }}>{t("components.Workspace.BulkOnboardingModal.text_need_the_official_bulk_onboarding_csv_fo", "Need the official bulk onboarding CSV format?")}</strong>
+                                    <p style={{ margin: '0.2rem 0 0', fontSize: '0.78rem', color: '#94a3b8' }}>{t("components.Workspace.BulkOnboardingModal.text_download_pre-formatted_csv_template_with", "Download pre-formatted CSV template with all 18 standard header columns.")}</p>
                                 </div>
                                 <button type="button" className={styles.btnSecondary} onClick={handleDownloadTemplate}>
-                                    <Download size={15} style={{ display: 'inline', marginRight: '4px' }} /> Download Template
+                                    <Download size={15} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.BulkOnboardingModal.text_download_template", "Download Template")}
                                 </button>
                             </div>
                         </div>
@@ -237,15 +241,15 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                         <div>
                             <div style={{ marginBottom: '1rem', background: 'rgba(56, 189, 248, 0.1)', padding: '0.85rem 1rem', borderRadius: '10px', fontSize: '0.84rem', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                                 <Sparkles size={18} />
-                                <div><strong>Auto-Mapping Active:</strong> Matched source CSV column headers to Nucleus Employee Schema fields.</div>
+                                <div><strong>{t("components.Workspace.BulkOnboardingModal.text_auto-mapping_active", "Auto-Mapping Active:")}</strong>  {t("components.Workspace.BulkOnboardingModal.text_matched_source_csv_column_headers_to_nuc", "Matched source CSV column headers to Nucleus Employee Schema fields.")}</div>
                             </div>
 
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Source CSV Column</th>
-                                        <th>Target System Field</th>
-                                        <th>Match Status</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_source_csv_column", "Source CSV Column")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_target_system_field", "Target System Field")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_match_status", "Match Status")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -255,12 +259,12 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                             <td>
                                                 <select className={styles.select} value={mappings[col]} onChange={e => setMappings(prev => ({ ...prev, [col]: e.target.value }))}>
                                                     <option value={col}>{col}</option>
-                                                    <option value="__ignore__">-- Ignore Column --</option>
+                                                    <option value="__ignore__">{t("components.Workspace.BulkOnboardingModal.text_--_ignore_column_--", "-- Ignore Column --")}</option>
                                                 </select>
                                             </td>
                                             <td>
                                                 <span style={{ color: '#10b981', fontSize: '0.78rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                    <Check size={14} /> Auto-Matched
+                                                    <Check size={14} />  {t("components.Workspace.BulkOnboardingModal.text_auto-matched", "Auto-Matched")}
                                                 </span>
                                             </td>
                                         </tr>
@@ -277,8 +281,8 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                 <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.85rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <CheckCircle2 size={24} color="#10b981" />
                                     <div>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981' }}>{batchRows.length} Rows Valid</div>
-                                        <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>Passed email, Aadhaar/PAN format & mandatory field checks</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981' }}>{batchRows.length}  {t("components.Workspace.BulkOnboardingModal.text_rows_valid", "Rows Valid")}</div>
+                                        <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{t("components.Workspace.BulkOnboardingModal.text_passed_email_aadhaarpan_format_mandatory", "Passed email, Aadhaar/PAN format & mandatory field checks")}</div>
                                     </div>
                                 </div>
                             </div>
@@ -286,12 +290,12 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                             <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th>Status</th>
-                                        <th>Employee Code</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Dept & Designation</th>
-                                        <th>Location</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_status", "Status")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_employee_code", "Employee Code")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_name", "Name")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_email", "Email")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_dept_designation", "Dept & Designation")}</th>
+                                        <th>{t("components.Workspace.BulkOnboardingModal.text_location", "Location")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -305,7 +309,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                         const loc = row[mappings.location] || row.location || row.Location || 'Bangalore Plant';
                                         return (
                                             <tr key={i}>
-                                                <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>VALID</span></td>
+                                                <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>{t("components.Workspace.BulkOnboardingModal.text_valid", "VALID")}</span></td>
                                                 <td><strong>{code}</strong></td>
                                                 <td>{fn} {ln}</td>
                                                 <td>{email}</td>
@@ -325,9 +329,9 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                             <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                                 <Check size={36} />
                             </div>
-                            <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>Bulk Employee Batch Successfully Ingested</h3>
+                            <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>{t("components.Workspace.BulkOnboardingModal.text_bulk_employee_batch_successfully_ingeste", "Bulk Employee Batch Successfully Ingested")}</h3>
                             <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                                {batchRows.length} employee master records have been batch added into the employee directory.
+                                {batchRows.length}  {t("components.Workspace.BulkOnboardingModal.text_employee_master_records_have_been_batch_", "employee master records have been batch added into the employee directory.")}
                             </p>
                         </div>
                     )}
@@ -337,24 +341,24 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                 <div className={styles.footer}>
                     {step === 1 && (
                         <>
-                            <button type="button" className={styles.btnSecondary} onClick={resetAndClose}>Cancel</button>
-                            <button type="button" className={styles.btnPrimary} onClick={() => setStep(2)}>Next: Map Fields <ArrowRight size={15} style={{ display: 'inline', marginLeft: '4px' }} /></button>
+                            <button type="button" className={styles.btnSecondary} onClick={resetAndClose}>{t("components.Workspace.BulkOnboardingModal.text_cancel", "Cancel")}</button>
+                            <button type="button" className={styles.btnPrimary} onClick={() => setStep(2)}>{t("components.Workspace.BulkOnboardingModal.text_next_map_fields", "Next: Map Fields")} <ArrowRight size={15} style={{ display: 'inline', marginLeft: '4px' }} /></button>
                         </>
                     )}
                     {step === 2 && (
                         <>
-                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}><ArrowLeft size={15} style={{ display: 'inline', marginRight: '4px' }} /> Back</button>
-                            <button type="button" className={styles.btnPrimary} onClick={() => setStep(3)}>Validate Batch <ArrowRight size={15} style={{ display: 'inline', marginLeft: '4px' }} /></button>
+                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(1)}><ArrowLeft size={15} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.BulkOnboardingModal.text_back", "Back")}</button>
+                            <button type="button" className={styles.btnPrimary} onClick={() => setStep(3)}>{t("components.Workspace.BulkOnboardingModal.text_validate_batch", "Validate Batch")} <ArrowRight size={15} style={{ display: 'inline', marginLeft: '4px' }} /></button>
                         </>
                     )}
                     {step === 3 && (
                         <>
-                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(2)}><ArrowLeft size={15} style={{ display: 'inline', marginRight: '4px' }} /> Back</button>
-                            <button type="button" className={styles.btnPrimary} onClick={handleCommitBatch}><Database size={15} style={{ display: 'inline', marginRight: '4px' }} /> Ingest Batch Employees</button>
+                            <button type="button" className={styles.btnSecondary} onClick={() => setStep(2)}><ArrowLeft size={15} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.BulkOnboardingModal.text_back", "Back")}</button>
+                            <button type="button" className={styles.btnPrimary} onClick={handleCommitBatch}><Database size={15} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.BulkOnboardingModal.text_ingest_batch_employees", "Ingest Batch Employees")}</button>
                         </>
                     )}
                     {step === 4 && (
-                        <button type="button" className={styles.btnPrimary} style={{ margin: '0 auto' }} onClick={resetAndClose}>Close & View Directory</button>
+                        <button type="button" className={styles.btnPrimary} style={{ margin: '0 auto' }} onClick={resetAndClose}>{t("components.Workspace.BulkOnboardingModal.text_close_view_directory", "Close & View Directory")}</button>
                     )}
                 </div>
             </div>

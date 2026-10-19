@@ -49,6 +49,7 @@ function inferMappings(currentFile) {
 }
 
 const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const { ingestMappedData, showToast } = useHRMS();
@@ -271,10 +272,12 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                             }}>
                                 <div>
                                     <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text, #0f172a)' }}>
-                                        📥 Need a starting format? Download Excel/CSV Sample Template
+                                        
+                                        {t("components.Workspace.DataImportModal.text_need_a_starting_format_download_excelcsv", "📥 Need a starting format? Download Excel/CSV Sample Template")}
                                     </div>
                                     <div style={{ fontSize: '0.74rem', color: 'var(--text-2, #64748b)' }}>
-                                        Pre-formatted with validated column structures for instant ingestion.
+                                        
+                                        {t("components.Workspace.DataImportModal.text_pre-formatted_with_validated_column_stru", "Pre-formatted with validated column structures for instant ingestion.")}
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -283,28 +286,32 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                         style={{ background: 'var(--signal)', color: 'var(--on-signal, #ffffff)', border: 'none', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('employee')}
                                     >
-                                        👥 Employee Master (.CSV)
+                                        
+                                        {t("components.Workspace.DataImportModal.text_employee_master_csv", "👥 Employee Master (.CSV)")}
                                     </button>
                                     <button
                                         type="button"
                                         style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('biometric')}
                                     >
-                                        ⏱️ Attendance Punches (.CSV)
+                                        
+                                        {t("components.Workspace.DataImportModal.text_attendance_punches_csv", "⏱️ Attendance Punches (.CSV)")}
                                     </button>
                                     <button
                                         type="button"
                                         style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('leave')}
                                     >
-                                        🏖️ Leave Balances (.CSV)
+                                        
+                                        {t("components.Workspace.DataImportModal.text_leave_balances_csv", "🏖️ Leave Balances (.CSV)")}
                                     </button>
                                     <button
                                         type="button"
                                         style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('payroll')}
                                     >
-                                        💰 Salary Structure (.CSV)
+                                        
+                                        {t("components.Workspace.DataImportModal.text_salary_structure_csv", "💰 Salary Structure (.CSV)")}
                                     </button>
                                 </div>
                             </div>
@@ -325,7 +332,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                 <UploadCloud size={40} color="#2563eb" />
                                 <div>
                                     <h4>{readData("components.Workspace.DataImportModal", "DataImportModal_text_10")}</h4>
-                                    <p>Click to browse CSV / Excel file or drag & drop. Currently loaded: <strong style={{ color: '#2563eb' }}>{currentFile.fileName}</strong> ({currentFile.sampleRows.length} rows, {currentFile.columns.length} cols)</p>
+                                    <p>{t("components.Workspace.DataImportModal.text_click_to_browse_csv_excel_file_or_drag_d", "Click to browse CSV / Excel file or drag & drop. Currently loaded:")} <strong style={{ color: '#2563eb' }}>{currentFile.fileName}</strong> ({currentFile.sampleRows.length}  {t("components.Workspace.DataImportModal.text_rows", "rows,")} {currentFile.columns.length}  {t("components.Workspace.DataImportModal.text_cols", "cols)")}</p>
                                 </div>
                             </div>
 

@@ -36,8 +36,8 @@ export const MOBILITY_STATUSES: readonly string[] = [
  * `hrms_operation_events` row and one `audit_events` row. Its per-resource
  * side effects cover assets, settlements and offboarding cases only — there is
  * no branch for `mobility`, so no employee, employment or assignment row is
- * touched. docs/HRMS_WORKFLOW_DELIVERY.md records the same intent: employment
- * assignment changes remain explicit in People Core.
+ * touched. docs/architecture/lld/modules/NEW_PEOPLE-ORGANIZATION.md records the
+ * same intent: employment assignment changes remain explicit in People Core.
  */
 export const COMPLETION_EFFECT = {
   does:

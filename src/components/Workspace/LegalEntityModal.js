@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState, useEffect, useCallback } from 'react';
 import { X, Building2, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
 import styles from './LegalEntityModal.module.css';
@@ -24,6 +26,7 @@ const ENTITY_RULES = [
 
 
 export default function LegalEntityModal({ isOpen, onClose, onSave, existingEntities = [] }) {
+    const { t } = useTranslation();
     const { showToast } = useHRMS();
     const { isDuplicate } = useDuplicateCheck(existingEntities);
     const { getFieldError, setFieldTouched, handleSubmitGuard, resetValidation, getTabErrorCount } = useFormValidation(ENTITY_RULES);
@@ -124,22 +127,23 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Building2 size={20} color="var(--signal)" /> Legal Entity Master (FRM-PLT-01)
+                            <Building2 size={20} color="var(--signal)" />  {t("components.Workspace.LegalEntityModal.text_legal_entity_master_frm-plt-01", "Legal Entity Master (FRM-PLT-01)")}
                         </h3>
-                        <p>Corporate legal entity incorporation and statutory tax registrations</p>
+                        <p>{t("components.Workspace.LegalEntityModal.text_corporate_legal_entity_incorporation_and", "Corporate legal entity incorporation and statutory tax registrations")}</p>
                     </div>
                     <button className={styles.closeBtn} onClick={onClose} type="button"><X size={20} /></button>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.body} noValidate>
-                    <div className={styles.sectionTitle}>Entity Identity &amp; Statutory Registrations</div>
+                    <div className={styles.sectionTitle}>{t("components.Workspace.LegalEntityModal.text_entity_identity_amp_statutory_registrati", "Entity Identity &amp; Statutory Registrations")}</div>
                     <div className={styles.formGrid}>
 
                         {/* Entity Code — Read Only, Auto-Generated */}
                         <label className={styles.field}>
                             <span className={styles.fieldLabel}>
-                                Entity Code
-                                <span className={styles.autoTag}><Lock size={11} /> Auto-generated</span>
+                                
+                                {t("components.Workspace.LegalEntityModal.text_entity_code", "Entity Code")}
+                                <span className={styles.autoTag}><Lock size={11} />  {t("components.Workspace.LegalEntityModal.text_auto-generated", "Auto-generated")}</span>
                             </span>
                             <div className={styles.readOnlyId}>
                                 <Lock size={13} />
@@ -148,46 +152,46 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Registered Name <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_registered_name", "Registered Name")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('registeredName')}
                                 value={formData.registeredName}
                                 onChange={e => handleChange('registeredName', e.target.value)}
                                 onBlur={() => handleBlur('registeredName')}
-                                placeholder="e.g. Nucleus HR Solutions India Pvt Ltd"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_eg_nucleus_hr_solutions_india_pvt_ltd", "e.g. Nucleus HR Solutions India Pvt Ltd")}
                                 required
                             />
                             <FieldError fieldKey="registeredName" />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Trade / Brand Name</span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_trade_brand_name", "Trade / Brand Name")}</span>
                             <input className={styles.input} value={formData.tradeName} onChange={e => handleChange('tradeName', e.target.value)} />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Entity Type <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_entity_type", "Entity Type")} <span className={styles.required}>*</span></span>
                             <select
                                 className={selectClass('entityType')}
                                 value={formData.entityType}
                                 onChange={e => handleChange('entityType', e.target.value)}
                                 onBlur={() => handleBlur('entityType')}
                             >
-                                <option value="">— Select —</option>
-                                <option>Private Limited</option><option>Public Limited</option>
-                                <option>LLP</option><option>Partnership</option><option>Proprietorship</option>
+                                <option value="">{t("components.Workspace.LegalEntityModal.text_select", "— Select —")}</option>
+                                <option>{t("components.Workspace.LegalEntityModal.text_private_limited", "Private Limited")}</option><option>{t("components.Workspace.LegalEntityModal.text_public_limited", "Public Limited")}</option>
+                                <option>{t("components.Workspace.LegalEntityModal.text_llp", "LLP")}</option><option>{t("components.Workspace.LegalEntityModal.text_partnership", "Partnership")}</option><option>{t("components.Workspace.LegalEntityModal.text_proprietorship", "Proprietorship")}</option>
                             </select>
                             <FieldError fieldKey="entityType" />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>CIN / LLPIN <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_cin_llpin", "CIN / LLPIN")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('cinLlpin')}
                                 value={formData.cinLlpin}
                                 onChange={e => handleChange('cinLlpin', e.target.value.toUpperCase())}
                                 onBlur={() => handleBlur('cinLlpin')}
-                                placeholder="U72900KA2024PTC123456"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_u72900ka2024ptc123456", "U72900KA2024PTC123456")}
                                 maxLength={21}
                                 required
                             />
@@ -195,13 +199,13 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Company PAN <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_company_pan", "Company PAN")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('entityPan')}
                                 value={formData.entityPan}
                                 onChange={e => handleChange('entityPan', e.target.value.toUpperCase())}
                                 onBlur={() => handleBlur('entityPan')}
-                                placeholder="AAACN1234F"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_aaacn1234f", "AAACN1234F")}
                                 maxLength={10}
                                 required
                             />
@@ -209,13 +213,13 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Company TAN <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_company_tan", "Company TAN")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('tan')}
                                 value={formData.tan}
                                 onChange={e => handleChange('tan', e.target.value.toUpperCase())}
                                 onBlur={() => handleBlur('tan')}
-                                placeholder="BLRN12345E"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_blrn12345e", "BLRN12345E")}
                                 maxLength={10}
                                 required
                             />
@@ -223,98 +227,98 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>GSTIN <span className={styles.optional}>(optional)</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_gstin", "GSTIN")} <span className={styles.optional}>{t("components.Workspace.LegalEntityModal.text_optional", "(optional)")}</span></span>
                             <input
                                 className={inputClass('gstin')}
                                 value={formData.gstin}
                                 onChange={e => handleChange('gstin', e.target.value.toUpperCase())}
                                 onBlur={() => handleBlur('gstin')}
-                                placeholder="29AAACN1234F1Z5"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_29aaacn1234f1z5", "29AAACN1234F1Z5")}
                                 maxLength={15}
                             />
                             <FieldError fieldKey="gstin" />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>PF Establishment Code</span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_pf_establishment_code", "PF Establishment Code")}</span>
                             <input className={styles.input} value={formData.pfCode} onChange={e => handleChange('pfCode', e.target.value)} />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>ESI Employer Code</span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_esi_employer_code", "ESI Employer Code")}</span>
                             <input className={styles.input} value={formData.esiCode} onChange={e => handleChange('esiCode', e.target.value)} />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>PT Registration No</span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_pt_registration_no", "PT Registration No")}</span>
                             <input className={styles.input} value={formData.ptRegNo} onChange={e => handleChange('ptRegNo', e.target.value)} />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Establishment Type <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_establishment_type", "Establishment Type")} <span className={styles.required}>*</span></span>
                             <select
                                 className={selectClass('establishmentType')}
                                 value={formData.establishmentType}
                                 onChange={e => handleChange('establishmentType', e.target.value)}
                                 onBlur={() => handleBlur('establishmentType')}
                             >
-                                <option value="">— Select —</option>
-                                <option>Factory</option><option>Shop &amp; Establishment</option><option>IT Park</option>
+                                <option value="">{t("components.Workspace.LegalEntityModal.text_select", "— Select —")}</option>
+                                <option>{t("components.Workspace.LegalEntityModal.text_factory", "Factory")}</option><option>{t("components.Workspace.LegalEntityModal.text_shop_amp_establishment", "Shop &amp; Establishment")}</option><option>{t("components.Workspace.LegalEntityModal.text_it_park", "IT Park")}</option>
                             </select>
                             <FieldError fieldKey="establishmentType" />
                         </label>
                     </div>
 
-                    <div className={styles.sectionTitle}>Address &amp; Fiscal Controls</div>
+                    <div className={styles.sectionTitle}>{t("components.Workspace.LegalEntityModal.text_address_amp_fiscal_controls", "Address &amp; Fiscal Controls")}</div>
                     <div className={styles.formGrid}>
                         <label className={styles.field} style={{ gridColumn: 'span 2' }}>
-                            <span className={styles.fieldLabel}>Registered Address <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_registered_address", "Registered Address")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('registeredAddress')}
                                 value={formData.registeredAddress}
                                 onChange={e => handleChange('registeredAddress', e.target.value)}
                                 onBlur={() => handleBlur('registeredAddress')}
-                                placeholder="Full registered office address"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_full_registered_office_address", "Full registered office address")}
                                 required
                             />
                             <FieldError fieldKey="registeredAddress" />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>FY Start Month <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_fy_start_month", "FY Start Month")} <span className={styles.required}>*</span></span>
                             <select className={styles.select} value={formData.fyStartMonth} onChange={e => handleChange('fyStartMonth', e.target.value)}>
-                                <option>April</option><option>January</option>
+                                <option>{t("components.Workspace.LegalEntityModal.text_april", "April")}</option><option>{t("components.Workspace.LegalEntityModal.text_january", "January")}</option>
                             </select>
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Base Currency <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_base_currency", "Base Currency")} <span className={styles.required}>*</span></span>
                             <select className={styles.select} value={formData.currencyCode} onChange={e => handleChange('currencyCode', e.target.value)}>
-                                <option>INR</option><option>USD</option><option>EUR</option><option>GBP</option>
+                                <option>{t("components.Workspace.LegalEntityModal.text_inr", "INR")}</option><option>{t("components.Workspace.LegalEntityModal.text_usd", "USD")}</option><option>{t("components.Workspace.LegalEntityModal.text_eur", "EUR")}</option><option>{t("components.Workspace.LegalEntityModal.text_gbp", "GBP")}</option>
                             </select>
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Signing Authority <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_signing_authority", "Signing Authority")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('signatoryName')}
                                 value={formData.signatoryName}
                                 onChange={e => handleChange('signatoryName', e.target.value)}
                                 onBlur={() => handleBlur('signatoryName')}
-                                placeholder="Authorised signatory full name"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_authorised_signatory_full_name", "Authorised signatory full name")}
                                 required
                             />
                             <FieldError fieldKey="signatoryName" />
                         </label>
 
                         <label className={styles.field}>
-                            <span className={styles.fieldLabel}>Signatory Designation <span className={styles.required}>*</span></span>
+                            <span className={styles.fieldLabel}>{t("components.Workspace.LegalEntityModal.text_signatory_designation", "Signatory Designation")} <span className={styles.required}>*</span></span>
                             <input
                                 className={inputClass('signatoryDesignation')}
                                 value={formData.signatoryDesignation}
                                 onChange={e => handleChange('signatoryDesignation', e.target.value)}
                                 onBlur={() => handleBlur('signatoryDesignation')}
-                                placeholder="e.g. Director & Chief People Officer"
+                                placeholder={t("components.Workspace.LegalEntityModal.placeholder_eg_director_chief_people_officer", "e.g. Director & Chief People Officer")}
                                 required
                             />
                             <FieldError fieldKey="signatoryDesignation" />
@@ -322,9 +326,9 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                     </div>
 
                     <div className={styles.footer}>
-                        <button type="button" className={styles.btnSecondary} onClick={onClose}>Cancel</button>
+                        <button type="button" className={styles.btnSecondary} onClick={onClose}>{t("components.Workspace.LegalEntityModal.text_cancel", "Cancel")}</button>
                         <button type="submit" className={styles.btnPrimary}>
-                            <CheckCircle2 size={16} style={{ display: 'inline', marginRight: '4px' }} /> Save Legal Entity
+                            <CheckCircle2 size={16} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.LegalEntityModal.text_save_legal_entity", "Save Legal Entity")}
                         </button>
                     </div>
                 </form>

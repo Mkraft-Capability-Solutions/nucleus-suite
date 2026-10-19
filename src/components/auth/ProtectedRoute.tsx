@@ -1,4 +1,6 @@
 'use client';
+
+import { useTranslation } from '@/context/I18nContext';
 import { type ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
@@ -23,6 +25,7 @@ export function ProtectedRoute({
   requiredRole,
   fallback = null,
 }: ProtectedRouteProps) {
+    const { t } = useTranslation();
   const router = useRouter();
   const { user, isLoading } = useAuth();
   const { hasPermission, hasRole, isSuperAdmin } = usePermissions();
@@ -55,7 +58,8 @@ export function ProtectedRoute({
   if (isLoading) {
     return (
       <div style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-2, #94a3b8)' }}>
-        Authenticating clearance…
+        
+        {t("components.auth.ProtectedRoute.text_authenticating_clearance", "Authenticating clearance…")}
       </div>
     );
   }

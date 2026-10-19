@@ -29,7 +29,7 @@ import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
 import AppearanceToggle from '@/components/AppearanceToggle';
 import LanguageSelector from '@/components/LanguageSelector';
-import { speakAloud } from '@/utils/voiceCommandEngine';
+import { NeuralSonicBeacon } from '@/components/AI/NeuralSonicBeacon';
 
 const ROLE_TO_DEFAULT_CONSOLE = readData("components.Workspace.TopNav", "ROLE_TO_DEFAULT_CONSOLE_1");
 
@@ -49,6 +49,7 @@ const TopNav = ({
     activeConsole = readData("components.Workspace.TopNav", "defaultValue_1"),
     onSelectConsole
 }) => {
+  const { t } = useTranslation();
     const { t: translateText } = useTranslation();
 
     const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
@@ -369,38 +370,8 @@ const TopNav = ({
                     </button>
                 )}
 
-                {/* Voice Navigation Trigger */}
-                <button
-                    className={styles.iconBtn}
-                    onClick={() => {
-                        if (typeof window === 'undefined') return;
-
-                        const hour = new Date().getHours();
-                        let timeGreeting = 'Good evening';
-                        if (hour < 12) timeGreeting = 'Good morning';
-                        else if (hour < 17) timeGreeting = 'Good afternoon';
-                        const name = user?.name ? user.name.trim().split(' ')[0] : 'Superadmin';
-                        const greetingText = `${timeGreeting}, ${name}! How can I help you today?`;
-
-                        window.dispatchEvent(
-                            new CustomEvent('nucleus:voice_navigation', {
-                                detail: {
-                                    greeting: greetingText,
-                                    autoStart: true,
-                                },
-                            })
-                        );
-                    }}
-                    title="Nucleus Talk — Voice Assist (Click or Speak)"
-                    aria-label="Nucleus Talk"
-                    style={{
-                        background: 'rgba(56, 189, 248, 0.1)',
-                        borderColor: 'rgba(56, 189, 248, 0.25)',
-                        color: 'var(--signal, #0284c7)'
-                    }}
-                >
-                    <Mic sx={{ fontSize: 18 }} />
-                </button>
+                {/* Neural Sonic Beacon (Voice & Policy Intelligence) */}
+                <NeuralSonicBeacon />
 
                 <LanguageSelector />
                 <AppearanceToggle />
@@ -543,7 +514,7 @@ const TopNav = ({
                                         style={{ textDecoration: 'none', color: 'var(--text-2)' }}
                                     >
                                         <Api sx={{ fontSize: 15 }} color="var(--signal)" />
-                                        <span>API Documentation</span>
+                                        <span>{t("components.Workspace.TopNav.text_api_documentation", "API Documentation")}</span>
                                     </a>
                                 )}
                             </div>

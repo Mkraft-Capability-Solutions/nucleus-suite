@@ -233,7 +233,7 @@ function LeaveApplicationForm({
             onChange={(event) => setType(event.target.value)}
           >
             <MenuItem value="" disabled>
-              <em>Select Leave Type</em>
+              <em>{t("components.Leave.LeaveApplicationDialog.text_select_leave_type", "Select Leave Type")}</em>
             </MenuItem>
             {(
               Object.values(LEAVE_TYPES) as unknown as Array<{

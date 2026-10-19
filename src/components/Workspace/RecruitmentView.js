@@ -16,6 +16,7 @@ import DataImportModal from './DataImportModal';
 import CtcExceptionModal from '../Dashboard/Modals/CtcExceptionModal';
 
 const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const {
@@ -377,9 +378,9 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     <button
                         className={styles.btnSecondary}
                         onClick={() => setIsAtsModalOpen(true)}
-                        title="Upload ATS Candidate Resumes & CSV Profiles in Bulk"
+                        title={t("components.Workspace.RecruitmentView.title_upload_ats_candidate_resumes_csv_profile", "Upload ATS Candidate Resumes & CSV Profiles in Bulk")}
                     >
-                        <UploadCloud size={15} /> Bulk ATS Import
+                        <UploadCloud size={15} />  {t("components.Workspace.RecruitmentView.text_bulk_ats_import", "Bulk ATS Import")}
                     </button>
                     <button
                         className={styles.btnSecondary}
@@ -398,9 +399,9 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                             setIsCtcModalOpen(true);
                         }}
                         style={{ border: '1px solid rgba(245, 158, 11, 0.4)', color: '#d97706' }}
-                        title="Raise or Review Talent CTC Exception for Out-of-Budget Candidates"
+                        title={t("components.Workspace.RecruitmentView.title_raise_or_review_talent_ctc_exception_for", "Raise or Review Talent CTC Exception for Out-of-Budget Candidates")}
                     >
-                        <DollarSign size={15} /> CTC Exception Workflow
+                        <DollarSign size={15} />  {t("components.Workspace.RecruitmentView.text_ctc_exception_workflow", "CTC Exception Workflow")}
                     </button>
                     <button
                         className={`${styles.btnSecondary} ${candidateList.length === 0 ? styles.btnExportDisabled : ''}`}
@@ -408,7 +409,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         disabled={candidateList.length === 0}
                         title={candidateList.length === 0 ? "No candidates in pipeline to export" : "Export Candidate Pipeline CSV"}
                     >
-                        <Download size={15} /> Export Candidates
+                        <Download size={15} />  {t("components.Workspace.RecruitmentView.text_export_candidates", "Export Candidates")}
                     </button>
                     <button className={styles.btnSecondary} onClick={() => setIsRefModalOpen(true)}>
                         <UserPlus size={16} />{readData("components.Workspace.RecruitmentView", "RecruitmentView_text_8")}</button>
@@ -547,7 +548,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                         >
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                                                    <span className={styles.dragGrip} title="Drag and drop card across any of the 4 stages">
+                                                    <span className={styles.dragGrip} title={t("components.Workspace.RecruitmentView.title_drag_and_drop_card_across_any_of_the_4_s", "Drag and drop card across any of the 4 stages")}>
                                                         <GripVertical size={14} />
                                                     </span>
                                                     <strong style={{ color: 'var(--text)', fontSize: '0.95rem' }}>{cand.name}</strong>
@@ -576,7 +577,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                             {/* Stage Controls: Dedicated Stage Jumper + Bottom Prev/Next Controls */}
                                             <div className={styles.cardFooter}>
                                                 <div className={styles.stageSelectWrapper}>
-                                                    <span className={styles.stageSelectLabel}>Stage</span>
+                                                    <span className={styles.stageSelectLabel}>{t("components.Workspace.RecruitmentView.text_stage", "Stage")}</span>
                                                     <select
                                                         className={styles.stageSelect}
                                                         value={cand.stage || stage.key}
@@ -584,7 +585,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                             e.stopPropagation();
                                                             handleMoveCandidate(cand.id, e.target.value);
                                                         }}
-                                                        title="Jump directly to any stage"
+                                                        title={t("components.Workspace.RecruitmentView.title_jump_directly_to_any_stage", "Jump directly to any stage")}
                                                     >
                                                         {stages.map(s => (
                                                             <option key={s.key} value={s.key}>{s.label}</option>
@@ -603,7 +604,7 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                                 handleMoveCandidate(cand.id, stages[stageIdx - 1].key);
                                                             }}
                                                         >
-                                                            <ChevronLeft size={14} /> Prev
+                                                            <ChevronLeft size={14} />  {t("components.Workspace.RecruitmentView.text_prev", "Prev")}
                                                         </button>
                                                     ) : (
                                                         <div />
@@ -619,7 +620,8 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                                 handleMoveCandidate(cand.id, stages[stageIdx + 1].key);
                                                             }}
                                                         >
-                                                            Next <ChevronRight size={14} />
+                                                            
+                                                            {t("components.Workspace.RecruitmentView.text_next", "Next")} <ChevronRight size={14} />
                                                         </button>
                                                     ) : (
                                                         <div />
@@ -632,7 +634,8 @@ const RecruitmentView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
                                 {isDragTarget && (
                                     <div className={styles.dropPlaceholder}>
-                                        Drop candidate to move to {stage.label}
+                                        
+                                        {t("components.Workspace.RecruitmentView.text_drop_candidate_to_move_to", "Drop candidate to move to")} {stage.label}
                                     </div>
                                 )}
                             </div>

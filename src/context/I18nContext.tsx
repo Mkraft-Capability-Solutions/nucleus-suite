@@ -1,7 +1,8 @@
 'use client';
-import { createContext, useContext, useCallback, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useCallback, useMemo, useState, useEffect, type ReactNode } from 'react';
 import { defaultMessages, getMessagesForLocale, translate, type Messages, type TranslationParams } from '@/lib/i18n';
 import { supportedLanguages, defaultLocale, type LanguageMeta } from '@/locales';
+import { setWorkspaceTranslator } from '@/services/workspace-data.mjs';
 
 interface I18nContextValue {
   locale: string;
@@ -66,6 +67,20 @@ export function I18nProvider({
     }
   }, []);
 
+  useEffect(() => {
+    setWorkspaceTranslator((resource: string, key: string, rawVal: string) => {
+      const namespaced = `${resource}.${key}`;
+      const translated = translate(currentMessages, namespaced);
+      if (translated && translated !== namespaced) return translated;
+      if (rawVal) {
+        const byRaw = translate(currentMessages, rawVal);
+        if (byRaw && byRaw !== rawVal) return byRaw;
+      }
+      return rawVal;
+    });
+  }, [currentMessages]);
+
+
   const value = useMemo(
     () => ({
       locale: currentLocale,
@@ -85,8 +100,8 @@ export function useTranslation() {
     (
       namespaceOrKey: string,
       keyOrParams?: string | TranslationParams,
-      params?: TranslationParams,
-    ) => translate(messages, namespaceOrKey, keyOrParams, params),
+      paramsOrFallback?: string | TranslationParams,
+    ) => translate(messages, namespaceOrKey, keyOrParams, paramsOrFallback),
     [messages],
   );
   return { locale, t, setLocale, supportedLanguages };

@@ -17,6 +17,7 @@ import { launchAction } from '@/lib/action-launcher';
 import { getAllPicklists, searchPicklists } from '@/lib/picklist-catalog';
 
 const SettingsView = ({ onNavigate, onSelectConsole }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const { showToast } = useHRMS();
@@ -219,7 +220,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                     className={`${styles.tabBtn} ${activeTab === 'picklists' ? styles.tabActive : ''}`}
                     onClick={() => setActiveTab('picklists')}
                 >
-                    <List size={16} />Picklists Catalog</button>
+                    <List size={16} />{t("components.Workspace.SettingsView.text_picklists_catalog", "Picklists Catalog")}</button>
             </div>
 
             {/* TAB 1: PROFILE & PERSONAL */}
@@ -566,7 +567,8 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                             onClick={() => window.open('/api/v1/audit/export', '_blank')}
                             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontWeight: 600, fontSize: '0.85rem' }}
                         >
-                            Export Audit CSV
+                            
+                            {t("components.Workspace.SettingsView.text_export_audit_csv", "Export Audit CSV")}
                         </button>
                     </div>
 
@@ -731,14 +733,14 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                         <div className={styles.sectionIcon} style={{ background: 'rgba(45, 212, 168, 0.12)' }}><List size={20} color="#2DD4A8" /></div>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', gap: '1rem', flexWrap: 'wrap' }}>
                             <div>
-                                <h3 style={{ margin: 0 }}>System & Config Picklists Catalog</h3>
-                                <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>Standardized master dropdown catalogs, statutory classifications, and lookup value sets across all 11 HRMS modules (118 Seeded Picklists).</p>
+                                <h3 style={{ margin: 0 }}>{t("components.Workspace.SettingsView.text_system_config_picklists_catalog", "System & Config Picklists Catalog")}</h3>
+                                <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2)' }}>{t("components.Workspace.SettingsView.text_standardized_master_dropdown_catalogs_st", "Standardized master dropdown catalogs, statutory classifications, and lookup value sets across all 11 HRMS modules (118 Seeded Picklists).")}</p>
                             </div>
                             <div style={{ position: 'relative', width: '280px' }}>
                                 <Search size={15} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-2)' }} />
                                 <input
                                     type="text"
-                                    placeholder="Search picklist code, name, value..."
+                                    placeholder={t("components.Workspace.SettingsView.placeholder_search_picklist_code_name_value", "Search picklist code, name, value...")}
                                     className={styles.input}
                                     style={{ paddingLeft: '2.1rem', height: '36px', fontSize: '0.8rem' }}
                                     value={picklistSearch}
@@ -752,11 +754,11 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                         <table className={styles.auditTable}>
                             <thead>
                                 <tr>
-                                    <th>Picklist Code</th>
-                                    <th>Name</th>
-                                    <th>Seeded By</th>
-                                    <th>Values Count</th>
-                                    <th>Value Set Preview</th>
+                                    <th>{t("components.Workspace.SettingsView.text_picklist_code", "Picklist Code")}</th>
+                                    <th>{t("components.Workspace.SettingsView.text_name", "Name")}</th>
+                                    <th>{t("components.Workspace.SettingsView.text_seeded_by", "Seeded By")}</th>
+                                    <th>{t("components.Workspace.SettingsView.text_values_count", "Values Count")}</th>
+                                    <th>{t("components.Workspace.SettingsView.text_value_set_preview", "Value Set Preview")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -788,7 +790,7 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                                                 ))}
                                                 {pl.values.length > 5 && (
                                                     <span style={{ fontSize: '0.72rem', color: 'var(--text-2)', alignSelf: 'center', fontWeight: 600 }}>
-                                                        +{pl.values.length - 5} more
+                                                        +{pl.values.length - 5}  {t("components.Workspace.SettingsView.text_more", "more")}
                                                     </span>
                                                 )}
                                             </div>

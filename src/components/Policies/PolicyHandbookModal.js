@@ -1,5 +1,7 @@
 "use client";
 
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState, useEffect } from 'react';
 import {
     X, BookOpen, Search, CheckCircle2, Download, Shield,
@@ -96,6 +98,7 @@ const DEFAULT_POLICIES = [
 ];
 
 export default function PolicyHandbookModal({ isOpen, onClose }) {
+    const { t } = useTranslation();
     const { showToast } = useHRMS();
     const { user } = useAuth();
 
@@ -244,10 +247,12 @@ Record Verified by Enterprise HR Compliance Engine.
                         </div>
                         <div>
                             <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text, #ffffff)', fontWeight: 700 }}>
-                                Enterprise Policy Handbook &amp; Compliance Repository
+                                
+                                {t("components.Policies.PolicyHandbookModal.text_enterprise_policy_handbook_amp_complianc", "Enterprise Policy Handbook &amp; Compliance Repository")}
                             </h3>
                             <p style={{ margin: '0.2rem 0 0', fontSize: '0.8rem', color: 'var(--text-2, #94a3b8)' }}>
-                                Official company policies, statutory guidelines, and digital employee acknowledgement register
+                                
+                                {t("components.Policies.PolicyHandbookModal.text_official_company_policies_statutory_guid", "Official company policies, statutory guidelines, and digital employee acknowledgement register")}
                             </p>
                         </div>
                     </div>
@@ -288,7 +293,7 @@ Record Verified by Enterprise HR Compliance Engine.
                                 <Search size={15} color="var(--text-3, #64748b)" />
                                 <input
                                     type="text"
-                                    placeholder="Search handbook..."
+                                    placeholder={t("components.Policies.PolicyHandbookModal.placeholder_search_handbook", "Search handbook...")}
                                     value={searchQuery}
                                     onChange={e => setSearchQuery(e.target.value)}
                                     style={{
@@ -325,11 +330,12 @@ Record Verified by Enterprise HR Compliance Engine.
                                             <span style={{ fontSize: '0.7rem', color: 'var(--text-3, #64748b)', fontWeight: 600 }}>{policy.id}</span>
                                             {isAcked ? (
                                                 <span style={{ fontSize: '0.68rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: 3, fontWeight: 600 }}>
-                                                    <Check size={12} /> Acknowledged
+                                                    <Check size={12} />  {t("components.Policies.PolicyHandbookModal.text_acknowledged", "Acknowledged")}
                                                 </span>
                                             ) : (
                                                 <span style={{ fontSize: '0.68rem', color: '#f59e0b', fontWeight: 600 }}>
-                                                    Pending
+                                                    
+                                                    {t("components.Policies.PolicyHandbookModal.text_pending", "Pending")}
                                                 </span>
                                             )}
                                         </div>
@@ -361,13 +367,14 @@ Record Verified by Enterprise HR Compliance Engine.
                                                 fontWeight: 700
                                             }}>{selectedPolicy.id}</span>
                                             <span style={{ fontSize: '0.75rem', color: 'var(--text-3, #64748b)' }}>{selectedPolicy.version}</span>
-                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-3, #64748b)' }}>• Effective: {selectedPolicy.effectiveDate}</span>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-3, #64748b)' }}>{t("components.Policies.PolicyHandbookModal.text_effective", "• Effective:")} {selectedPolicy.effectiveDate}</span>
                                         </div>
                                         <h2 style={{ margin: 0, fontSize: '1.35rem', color: 'var(--text, #ffffff)', fontWeight: 700 }}>
                                             {selectedPolicy.title}
                                         </h2>
                                         <p style={{ margin: '0.35rem 0 0', fontSize: '0.82rem', color: 'var(--text-2, #94a3b8)' }}>
-                                            Classification: {selectedPolicy.category}
+                                            
+                                            {t("components.Policies.PolicyHandbookModal.text_classification", "Classification:")} {selectedPolicy.category}
                                         </p>
                                     </div>
 
@@ -387,7 +394,7 @@ Record Verified by Enterprise HR Compliance Engine.
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        <Download size={14} /> Download Handbook
+                                        <Download size={14} />  {t("components.Policies.PolicyHandbookModal.text_download_handbook", "Download Handbook")}
                                     </button>
                                 </div>
 
@@ -401,7 +408,7 @@ Record Verified by Enterprise HR Compliance Engine.
                                 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
                                         <Shield size={16} color="#3b82f6" />
-                                        <strong style={{ fontSize: '0.85rem', color: 'var(--text, #ffffff)' }}>Policy Objective &amp; Scope</strong>
+                                        <strong style={{ fontSize: '0.85rem', color: 'var(--text, #ffffff)' }}>{t("components.Policies.PolicyHandbookModal.text_policy_objective_amp_scope", "Policy Objective &amp; Scope")}</strong>
                                     </div>
                                     <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-2, #94a3b8)', lineHeight: 1.5 }}>
                                         {selectedPolicy.summary}
@@ -411,7 +418,8 @@ Record Verified by Enterprise HR Compliance Engine.
                                 {/* Clauses */}
                                 <div style={{ flex: 1 }}>
                                     <h4 style={{ margin: '0 0 0.75rem', fontSize: '0.95rem', color: 'var(--text, #ffffff)' }}>
-                                        Mandatory Statutory Clauses &amp; Guidelines
+                                        
+                                        {t("components.Policies.PolicyHandbookModal.text_mandatory_statutory_clauses_amp_guidelin", "Mandatory Statutory Clauses &amp; Guidelines")}
                                     </h4>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                         {selectedPolicy.clauses.map((clause, idx) => (
@@ -445,10 +453,10 @@ Record Verified by Enterprise HR Compliance Engine.
                                     <div style={{ fontSize: '0.78rem', color: 'var(--text-2, #94a3b8)' }}>
                                         {acknowledgedMap[selectedPolicy.id] ? (
                                             <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: 5, fontWeight: 600 }}>
-                                                <CheckCircle2 size={16} /> Formally acknowledged by {user?.name || 'Active User'}
+                                                <CheckCircle2 size={16} />  {t("components.Policies.PolicyHandbookModal.text_formally_acknowledged_by", "Formally acknowledged by")} {user?.name || 'Active User'}
                                             </span>
                                         ) : (
-                                            <span>Please review the policy clauses and submit your digital acknowledgement.</span>
+                                            <span>{t("components.Policies.PolicyHandbookModal.text_please_review_the_policy_clauses_and_sub", "Please review the policy clauses and submit your digital acknowledgement.")}</span>
                                         )}
                                     </div>
 
@@ -471,7 +479,7 @@ Record Verified by Enterprise HR Compliance Engine.
                                                 cursor: isAcknowledging ? 'not-allowed' : 'pointer'
                                             }}
                                         >
-                                            <CheckCircle2 size={16} /> Acknowledge Policy
+                                            <CheckCircle2 size={16} />  {t("components.Policies.PolicyHandbookModal.text_acknowledge_policy", "Acknowledge Policy")}
                                         </button>
                                     )}
                                 </div>

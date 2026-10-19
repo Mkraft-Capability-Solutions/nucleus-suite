@@ -1,0 +1,195 @@
+/* ==========================================================================
+   Nucleus Assistance Beacon — Apple-Grade Dynamic Glass Pill (TopNav)
+   Theme Adaptive: Crystalline Frosted White in Light, Smoked Obsidian in Dark
+   ========================================================================== */
+
+.beaconWrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  user-select: none;
+}
+
+/* Ambient Outer Aurora Ring for Live State */
+.auroraAtmosphere {
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.35) 0%, rgba(236, 72, 153, 0.2) 60%, transparent 100%);
+  filter: blur(6px);
+  animation: auroraPulse 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes auroraPulse {
+  0% { transform: scale(0.96); opacity: 0.5; }
+  100% { transform: scale(1.06); opacity: 0.85; }
+}
+
+/* Main Pill Button */
+.beaconBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px 0 10px;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Light Mode Default: Frosted Pearl White Glass */
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  color: #1e293b;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 1);
+}
+
+:global([data-theme="dark"]) .beaconBtn,
+:global([data-appearance="dark"]) .beaconBtn {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #f1f5f9;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.beaconBtn:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  background: rgba(255, 255, 255, 0.96);
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 16px rgba(99, 102, 241, 0.12),
+    0 0 0 1px rgba(99, 102, 241, 0.15);
+}
+
+:global([data-theme="dark"]) .beaconBtn:hover,
+:global([data-appearance="dark"]) .beaconBtn:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(165, 180, 252, 0.3);
+  box-shadow: 0 4px 18px rgba(99, 102, 241, 0.25);
+}
+
+.beaconBtn:active {
+  transform: translateY(0);
+}
+
+/* Live Active Voice State */
+.beaconBtnLive {
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(240, 253, 244, 0.9);
+  color: #065f46;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.25);
+}
+
+:global([data-theme="dark"]) .beaconBtnLive,
+:global([data-appearance="dark"]) .beaconBtnLive {
+  background: rgba(6, 78, 59, 0.5);
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+
+/* Connecting State */
+.beaconBtnConnecting {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(254, 243, 199, 0.9);
+  color: #92400e;
+}
+
+:global([data-theme="dark"]) .beaconBtnConnecting,
+:global([data-appearance="dark"]) .beaconBtnConnecting {
+  background: rgba(120, 53, 15, 0.4);
+  color: #fbbf24;
+}
+
+/* Static Pill Icon */
+.staticPillIcon {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6366f1;
+}
+
+:global([data-theme="dark"]) .staticPillIcon,
+:global([data-appearance="dark"]) .staticPillIcon {
+  color: #a5b4fc;
+}
+
+.subtlePulseDot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6366f1;
+}
+
+/* Equalizer Bars in Live Pill */
+.spectrumBarGroup {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 18px;
+}
+
+.spectrumBar {
+  width: 2.5px;
+  border-radius: 9999px;
+  transition: height 0.08s ease;
+}
+
+/* Label & Shortcut */
+.labelSection {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.beaconPrimaryText {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.badgeLiveContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
+}
+
+.liveRadioIcon {
+  animation: pulseRadio 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseRadio {
+  0% { transform: scale(0.9); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 1; }
+}
+
+.shortcutKey {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.05);
+  color: #64748b;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+:global([data-theme="dark"]) .shortcutKey,
+:global([data-appearance="dark"]) .shortcutKey {
+  background: rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  border-color: rgba(255, 255, 255, 0.12);
+}

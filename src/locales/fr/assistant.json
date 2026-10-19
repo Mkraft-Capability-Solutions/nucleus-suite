@@ -1,0 +1,72 @@
+{
+  "greeting": "Comment puis-je vous aider à naviguer dans l'espace de travail ?",
+  "fallback": "Demandez-moi d'ouvrir un module tel que Paie, Congés, Présence ou Performance.",
+  "replies": {
+    "payroll": "Ouverture de la Paie.",
+    "leaves": "Ouverture de la Gestion des Congés.",
+    "attendance": "Ouverture des Présences.",
+    "recruitment": "Ouverture du Recrutement.",
+    "performance": "Ouverture de la Performance.",
+    "learning": "Ouverture de la Formation.",
+    "experience": "Ouverture de l'Expérience Collaborateur.",
+    "team": "Ouverture de l'Annuaire d'Équipe.",
+    "dashboard": "Ouverture du Tableau de Bord.",
+    "settings": "Ouverture des Paramètres."
+  },
+  "keywords": {
+    "payroll": [
+      "paie",
+      "salaire",
+      "bulletin",
+      "rémunération"
+    ],
+    "leaves": [
+      "congé",
+      "vacances",
+      "absence",
+      "rtt"
+    ],
+    "attendance": [
+      "présence",
+      "pointage",
+      "horaire",
+      "shift"
+    ],
+    "recruitment": [
+      "recrutement",
+      "candidat",
+      "poste",
+      "embauche"
+    ],
+    "performance": [
+      "performance",
+      "objectif",
+      "évaluation"
+    ],
+    "learning": [
+      "formation",
+      "cours",
+      "apprentissage",
+      "compétence"
+    ],
+    "experience": [
+      "expérience",
+      "bien-être",
+      "santé"
+    ],
+    "team": [
+      "équipe",
+      "annuaire",
+      "collègue"
+    ],
+    "dashboard": [
+      "tableau de bord",
+      "accueil"
+    ],
+    "settings": [
+      "paramètres",
+      "sécurité",
+      "profil"
+    ]
+  }
+}

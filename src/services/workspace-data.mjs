@@ -127,9 +127,49 @@ async function httpTransport() {
     return validated;
 }
 
+let translator = null;
+
+// Object fields whose string values are machine identifiers (chart axis/series types,
+// layout enums, ids, colors, routes). Translating them breaks consumers, e.g. ECharts
+// rejects `type: "Value"` with "Component yAxis.Value is used but not imported".
+const NON_TRANSLATABLE_KEYS = new Set([
+    'type', 'id', 'key', 'trigger', 'orient', 'position', 'align', 'verticalAlign',
+    'left', 'right', 'top', 'bottom', 'width', 'height', 'color', 'backgroundColor',
+    'borderColor', 'borderType', 'icon', 'symbol', 'shape', 'layout', 'mode', 'variant',
+    'size', 'status', 'route', 'href', 'url', 'path', 'tab', 'targetTab', 'domain',
+    'fontFamily', 'fontWeight', 'fontStyle', 'roseType', 'sort', 'stack', 'animationEasing',
+    'nameLocation', 'selectedMode', 'radius', 'center', 'formatter',
+]);
+
+export function setWorkspaceTranslator(fn) {
+    translator = fn;
+}
+
+function translateValue(resource, key, val) {
+    if (!translator) return val;
+    if (typeof val === 'string') {
+        return translator(resource, key, val);
+    }
+    if (val && typeof val === 'object' && !Array.isArray(val)) {
+        const translated = {};
+        for (const [k, v] of Object.entries(val)) {
+            if (typeof v === 'string' && !NON_TRANSLATABLE_KEYS.has(k)) {
+                translated[k] = translator(`${resource}.${key}`, k, v);
+            } else {
+                translated[k] = v;
+            }
+        }
+        return translated;
+    }
+    return val;
+}
+
 let service = createWorkspaceDataService(httpTransport);
 export const loadWorkspaceData = () => service.load();
-export const readData = (resource, key) => service.read(resource, key);
+export const readData = (resource, key) => {
+    const raw = service.read(resource, key);
+    return translateValue(resource, key, raw);
+};
 
 /** Dependency injection for integration tests or a future service transport. */
 export async function configureWorkspaceTransport(transport) {

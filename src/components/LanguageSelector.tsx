@@ -6,6 +6,7 @@ import { useTranslation } from '@/context/I18nContext';
 import styles from './LanguageSelector.module.css';
 
 export default function LanguageSelector() {
+    const { t } = useTranslation();
   const { locale, setLocale, supportedLanguages } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -43,11 +44,11 @@ export default function LanguageSelector() {
       {isOpen && (
         <div className={styles.dropdown} role="menu" tabIndex={-1}>
           <div className={styles.header}>
-            <span className={styles.headerTitle}>Select Language / भाषा चुनें</span>
+            <span className={styles.headerTitle}>{t("components.LanguageSelector.text_select_language", "Select Language / भाषा चुनें")}</span>
           </div>
 
           <div className={styles.section}>
-            <div className={styles.sectionHeader}>International Languages</div>
+            <div className={styles.sectionHeader}>{t("components.LanguageSelector.text_international_languages", "International Languages")}</div>
             {internationalLangs.map((lang) => {
               const isSelected = lang.code === locale;
               return (
@@ -75,7 +76,7 @@ export default function LanguageSelector() {
           <div className={styles.sectionDivider} />
 
           <div className={styles.section}>
-            <div className={styles.sectionHeader}>Indian Languages (भारतीय भाषाएं)</div>
+            <div className={styles.sectionHeader}>{t("components.LanguageSelector.text_indian_languages", "Indian Languages (भारतीय भाषाएं)")}</div>
             {indianLangs.map((lang) => {
               const isSelected = lang.code === locale;
               return (

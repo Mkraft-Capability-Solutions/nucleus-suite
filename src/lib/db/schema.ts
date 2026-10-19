@@ -662,3 +662,21 @@ export const learningPaths = pgTable("learning_paths", moduleTableConfig);
 export const contractorWorkforce = pgTable("contractor_workforce", moduleTableConfig);
 export const projectWorkforce = pgTable("project_workforce", moduleTableConfig);
 export const helpdeskTickets = pgTable("helpdesk_tickets", moduleTableConfig);
+
+export const systemEnums = pgTable(
+  "system_enums",
+  {
+    id: text("id").primaryKey(),
+    category: text("category").notNull(),
+    code: text("code").notNull(),
+    label: text("label").notNull(),
+    translations: jsonb("translations").default({}).notNull(),
+    sortOrder: integer("sort_order").default(0).notNull(),
+    isActive: boolean("is_active").default(true).notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    uniqueIndex("system_enums_cat_code_uq").on(table.category, table.code),
+    index("system_enums_category_idx").on(table.category),
+  ],
+);

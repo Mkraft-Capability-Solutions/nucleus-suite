@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import { readData } from '@/services/workspace-data.mjs';
 
 import { getNavigationDomains } from '@/lib/workspace-navigation';
@@ -9,12 +11,10 @@ import LeftDock from '@/components/Workspace/LeftDock';
 import TopNav from '@/components/Workspace/TopNav';
 import RightSubNav from '@/components/Workspace/RightSubNav';
 import MainWorkspace from '@/components/Workspace/MainWorkspace';
-import AIPanel from '@/components/Workspace/AIPanel';
+import QuantumCopilot from '@/components/AI/QuantumCopilot';
 import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
-import VoiceNavigator from '@/components/VoiceNavigator';
-import { NucleusDock } from '@/components/Workspace/NucleusDock';
 import CtcExceptionModal from '@/components/Dashboard/Modals/CtcExceptionModal';
 import DataImportModal from '@/components/Workspace/DataImportModal';
 import { HRMSProvider, useHRMS } from '@/context/HRMSContext';
@@ -22,33 +22,73 @@ import { useAuth } from '@/context/AuthContext';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import styles from '@/app/page.module.css';
 import { useScrollableTables } from '@/hooks/useScrollableTables';
-import { getTimeGreeting, hasPlayedDailyGreeting, markDailyGreetingPlayed, speakAloud } from '@/utils/voiceCommandEngine';
 import Toast from '@/components/Workspace/Toast';
 import toastStyles from '@/components/Workspace/Toast.module.css';
 
+import { usePathname, useRouter } from 'next/navigation';
+
 const NAV_STATE_KEY = 'nucleus_nav_state';
 
+// Route-to-Tab dictionary for direct URLs like /people, /leave, /attendance, /payroll
+const ROUTE_MODULE_MAP = {
+  people: { tab: 'people_core', domain: 'people', sub: 'core_people' },
+  directory: { tab: 'people_core', domain: 'people', sub: 'directory' },
+  employees: { tab: 'people_core', domain: 'people', sub: 'core_people' },
+  leave: { tab: 'leaves', domain: 'workforce_ops', sub: 'core_leaves' },
+  leaves: { tab: 'leaves', domain: 'workforce_ops', sub: 'core_leaves' },
+  attendance: { tab: 'attendance', domain: 'workforce_ops', sub: 'core_attendance' },
+  roster: { tab: 'attendance', domain: 'workforce_ops', sub: 'ops_rosters' },
+  payroll: { tab: 'payroll', domain: 'payroll_finance', sub: 'payroll_global' },
+  payslips: { tab: 'payroll', domain: 'payroll_finance', sub: 'payslips' },
+  loans: { tab: 'payroll', domain: 'payroll_finance', sub: 'loans' },
+  onboarding: { tab: 'onboarding', domain: 'people', sub: 'core_onboarding' },
+  lifecycle: { tab: 'onboarding', domain: 'people', sub: 'lifecycle' },
+  organization: { tab: 'team', domain: 'people', sub: 'core_org' },
+  team: { tab: 'team', domain: 'people', sub: 'teams' },
+  recruitment: { tab: 'recruitment', domain: 'talent', sub: 'talent_ats' },
+  talent: { tab: 'recruitment', domain: 'talent', sub: 'talent_ats' },
+  performance: { tab: 'performance', domain: 'talent', sub: 'talent_performance' },
+  learning: { tab: 'learning', domain: 'talent', sub: 'talent_learning' },
+  experience: { tab: 'experience', domain: 'talent', sub: 'talent_experience' },
+  settings: { tab: 'settings', domain: 'platform', sub: 'platform_integrations' },
+  integrations: { tab: 'integrations', domain: 'platform', sub: 'platform_integrations' },
+  compliance: { tab: 'compliance', domain: 'platform', sub: 'core_compliance' },
+  access_control: { tab: 'access_control', domain: 'platform', sub: 'platform_access_control' },
+  analytics: { tab: 'analytics', domain: 'analytics_ai', sub: 'analytics_exec' },
+  insights: { tab: 'analytics', domain: 'analytics_ai', sub: 'analytics_exec' },
+  helpdesk: { tab: 'helpdesk', domain: 'platform', sub: 'core_operations' },
+  contract_workforce: { tab: 'contract_workforce', domain: 'core_hr', sub: 'core_workforce' },
+};
+
 const AppContent = () => {
+  const { t } = useTranslation();
   const { user, isLoading, isModuleAllowed } = useAuth();
+  const pathname = usePathname();
+  const router = useRouter();
   const workspaceRef = useRef(null);
   useScrollableTables(workspaceRef, Boolean(user));
   const { toasts, removeToast, showToast } = useHRMS();
 
-  // ── Restore last-active page from sessionStorage (cleared on logout/tab close) ──
+  // ── Restore last-active page from URL first, then sessionStorage ──
+  const initialSegment = typeof window !== 'undefined'
+    ? window.location.pathname.replace(/^\//, '').split('/')[0].toLowerCase()
+    : '';
+  const initialMapped = ROUTE_MODULE_MAP[initialSegment];
+
   const savedNav = (() => {
     if (typeof window === 'undefined') return null;
     try { return JSON.parse(sessionStorage.getItem(NAV_STATE_KEY) || 'null'); } catch { return null; }
   })();
 
-  // Active navigation states — seeded from sessionStorage when available
+  // Active navigation states — seeded from current route URL first, then sessionStorage
   const [activeDomain, setActiveDomain] = useState(
-    savedNav?.activeDomain ?? readData("components.AppWorkspace", "initialState_1")
+    initialMapped?.domain ?? savedNav?.activeDomain ?? readData("components.AppWorkspace", "initialState_1")
   );
   const [activeSubFeature, setActiveSubFeature] = useState(
-    savedNav?.activeSubFeature ?? (user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"))
+    initialMapped?.sub ?? savedNav?.activeSubFeature ?? (user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"))
   );
   const [activeTab, setActiveTab] = useState(
-    savedNav?.activeTab ?? readData("components.AppWorkspace", "initialState_3")
+    initialMapped?.tab ?? savedNav?.activeTab ?? readData("components.AppWorkspace", "initialState_3")
   );
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);
@@ -58,6 +98,19 @@ const AppContent = () => {
   const [activeConsole, setActiveConsole] = useState(
     savedNav?.activeConsole ?? (user?.defaultConsole || readData("components.AppWorkspace", "initialState_4"))
   );
+
+  // Sync state when URL pathname changes (e.g. browser back/forward or router.push)
+  useEffect(() => {
+    if (!pathname || pathname === '/workspace' || pathname === '/login') return;
+    const segment = pathname.replace(/^\//, '').split('/')[0].toLowerCase();
+    const mapped = ROUTE_MODULE_MAP[segment];
+    if (mapped) {
+      setActiveTab(mapped.tab);
+      setActiveDomain(mapped.domain);
+      setActiveSubFeature(mapped.sub);
+      setShowCatalog(false);
+    }
+  }, [pathname]);
 
   // Persist nav state to sessionStorage on every navigation change
   useEffect(() => {
@@ -72,6 +125,35 @@ const AppContent = () => {
     } catch { /* Storage unavailable */ }
   }, [activeDomain, activeSubFeature, activeTab, activeConsole, user]);
 
+  // Cleanly reflect active module in browser URL
+  useEffect(() => {
+    if (typeof window === 'undefined' || !activeTab) return;
+    const tabToPath = {
+      people_core: '/people',
+      leaves: '/leave',
+      attendance: '/attendance',
+      payroll: '/payroll',
+      onboarding: '/onboarding',
+      team: '/organization',
+      recruitment: '/recruitment',
+      performance: '/performance',
+      learning: '/learning',
+      experience: '/experience',
+      settings: '/settings',
+      integrations: '/integrations',
+      compliance: '/compliance',
+      access_control: '/access_control',
+      analytics: '/analytics',
+      helpdesk: '/helpdesk',
+      contract_workforce: '/contract_workforce',
+      dashboard: '/workspace',
+    };
+    const targetUrl = tabToPath[activeTab];
+    if (targetUrl && window.location.pathname !== targetUrl && window.location.pathname !== '/login') {
+      window.history.replaceState(null, '', targetUrl);
+    }
+  }, [activeTab]);
+
   useEffect(() => {
     const compact = window.matchMedia('(max-width: 960px)');
     const closeOnCompact = () => { if (compact.matches) setIsRightNavOpen(false); };
@@ -79,9 +161,8 @@ const AppContent = () => {
     return () => compact.removeEventListener('change', closeOnCompact);
   }, []);
   
-  // Mutually exclusive drawer manager ('ai' | 'chat' | null)
+  // Mutually exclusive drawer manager ('chat' | null)
   const [activeFloatingDrawer, setActiveFloatingDrawer] = useState(null);
-  const isAIPanelOpen = activeFloatingDrawer === 'ai';
   const isChatPanelOpen = activeFloatingDrawer === 'chat';
 
   // Handle switching consoles (connected across TopNav, MainWorkspace, DualPaneNav, and RightSubNav)
@@ -95,30 +176,36 @@ const AppContent = () => {
 
   // Dual-Pane Navigation Modal state (Modules Left, Sub-modules Right)
   const [isModulesOpen, setIsModulesOpen] = useState(false);
-  const [isVoiceModalOpen, setIsVoiceModalOpen] = useState(false);
-  const [voiceNavDetail, setVoiceNavDetail] = useState(null);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isCtcModalOpen, setIsCtcModalOpen] = useState(false);
   const [ctcModalData, setCtcModalData] = useState(null);
   const [isBulkUploadOpen, setIsBulkUploadOpen] = useState(false);
 
   useKeyboardShortcut('m', () => setIsModulesOpen(prev => !prev), Boolean(user));
-  useKeyboardShortcut('v', () => setIsVoiceModalOpen(prev => !prev), Boolean(user));
+  useKeyboardShortcut('v', () => setIsCopilotOpen(prev => !prev), Boolean(user));
 
   // Global event listeners (used by openAccessControl, voice, CTC exception, bulk upload)
   useEffect(() => {
     const handleCustomNav = (e) => {
       if (e.detail) {
-        setActiveTab(e.detail);
-        setShowCatalog(false);
-        if (e.detail === 'dashboard') setActiveDomain('dashboard');
-        if (e.detail === 'access_control' || e.detail === 'settings') {
-          setActiveDomain('platform');
+        const target = String(e.detail);
+        const mapped = ROUTE_MODULE_MAP[target.toLowerCase()];
+        if (mapped) {
+          setActiveTab(mapped.tab);
+          setActiveDomain(mapped.domain);
+          setActiveSubFeature(mapped.sub);
+        } else {
+          setActiveTab(target);
+          if (target === 'dashboard') setActiveDomain('dashboard');
+          if (target === 'access_control' || target === 'settings') {
+            setActiveDomain('platform');
+          }
         }
+        setShowCatalog(false);
       }
     };
-    const handleVoiceNav = (e) => {
-      setVoiceNavDetail(e?.detail || null);
-      setIsVoiceModalOpen(true);
+    const handleVoiceNav = () => {
+      setIsCopilotOpen(true);
     };
     const handleCtcException = (e) => {
       setCtcModalData(e.detail || null);
@@ -128,31 +215,18 @@ const AppContent = () => {
 
     window.addEventListener('nucleus:navigate_tab', handleCustomNav);
     window.addEventListener('nucleus:voice_navigation', handleVoiceNav);
+    window.addEventListener('nucleus:open_copilot', handleVoiceNav);
     window.addEventListener('nucleus:open_ctc_exception', handleCtcException);
     window.addEventListener('nucleus:open_bulk_upload', handleBulkUpload);
 
     return () => {
       window.removeEventListener('nucleus:navigate_tab', handleCustomNav);
       window.removeEventListener('nucleus:voice_navigation', handleVoiceNav);
+      window.removeEventListener('nucleus:open_copilot', handleVoiceNav);
       window.removeEventListener('nucleus:open_ctc_exception', handleCtcException);
       window.removeEventListener('nucleus:open_bulk_upload', handleBulkUpload);
     };
   }, []);
-
-  // Voice Greeting: Play strictly once per day when the user logs in and uses the app for the first time.
-  // After that, voice narration is exclusively triggered for user actions.
-  useEffect(() => {
-    if (!user) return;
-    const userKey = user.id || user.email || 'user';
-    if (!hasPlayedDailyGreeting(userKey)) {
-      markDailyGreetingPlayed(userKey);
-      const greeting = getTimeGreeting(user.name);
-      const timer = setTimeout(() => {
-        speakAloud(greeting);
-      }, 750);
-      return () => clearTimeout(timer);
-    }
-  }, [user]);
 
   const toggleDrawer = (drawerType) => {
     setActiveFloatingDrawer((prev) => (prev === drawerType ? null : drawerType));
@@ -473,14 +547,14 @@ const AppContent = () => {
       {(canUseAIAssistant || canUseTeamMessages) && <div className={styles.fabStack} role="toolbar" aria-label={readData("components.AppWorkspace", "attribute_7")}>
         {/* 1. Ask AI Assistant */}
         {canUseAIAssistant && <button
-          className={`${styles.fabBtn} ${styles.aiFab} ${isAIPanelOpen ? styles.fabActive : ''}`}
-          onClick={() => toggleDrawer('ai')}
-          title={isAIPanelOpen ? readData("components.AppWorkspace", "display_8") : readData("components.AppWorkspace", "display_9")}
-          aria-label={isAIPanelOpen ? readData("components.AppWorkspace", "display_10") : readData("components.AppWorkspace", "display_11")}
-          aria-expanded={isAIPanelOpen}
+          className={`${styles.fabBtn} ${styles.aiFab} ${isCopilotOpen ? styles.fabActive : ''}`}
+          onClick={() => setIsCopilotOpen(prev => !prev)}
+          title={t("components.AppWorkspace.title_open_nucleus_neural_intelligence_voice_p", "Open Nucleus Neural Intelligence (Voice & Policy Intelligence)")}
+          aria-label={t("components.AppWorkspace.aria-label_open_nucleus_neural_intelligence", "Open Nucleus Neural Intelligence")}
+          aria-expanded={isCopilotOpen}
         >
           <Sparkles size={17} />
-          <span className={styles.fabLabel}>{isAIPanelOpen ? readData("components.AppWorkspace", "display_12") : readData("components.AppWorkspace", "display_13")}</span>
+          <span className={styles.fabLabel}>{t("components.AppWorkspace.text_nucleus_assistance", "Nucleus Assistance")}</span>
         </button>}
 
         {/* 2. Team Messages */}
@@ -497,63 +571,26 @@ const AppContent = () => {
         </button>}
       </div>}
 
-      {/* Floating Overlay Layer (Decoupled overlay that never pushes layout flow) */}
-      {(isAIPanelOpen || isChatPanelOpen) && (
+      {/* Floating Overlay Layer for Chat */}
+      {isChatPanelOpen && (
         <div className={styles.floatingOverlayLayer} aria-live="polite">
-          {/* Floating AI Assistant Drawer */}
-          {isAIPanelOpen && (
-            <AIPanel
-              onClose={() => setActiveFloatingDrawer(null)}
-              onNavigate={(tab, domain, sub) => {
-                setActiveTab(tab);
-                if (domain) setActiveDomain(domain);
-                if (sub) setActiveSubFeature(sub);
-                setShowCatalog(false);
-              }}
-              onSelectConsole={handleSelectConsole}
-              onOpenModal={(modalType) => {
-                if (modalType === 'ctc_exception') setIsCtcModalOpen(true);
-                if (modalType === 'bulk_upload') setIsBulkUploadOpen(true);
-                if (modalType === 'modules') setIsModulesOpen(true);
-              }}
-            />
-          )}
-
-          {/* Floating Team Messages Drawer */}
-          {isChatPanelOpen && (
-            <ChatPanel
-              onClose={() => setActiveFloatingDrawer(null)}
-            />
-          )}
+          <ChatPanel onClose={() => setActiveFloatingDrawer(null)} />
         </div>
       )}
 
-      {/* Voice-Powered Natural Language Navigator */}
-      <VoiceNavigator
-        isOpen={isVoiceModalOpen}
-        onClose={() => {
-          setIsVoiceModalOpen(false);
-          setVoiceNavDetail(null);
-        }}
-        initialDetail={voiceNavDetail}
+      {/* Revolutionary Multimodal Neural HUD */}
+      <QuantumCopilot
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+        activeDomain={activeDomain}
+        activeTab={activeTab}
         onNavigate={(tab, domain, sub) => {
           setActiveTab(tab);
           if (domain) setActiveDomain(domain);
           if (sub) setActiveSubFeature(sub);
           setShowCatalog(false);
         }}
-        onSelectConsole={handleSelectConsole}
-        onOpenModal={(modalType) => {
-          if (modalType === 'ctc_exception') setIsCtcModalOpen(true);
-          if (modalType === 'bulk_upload') setIsBulkUploadOpen(true);
-          if (modalType === 'modules') setIsModulesOpen(true);
-          if (modalType === 'copilot' || modalType === 'ai') setActiveFloatingDrawer('ai');
-          if (modalType === 'chat') setActiveFloatingDrawer('chat');
-        }}
       />
-
-      {/* Floating Persistent Voice Session Dock */}
-      <NucleusDock onOpenVoiceModal={() => setIsVoiceModalOpen(true)} />
 
       {/* Talent CTC Exception Approval Modal */}
       <CtcExceptionModal
@@ -579,6 +616,7 @@ const AppContent = () => {
 };
 
 export default function Home() {
+    const { t } = useTranslation();
   const { user } = useAuth();
   return (
     <HRMSProvider key={user?.email || readData("components.AppWorkspace", "fallback_1")}>

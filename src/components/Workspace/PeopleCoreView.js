@@ -26,6 +26,7 @@ import { downloadCSV } from '@/utils/exportUtils';
 import TablePagination from '../Common/TablePagination';
 
 const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+  const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
     const {
@@ -257,14 +258,14 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         >
                             <ShieldCheck size={15} />{readData("components.Workspace.PeopleCoreView", "PeopleCoreView_text_4")}</button>
                     )}
-                    <button className={styles.btnSecondary} onClick={() => setIsBulkImportOpen(true)} title="Bulk employee import & template download">
-                        <UploadCloud size={16} /> Bulk Onboarding
+                    <button className={styles.btnSecondary} onClick={() => setIsBulkImportOpen(true)} title={t("components.Workspace.PeopleCoreView.title_bulk_employee_import_template_download", "Bulk employee import & template download")}>
+                        <UploadCloud size={16} />  {t("components.Workspace.PeopleCoreView.text_bulk_onboarding", "Bulk Onboarding")}
                     </button>
-                    <button className={styles.btnSecondary} onClick={exportDirectoryCSV} title="Export directory to CSV">
-                        <Download size={16} /> Export CSV
+                    <button className={styles.btnSecondary} onClick={exportDirectoryCSV} title={t("components.Workspace.PeopleCoreView.title_export_directory_to_csv", "Export directory to CSV")}>
+                        <Download size={16} />  {t("components.Workspace.PeopleCoreView.text_export_csv", "Export CSV")}
                     </button>
-                    <button className={styles.btnPrimary} onClick={() => setIsWizardOpen(true)} title="Add employee wizard (117 fields)">
-                        <Plus size={16} /> Add Employee
+                    <button className={styles.btnPrimary} onClick={() => setIsWizardOpen(true)} title={t("components.Workspace.PeopleCoreView.title_add_employee_wizard_117_fields", "Add employee wizard (117 fields)")}>
+                        <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_add_employee", "Add Employee")}
                     </button>
                 </div>
             </div>
@@ -275,61 +276,62 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     className={`${styles.tabBtn} ${activeSection === 'overview' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('overview')}
                 >
-                    <ShieldCheck size={16} /> Governance Hub
+                    <ShieldCheck size={16} />  {t("components.Workspace.PeopleCoreView.text_governance_hub", "Governance Hub")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'directory' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('directory')}
                 >
-                    <Users size={16} /> Employee Directory
+                    <Users size={16} />  {t("components.Workspace.PeopleCoreView.text_employee_directory", "Employee Directory")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'entities' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('entities')}
                 >
-                    <Building2 size={16} /> Legal Entities
+                    <Building2 size={16} />  {t("components.Workspace.PeopleCoreView.text_legal_entities", "Legal Entities")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'locations' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('locations')}
                 >
-                    <MapPin size={16} /> Locations
+                    <MapPin size={16} />  {t("components.Workspace.PeopleCoreView.text_locations", "Locations")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'orgchart' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('orgchart')}
                 >
-                    <Network size={16} /> Org Chart
+                    <Network size={16} />  {t("components.Workspace.PeopleCoreView.text_org_chart", "Org Chart")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'positions' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('positions')}
                 >
-                    <Layers size={16} /> Positions
+                    <Layers size={16} />  {t("components.Workspace.PeopleCoreView.text_positions", "Positions")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'star_employees' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('star_employees')}
                 >
-                    ⭐ Star Employees
+                    
+                    {t("components.Workspace.PeopleCoreView.text_star_employees", "⭐ Star Employees")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'manpower' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('manpower')}
                 >
-                    <Users size={16} /> Manpower
+                    <Users size={16} />  {t("components.Workspace.PeopleCoreView.text_manpower", "Manpower")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'documents' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('documents')}
                 >
-                    <FileText size={16} /> Documents
+                    <FileText size={16} />  {t("components.Workspace.PeopleCoreView.text_documents", "Documents")}
                 </button>
                 <button
                     className={`${styles.tabBtn} ${activeSection === 'audit' ? styles.activeTab : ''}`}
                     onClick={() => setActiveSection('audit')}
                 >
-                    <History size={16} /> Audit Trail
+                    <History size={16} />  {t("components.Workspace.PeopleCoreView.text_audit_trail", "Audit Trail")}
                 </button>
             </div>
 
@@ -384,10 +386,11 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         boxShadow: 'var(--shadow-raise)'
                     }}>
                         <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.15rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <Building2 size={20} style={{ color: 'var(--signal)' }} /> People Core & Enterprise Governance Overview
+                            <Building2 size={20} style={{ color: 'var(--signal)' }} />  {t("components.Workspace.PeopleCoreView.text_people_core_enterprise_governance_overvi", "People Core & Enterprise Governance Overview")}
                         </h3>
                         <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-2)', lineHeight: 1.5 }}>
-                            Central organizational architecture, corporate legal entity registration, manufacturing plant work sites, position registries, and headcount quotas for Nucleus HR Solutions.
+                            
+                            {t("components.Workspace.PeopleCoreView.text_central_organizational_architecture_corp", "Central organizational architecture, corporate legal entity registration, manufacturing plant work sites, position registries, and headcount quotas for Nucleus HR Solutions.")}
                         </p>
                     </div>
 
@@ -402,12 +405,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--signal-wash)', color: 'var(--signal-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Users size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Employee Master Records</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_employee_master_records", "Employee Master Records")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Inspect active staff, open full 360 dossiers, edit placements, and configure statutory numbers.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_inspect_active_staff_open_full_360_dossi", "Inspect active staff, open full 360 dossiers, edit placements, and configure statutory numbers.")}
                             </p>
                         </div>
 
@@ -417,12 +421,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--info-wash)', color: 'var(--info)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Building2 size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Legal Entities (SCR-001)</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_legal_entities_scr-001", "Legal Entities (SCR-001)")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Registered corporate legal entities, CIN, PAN, TAN, and statutory enterprise registrations.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_registered_corporate_legal_entities_cin_", "Registered corporate legal entities, CIN, PAN, TAN, and statutory enterprise registrations.")}
                             </p>
                         </div>
 
@@ -432,12 +437,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--pending-wash)', color: 'var(--pending)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <MapPin size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Plants & Locations (SCR-002)</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_plants_locations_scr-002", "Plants & Locations (SCR-002)")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Plant facilities, corporate offices, factory act time zones, and geo-scoped boundaries.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_plant_facilities_corporate_offices_facto", "Plant facilities, corporate offices, factory act time zones, and geo-scoped boundaries.")}
                             </p>
                         </div>
 
@@ -447,12 +453,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--signal-wash)', color: 'var(--signal)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Network size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Organization Tree Chart (SCR-014)</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_organization_tree_chart_scr-014", "Organization Tree Chart (SCR-014)")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Smart, advanced hierarchical tree visualization with reporting chains and branch expansion.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_smart_advanced_hierarchical_tree_visuali", "Smart, advanced hierarchical tree visualization with reporting chains and branch expansion.")}
                             </p>
                         </div>
 
@@ -462,12 +469,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--surface-2)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Layers size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Position Register (SCR-012)</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_position_register_scr-012", "Position Register (SCR-012)")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Position slots, vacancy tracking, and replacement requisition against vacated position codes.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_position_slots_vacancy_tracking_and_repl", "Position slots, vacancy tracking, and replacement requisition against vacated position codes.")}
                             </p>
                         </div>
 
@@ -477,12 +485,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <div style={{ width: 36, height: 36, borderRadius: 'var(--r-control)', background: 'var(--flag-wash)', color: 'var(--flag)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Users size={18} />
                                     </div>
-                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>Approved Manpower (SCR-013)</h4>
+                                    <h4 style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text)' }}>{t("components.Workspace.PeopleCoreView.text_approved_manpower_scr-013", "Approved Manpower (SCR-013)")}</h4>
                                 </div>
                                 <ArrowUpRight size={16} style={{ color: 'var(--text-2)' }} />
                             </div>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-2)', lineHeight: 1.4 }}>
-                                Department-wise sanctioned strength and manpower caps.
+                                
+                                {t("components.Workspace.PeopleCoreView.text_department-wise_sanctioned_strength_and_", "Department-wise sanctioned strength and manpower caps.")}
                             </p>
                         </div>
                     </div>
@@ -494,9 +503,10 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
                         <div>
-                            <h3>Employee Master Directory (SCR-011)</h3>
+                            <h3>{t("components.Workspace.PeopleCoreView.text_employee_master_directory_scr-011", "Employee Master Directory (SCR-011)")}</h3>
                             <p style={{ fontSize: '0.8rem', color: 'var(--text-2)', margin: '0.2rem 0 0 0' }}>
-                                Full employee records roster with 360 dossiers, position mapping, and profile editing
+                                
+                                {t("components.Workspace.PeopleCoreView.text_full_employee_records_roster_with_360_do", "Full employee records roster with 360 dossiers, position mapping, and profile editing")}
                             </p>
                         </div>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
@@ -511,7 +521,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                 />
                             </div>
                             <button className={styles.btnSecondary} onClick={exportDirectoryCSV}>
-                                <Download size={15} /> Export CSV
+                                <Download size={15} />  {t("components.Workspace.PeopleCoreView.text_export_csv", "Export CSV")}
                             </button>
                             <button
                                 className={styles.btnPrimary}
@@ -521,7 +531,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     setIsWizardOpen(true);
                                 }}
                             >
-                                <Plus size={16} /> Add Employee
+                                <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_add_employee", "Add Employee")}
                             </button>
                         </div>
                     </div>
@@ -548,7 +558,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                     <th onClick={() => { if (sortColumn === 'status') setSortAsc(!sortAsc); else { setSortColumn('status'); setSortAsc(true); } }} style={{ cursor: 'pointer', userSelect: 'none' }}>
                                         {readData("components.Workspace.PeopleCoreView", "PeopleCoreView_text_26")} {sortColumn === 'status' ? (sortAsc ? '▲' : '▼') : '↕'}
                                     </th>
-                                    <th>Actions</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_actions", "Actions")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -605,9 +615,10 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                     className={styles.btnSecondary}
                                                     style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                                                     onClick={() => setSelectedDossierEmployee(emp)}
-                                                    title="View full 360-degree employee dossier"
+                                                    title={t("components.Workspace.PeopleCoreView.title_view_full_360-degree_employee_dossier", "View full 360-degree employee dossier")}
                                                 >
-                                                    View Dossier
+                                                    
+                                                    {t("components.Workspace.PeopleCoreView.text_view_dossier", "View Dossier")}
                                                 </button>
                                                 <button
                                                     className={styles.btnSecondary}
@@ -617,9 +628,9 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                                                         setWizardMode('edit');
                                                         setIsWizardOpen(true);
                                                     }}
-                                                    title="Edit employee record"
+                                                    title={t("components.Workspace.PeopleCoreView.title_edit_employee_record", "Edit employee record")}
                                                 >
-                                                    <Edit size={13} /> Edit
+                                                    <Edit size={13} />  {t("components.Workspace.PeopleCoreView.text_edit", "Edit")}
                                                 </button>
                                             </div>
                                         </td>
@@ -656,13 +667,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'positions' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Layers size={20} style={{ color: 'var(--info)' }} /> Position Register (SCR-012)</h3>
+                        <h3><Layers size={20} style={{ color: 'var(--info)' }} />  {t("components.Workspace.PeopleCoreView.text_position_register_scr-012", "Position Register (SCR-012)")}</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportPositionsCSV}>
-                                <Download size={15} /> Export Positions CSV
+                                <Download size={15} />  {t("components.Workspace.PeopleCoreView.text_export_positions_csv", "Export Positions CSV")}
                             </button>
                             <button className={styles.btnPrimary} onClick={() => launchAction('position')}>
-                                <Plus size={16} /> New Position Slot
+                                <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_new_position_slot", "New Position Slot")}
                             </button>
                         </div>
                     </div>
@@ -706,13 +717,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'documents' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><FileText size={20} color="var(--info)" /> Document Vault (SCR-014)</h3>
+                        <h3><FileText size={20} color="var(--info)" />  {t("components.Workspace.PeopleCoreView.text_document_vault_scr-014", "Document Vault (SCR-014)")}</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportDocumentsCSV}>
-                                <Download size={15} /> Export Vault CSV
+                                <Download size={15} />  {t("components.Workspace.PeopleCoreView.text_export_vault_csv", "Export Vault CSV")}
                             </button>
                             <button className={styles.btnPrimary} onClick={() => launchAction('document')}>
-                                <Plus size={16} /> Upload Document
+                                <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_upload_document", "Upload Document")}
                             </button>
                         </div>
                     </div>
@@ -799,13 +810,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'entities' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><Building2 size={20} style={{ color: 'var(--info)' }} /> Legal Entity Master </h3>
+                        <h3><Building2 size={20} style={{ color: 'var(--info)' }} />  {t("components.Workspace.PeopleCoreView.text_legal_entity_master", "Legal Entity Master")} </h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportEntitiesCSV}>
-                                <Download size={15} /> Export Entities CSV
+                                <Download size={15} />  {t("components.Workspace.PeopleCoreView.text_export_entities_csv", "Export Entities CSV")}
                             </button>
                             <button className={styles.btnPrimary} onClick={() => setIsEntityModalOpen(true)}>
-                                <Plus size={16} /> Add Legal Entity
+                                <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_add_legal_entity", "Add Legal Entity")}
                             </button>
                         </div>
                     </div>
@@ -814,13 +825,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Entity Code</th>
-                                    <th>Registered Name</th>
-                                    <th>Entity Type</th>
-                                    <th>CIN / LLPIN</th>
-                                    <th>PAN</th>
-                                    <th>TAN</th>
-                                    <th>Status</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_entity_code", "Entity Code")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_registered_name", "Registered Name")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_entity_type", "Entity Type")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_cin_llpin", "CIN / LLPIN")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_pan", "PAN")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_tan", "TAN")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_status", "Status")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -845,13 +856,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             {activeSection === 'locations' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>
-                        <h3><MapPin size={20} style={{ color: 'var(--info)' }} /> Location / Work Site Master (SCR-002)</h3>
+                        <h3><MapPin size={20} style={{ color: 'var(--info)' }} />  {t("components.Workspace.PeopleCoreView.text_location_work_site_master_scr-002", "Location / Work Site Master (SCR-002)")}</h3>
                         <div style={{ display: 'flex', gap: '0.65rem' }}>
                             <button className={styles.btnSecondary} onClick={exportLocationsCSV}>
-                                <Download size={15} /> Export Locations CSV
+                                <Download size={15} />  {t("components.Workspace.PeopleCoreView.text_export_locations_csv", "Export Locations CSV")}
                             </button>
                             <button className={styles.btnPrimary} onClick={() => setIsLocationModalOpen(true)}>
-                                <Plus size={16} /> Add Location Master
+                                <Plus size={16} />  {t("components.Workspace.PeopleCoreView.text_add_location_master", "Add Location Master")}
                             </button>
                         </div>
                     </div>
@@ -860,13 +871,13 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Location Code</th>
-                                    <th>Location Name</th>
-                                    <th>Legal Entity</th>
-                                    <th>Type</th>
-                                    <th>State</th>
-                                    <th>Time Zone</th>
-                                    <th>Status</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_location_code", "Location Code")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_location_name", "Location Name")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_legal_entity", "Legal Entity")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_type", "Type")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_state", "State")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_time_zone", "Time Zone")}</th>
+                                    <th>{t("components.Workspace.PeopleCoreView.text_status", "Status")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1138,6 +1149,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
 
 // ── Star Employees Panel ──────────────────────────────────
 function StarEmployeesPanel({ employees = [], recognitionAwards = [], grantRecognitionAward, showToast }) {
+  const { t } = useTranslation();
     const [nominee, setNominee] = React.useState('');
     const [category, setCategory] = React.useState('Star Employee of the Month');
     const [note, setNote] = React.useState('');
@@ -1170,47 +1182,49 @@ function StarEmployeesPanel({ employees = [], recognitionAwards = [], grantRecog
             {/* Nomination Form */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem', borderTop: '3px solid var(--pending)' }}>
                 <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem' }}>
-                    ⭐ Nominate Star Employee — {month}
+                    
+                    {t("components.Workspace.PeopleCoreView.text_nominate_star_employee", "⭐ Nominate Star Employee —")} {month}
                 </h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                     <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Employee</span>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>{t("components.Workspace.PeopleCoreView.text_employee", "Employee")}</span>
                         <select value={nominee} onChange={e => setNominee(e.target.value)}
                             style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}>
-                            <option value="">Select employee…</option>
+                            <option value="">{t("components.Workspace.PeopleCoreView.text_select_employee", "Select employee…")}</option>
                             {(employees || []).map(e => <option key={e.id} value={e.id}>{e.name} — {e.dept}</option>)}
                         </select>
                     </label>
                     <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Award Category</span>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>{t("components.Workspace.PeopleCoreView.text_award_category", "Award Category")}</span>
                         <select value={category} onChange={e => setCategory(e.target.value)}
                             style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem' }}>
-                            <option>Star Employee of the Month</option>
-                            <option>Best Team Player</option>
-                            <option>Innovation Award</option>
-                            <option>Customer Champion</option>
-                            <option>Leadership Excellence</option>
-                            <option>Safety Champion</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_star_employee_of_the_month", "Star Employee of the Month")}</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_best_team_player", "Best Team Player")}</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_innovation_award", "Innovation Award")}</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_customer_champion", "Customer Champion")}</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_leadership_excellence", "Leadership Excellence")}</option>
+                            <option>{t("components.Workspace.PeopleCoreView.text_safety_champion", "Safety Champion")}</option>
                         </select>
                     </label>
                     <label style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>Citation / Note</span>
+                        <span style={{ color: 'var(--text-2)', fontSize: '0.8rem', fontWeight: 600 }}>{t("components.Workspace.PeopleCoreView.text_citation_note", "Citation / Note")}</span>
                         <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
-                            placeholder="Brief description of achievement…"
+                            placeholder={t("components.Workspace.PeopleCoreView.placeholder_brief_description_of_achievement", "Brief description of achievement…")}
                             style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--surface)', color: 'var(--text)', fontSize: '0.83rem', resize: 'vertical' }} />
                     </label>
                 </div>
                 <button onClick={handleGrant}
                     style={{ marginTop: '0.75rem', padding: '8px 20px', background: 'var(--pending)', color: 'var(--bg)', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer', fontSize: '0.85rem' }}>
-                    ⭐ Grant Award
+                    
+                    {t("components.Workspace.PeopleCoreView.text_grant_award", "⭐ Grant Award")}
                 </button>
             </div>
 
             {/* Awards History */}
             <div style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '1.25rem' }}>
-                <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', fontSize: '1rem' }}>Recognition History</h3>
+                <h3 style={{ margin: '0 0 1rem', color: 'var(--text)', fontSize: '1rem' }}>{t("components.Workspace.PeopleCoreView.text_recognition_history", "Recognition History")}</h3>
                 {(recognitionAwards || []).length === 0 ? (
-                    <div style={{ color: 'var(--text-3)', textAlign: 'center', padding: '2rem' }}>No awards granted yet.</div>
+                    <div style={{ color: 'var(--text-3)', textAlign: 'center', padding: '2rem' }}>{t("components.Workspace.PeopleCoreView.text_no_awards_granted_yet", "No awards granted yet.")}</div>
                 ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                         {[...(recognitionAwards || [])].reverse().map((award, i) => (
@@ -1232,6 +1246,7 @@ function StarEmployeesPanel({ employees = [], recognitionAwards = [], grantRecog
 
 // ── Approved Manpower Panel (SCR-013) ─────────────────────────
 function ApprovedManpowerPanel({ employees = [], positions = [], sanctionedQuotas = {}, calculateDepartmentCapacity }) {
+  const { t } = useTranslation();
     const empList = Array.isArray(employees) ? employees : [];
     const posList = Array.isArray(positions) ? positions : [];
     const quotas = (sanctionedQuotas && typeof sanctionedQuotas === 'object') ? sanctionedQuotas : {};
@@ -1247,10 +1262,11 @@ function ApprovedManpowerPanel({ employees = [], positions = [], sanctionedQuota
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                 <div>
                     <h3 style={{ margin: 0, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 8, fontSize: '1rem', fontWeight: 600 }}>
-                        <Users size={18} style={{ color: 'var(--signal)' }} /> Approved Manpower vs Actual Headcount (SCR-013)
+                        <Users size={18} style={{ color: 'var(--signal)' }} />  {t("components.Workspace.PeopleCoreView.text_approved_manpower_vs_actual_headcount_sc", "Approved Manpower vs Actual Headcount (SCR-013)")}
                     </h3>
                     <p style={{ color: 'var(--text-2)', fontSize: '0.8rem', margin: '0.3rem 0 0' }}>
-                        Department-wise sanctioned strength and headcount caps with real-time variance and open requisition tracking.
+                        
+                        {t("components.Workspace.PeopleCoreView.text_department-wise_sanctioned_strength_and_", "Department-wise sanctioned strength and headcount caps with real-time variance and open requisition tracking.")}
                     </p>
                 </div>
             </div>

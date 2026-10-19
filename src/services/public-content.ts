@@ -6,7 +6,10 @@ import {translate} from '@/lib/i18n';
 export type PublicPageKey = keyof typeof content.pages;
 /** Async repository boundary; intentionally separate from the demo-gated HR dataset. */
 export async function getPublicContent(locale = 'en') {
-    const {messages}=await loadInterfaceMessages(locale);
+    const {messages} = await loadInterfaceMessages(locale);
+    if (messages.publicContent && typeof messages.publicContent === 'object' && 'pages' in messages.publicContent) {
+        return messages.publicContent as typeof content;
+    }
     const localize=(value:unknown,path=''):unknown=>{
         if(typeof value==='string') return Object.hasOwn(messages.publicContent || {},path)?translate(messages,'publicContent',path):value;
         if(Array.isArray(value)) return value.map((child,index)=>localize(child,`${path}.${index}`));

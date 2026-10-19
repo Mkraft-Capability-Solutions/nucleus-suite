@@ -1,8 +1,11 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import React from 'react';
 import styles from './AnimatedNucleusLogo.module.css';
 
 export default function AnimatedNucleusLogo({ size = 96, isListening = false, isSpeaking = false, onClick }) {
+    const { t } = useTranslation();
   return (
     <div 
       className={`${styles.circleLogoWrapper} ${isListening ? styles.listening : ''} ${isSpeaking ? styles.speaking : ''}`}
@@ -10,7 +13,7 @@ export default function AnimatedNucleusLogo({ size = 96, isListening = false, is
       onClick={onClick}
       role="button"
       tabIndex={0}
-      aria-label="Nucleus Animated Logo"
+      aria-label={t("components.AnimatedNucleusLogo.aria-label_nucleus_animated_logo", "Nucleus Animated Logo")}
     >
       <svg
         viewBox="0 0 100 100"

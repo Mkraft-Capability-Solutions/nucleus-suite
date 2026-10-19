@@ -1,4 +1,6 @@
 "use client";
+
+import { useTranslation } from '@/context/I18nContext';
 import React, { useState, useEffect, useMemo } from 'react';
 import Dialog from '@mui/material/Dialog';
 import {
@@ -61,6 +63,7 @@ function FieldError({ fieldKey }) {
 }
 
 function TabErrorBanner({ tabNum }) {
+  const { t } = useTranslation();
     const { formErrors } = React.useContext(FormErrorContext);
     const rules = TAB_RULES[tabNum] || [];
     const errorsInTab = rules
@@ -74,7 +77,8 @@ function TabErrorBanner({ tabNum }) {
             <AlertCircle size={18} className={styles.tabErrorIcon} />
             <div className={styles.tabErrorContent}>
                 <div className={styles.tabErrorTitle}>
-                    Please resolve {errorsInTab.length} required or invalid field{errorsInTab.length > 1 ? 's' : ''} in this tab:
+                    
+                    {t("components.Workspace.EmployeeCreationWizard.text_please_resolve", "Please resolve")} {errorsInTab.length}  {t("components.Workspace.EmployeeCreationWizard.text_required_or_invalid_field", "required or invalid field")}{errorsInTab.length > 1 ? 's' : ''}  {t("components.Workspace.EmployeeCreationWizard.text_in_this_tab", "in this tab:")}
                 </div>
                 <ul className={styles.tabErrorList}>
                     {errorsInTab.map(item => (
@@ -96,6 +100,7 @@ export default function EmployeeCreationWizard({
     mode = 'create',
     initialData = null
 }) {
+    const { t } = useTranslation();
     const { showToast } = useHRMS();
     const [activeTab, setActiveTab] = useState(1);
     const [formErrors, setFormErrors] = useState({});
@@ -488,81 +493,81 @@ export default function EmployeeCreationWizard({
                         <h2><User size={20} className={styles.headerIcon} /> {mode === 'edit' ? `Edit Employee Profile (${formData.employeeCode})` : 'Add Employee Master (FRM-PPL-01)'}</h2>
                         <p>{mode === 'edit' ? `Update details and statutory information for ${formData.fullLegalName || formData.employeeCode}` : 'Complete 117-field statutory employee onboarding wizard'}</p>
                     </div>
-                    <button className={styles.closeBtn} onClick={onClose} type="button" title="Close"><X size={20} /></button>
+                    <button className={styles.closeBtn} onClick={onClose} type="button" title={t("components.Workspace.EmployeeCreationWizard.title_close", "Close")}><X size={20} /></button>
                 </div>
 
                 {/* Tabs - Form Step Navigation fitting perfectly within modal window */}
-                <div className={styles.tabs} role="tablist" aria-label="Employee Creation Wizard Steps">
+                <div className={styles.tabs} role="tablist" aria-label={t("components.Workspace.EmployeeCreationWizard.aria-label_employee_creation_wizard_steps", "Employee Creation Wizard Steps")}>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 1}
-                        title="1. Identity & Personal Attributes"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_1_identity_personal_attributes", "1. Identity & Personal Attributes")}
                         className={`${styles.tabBtn} ${activeTab === 1 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(1)}
                     >
                         <User size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>1. Identity</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_1_identity", "1. Identity")}</span>
                         {tabErrorCount(1) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(1)}</span>}
                     </button>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 2}
-                        title="2. Contact & Address Details"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_2_contact_address_details", "2. Contact & Address Details")}
                         className={`${styles.tabBtn} ${activeTab === 2 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(2)}
                     >
                         <Phone size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>2. Contact</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_2_contact", "2. Contact")}</span>
                         {tabErrorCount(2) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(2)}</span>}
                     </button>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 3}
-                        title="3. Statutory IDs & Bank Details"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_3_statutory_ids_bank_details", "3. Statutory IDs & Bank Details")}
                         className={`${styles.tabBtn} ${activeTab === 3 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(3)}
                     >
                         <Shield size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>3. Statutory</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_3_statutory", "3. Statutory")}</span>
                         {tabErrorCount(3) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(3)}</span>}
                     </button>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 4}
-                        title="4. Family & Nominees"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_4_family_nominees", "4. Family & Nominees")}
                         className={`${styles.tabBtn} ${activeTab === 4 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(4)}
                     >
                         <Users size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>4. Family</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_4_family", "4. Family")}</span>
                         {tabErrorCount(4) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(4)}</span>}
                     </button>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 5}
-                        title="5. Education & Work Experience"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_5_education_work_experience", "5. Education & Work Experience")}
                         className={`${styles.tabBtn} ${activeTab === 5 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(5)}
                     >
                         <GraduationCap size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>5. Education</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_5_education", "5. Education")}</span>
                         {tabErrorCount(5) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(5)}</span>}
                     </button>
                     <button
                         type="button"
                         role="tab"
                         aria-selected={activeTab === 6}
-                        title="6. Placement, Medical & Facilities Control"
+                        title={t("components.Workspace.EmployeeCreationWizard.title_6_placement_medical_facilities_control", "6. Placement, Medical & Facilities Control")}
                         className={`${styles.tabBtn} ${activeTab === 6 ? styles.activeTab : ''}`}
                         onClick={() => setActiveTab(6)}
                     >
                         <Briefcase size={14} className={styles.tabIcon} />
-                        <span className={styles.tabLabel}>6. Placement</span>
+                        <span className={styles.tabLabel}>{t("components.Workspace.EmployeeCreationWizard.text_6_placement", "6. Placement")}</span>
                         {tabErrorCount(6) > 0 && <span className={styles.tabErrorBadge}>{tabErrorCount(6)}</span>}
                     </button>
                 </div>
@@ -573,13 +578,14 @@ export default function EmployeeCreationWizard({
                     {activeTab === 1 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={1} />
-                            <div className={styles.sectionTitle}>Identity Attributes</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_identity_attributes", "Identity Attributes")}</div>
                             <div className={styles.formGrid}>
                                 {/* Employee Code — Read Only, Auto-Generated */}
                                 <label className={styles.field}>
                                     <span className={styles.fieldLabel}>
-                                        Employee Code
-                                        <span className={styles.autoTag}><Lock size={11} /> Auto-assigned</span>
+                                        
+                                        {t("components.Workspace.EmployeeCreationWizard.text_employee_code", "Employee Code")}
+                                        <span className={styles.autoTag}><Lock size={11} />  {t("components.Workspace.EmployeeCreationWizard.text_auto-assigned", "Auto-assigned")}</span>
                                     </span>
                                     <div className={styles.readOnlyId}>
                                         <Lock size={13} />
@@ -587,36 +593,36 @@ export default function EmployeeCreationWizard({
                                     </div>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Salutation</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_salutation", "Salutation")}</span>
                                     <select className={styles.select} value={formData.salutation} onChange={e => handleChange('salutation', e.target.value)}>
-                                        <option value="">Select Salutation</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_salutation", "Select Salutation")}</option>
                                         {(getPicklistOptions('PL_SALUTATION').length > 0 ? getPicklistOptions('PL_SALUTATION') : [{value: 'Mr', label: 'Mr'}, {value: 'Ms', label: 'Ms'}, {value: 'Mrs', label: 'Mrs'}, {value: 'Dr', label: 'Dr'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>First Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_first_name", "First Name")} <span className={styles.required}>*</span></span>
                                     <input className={ic('firstName')} value={formData.firstName} onChange={e => updateFirstName(e.target.value)} onBlur={() => touchField('firstName')} required />
                                     <FieldError fieldKey="firstName" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Middle Name</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_middle_name", "Middle Name")}</span>
                                     <input className={styles.input} value={formData.middleName} onChange={e => handleChange('middleName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Last Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_last_name", "Last Name")} <span className={styles.required}>*</span></span>
                                     <input className={ic('lastName')} value={formData.lastName} onChange={e => updateLastName(e.target.value)} onBlur={() => touchField('lastName')} required />
                                     <FieldError fieldKey="lastName" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Full Name (Aadhaar match)</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_full_name_aadhaar_match", "Full Name (Aadhaar match)")}</span>
                                     <input className={styles.input} value={formData.fullLegalName} onChange={e => handleChange('fullLegalName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Gender <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_gender", "Gender")} <span className={styles.required}>*</span></span>
                                     <select className={sc('gender')} value={formData.gender} onChange={e => handleChange('gender', e.target.value)} onBlur={() => touchField('gender')}>
-                                        <option value="">Select Gender</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_gender", "Select Gender")}</option>
                                         {(getPicklistOptions('PL_GENDER').length > 0 ? getPicklistOptions('PL_GENDER') : [{value: 'Male', label: 'Male'}, {value: 'Female', label: 'Female'}, {value: 'Other', label: 'Other'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -624,23 +630,23 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="gender" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Date of Birth <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_date_of_birth", "Date of Birth")} <span className={styles.required}>*</span></span>
                                     <input type="date" className={ic('dateOfBirth')} value={formData.dateOfBirth} onChange={e => handleChange('dateOfBirth', e.target.value)} onBlur={() => touchField('dateOfBirth')} required />
                                     <FieldError fieldKey="dateOfBirth" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Blood Group</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_blood_group", "Blood Group")}</span>
                                     <select className={styles.select} value={formData.bloodGroup} onChange={e => handleChange('bloodGroup', e.target.value)}>
-                                        <option value="">Select Blood Group</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_blood_group", "Select Blood Group")}</option>
                                         {(getPicklistOptions('PL_BLOOD_GROUP').length > 0 ? getPicklistOptions('PL_BLOOD_GROUP') : [{value: 'A+', label: 'A+'}, {value: 'A-', label: 'A-'}, {value: 'B+', label: 'B+'}, {value: 'B-', label: 'B-'}, {value: 'O+', label: 'O+'}, {value: 'O-', label: 'O-'}, {value: 'AB+', label: 'AB+'}, {value: 'AB-', label: 'AB-'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Marital Status</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_marital_status", "Marital Status")}</span>
                                     <select className={styles.select} value={formData.maritalStatus} onChange={e => handleChange('maritalStatus', e.target.value)}>
-                                        <option value="">Select Marital Status</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_marital_status", "Select Marital Status")}</option>
                                         {(getPicklistOptions('PL_MARITAL_STATUS').length > 0 ? getPicklistOptions('PL_MARITAL_STATUS') : [{value: 'Single', label: 'Single'}, {value: 'Married', label: 'Married'}, {value: 'Divorced', label: 'Divorced'}, {value: 'Widowed', label: 'Widowed'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -648,18 +654,18 @@ export default function EmployeeCreationWizard({
                                 </label>
                                 {formData.maritalStatus === 'Married' && (
                                     <label className={styles.field}>
-                                        <span className={styles.fieldLabel}>Marriage Date</span>
+                                        <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_marriage_date", "Marriage Date")}</span>
                                         <input type="date" className={styles.input} value={formData.marriageDate} onChange={e => handleChange('marriageDate', e.target.value)} />
                                     </label>
                                 )}
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Nationality</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_nationality", "Nationality")}</span>
                                     <input className={styles.input} value={formData.nationality} onChange={e => handleChange('nationality', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Social Category</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_social_category", "Social Category")}</span>
                                     <select className={styles.select} value={formData.socialCategory} onChange={e => handleChange('socialCategory', e.target.value)}>
-                                        <option value="">Select Social Category</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_social_category", "Select Social Category")}</option>
                                         {(getPicklistOptions('PL_SOCIAL_CAT').length > 0 ? getPicklistOptions('PL_SOCIAL_CAT') : [{value: 'General', label: 'General'}, {value: 'OBC', label: 'OBC'}, {value: 'SC', label: 'SC'}, {value: 'ST', label: 'ST'}]).map(opt => (
                                             <option key={opt.value} value={opt.value}>{opt.label}</option>
                                         ))}
@@ -667,18 +673,18 @@ export default function EmployeeCreationWizard({
                                 </label>
                             </div>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Family Identity</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_family_identity", "Family Identity")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Father&apos;s Name</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_fatheraposs_name", "Father&apos;s Name")}</span>
                                     <input className={styles.input} value={formData.fatherName} onChange={e => handleChange('fatherName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Mother&apos;s Name</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_motheraposs_name", "Mother&apos;s Name")}</span>
                                     <input className={styles.input} value={formData.motherName} onChange={e => handleChange('motherName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Spouse Name</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_spouse_name", "Spouse Name")}</span>
                                     <input className={styles.input} value={formData.spouseName} onChange={e => handleChange('spouseName', e.target.value)} />
                                 </label>
                             </div>
@@ -689,45 +695,45 @@ export default function EmployeeCreationWizard({
                     {activeTab === 2 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={2} />
-                            <div className={styles.sectionTitle}>Contact Info</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_contact_info", "Contact Info")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Primary Mobile (WhatsApp) <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_primary_mobile_whatsapp", "Primary Mobile (WhatsApp)")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('mobile')}
                                         maxLength={10}
-                                        placeholder="9876543210"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_9876543210", "9876543210")}
                                         value={formData.mobile}
                                         onChange={e => handleChange('mobile', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('mobile')}
                                         required
                                     />
                                     <FieldError fieldKey="mobile" />
-                                    <span className={styles.formatHint}>10-digit Indian mobile number (e.g. 9876543210)</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_10-digit_indian_mobile_number_eg_9876543", "10-digit Indian mobile number (e.g. 9876543210)")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Official Email</span>
-                                    <input type="email" className={styles.input} placeholder="name@company.com" value={formData.officialEmail} onChange={e => handleChange('officialEmail', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_official_email", "Official Email")}</span>
+                                    <input type="email" className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_namecompanycom", "name@company.com")} value={formData.officialEmail} onChange={e => handleChange('officialEmail', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Personal Email <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_personal_email", "Personal Email")} <span className={styles.required}>*</span></span>
                                     <input
                                         type="email"
                                         className={ic('personalEmail')}
-                                        placeholder="name@gmail.com"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_namegmailcom", "name@gmail.com")}
                                         value={formData.personalEmail}
                                         onChange={e => handleChange('personalEmail', e.target.value)}
                                         onBlur={() => touchField('personalEmail')}
                                         required
                                     />
                                     <FieldError fieldKey="personalEmail" />
-                                    <span className={styles.formatHint}>Format: name@domain.com</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_format_namedomaincom", "Format: name@domain.com")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Emergency Contact Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_emergency_contact_name", "Emergency Contact Name")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('emergencyName')}
-                                        placeholder="Contact person full name"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_contact_person_full_name", "Contact person full name")}
                                         value={formData.emergencyName}
                                         onChange={e => handleChange('emergencyName', e.target.value)}
                                         onBlur={() => touchField('emergencyName')}
@@ -736,50 +742,50 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="emergencyName" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Emergency Relation</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_emergency_relation", "Emergency Relation")}</span>
                                     <input className={styles.input} value={formData.emergencyRelation} onChange={e => handleChange('emergencyRelation', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Emergency Phone <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_emergency_phone", "Emergency Phone")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('emergencyPhone')}
                                         maxLength={10}
-                                        placeholder="9876543210"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_9876543210", "9876543210")}
                                         value={formData.emergencyPhone}
                                         onChange={e => handleChange('emergencyPhone', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('emergencyPhone')}
                                         required
                                     />
                                     <FieldError fieldKey="emergencyPhone" />
-                                    <span className={styles.formatHint}>10-digit mobile number</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_10-digit_mobile_number", "10-digit mobile number")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Secondary Emergency Name</span>
-                                    <input className={styles.input} placeholder="Secondary contact name" value={formData.emergencySecondaryName || ''} onChange={e => handleChange('emergencySecondaryName', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_secondary_emergency_name", "Secondary Emergency Name")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_secondary_contact_name", "Secondary contact name")} value={formData.emergencySecondaryName || ''} onChange={e => handleChange('emergencySecondaryName', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Secondary Relation</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_secondary_relation", "Secondary Relation")}</span>
                                     <select className={styles.select} value={formData.emergencySecondaryRelation || 'Parent'} onChange={e => handleChange('emergencySecondaryRelation', e.target.value)}>
-                                        <option value="Parent">Parent</option>
-                                        <option value="Sibling">Sibling</option>
-                                        <option value="Spouse">Spouse</option>
-                                        <option value="Friend">Friend</option>
-                                        <option value="Guardian">Guardian</option>
+                                        <option value="Parent">{t("components.Workspace.EmployeeCreationWizard.text_parent", "Parent")}</option>
+                                        <option value="Sibling">{t("components.Workspace.EmployeeCreationWizard.text_sibling", "Sibling")}</option>
+                                        <option value="Spouse">{t("components.Workspace.EmployeeCreationWizard.text_spouse", "Spouse")}</option>
+                                        <option value="Friend">{t("components.Workspace.EmployeeCreationWizard.text_friend", "Friend")}</option>
+                                        <option value="Guardian">{t("components.Workspace.EmployeeCreationWizard.text_guardian", "Guardian")}</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Secondary Phone</span>
-                                    <input className={styles.input} placeholder="9876543210" value={formData.emergencySecondaryPhone || ''} onChange={e => handleChange('emergencySecondaryPhone', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_secondary_phone", "Secondary Phone")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_9876543210", "9876543210")} value={formData.emergencySecondaryPhone || ''} onChange={e => handleChange('emergencySecondaryPhone', e.target.value)} />
                                 </label>
                             </div>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Address Details</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_address_details", "Address Details")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field} style={{ gridColumn: 'span 2' }}>
-                                    <span className={styles.fieldLabel}>Present Address Line 1 <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_present_address_line_1", "Present Address Line 1")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('presentAddr1')}
-                                        placeholder="Flat/House No, Street, Landmark"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_flathouse_no_street_landmark", "Flat/House No, Street, Landmark")}
                                         value={formData.presentAddr1}
                                         onChange={e => handleChange('presentAddr1', e.target.value)}
                                         onBlur={() => touchField('presentAddr1')}
@@ -788,10 +794,10 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="presentAddr1" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>City <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_city", "City")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('presentCity')}
-                                        placeholder="e.g. Bangalore"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_eg_bangalore", "e.g. Bangalore")}
                                         value={formData.presentCity}
                                         onChange={e => handleChange('presentCity', e.target.value)}
                                         onBlur={() => touchField('presentCity')}
@@ -800,34 +806,34 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="presentCity" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>State <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_state", "State")} <span className={styles.required}>*</span></span>
                                     <select className={sc('presentState')} value={formData.presentState} onChange={e => handleChange('presentState', e.target.value)} onBlur={() => touchField('presentState')}>
-                                        <option value="">Select State</option>
-                                        <option value="KA">Karnataka</option>
-                                        <option value="MH">Maharashtra</option>
-                                        <option value="DL">Delhi</option>
-                                        <option value="TN">Tamil Nadu</option>
-                                        <option value="TS">Telangana</option>
-                                        <option value="GJ">Gujarat</option>
-                                        <option value="WB">West Bengal</option>
-                                        <option value="UP">Uttar Pradesh</option>
-                                        <option value="HR">Haryana</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_state", "Select State")}</option>
+                                        <option value="KA">{t("components.Workspace.EmployeeCreationWizard.text_karnataka", "Karnataka")}</option>
+                                        <option value="MH">{t("components.Workspace.EmployeeCreationWizard.text_maharashtra", "Maharashtra")}</option>
+                                        <option value="DL">{t("components.Workspace.EmployeeCreationWizard.text_delhi", "Delhi")}</option>
+                                        <option value="TN">{t("components.Workspace.EmployeeCreationWizard.text_tamil_nadu", "Tamil Nadu")}</option>
+                                        <option value="TS">{t("components.Workspace.EmployeeCreationWizard.text_telangana", "Telangana")}</option>
+                                        <option value="GJ">{t("components.Workspace.EmployeeCreationWizard.text_gujarat", "Gujarat")}</option>
+                                        <option value="WB">{t("components.Workspace.EmployeeCreationWizard.text_west_bengal", "West Bengal")}</option>
+                                        <option value="UP">{t("components.Workspace.EmployeeCreationWizard.text_uttar_pradesh", "Uttar Pradesh")}</option>
+                                        <option value="HR">{t("components.Workspace.EmployeeCreationWizard.text_haryana", "Haryana")}</option>
                                     </select>
                                     <FieldError fieldKey="presentState" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>PIN Code <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_pin_code", "PIN Code")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('presentPin')}
                                         maxLength={6}
-                                        placeholder="560001"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_560001", "560001")}
                                         value={formData.presentPin}
                                         onChange={e => handleChange('presentPin', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('presentPin')}
                                         required
                                     />
                                     <FieldError fieldKey="presentPin" />
-                                    <span className={styles.formatHint}>6-digit postal code (e.g. 560001)</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_6-digit_postal_code_eg_560001", "6-digit postal code (e.g. 560001)")}</span>
                                 </label>
                             </div>
                         </div>
@@ -837,73 +843,73 @@ export default function EmployeeCreationWizard({
                     {activeTab === 3 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={3} />
-                            <div className={styles.sectionTitle}>Statutory Numbers & Tax Identification</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_statutory_numbers_tax_identification", "Statutory Numbers & Tax Identification")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Aadhaar Number (12 digit)</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_aadhaar_number_12_digit", "Aadhaar Number (12 digit)")}</span>
                                     <input
                                         className={ic('aadhaarToken')}
                                         maxLength={12}
-                                        placeholder="123456789012"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_123456789012", "123456789012")}
                                         value={formData.aadhaarToken}
                                         onChange={e => handleChange('aadhaarToken', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('aadhaarToken')}
                                     />
                                     <FieldError fieldKey="aadhaarToken" />
-                                    <span className={styles.formatHint}>12 numeric digits without spaces</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_12_numeric_digits_without_spaces", "12 numeric digits without spaces")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>PAN Number (10 char)</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_pan_number_10_char", "PAN Number (10 char)")}</span>
                                     <input
                                         className={ic('panToken')}
                                         maxLength={10}
-                                        placeholder="ABCDE1234F"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_abcde1234f", "ABCDE1234F")}
                                         value={formData.panToken}
                                         onChange={e => handleChange('panToken', e.target.value.toUpperCase())}
                                         onBlur={() => touchField('panToken')}
                                     />
                                     <FieldError fieldKey="panToken" />
-                                    <span className={styles.formatHint}>Format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_format_5_letters_4_digits_1_letter_eg_ab", "Format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>UAN (Universal Account No)</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_uan_universal_account_no", "UAN (Universal Account No)")}</span>
                                     <input
                                         className={ic('uan')}
                                         maxLength={12}
-                                        placeholder="100123456789"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_100123456789", "100123456789")}
                                         value={formData.uan}
                                         onChange={e => handleChange('uan', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('uan')}
                                     />
                                     <FieldError fieldKey="uan" />
-                                    <span className={styles.formatHint}>12 numeric digits</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_12_numeric_digits", "12 numeric digits")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>ESI IP Number (17 digit)</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_esi_ip_number_17_digit", "ESI IP Number (17 digit)")}</span>
                                     <input
                                         className={ic('esiIp')}
                                         maxLength={17}
-                                        placeholder="31000123450001234"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_31000123450001234", "31000123450001234")}
                                         value={formData.esiIp}
                                         onChange={e => handleChange('esiIp', e.target.value.replace(/\D/g, ''))}
                                         onBlur={() => touchField('esiIp')}
                                     />
                                     <FieldError fieldKey="esiIp" />
-                                    <span className={styles.formatHint}>17 numeric digits</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_17_numeric_digits", "17 numeric digits")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Passport Number</span>
-                                    <input className={styles.input} placeholder="e.g. Z1234567" value={formData.passportToken} onChange={e => handleChange('passportToken', e.target.value.toUpperCase())} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_passport_number", "Passport Number")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_eg_z1234567", "e.g. Z1234567")} value={formData.passportToken} onChange={e => handleChange('passportToken', e.target.value.toUpperCase())} />
                                 </label>
                             </div>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Bank Disbursement Details</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_bank_disbursement_details", "Bank Disbursement Details")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Bank Name <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_bank_name", "Bank Name")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('bankName')}
-                                        placeholder="e.g. HDFC Bank, ICICI Bank, SBI"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_eg_hdfc_bank_icici_bank_sbi", "e.g. HDFC Bank, ICICI Bank, SBI")}
                                         value={formData.bankName}
                                         onChange={e => handleChange('bankName', e.target.value)}
                                         onBlur={() => touchField('bankName')}
@@ -912,49 +918,49 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="bankName" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>IFSC Code <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_ifsc_code", "IFSC Code")} <span className={styles.required}>*</span></span>
                                     <input
                                         className={ic('ifsc')}
                                         maxLength={11}
-                                        placeholder="HDFC0000123"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_hdfc0000123", "HDFC0000123")}
                                         value={formData.ifsc}
                                         onChange={e => handleChange('ifsc', e.target.value.toUpperCase())}
                                         onBlur={() => touchField('ifsc')}
                                         required
                                     />
                                     <FieldError fieldKey="ifsc" />
-                                    <span className={styles.formatHint}>Format: 4 letters, 0, 6 characters (e.g. HDFC0000123)</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_format_4_letters_0_6_characters_eg_hdfc0", "Format: 4 letters, 0, 6 characters (e.g. HDFC0000123)")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Account Number (Tokenised) <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_account_number_tokenised", "Account Number (Tokenised)")} <span className={styles.required}>*</span></span>
                                     <input
                                         type="password"
                                         className={ic('accountToken')}
-                                        placeholder="Enter 9–18 digit account number"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_enter_918_digit_account_number", "Enter 9–18 digit account number")}
                                         value={formData.accountToken}
                                         onChange={e => handleChange('accountToken', e.target.value)}
                                         onBlur={() => touchField('accountToken')}
                                         required
                                     />
                                     <FieldError fieldKey="accountToken" />
-                                    <span className={styles.formatHint}>Between 9 and 18 digits</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_between_9_and_18_digits", "Between 9 and 18 digits")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Confirm Account Number <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_confirm_account_number", "Confirm Account Number")} <span className={styles.required}>*</span></span>
                                     <input
                                         type="password"
                                         className={ic('accountConfirm')}
-                                        placeholder="Re-enter account number"
+                                        placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_re-enter_account_number", "Re-enter account number")}
                                         value={formData.accountConfirm}
                                         onChange={e => handleChange('accountConfirm', e.target.value)}
                                         onBlur={() => touchField('accountConfirm')}
                                         required
                                     />
                                     <FieldError fieldKey="accountConfirm" />
-                                    <span className={styles.formatHint}>Must match Account Number exactly</span>
+                                    <span className={styles.formatHint}>{t("components.Workspace.EmployeeCreationWizard.text_must_match_account_number_exactly", "Must match Account Number exactly")}</span>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Account Type <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_account_type", "Account Type")} <span className={styles.required}>*</span></span>
                                     <select
                                         className={sc('accountType')}
                                         value={formData.accountType}
@@ -962,18 +968,18 @@ export default function EmployeeCreationWizard({
                                         onBlur={() => touchField('accountType')}
                                         required
                                     >
-                                        <option value="Savings">Savings</option>
-                                        <option value="Current">Current</option>
-                                        <option value="Salary">Salary</option>
+                                        <option value="Savings">{t("components.Workspace.EmployeeCreationWizard.text_savings", "Savings")}</option>
+                                        <option value="Current">{t("components.Workspace.EmployeeCreationWizard.text_current", "Current")}</option>
+                                        <option value="Salary">{t("components.Workspace.EmployeeCreationWizard.text_salary", "Salary")}</option>
                                     </select>
                                     <FieldError fieldKey="accountType" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Payment Mode</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_payment_mode", "Payment Mode")}</span>
                                     <select className={styles.select} value={formData.paymentMode} onChange={e => handleChange('paymentMode', e.target.value)}>
-                                        <option value="Bank Transfer">Bank Transfer</option>
-                                        <option value="Cheque">Cheque</option>
-                                        <option value="Cash">Cash</option>
+                                        <option value="Bank Transfer">{t("components.Workspace.EmployeeCreationWizard.text_bank_transfer", "Bank Transfer")}</option>
+                                        <option value="Cheque">{t("components.Workspace.EmployeeCreationWizard.text_cheque", "Cheque")}</option>
+                                        <option value="Cash">{t("components.Workspace.EmployeeCreationWizard.text_cash", "Cash")}</option>
                                     </select>
                                 </label>
                             </div>
@@ -984,26 +990,26 @@ export default function EmployeeCreationWizard({
                     {activeTab === 4 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={4} />
-                            <div className={styles.sectionTitle}>Dependants (Medical & Benefits)</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_dependants_medical_benefits", "Dependants (Medical & Benefits)")}</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
                                     <tr>
-                                        <th>Name</th><th>Relation</th><th>DOB</th><th>Gender</th><th>Insurance</th><th>Action</th>
+                                        <th>{t("components.Workspace.EmployeeCreationWizard.text_name", "Name")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_relation", "Relation")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_dob", "DOB")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_gender", "Gender")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_insurance", "Insurance")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_action", "Action")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {formData.dependants.map((dep, idx) => (
                                         <tr key={idx}>
-                                            <td><input className={styles.input} value={dep.name} onChange={e => updateRow('dependants', idx, 'name', e.target.value)} placeholder="Dependant Name" /></td>
+                                            <td><input className={styles.input} value={dep.name} onChange={e => updateRow('dependants', idx, 'name', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_dependant_name", "Dependant Name")} /></td>
                                             <td>
                                                 <select className={styles.select} value={dep.relation} onChange={e => updateRow('dependants', idx, 'relation', e.target.value)}>
-                                                    <option>Spouse</option><option>Child</option><option>Father</option><option>Mother</option>
+                                                    <option>{t("components.Workspace.EmployeeCreationWizard.text_spouse", "Spouse")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_child", "Child")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_father", "Father")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_mother", "Mother")}</option>
                                                 </select>
                                             </td>
                                             <td><input type="date" className={styles.input} value={dep.dob} onChange={e => updateRow('dependants', idx, 'dob', e.target.value)} /></td>
                                             <td>
                                                 <select className={styles.select} value={dep.gender} onChange={e => updateRow('dependants', idx, 'gender', e.target.value)}>
-                                                    <option>Male</option><option>Female</option>
+                                                    <option>{t("components.Workspace.EmployeeCreationWizard.text_male", "Male")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_female", "Female")}</option>
                                                 </select>
                                             </td>
                                             <td>
@@ -1017,30 +1023,30 @@ export default function EmployeeCreationWizard({
                                 </tbody>
                             </table>
                             <button type="button" className={styles.addBtn} onClick={() => addRow('dependants', { name: '', relation: 'Child', dob: '', gender: 'Male', insured: true })}>
-                                <Plus size={14} /> Add Dependant Row
+                                <Plus size={14} />  {t("components.Workspace.EmployeeCreationWizard.text_add_dependant_row", "Add Dependant Row")}
                             </button>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1.5rem' }}>Statutory Nominees (PF, Gratuity, Insurance)</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1.5rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_statutory_nominees_pf_gratuity_insurance", "Statutory Nominees (PF, Gratuity, Insurance)")}</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
                                     <tr>
-                                        <th>Nominee Name</th><th>Relation</th><th>DOB</th><th>Share %</th><th>Scheme</th><th>Action</th>
+                                        <th>{t("components.Workspace.EmployeeCreationWizard.text_nominee_name", "Nominee Name")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_relation", "Relation")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_dob", "DOB")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_share", "Share %")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_scheme", "Scheme")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_action", "Action")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {formData.nominees.map((nom, idx) => (
                                         <tr key={idx}>
-                                            <td><input className={styles.input} value={nom.name} onChange={e => updateRow('nominees', idx, 'name', e.target.value)} placeholder="Nominee Name" /></td>
+                                            <td><input className={styles.input} value={nom.name} onChange={e => updateRow('nominees', idx, 'name', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_nominee_name", "Nominee Name")} /></td>
                                             <td>
                                                 <select className={styles.select} value={nom.relation} onChange={e => updateRow('nominees', idx, 'relation', e.target.value)}>
-                                                    <option>Spouse</option><option>Child</option><option>Father</option><option>Mother</option>
+                                                    <option>{t("components.Workspace.EmployeeCreationWizard.text_spouse", "Spouse")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_child", "Child")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_father", "Father")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_mother", "Mother")}</option>
                                                 </select>
                                             </td>
                                             <td><input type="date" className={styles.input} value={nom.dob} onChange={e => updateRow('nominees', idx, 'dob', e.target.value)} /></td>
                                             <td><input type="number" className={styles.input} style={{ width: '80px' }} value={nom.sharePercent} onChange={e => updateRow('nominees', idx, 'sharePercent', parseFloat(e.target.value) || 0)} /></td>
                                             <td>
                                                 <select className={styles.select} value={nom.scheme} onChange={e => updateRow('nominees', idx, 'scheme', e.target.value)}>
-                                                    <option>PF</option><option>Gratuity</option><option>Insurance</option><option>All</option>
+                                                    <option>{t("components.Workspace.EmployeeCreationWizard.text_pf", "PF")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_gratuity", "Gratuity")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_insurance", "Insurance")}</option><option>{t("components.Workspace.EmployeeCreationWizard.text_all", "All")}</option>
                                                 </select>
                                             </td>
                                             <td>
@@ -1051,7 +1057,7 @@ export default function EmployeeCreationWizard({
                                 </tbody>
                             </table>
                             <button type="button" className={styles.addBtn} onClick={() => addRow('nominees', { name: '', relation: 'Spouse', dob: '', sharePercent: 100, scheme: 'PF', guardianName: '', address: '' })}>
-                                <Plus size={14} /> Add Nominee Row
+                                <Plus size={14} />  {t("components.Workspace.EmployeeCreationWizard.text_add_nominee_row", "Add Nominee Row")}
                             </button>
                         </div>
                     )}
@@ -1060,11 +1066,11 @@ export default function EmployeeCreationWizard({
                     {activeTab === 5 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={5} />
-                            <div className={styles.sectionTitle}>Education Qualifications</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_education_qualifications", "Education Qualifications")}</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
                                     <tr>
-                                        <th>Level</th><th>Degree</th><th>Institute / Board</th><th>Year</th><th>Score</th><th>Action</th>
+                                        <th>{t("components.Workspace.EmployeeCreationWizard.text_level", "Level")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_degree", "Degree")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_institute_board", "Institute / Board")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_year", "Year")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_score", "Score")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_action", "Action")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1077,41 +1083,41 @@ export default function EmployeeCreationWizard({
                                                     ))}
                                                 </select>
                                             </td>
-                                            <td><input className={styles.input} value={edu.degree} onChange={e => updateRow('education', idx, 'degree', e.target.value)} placeholder="B.Tech" /></td>
-                                            <td><input className={styles.input} value={edu.institute} onChange={e => updateRow('education', idx, 'institute', e.target.value)} placeholder="University Name" /></td>
-                                            <td><input className={styles.input} style={{ width: '80px' }} value={edu.passingYear} onChange={e => updateRow('education', idx, 'passingYear', e.target.value)} placeholder="2022" /></td>
-                                            <td><input className={styles.input} style={{ width: '90px' }} value={edu.score} onChange={e => updateRow('education', idx, 'score', e.target.value)} placeholder="8.5 CGPA" /></td>
+                                            <td><input className={styles.input} value={edu.degree} onChange={e => updateRow('education', idx, 'degree', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_btech", "B.Tech")} /></td>
+                                            <td><input className={styles.input} value={edu.institute} onChange={e => updateRow('education', idx, 'institute', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_university_name", "University Name")} /></td>
+                                            <td><input className={styles.input} style={{ width: '80px' }} value={edu.passingYear} onChange={e => updateRow('education', idx, 'passingYear', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_2022", "2022")} /></td>
+                                            <td><input className={styles.input} style={{ width: '90px' }} value={edu.score} onChange={e => updateRow('education', idx, 'score', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_85_cgpa", "8.5 CGPA")} /></td>
                                             <td><button type="button" className={styles.removeBtn} onClick={() => removeRow('education', idx)}><Trash2 size={13} /></button></td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                             <button type="button" className={styles.addBtn} onClick={() => addRow('education', { level: "Bachelor's", degree: '', institute: '', passingYear: '', score: '' })}>
-                                <Plus size={14} /> Add Qualification
+                                <Plus size={14} />  {t("components.Workspace.EmployeeCreationWizard.text_add_qualification", "Add Qualification")}
                             </button>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1.5rem' }}>Prior Experience History</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1.5rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_prior_experience_history", "Prior Experience History")}</div>
                             <table className={styles.repeatingTable}>
                                 <thead>
                                     <tr>
-                                        <th>Previous Employer</th><th>Designation</th><th>From Date</th><th>To Date</th><th>Prev UAN</th><th>Action</th>
+                                        <th>{t("components.Workspace.EmployeeCreationWizard.text_previous_employer", "Previous Employer")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_designation", "Designation")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_from_date", "From Date")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_to_date", "To Date")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_prev_uan", "Prev UAN")}</th><th>{t("components.Workspace.EmployeeCreationWizard.text_action", "Action")}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {formData.experience.map((exp, idx) => (
                                         <tr key={idx}>
-                                            <td><input className={styles.input} value={exp.employer} onChange={e => updateRow('experience', idx, 'employer', e.target.value)} placeholder="Company Ltd" /></td>
-                                            <td><input className={styles.input} value={exp.designation} onChange={e => updateRow('experience', idx, 'designation', e.target.value)} placeholder="Sr Engineer" /></td>
+                                            <td><input className={styles.input} value={exp.employer} onChange={e => updateRow('experience', idx, 'employer', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_company_ltd", "Company Ltd")} /></td>
+                                            <td><input className={styles.input} value={exp.designation} onChange={e => updateRow('experience', idx, 'designation', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_sr_engineer", "Sr Engineer")} /></td>
                                             <td><input type="date" className={styles.input} value={exp.fromDate} onChange={e => updateRow('experience', idx, 'fromDate', e.target.value)} /></td>
                                             <td><input type="date" className={styles.input} value={exp.toDate} onChange={e => updateRow('experience', idx, 'toDate', e.target.value)} /></td>
-                                            <td><input className={styles.input} value={exp.prevUan} onChange={e => updateRow('experience', idx, 'prevUan', e.target.value)} placeholder="100..." /></td>
+                                            <td><input className={styles.input} value={exp.prevUan} onChange={e => updateRow('experience', idx, 'prevUan', e.target.value)} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_100", "100...")} /></td>
                                             <td><button type="button" className={styles.removeBtn} onClick={() => removeRow('experience', idx)}><Trash2 size={13} /></button></td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                             <button type="button" className={styles.addBtn} onClick={() => addRow('experience', { employer: '', designation: '', fromDate: '', toDate: '', prevUan: '' })}>
-                                <Plus size={14} /> Add Experience Row
+                                <Plus size={14} />  {t("components.Workspace.EmployeeCreationWizard.text_add_experience_row", "Add Experience Row")}
                             </button>
                         </div>
                     )}
@@ -1120,12 +1126,12 @@ export default function EmployeeCreationWizard({
                     {activeTab === 6 && (
                         <div className={styles.sectionGroup}>
                             <TabErrorBanner tabNum={6} />
-                            <div className={styles.sectionTitle}>Assignment & Placement Details</div>
+                            <div className={styles.sectionTitle}>{t("components.Workspace.EmployeeCreationWizard.text_assignment_placement_details", "Assignment & Placement Details")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Department <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_department", "Department")} <span className={styles.required}>*</span></span>
                                     <select className={sc('department')} value={formData.department} onChange={e => handleChange('department', e.target.value)} onBlur={() => touchField('department')}>
-                                        <option value="">Select Department</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_department", "Select Department")}</option>
                                         {Array.from(new Set([
                                             ...existingEmployees.map(e => e.dept || e.department).filter(Boolean),
                                             'Engineering', 'Product', 'Human Resources', 'Finance', 'Operations', 'Quality', 'Production', 'Maintenance', 'Safety', 'Purchase'
@@ -1136,17 +1142,17 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="department" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Designation <span className={styles.required}>*</span></span>
-                                    <input className={ic('designation')} placeholder="e.g. Senior Software Engineer" value={formData.designation} onChange={e => handleChange('designation', e.target.value)} onBlur={() => touchField('designation')} required />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_designation", "Designation")} <span className={styles.required}>*</span></span>
+                                    <input className={ic('designation')} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_eg_senior_software_engineer", "e.g. Senior Software Engineer")} value={formData.designation} onChange={e => handleChange('designation', e.target.value)} onBlur={() => touchField('designation')} required />
                                     <FieldError fieldKey="designation" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Date of Joining <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_date_of_joining", "Date of Joining")} <span className={styles.required}>*</span></span>
                                     <input type="date" className={ic('joiningDate')} value={formData.joiningDate} onChange={e => handleChange('joiningDate', e.target.value)} onBlur={() => touchField('joiningDate')} required />
                                     <FieldError fieldKey="joiningDate" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Reporting Manager <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_reporting_manager", "Reporting Manager")} <span className={styles.required}>*</span></span>
                                     <select
                                         className={sc('manager')}
                                         value={isCustomManager ? '__CUSTOM__' : (formData.manager || '')}
@@ -1162,19 +1168,19 @@ export default function EmployeeCreationWizard({
                                         onBlur={() => touchField('manager')}
                                         required
                                     >
-                                        <option value="">Select Reporting Manager</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_reporting_manager", "Select Reporting Manager")}</option>
                                         {managerOptions.map(m => (
                                             <option key={m.value} value={m.value}>
                                                 {m.label}
                                             </option>
                                         ))}
-                                        <option value="__CUSTOM__">+ Add Other / Custom Manager...</option>
+                                        <option value="__CUSTOM__">{t("components.Workspace.EmployeeCreationWizard.text_add_other_custom_manager", "+ Add Other / Custom Manager...")}</option>
                                     </select>
                                     {isCustomManager && (
                                         <div style={{ marginTop: '0.5rem', display: 'flex', gap: '0.5rem' }}>
                                             <input
                                                 className={styles.input}
-                                                placeholder="Enter Manager Name or Employee Code"
+                                                placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_enter_manager_name_or_employee_code", "Enter Manager Name or Employee Code")}
                                                 value={customManagerText}
                                                 onChange={e => {
                                                     const text = e.target.value;
@@ -1192,16 +1198,17 @@ export default function EmployeeCreationWizard({
                                                     handleChange('manager', '');
                                                 }}
                                             >
-                                                From List
+                                                
+                                                {t("components.Workspace.EmployeeCreationWizard.text_from_list", "From List")}
                                             </button>
                                         </div>
                                     )}
                                     <FieldError fieldKey="manager" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Work Location <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_work_location", "Work Location")} <span className={styles.required}>*</span></span>
                                     <select className={sc('location')} value={formData.location} onChange={e => handleChange('location', e.target.value)} onBlur={() => touchField('location')} required>
-                                        <option value="">Select Work Location</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_work_location", "Select Work Location")}</option>
                                         {Array.from(new Set([
                                             ...existingEmployees.map(e => e.location).filter(Boolean),
                                             'Bangalore Plant', 'Mumbai Corporate HQ', 'Delhi Logistics Hub', 'Pune Factory', 'Chennai Office'
@@ -1212,23 +1219,23 @@ export default function EmployeeCreationWizard({
                                     <FieldError fieldKey="location" />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Worker Class <span className={styles.required}>*</span></span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_worker_class", "Worker Class")} <span className={styles.required}>*</span></span>
                                     <select className={sc('workerClass')} value={formData.workerClass} onChange={e => handleChange('workerClass', e.target.value)} onBlur={() => touchField('workerClass')} required>
-                                        <option value="">Select Worker Class</option>
-                                        <option value="Permanent Full-Time">Permanent Full-Time</option>
-                                        <option value="Probationer">Probationer</option>
-                                        <option value="Contractor">Contractor</option>
-                                        <option value="Trainee">Trainee</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_worker_class", "Select Worker Class")}</option>
+                                        <option value="Permanent Full-Time">{t("components.Workspace.EmployeeCreationWizard.text_permanent_full-time", "Permanent Full-Time")}</option>
+                                        <option value="Probationer">{t("components.Workspace.EmployeeCreationWizard.text_probationer", "Probationer")}</option>
+                                        <option value="Contractor">{t("components.Workspace.EmployeeCreationWizard.text_contractor", "Contractor")}</option>
+                                        <option value="Trainee">{t("components.Workspace.EmployeeCreationWizard.text_trainee", "Trainee")}</option>
                                     </select>
                                     <FieldError fieldKey="workerClass" />
                                 </label>
                             </div>
 
                             {/* Labour Law & OT Classification */}
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Labour Law & OT Classification</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_labour_law_ot_classification", "Labour Law & OT Classification")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Worker Category</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_worker_category", "Worker Category")}</span>
                                     <select className={styles.select} value={formData.workerCategory} onChange={e => {
                                         const cat = e.target.value;
                                         handleChange('workerCategory', cat);
@@ -1238,64 +1245,64 @@ export default function EmployeeCreationWizard({
                                         if (cat === 'TRAINEE_DET' || cat === 'TRAINEE_GET') { handleChange('isTrainee', true); handleChange('traineeType', cat === 'TRAINEE_DET' ? 'DET' : 'GET'); }
                                         else { handleChange('isTrainee', false); handleChange('traineeType', ''); }
                                     }}>
-                                        <option value="">Select Worker Category</option>
-                                        <option value="PERM">Permanent Employee</option>
-                                        <option value="CONTRACT">Contractual (Daily Wage — No Rest Day)</option>
-                                        <option value="THIRD_PARTY_EMP">3rd Party Employee (With Rest Days)</option>
-                                        <option value="THIRD_PARTY_HELPER">3rd Party Helper (No Rest Days)</option>
-                                        <option value="TRAINEE_DET">Trainee — DET (Graduate Engineer)</option>
-                                        <option value="TRAINEE_GET">Trainee — GET (Diploma Engineer)</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_worker_category", "Select Worker Category")}</option>
+                                        <option value="PERM">{t("components.Workspace.EmployeeCreationWizard.text_permanent_employee", "Permanent Employee")}</option>
+                                        <option value="CONTRACT">{t("components.Workspace.EmployeeCreationWizard.text_contractual_daily_wage_no_rest_day", "Contractual (Daily Wage — No Rest Day)")}</option>
+                                        <option value="THIRD_PARTY_EMP">{t("components.Workspace.EmployeeCreationWizard.text_3rd_party_employee_with_rest_days", "3rd Party Employee (With Rest Days)")}</option>
+                                        <option value="THIRD_PARTY_HELPER">{t("components.Workspace.EmployeeCreationWizard.text_3rd_party_helper_no_rest_days", "3rd Party Helper (No Rest Days)")}</option>
+                                        <option value="TRAINEE_DET">{t("components.Workspace.EmployeeCreationWizard.text_trainee_det_graduate_engineer", "Trainee — DET (Graduate Engineer)")}</option>
+                                        <option value="TRAINEE_GET">{t("components.Workspace.EmployeeCreationWizard.text_trainee_get_diploma_engineer", "Trainee — GET (Diploma Engineer)")}</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Rest Day Eligibility</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_rest_day_eligibility", "Rest Day Eligibility")}</span>
                                     <select className={styles.select} value={formData.hasRestDays ? 'YES' : 'NO'} onChange={e => handleChange('hasRestDays', e.target.value === 'YES')}>
-                                        <option value="YES">Yes — Weekly Off Applies</option>
-                                        <option value="NO">No — Paid for All Working Days</option>
+                                        <option value="YES">{t("components.Workspace.EmployeeCreationWizard.text_yes_weekly_off_applies", "Yes — Weekly Off Applies")}</option>
+                                        <option value="NO">{t("components.Workspace.EmployeeCreationWizard.text_no_paid_for_all_working_days", "No — Paid for All Working Days")}</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>OT Eligibility</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_ot_eligibility", "OT Eligibility")}</span>
                                     <select className={styles.select} value={formData.otEligibility} onChange={e => handleChange('otEligibility', e.target.value)}>
-                                        <option value="">Select OT Eligibility</option>
-                                        <option value="ALL_DAYS">All Days (Regular + Rest Days)</option>
-                                        <option value="REST_HOLIDAYS_ONLY">Rest Days &amp; Holidays Only</option>
-                                        <option value="NONE">Not Eligible for OT</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_ot_eligibility", "Select OT Eligibility")}</option>
+                                        <option value="ALL_DAYS">{t("components.Workspace.EmployeeCreationWizard.text_all_days_regular_rest_days", "All Days (Regular + Rest Days)")}</option>
+                                        <option value="REST_HOLIDAYS_ONLY">{t("components.Workspace.EmployeeCreationWizard.text_rest_days_amp_holidays_only", "Rest Days &amp; Holidays Only")}</option>
+                                        <option value="NONE">{t("components.Workspace.EmployeeCreationWizard.text_not_eligible_for_ot", "Not Eligible for OT")}</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Salary Location Scope</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_salary_location_scope", "Salary Location Scope")}</span>
                                     <select className={styles.select} value={formData.salaryLocationScope} onChange={e => handleChange('salaryLocationScope', e.target.value)}>
-                                        <option value="">Select Salary Location Scope</option>
-                                        <option value="PLANT">Plant (Attendance + Salary at Plant)</option>
-                                        <option value="HO">Head Office (Attendance at Plant, Salary at HO)</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_salary_location_scope", "Select Salary Location Scope")}</option>
+                                        <option value="PLANT">{t("components.Workspace.EmployeeCreationWizard.text_plant_attendance_salary_at_plant", "Plant (Attendance + Salary at Plant)")}</option>
+                                        <option value="HO">{t("components.Workspace.EmployeeCreationWizard.text_head_office_attendance_at_plant_salary_a", "Head Office (Attendance at Plant, Salary at HO)")}</option>
                                     </select>
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Default Assigned Shift</span>
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_default_assigned_shift", "Default Assigned Shift")}</span>
                                     <select className={styles.select} value={formData.assignedShift} onChange={e => handleChange('assignedShift', e.target.value)}>
-                                        <option value="">Select Assigned Shift</option>
-                                        <option value="A">A Shift (08:00 AM – 08:00 PM, 12 Hrs)</option>
-                                        <option value="B">B Shift (08:00 PM – 08:00 AM, 12 Hrs)</option>
-                                        <option value="GENERAL">General Shift (09:00 AM – 06:00 PM, 9 Hrs)</option>
-                                        <option value="AUTO_DETECT">Auto-Detect from Punch Time</option>
+                                        <option value="">{t("components.Workspace.EmployeeCreationWizard.text_select_assigned_shift", "Select Assigned Shift")}</option>
+                                        <option value="A">{t("components.Workspace.EmployeeCreationWizard.text_a_shift_0800_am_0800_pm_12_hrs", "A Shift (08:00 AM – 08:00 PM, 12 Hrs)")}</option>
+                                        <option value="B">{t("components.Workspace.EmployeeCreationWizard.text_b_shift_0800_pm_0800_am_12_hrs", "B Shift (08:00 PM – 08:00 AM, 12 Hrs)")}</option>
+                                        <option value="GENERAL">{t("components.Workspace.EmployeeCreationWizard.text_general_shift_0900_am_0600_pm_9_hrs", "General Shift (09:00 AM – 06:00 PM, 9 Hrs)")}</option>
+                                        <option value="AUTO_DETECT">{t("components.Workspace.EmployeeCreationWizard.text_auto-detect_from_punch_time", "Auto-Detect from Punch Time")}</option>
                                     </select>
                                 </label>
                             </div>
 
-                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>Site &amp; Facilities</div>
+                            <div className={styles.sectionTitle} style={{ marginTop: '1rem' }}>{t("components.Workspace.EmployeeCreationWizard.text_site_amp_facilities", "Site &amp; Facilities")}</div>
                             <div className={styles.formGrid}>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Biometric Enrolment ID</span>
-                                    <input className={styles.input} placeholder="BIO-9081" value={formData.biometricEnrolId} onChange={e => handleChange('biometricEnrolId', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_biometric_enrolment_id", "Biometric Enrolment ID")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_bio-9081", "BIO-9081")} value={formData.biometricEnrolId} onChange={e => handleChange('biometricEnrolId', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Access Card Number</span>
-                                    <input className={styles.input} placeholder="AC-1029" value={formData.accessCardNo} onChange={e => handleChange('accessCardNo', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_access_card_number", "Access Card Number")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_ac-1029", "AC-1029")} value={formData.accessCardNo} onChange={e => handleChange('accessCardNo', e.target.value)} />
                                 </label>
                                 <label className={styles.field}>
-                                    <span className={styles.fieldLabel}>Locker Number</span>
-                                    <input className={styles.input} placeholder="L-402" value={formData.lockerNo} onChange={e => handleChange('lockerNo', e.target.value)} />
+                                    <span className={styles.fieldLabel}>{t("components.Workspace.EmployeeCreationWizard.text_locker_number", "Locker Number")}</span>
+                                    <input className={styles.input} placeholder={t("components.Workspace.EmployeeCreationWizard.placeholder_l-402", "L-402")} value={formData.lockerNo} onChange={e => handleChange('lockerNo', e.target.value)} />
                                 </label>
                             </div>
                         </div>
@@ -1306,19 +1313,20 @@ export default function EmployeeCreationWizard({
                         <div>
                             {activeTab > 1 ? (
                                 <button type="button" className={styles.btnSecondary} onClick={() => setActiveTab(prev => prev - 1)}>
-                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} /> Back
+                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.EmployeeCreationWizard.text_back", "Back")}
                                 </button>
                             ) : (
                                 <button type="button" className={styles.btnSecondary} onClick={onClose}>
-                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} /> Back to Directory
+                                    <ArrowLeft size={16} style={{ display: 'inline', marginRight: '4px' }} />  {t("components.Workspace.EmployeeCreationWizard.text_back_to_directory", "Back to Directory")}
                                 </button>
                             )}
                         </div>
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
-                            <button type="button" className={styles.btnSecondary} onClick={onClose}>Cancel</button>
+                            <button type="button" className={styles.btnSecondary} onClick={onClose}>{t("components.Workspace.EmployeeCreationWizard.text_cancel", "Cancel")}</button>
                             {activeTab < 6 ? (
                                 <button type="button" className={styles.btnPrimary} onClick={() => setActiveTab(prev => prev + 1)}>
-                                    Next Tab <ArrowRight size={16} style={{ display: 'inline', marginLeft: '4px' }} />
+                                    
+                                    {t("components.Workspace.EmployeeCreationWizard.text_next_tab", "Next Tab")} <ArrowRight size={16} style={{ display: 'inline', marginLeft: '4px' }} />
                                 </button>
                             ) : (
                                 <button type="submit" className={styles.btnPrimary}>

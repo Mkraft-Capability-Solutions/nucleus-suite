@@ -20,6 +20,7 @@ const RightSubNav = ({
     isOpen = true,
     onClose
 }) => {
+  const { t } = useTranslation();
     const { t: translateText } = useTranslation();
     const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
     const [collapsedGroups, setCollapsedGroups] = React.useState({});
@@ -81,12 +82,12 @@ const RightSubNav = ({
 
     if (isPanelCollapsed) {
         return (
-            <aside className={styles.rightNavCollapsed} aria-label="Right navigation collapsed">
+            <aside className={styles.rightNavCollapsed} aria-label={t("components.Workspace.RightSubNav.aria-label_right_navigation_collapsed", "Right navigation collapsed")}>
                 <button
                     className={styles.expandRailBtn}
                     onClick={() => setIsPanelCollapsed(false)}
-                    title="Expand right sidebar"
-                    aria-label="Expand right sidebar"
+                    title={t("components.Workspace.RightSubNav.title_expand_right_sidebar", "Expand right sidebar")}
+                    aria-label={t("components.Workspace.RightSubNav.aria-label_expand_right_sidebar", "Expand right sidebar")}
                 >
                     <ChevronRight sx={{ fontSize: 18, transform: 'rotate(180deg)' }} />
                 </button>
@@ -119,8 +120,8 @@ const RightSubNav = ({
                     <button
                         className={styles.iconBtn}
                         onClick={() => setIsPanelCollapsed(true)}
-                        title="Collapse right sidebar"
-                        aria-label="Collapse right sidebar"
+                        title={t("components.Workspace.RightSubNav.title_collapse_right_sidebar", "Collapse right sidebar")}
+                        aria-label={t("components.Workspace.RightSubNav.aria-label_collapse_right_sidebar", "Collapse right sidebar")}
                     >
                         <ChevronRight sx={{ fontSize: 16 }} />
                     </button>

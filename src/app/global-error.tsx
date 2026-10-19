@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
+import { t } from '@/lib/i18n';
 
 export default function GlobalError({
   error,
@@ -72,7 +73,7 @@ export default function GlobalError({
                 color: '#ef4444',
               }}
             >
-              System Error
+              {t('errors.system_error', 'System Error')}
             </span>
             <h1
               style={{
@@ -82,7 +83,7 @@ export default function GlobalError({
                 color: '#ffffff',
               }}
             >
-              Application Failure
+              {t('errors.app_failure', 'Application Failure')}
             </h1>
             <p
               style={{
@@ -92,7 +93,7 @@ export default function GlobalError({
                 margin: 0,
               }}
             >
-              A fatal error occurred in the core framework layout. Nucleus diagnostic telemetry has captured this state. Please restart or reload the session.
+              {t('errors.app_failure_desc', 'A fatal error occurred in the core framework layout. Nucleus diagnostic telemetry has captured this state. Please restart or reload the session.')}
             </p>
             {error?.digest && (
               <p
@@ -103,7 +104,25 @@ export default function GlobalError({
                   marginTop: '0.5rem',
                 }}
               >
-                Digest: {error.digest}
+                {t('errors.digest', 'Digest')}: {error.digest}
+              </p>
+            )}
+            {error?.message && (
+              <p
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#f87171',
+                  fontFamily: 'monospace',
+                  marginTop: '0.5rem',
+                  textAlign: 'left',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  padding: '0.5rem 0.75rem',
+                  borderRadius: '6px',
+                  whiteSpace: 'pre-wrap',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {error.message}
               </p>
             )}
           </div>
@@ -122,7 +141,7 @@ export default function GlobalError({
                 fontWeight: 600,
               }}
             >
-              Reload Session
+              {t('common.reload_session', 'Reload Session')}
             </button>
             <button
               onClick={() => { window.location.href = '/'; }}
@@ -137,7 +156,7 @@ export default function GlobalError({
                 fontWeight: 600,
               }}
             >
-              Go to Home
+              {t('common.go_home', 'Go to Home')}
             </button>
           </div>
         </div>

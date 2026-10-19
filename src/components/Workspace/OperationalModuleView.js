@@ -149,11 +149,13 @@ function recordValue(record, column, module, liveReferences) {
 }
 
 export default function OperationalModuleView(props) {
+    const { t } = useTranslation();
     if (props.module.screenId === 'SCR-030') return <><ProcessGuide screenId={props.module.screenId} /><LeaveWorkflowPanel /></>;
     return <OperationalModuleContent key={props.module.id} {...props} />;
 }
 
 function OperationalModuleContent({ module, onNavigate }) {
+  const { t } = useTranslation();
     const { t: translateText } = useTranslation();
 
     const [records, setRecords] = useState(() => fallbackRows(module));
@@ -654,7 +656,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                         type="button"
                         onClick={reload}
                         disabled={loading}
-                        aria-label="Refresh records"
+                        aria-label={t("components.Workspace.OperationalModuleView.aria-label_refresh_records", "Refresh records")}
                     >
                         <RefreshCw size={16} className={loading ? styles.spin : ''} />
                         {readData("components.Workspace.OperationalModuleView", "content_text_6")}
@@ -707,14 +709,14 @@ function OperationalModuleContent({ module, onNavigate }) {
                     <div className={styles.cardTitle}>
                         <div>
                             <h2>{module.title}</h2>
-                            <p>{sortedRecords.length} records available</p>
+                            <p>{sortedRecords.length}  {t("components.Workspace.OperationalModuleView.text_records_available", "records available")}</p>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
                             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                                 <Search size={14} style={{ position: 'absolute', left: '0.6rem', color: 'var(--text-3)', pointerEvents: 'none' }} />
                                 <input
                                     type="text"
-                                    placeholder="Search..."
+                                    placeholder={t("components.Workspace.OperationalModuleView.placeholder_search", "Search...")}
                                     value={searchQuery}
                                     onChange={(e) => {
                                         setSearchQuery(e.target.value);
@@ -756,7 +758,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                                             {column} {sortColumn === column ? (sortAsc ? '▲' : '▼') : '↕'}
                                         </th>
                                     ))}
-                                    <th style={{ width: '85px', textAlign: 'center' }}>Actions</th>
+                                    <th style={{ width: '85px', textAlign: 'center' }}>{t("components.Workspace.OperationalModuleView.text_actions", "Actions")}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -783,18 +785,18 @@ function OperationalModuleContent({ module, onNavigate }) {
                                                 <button
                                                     type="button"
                                                     className={styles.rowActionBtn}
-                                                    title="View Details"
+                                                    title={t("components.Workspace.OperationalModuleView.title_view_details", "View Details")}
                                                     onClick={(e) => { e.stopPropagation(); openView(record); }}
-                                                    aria-label="View Details"
+                                                    aria-label={t("components.Workspace.OperationalModuleView.aria-label_view_details", "View Details")}
                                                 >
                                                     <Eye size={14} />
                                                 </button>
                                                 <button
                                                     type="button"
                                                     className={styles.rowActionBtn}
-                                                    title="Edit / Update"
+                                                    title={t("components.Workspace.OperationalModuleView.title_edit_update", "Edit / Update")}
                                                     onClick={(e) => { e.stopPropagation(); openEdit(record); }}
-                                                    aria-label="Edit Record"
+                                                    aria-label={t("components.Workspace.OperationalModuleView.aria-label_edit_record", "Edit Record")}
                                                 >
                                                     <Edit2 size={14} />
                                                 </button>
@@ -847,7 +849,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                             disabled={!selectedRecord}
                             style={{ flex: 1, justifyContent: 'center' }}
                         >
-                            <Edit2 size={14} /> Edit Record
+                            <Edit2 size={14} />  {t("components.Workspace.OperationalModuleView.text_edit_record", "Edit Record")}
                         </button>
                         <button
                             type="button"
@@ -856,7 +858,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                             disabled={!selectedRecord}
                             style={{ flex: 1, justifyContent: 'center' }}
                         >
-                            <Eye size={14} /> Full Details
+                            <Eye size={14} />  {t("components.Workspace.OperationalModuleView.text_full_details", "Full Details")}
                         </button>
                     </div>
 
@@ -954,8 +956,8 @@ function OperationalModuleContent({ module, onNavigate }) {
                 <form className={styles.formDialog} onSubmit={submitEdit} noValidate>
                     <header>
                         <div>
-                            <span>{module.screenId} · Edit Record</span>
-                            <h2 id="operational-edit-title">Edit {module.title}</h2>
+                            <span>{module.screenId}  {t("components.Workspace.OperationalModuleView.text_edit_record", "· Edit Record")}</span>
+                            <h2 id="operational-edit-title">{t("components.Workspace.OperationalModuleView.text_edit", "Edit")} {module.title}</h2>
                         </div>
                         <button type="button" onClick={() => setIsEditOpen(false)}>
                             <X size={18} />
@@ -979,16 +981,16 @@ function OperationalModuleContent({ module, onNavigate }) {
                                         <input id={props.id} type="file" required={item.required} onChange={event => updateEditField(item.key, event.target.files?.[0]?.name || '')} />
                                     ) : item.type === 'select' || item.options.length ? (
                                         <select {...props}>
-                                            <option value="">Select {item.label}</option>
+                                            <option value="">{t("components.Workspace.OperationalModuleView.text_select", "Select")} {item.label}</option>
                                             {dedupeOptions(item.options).map(option => (
                                                 <option key={option.value} value={option.value}>{option.label}</option>
                                             ))}
                                         </select>
                                     ) : item.derive?.kind === 'inclusiveDays' ? (
                                         <span className={styles.stepControl}>
-                                            <IconButton type="button" aria-label="Decrease days" disabled={!Number.isFinite(Number(editValues[item.key])) || Number(editValues[item.key]) <= item.min} onClick={() => updateEditField(item.key, Math.max(item.min, Number(editValues[item.key]) - item.step))}><RemoveIcon /></IconButton>
+                                            <IconButton type="button" aria-label={t("components.Workspace.OperationalModuleView.aria-label_decrease_days", "Decrease days")} disabled={!Number.isFinite(Number(editValues[item.key])) || Number(editValues[item.key]) <= item.min} onClick={() => updateEditField(item.key, Math.max(item.min, Number(editValues[item.key]) - item.step))}><RemoveIcon /></IconButton>
                                             <input {...props} type="number" min={item.min} max={item.max} step={item.step} />
-                                            <IconButton type="button" aria-label="Increase days" disabled={Number(editValues[item.key]) >= item.max} onClick={() => updateEditField(item.key, Math.min(item.max, (Number(editValues[item.key]) || 0) + item.step))}><AddIcon /></IconButton>
+                                            <IconButton type="button" aria-label={t("components.Workspace.OperationalModuleView.aria-label_increase_days", "Increase days")} disabled={Number(editValues[item.key]) >= item.max} onClick={() => updateEditField(item.key, Math.min(item.max, (Number(editValues[item.key]) || 0) + item.step))}><AddIcon /></IconButton>
                                         </span>
                                     ) : item.type === 'textarea' ? (
                                         <textarea {...props} rows={3} />
@@ -1003,10 +1005,11 @@ function OperationalModuleContent({ module, onNavigate }) {
                         })}
                     </div>
                     <footer>
-                        <p>Changes will be saved directly to the database.</p>
+                        <p>{t("components.Workspace.OperationalModuleView.text_changes_will_be_saved_directly_to_the_da", "Changes will be saved directly to the database.")}</p>
                         <div>
                             <button type="button" className={styles.secondaryButton} onClick={() => setIsEditOpen(false)}>
-                                Cancel
+                                
+                                {t("components.Workspace.OperationalModuleView.text_cancel", "Cancel")}
                             </button>
                             <button className={styles.primaryButton} type="submit" disabled={isSavingEdit}>
                                 {isSavingEdit ? 'Saving...' : 'Save & Update'}
@@ -1021,7 +1024,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                 <div className={styles.formDialog} style={{ padding: '1.25rem' }}>
                     <header style={{ borderBottom: '1px solid var(--line)', paddingBottom: '0.75rem', marginBottom: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div>
-                            <span style={{ fontSize: '0.72rem', color: 'var(--signal)', fontWeight: 800 }}>{module.screenId} · Record Details</span>
+                            <span style={{ fontSize: '0.72rem', color: 'var(--signal)', fontWeight: 800 }}>{module.screenId}  {t("components.Workspace.OperationalModuleView.text_record_details", "· Record Details")}</span>
                             <h2 style={{ fontSize: '1.2rem', margin: '0.2rem 0 0 0' }}>{module.title}</h2>
                         </div>
                         <button type="button" onClick={() => setIsViewOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-2)', cursor: 'pointer' }}>
@@ -1046,13 +1049,14 @@ function OperationalModuleContent({ module, onNavigate }) {
                     </div>
 
                     <div style={{ fontSize: '0.75rem', color: 'var(--text-3)', borderTop: '1px solid var(--line)', paddingTop: '0.75rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                        <span>Record ID: <code style={{ color: 'var(--text-2)' }}>{viewingRecord?.id}</code></span>
-                        <span>Created: {viewingRecord?.createdAt ? new Date(viewingRecord.createdAt).toLocaleString() : '—'}</span>
+                        <span>{t("components.Workspace.OperationalModuleView.text_record_id", "Record ID:")} <code style={{ color: 'var(--text-2)' }}>{viewingRecord?.id}</code></span>
+                        <span>{t("components.Workspace.OperationalModuleView.text_created", "Created:")} {viewingRecord?.createdAt ? new Date(viewingRecord.createdAt).toLocaleString() : '—'}</span>
                     </div>
 
                     <footer style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.6rem', borderTop: '1px solid var(--line)', paddingTop: '0.9rem' }}>
                         <button type="button" className={styles.secondaryButton} onClick={() => setIsViewOpen(false)}>
-                            Close
+                            
+                            {t("components.Workspace.OperationalModuleView.text_close", "Close")}
                         </button>
                         <button
                             type="button"
@@ -1063,7 +1067,7 @@ function OperationalModuleContent({ module, onNavigate }) {
                             }}
                             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
                         >
-                            <Edit2 size={14} /> Edit This Record
+                            <Edit2 size={14} />  {t("components.Workspace.OperationalModuleView.text_edit_this_record", "Edit This Record")}
                         </button>
                     </footer>
                 </div>

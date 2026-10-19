@@ -1,0 +1,76 @@
+{
+  "greeting": "¿Cómo puedo ayudarte a navegar por el espacio de trabajo?",
+  "fallback": "Pídeme que abra un módulo como Nómina, Permisos, Asistencia o Rendimiento.",
+  "replies": {
+    "payroll": "Abriendo Nómina.",
+    "leaves": "Abriendo Gestión de Permisos.",
+    "attendance": "Abriendo Asistencia.",
+    "recruitment": "Abriendo Selección y Contratación.",
+    "performance": "Abriendo Rendimiento.",
+    "learning": "Abriendo Aprendizaje y Formación.",
+    "experience": "Abriendo Experiencia del Empleado.",
+    "team": "Abriendo Directorio del Equipo.",
+    "dashboard": "Abriendo Panel de Control.",
+    "settings": "Abriendo Configuración."
+  },
+  "keywords": {
+    "payroll": [
+      "nómina",
+      "salario",
+      "sueldo",
+      "recibo"
+    ],
+    "leaves": [
+      "permiso",
+      "vacaciones",
+      "ausencia",
+      "baja"
+    ],
+    "attendance": [
+      "asistencia",
+      "fichar",
+      "horario",
+      "turno"
+    ],
+    "recruitment": [
+      "selección",
+      "contratación",
+      "candidato",
+      "empleo"
+    ],
+    "performance": [
+      "rendimiento",
+      "objetivo",
+      "evaluación",
+      "desempeño"
+    ],
+    "learning": [
+      "aprendizaje",
+      "curso",
+      "formación",
+      "capacitación",
+      "habilidad"
+    ],
+    "experience": [
+      "experiencia",
+      "bienestar",
+      "salud"
+    ],
+    "team": [
+      "equipo",
+      "directorio",
+      "compañeros",
+      "gente"
+    ],
+    "dashboard": [
+      "panel",
+      "consola",
+      "inicio"
+    ],
+    "settings": [
+      "configuración",
+      "seguridad",
+      "perfil"
+    ]
+  }
+}
