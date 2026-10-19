@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useSession, signOut as betterAuthSignOut, signIn } from '@/lib/auth-client';
+import { useSession, signOut as betterAuthSignOut } from '@/lib/auth-client';
+import { PASSWORD_LOGIN_PATH, storeSignedInUser } from '@/lib/auth/password-login';
 
 const AuthContext = createContext({
     user: null,
@@ -124,7 +125,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const res = await fetch('/api/auth/login', {
+            const res = await fetch(PASSWORD_LOGIN_PATH, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password }),
@@ -135,10 +136,8 @@ export const AuthProvider = ({ children }) => {
                 setLiveProfile(null);
                 setSavedUser(json.user);
                 if (typeof window !== 'undefined') {
-                    localStorage.setItem('nucleus_user', JSON.stringify(json.user));
-                    document.cookie = `nucleus_session=${encodeURIComponent(json.user.id)}; path=/; max-age=604800; SameSite=Lax`;
+                    storeSignedInUser(json.user, email, password);
                 }
-                signIn.email({ email, password }).catch(() => {});
                 return true;
             }
             return false;

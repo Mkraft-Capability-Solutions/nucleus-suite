@@ -1,0 +1,184 @@
+/* Nucleus scene (SVG). Colours are semantic tokens; gradient stops take theirs from these classes. */
+
+.scene {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 600 / 460;
+  overflow: visible;
+}
+
+/* Orbits */
+.orbit,
+.orbitDashed {
+  fill: none;
+  stroke-width: 1;
+}
+
+.orbit {
+  stroke: var(--color-brand-1);
+  stroke-opacity: 0.45;
+}
+
+.orbitDashed {
+  stroke: var(--color-brand-3);
+  stroke-opacity: 0.35;
+  stroke-dasharray: 3 7;
+}
+
+/* Core: bloom, halos, the lit sphere and its label */
+.stopGlowStrong {
+  stop-color: var(--color-brand-glow);
+  stop-opacity: 0.38;
+}
+
+.stopGlowSoft {
+  stop-color: var(--color-brand-glow);
+  stop-opacity: 0.08;
+}
+
+.stopGlowNone {
+  stop-color: var(--color-brand-glow);
+  stop-opacity: 0;
+}
+
+.halo,
+.haloMid,
+.haloOuter {
+  fill: none;
+  stroke: var(--color-brand-glow);
+  stroke-width: 1;
+}
+
+.halo {
+  stroke-opacity: 0.26;
+}
+
+.haloMid {
+  stroke-opacity: 0.16;
+}
+
+.haloOuter {
+  stroke-opacity: 0.08;
+}
+
+.sphereGlow {
+  fill: var(--color-brand-glow);
+  opacity: 0.35;
+  filter: blur(12px);
+}
+
+.stopBody {
+  stop-color: var(--color-sphere-body);
+}
+
+.stopMid {
+  stop-color: var(--color-sphere-mid);
+}
+
+.stopDeep {
+  stop-color: var(--color-sphere-deep);
+}
+
+.stopLight {
+  stop-color: var(--color-sphere-light);
+  stop-opacity: 1;
+}
+
+.stopLightSoft {
+  stop-color: var(--color-sphere-light);
+  stop-opacity: 0.5;
+}
+
+.stopLightNone {
+  stop-color: var(--color-sphere-light);
+  stop-opacity: 0;
+}
+
+.stopSpecular {
+  stop-color: var(--color-sphere-specular);
+  stop-opacity: 1;
+}
+
+.stopSpecularSoft {
+  stop-color: var(--color-sphere-specular);
+  stop-opacity: 0.5;
+}
+
+.stopSpecularNone {
+  stop-color: var(--color-sphere-specular);
+  stop-opacity: 0;
+}
+
+.sphereRim {
+  fill: none;
+  stroke: var(--color-sphere-specular);
+  stroke-opacity: 0.2;
+  stroke-width: 1;
+}
+
+.label {
+  fill: var(--color-sphere-specular);
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 560;
+  user-select: none;
+}
+
+.stopShadow {
+  stop-color: var(--color-contact-shadow);
+}
+
+.stopShadowNone {
+  stop-color: var(--color-contact-shadow);
+  stop-opacity: 0;
+}
+
+/* Nodes (the colour comes from the module identity token) */
+.nodeHalo {
+  fill: var(--node);
+  opacity: 0.16;
+}
+
+.nodeRing {
+  fill: var(--color-glass);
+  stroke: var(--node);
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+}
+
+.nodeDot {
+  fill: var(--node);
+}
+
+.streamDot {
+  fill: var(--node);
+}
+
+.nodeSky {
+  --node: var(--color-module-sky);
+}
+
+.nodeViolet {
+  --node: var(--color-module-violet);
+}
+
+.nodeEmerald {
+  --node: var(--color-module-emerald);
+}
+
+.nodeAmber {
+  --node: var(--color-module-amber);
+}
+
+.nodeRose {
+  --node: var(--color-module-rose);
+}
+
+.nodeIndigo {
+  --node: var(--color-module-indigo);
+}
+
+.nodeCyan {
+  --node: var(--color-module-cyan);
+}

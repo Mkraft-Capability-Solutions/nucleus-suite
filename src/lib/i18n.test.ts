@@ -68,6 +68,9 @@ describe('interface translations', () => {
 
     // Test deep dotted component key with fallback
     expect(translate(enMessages, 'components.Workspace.RecruitmentView.text_save', 'Save Requisition')).toBe('Save Requisition');
+
+    // Dotted interface namespace + key resolves the message instead of echoing the key
+    expect(translate(enMessages, 'components.WorkspaceDataBoundary', 'text_e177bbb93e')).toBe('Loading workspace data…');
   });
 
   it('provides complete multilingual assistant replies and keywords across locales', () => {

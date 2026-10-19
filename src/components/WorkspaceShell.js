@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { AuthProvider, useAuth } from '@/context/AuthContext';
 import AppWorkspace from '@/components/AppWorkspace';
-import LoginView from '@/components/Workspace/LoginView';
 
 function WorkspaceRoute() {
     const { user, isSigningOut } = useAuth();
@@ -19,8 +18,9 @@ function WorkspaceRoute() {
         }
     }, [user, pathname, router, isSigningOut]);
 
+    // Signed out: the effect above sends the visitor to /login (the landing-themed log in screen).
     if (!user) {
-        return <LoginView />;
+        return null;
     }
 
     return <AppWorkspace />;

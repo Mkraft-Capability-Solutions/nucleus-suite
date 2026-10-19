@@ -1,0 +1,22 @@
+.alert {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid color-mix(in oklch, var(--color-danger) 40%, var(--color-danger-wash));
+  border-radius: var(--radius-lg);
+  background-color: var(--color-danger-wash);
+  color: var(--color-danger-text);
+  font-size: var(--font-size-sm);
+}
+
+.alert:empty {
+  display: none;
+}
+
+.title {
+  font-weight: var(--font-weight-semibold);
+}
+
+.detail {
+  font-weight: var(--font-weight-medium);
+}

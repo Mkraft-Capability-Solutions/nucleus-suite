@@ -77,7 +77,23 @@ export function translate(
   let fallback: string | undefined;
   let actualParams: TranslationParams = {};
 
-  if (namespaceOrKey.includes('.')) {
+  const dottedNamespace = messages[namespaceOrKey] ?? defaultMessages[namespaceOrKey];
+  if (
+    namespaceOrKey.includes('.') &&
+    typeof keyOrParams === 'string' &&
+    dottedNamespace &&
+    typeof dottedNamespace === 'object' &&
+    Object.hasOwn(dottedNamespace, keyOrParams)
+  ) {
+    // Dotted namespace + key call (interface.json resources):
+    // e.g. t('components.WorkspaceDataBoundary', 'text_e177bbb93e')
+    key = keyOrParams;
+    if (typeof paramsOrFallback === 'string') {
+      fallback = paramsOrFallback;
+    } else if (typeof paramsOrFallback === 'object' && paramsOrFallback !== null) {
+      actualParams = paramsOrFallback;
+    }
+  } else if (namespaceOrKey.includes('.')) {
     // Dotted key call:
     // e.g. t('errors.something_wrong', 'Something Went Wrong')
     // or t('components.Workspace.RecruitmentView.text_bulk_ats_import', 'Bulk ATS Import')

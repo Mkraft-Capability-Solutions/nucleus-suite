@@ -1,0 +1,42 @@
+/* Brand logo: tenant image or the Nucleus mark + wordmark. Height from tokens; width follows the aspect ratio. */
+
+.logo {
+  display: block;
+  block-size: var(--space-8);
+  inline-size: auto;
+  max-inline-size: calc(var(--space-8) * 6);
+  object-fit: contain;
+}
+
+.fallback {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-primary);
+}
+
+.mark {
+  display: block;
+  inline-size: var(--space-8);
+  block-size: var(--space-8);
+  flex: none;
+}
+
+.markTile {
+  fill: var(--color-accent-default);
+}
+
+.markInk {
+  stroke: var(--color-text-on-accent);
+}
+
+.markCore {
+  fill: var(--color-text-on-accent);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}

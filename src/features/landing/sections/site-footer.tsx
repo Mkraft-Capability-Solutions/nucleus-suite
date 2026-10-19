@@ -11,7 +11,7 @@ import type { ReactNode } from 'react';
 import { ArrowRight, Mail, MapPin, Phone } from 'lucide-react';
 import { SectionHeading } from '../components/section-heading';
 import type { LandingText } from '../i18n/landing-text';
-import { CONTACT, FOOTER_COLUMNS, SITE, SOCIAL } from '../site-footer/footer-links';
+import { CONTACT, FOOTER_COLUMNS, SITE, SOCIAL, type FooterLink } from '../site-footer/footer-links';
 import { FooterMotion } from '../site-footer/footer-motion';
 import { MultipliersKraftLogo } from '../site-footer/multiplierskraft-logo';
 import { NewsletterForm } from '../site-footer/newsletter-form';
@@ -51,7 +51,7 @@ export function SiteFooter({ t, year }: { readonly t: LandingText; readonly year
             <nav key={column.id} className="ft-col" aria-label={t(`footer.columns.${column.id}`)} data-reveal-item="">
               <p className="ft-overline">{t(`footer.columns.${column.id}`)}</p>
               <ul>
-                {column.links.map(([id, href]) => (
+                {(column.links as readonly FooterLink[]).map(([id, href]) => (
                   <li key={id}>
                     <a href={`${SITE}${href}`}>{t(`footer.links.${id}`)}</a>
                   </li>

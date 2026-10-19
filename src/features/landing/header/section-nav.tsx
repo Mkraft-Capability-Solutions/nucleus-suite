@@ -79,7 +79,7 @@ export function SectionNav({ label, menuLabel, links, children }: SectionNavProp
         <Menu aria-hidden="true" />
       </button>
       <nav ref={menuRef} id={menuId} popover="auto" className="lp-menu" aria-label={menuLabel}>
-        {list(() => menuRef.current?.hidePopover())}
+        {list(() => document.getElementById(menuId)?.hidePopover())}
         <div className="lp-menu-actions">{children}</div>
       </nav>
     </>

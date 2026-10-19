@@ -1,0 +1,95 @@
+/* Auth split layout. Tokens only; logical properties (RTL mirrors the columns). */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  inline-size: 100%;
+  block-size: var(--layout-header-height);
+  padding-inline: var(--layout-page-margin);
+  border-block-end: 1px solid var(--color-border-subtle);
+  background-color: var(--color-surface);
+}
+
+.home {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+}
+
+.home:focus-visible {
+  outline: var(--control-focus-ring-width) solid var(--color-border-focus);
+  outline-offset: var(--control-focus-ring-offset);
+}
+
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--layout-columns), minmax(0, 1fr));
+  column-gap: var(--layout-grid-gutter);
+  align-items: center;
+  padding-block: var(--space-8);
+  padding-inline: var(--layout-page-margin);
+  overflow-x: clip;
+}
+
+.scene {
+  grid-column: 1 / 7;
+  display: grid;
+  place-items: center;
+  min-inline-size: 0;
+}
+
+/* Sized to fit: the full column width, capped so the whole scene stays inside the viewport height. */
+.stage {
+  inline-size: min(100%, calc((100dvh - var(--layout-header-height) - var(--space-16)) * 600 / 460));
+}
+
+.content {
+  grid-column: 8 / 13;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-inline-size: 0;
+}
+
+.content > * {
+  inline-size: 100%;
+  max-inline-size: 28rem;
+}
+
+@media (max-width: 899.98px) {
+  .main {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    row-gap: var(--space-6);
+    padding-block: var(--space-6) var(--space-10);
+    padding-inline: var(--layout-gutter);
+  }
+
+  .bar {
+    padding-inline: var(--layout-gutter);
+  }
+
+  .scene,
+  .content {
+    grid-column: 1;
+  }
+
+  .content {
+    align-items: center;
+  }
+
+  .stage {
+    inline-size: min(100%, 22rem);
+  }
+}

@@ -127,17 +127,18 @@ export function useLocale() {
  * @returns {Function} renderTag(name, children, key).
  */
 function tagRenderer(components) {
-  return (/** Render a tag.
+  /** Render a tag.
    * @param {string} name - Tag name.
    * @param {Array<any>} children - Rendered children.
    * @param {string} key - React key.
    * @returns {React.ReactNode} Node.
-   */ (name, children, key) => {
+   */
+  return function renderTag(name, children, key) {
     const component = components?.[name] ?? DEFAULT_TAGS[name];
     if (typeof component === 'function') return component(children, key);
     if (isValidElement(component)) return cloneElement(component, { key }, ...children);
     return <React.Fragment key={key}>{children}</React.Fragment>;
-  });
+  };
 }
 
 /** Translator for one catalog in the active locale. Suspends (throws the cached load promise to the nearest <Suspense>)
@@ -164,19 +165,29 @@ export function useT(catalog) {
      * @param {object} [values] - Placeholder values.
      * @returns {string} Text.
      */
-    const t = (key, values) => formatMessage(lookup(catalog, messages, key, locale), values, locale);
-    t.rich = /** Translate a key keeping its rich tags as React elements.
-     * @param {string} key - Dot key.
-     * @param {object} [values] - Placeholder values (may be React nodes).
-     * @param {Record<string, Function|React.ReactElement>} [components] - Tag renderers (em/strong/br are built in).
-     * @returns {React.ReactNode[]} Nodes.
-     */ (key, values, components) => formatRich(lookup(catalog, messages, key, locale), values || {}, tagRenderer(components), locale);
-    t.raw = /** The unformatted message (e.g. to hand "*emphasis*" text to SplitText).
-     * @param {string} key - Dot key.
-     * @returns {string} Message.
-     */ (key) => lookup(catalog, messages, key, locale);
-    t.locale = locale;
-    return t;
+    return Object.assign(
+      /** Translate a key to plain text.
+       * @param {string} key - Dot key.
+       * @param {object} [values] - Placeholder values.
+       * @returns {string} Text.
+       */
+      (key, values) => formatMessage(lookup(catalog, messages, key, locale), values, locale),
+      {
+        /** Translate a key keeping its rich tags as React elements.
+         * @param {string} key - Dot key.
+         * @param {object} [values] - Placeholder values (may be React nodes).
+         * @param {Record<string, Function|React.ReactElement>} [components] - Tag renderers (em/strong/br are built in).
+         * @returns {React.ReactNode[]} Nodes.
+         */
+        rich: (key, values, components) => formatRich(lookup(catalog, messages, key, locale), values || {}, tagRenderer(components), locale),
+        /** The unformatted message (e.g. to hand "*emphasis*" text to SplitText).
+         * @param {string} key - Dot key.
+         * @returns {string} Message.
+         */
+        raw: (key) => lookup(catalog, messages, key, locale),
+        locale,
+      },
+    );
   }, [catalog, messages, locale]);
 }
 

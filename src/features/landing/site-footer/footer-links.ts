@@ -14,6 +14,9 @@ export const FOOTER_COLUMNS = [
   { id: 'company', links: [['about', '/about#about'], ['team', '/about#leadership'], ['contact', '/contact'], ['request', '/raise-request'], ['signin', '/workspace']] },
 ] as const;
 
+/** One footer link: catalog id (footer.links.<id>) and path on SITE. */
+export type FooterLink = (typeof FOOTER_COLUMNS)[number]['links'][number];
+
 export const SOCIAL: readonly { readonly id: SocialId; readonly label: string; readonly href: string }[] = [
   { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/company/multiplierskraft/' },
   { id: 'instagram', label: 'Instagram', href: 'https://www.instagram.com/multiplierskraft/' },
