@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : Catalog registry: one catalog per namespace (a page, the shell, a widget) with its English messages
@@ -9,8 +9,8 @@
  *               active language). Loading is cached per namespace + locale; a failed load falls back to English.
  * =============================================================================
  */
-import { DEFAULT_LOCALE, findLocale } from './locales.js';
 import { flattenCatalog, formatMessage } from './format.js';
+import { DEFAULT_LOCALE, findLocale } from './locales.js';
 
 /** Every catalog defined so far (namespace → catalog), in definition order. */
 const registry = new Map();

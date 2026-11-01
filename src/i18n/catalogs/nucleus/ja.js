@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : "nucleus" catalog, Japanese (ja) translation of en.js.
@@ -548,11 +548,11 @@ export default {
   },
   footer: {
     label: 'サイトフッター', // Machine translation; pending native-speaker review.
-    copyright: '© {year} MKraft Capability Solutions LLP. All rights reserved.', // Machine translation; pending native-speaker review.
+    copyright: '© {year} Britenz Global Private Limited. All rights reserved.', // Machine translation; pending native-speaker review.
     big: 'ケイパビリティを、何倍にも。', // Machine translation; pending native-speaker review.
     bookDemo: 'デモを予約', // Machine translation; pending native-speaker review.
     brand: 'MultipliersKraft', // Machine translation; pending native-speaker review.
-    about: 'MKraft Capability Solutions LLP は、組織のケイパビリティと、それを支え続ける AI ネイティブなプラットフォームを構築しています。', // Machine translation; pending native-speaker review.
+    about: 'Britenz Global Private Limited は、組織のケイパビリティと、それを支え続ける AI ネイティブなプラットフォームを構築しています。', // Machine translation; pending native-speaker review.
     news: {
       label: 'フィールドノート（月刊）', // Machine translation; pending native-speaker review.
       placeholder: 'you@company.com', // Machine translation; pending native-speaker review.

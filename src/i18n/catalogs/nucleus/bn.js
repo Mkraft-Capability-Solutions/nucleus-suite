@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : "nucleus" catalog, Bengali (bn) translation of en.js.
@@ -548,11 +548,11 @@ export default {
   },
   footer: {
     label: 'সাইট ফুটার', // Machine translation; pending native-speaker review.
-    copyright: '© {year} MKraft Capability Solutions LLP. সর্বস্বত্ব সংরক্ষিত।', // Machine translation; pending native-speaker review.
+    copyright: '© {year} Britenz Global Private Limited. সর্বস্বত্ব সংরক্ষিত।', // Machine translation; pending native-speaker review.
     big: 'সক্ষমতা, বহুগুণে।', // Machine translation; pending native-speaker review.
     bookDemo: 'ডেমো বুক করুন', // Machine translation; pending native-speaker review.
     brand: 'MultipliersKraft', // Machine translation; pending native-speaker review.
-    about: 'MKraft Capability Solutions LLP প্রাতিষ্ঠানিক সক্ষমতা গড়ে তোলে, সঙ্গে সেই AI-নেটিভ প্ল্যাটফর্মও, যা এই সক্ষমতাকে প্রতিদিন সচল রাখে।', // Machine translation; pending native-speaker review.
+    about: 'Britenz Global Private Limited প্রাতিষ্ঠানিক সক্ষমতা গড়ে তোলে, সঙ্গে সেই AI-নেটিভ প্ল্যাটফর্মও, যা এই সক্ষমতাকে প্রতিদিন সচল রাখে।', // Machine translation; pending native-speaker review.
     news: {
       label: 'ফিল্ড নোট, প্রতি মাসে', // Machine translation; pending native-speaker review.
       placeholder: 'you@company.com', // Machine translation; pending native-speaker review.

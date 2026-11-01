@@ -2,8 +2,8 @@
 
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : Locale context for the public site: the active locale (from the URL prefix), <html lang/dir>, hreflang
@@ -12,12 +12,12 @@
  *               useSwitchLocale. Outside a provider everything falls back to English synchronously (unit tests).
  * =============================================================================
  */
-import React, { cloneElement, createContext, isValidElement, useCallback, useContext, useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from '@/shims/router';
-import { DEFAULT_LOCALE, LOCALES, LOCALE_KEY, SITE_ORIGIN, findLocale, localeFontProperties, localizePath, splitLocalePath } from './locales.js';
-import { formatMessage, formatRich, setActiveLocale } from './format.js';
+import React, { cloneElement, createContext, isValidElement, useCallback, useContext, useEffect, useMemo } from 'react';
 import { loadCatalog, lookup, preloadLocale } from './catalog.js';
 import { loadLocaleFonts } from './fonts.js';
+import { formatMessage, formatRich, setActiveLocale } from './format.js';
+import { DEFAULT_LOCALE, LOCALES, LOCALE_KEY, SITE_ORIGIN, findLocale, localeFontProperties, localizePath, splitLocalePath } from './locales.js';
 
 const LocaleContext = createContext(null);
 /** Font custom properties a locale may set on <html> (see localeFontProperties in the locale registry). */

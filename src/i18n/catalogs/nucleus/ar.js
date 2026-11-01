@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : "nucleus" catalog, Arabic (ar) translation of en.js.
@@ -548,11 +548,11 @@ export default {
   },
   footer: {
     label: 'تذييل الموقع', // Machine translation; pending native-speaker review.
-    copyright: '© {year} MKraft Capability Solutions LLP. جميع الحقوق محفوظة.', // Machine translation; pending native-speaker review.
+    copyright: '© {year} Britenz Global Private Limited. جميع الحقوق محفوظة.', // Machine translation; pending native-speaker review.
     big: 'القدرات، مضاعفة.', // Machine translation; pending native-speaker review.
     bookDemo: 'احجز عرضا توضيحيا', // Machine translation; pending native-speaker review.
     brand: 'MultipliersKraft', // Machine translation; pending native-speaker review.
-    about: 'تبني MKraft Capability Solutions LLP القدرات المؤسسية والمنصات القائمة على الذكاء الاصطناعي التي تحافظ على استمراريتها.', // Machine translation; pending native-speaker review.
+    about: 'تبني Britenz Global Private Limited القدرات المؤسسية والمنصات القائمة على الذكاء الاصطناعي التي تحافظ على استمراريتها.', // Machine translation; pending native-speaker review.
     news: {
       label: 'ملاحظات ميدانية شهرية', // Machine translation; pending native-speaker review.
       placeholder: 'you@company.com', // Machine translation; pending native-speaker review.

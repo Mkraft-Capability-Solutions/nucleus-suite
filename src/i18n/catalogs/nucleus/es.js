@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : "nucleus" catalog, Spanish (es) translation of en.js.
@@ -548,11 +548,11 @@ export default {
   },
   footer: {
     label: 'Pie de página', // Machine translation; pending native-speaker review.
-    copyright: '© {year} MKraft Capability Solutions LLP. Todos los derechos reservados.', // Machine translation; pending native-speaker review.
+    copyright: '© {year} Britenz Global Private Limited. Todos los derechos reservados.', // Machine translation; pending native-speaker review.
     big: 'Capacidad, multiplicada.', // Machine translation; pending native-speaker review.
     bookDemo: 'Reservar demo', // Machine translation; pending native-speaker review.
     brand: 'MultipliersKraft', // Machine translation; pending native-speaker review.
-    about: 'MKraft Capability Solutions LLP desarrolla capacidades organizacionales y las plataformas nativas de IA que las mantienen en marcha.', // Machine translation; pending native-speaker review.
+    about: 'Britenz Global Private Limited desarrolla capacidades organizacionales y las plataformas nativas de IA que las mantienen en marcha.', // Machine translation; pending native-speaker review.
     news: {
       label: 'Notas de campo, cada mes', // Machine translation; pending native-speaker review.
       placeholder: 'usted@empresa.com', // Machine translation; pending native-speaker review.

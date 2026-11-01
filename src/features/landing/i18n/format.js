@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : Tiny ICU-style message formatter (no dependencies, React-free): {arg} placeholders, {n, plural, …} with
@@ -175,29 +175,29 @@ function formatNodes(nodes, values, code, renderTag, number) {
    * @param {number} position - Position (React key).
    * @returns {void} Pushes parts.
    */ (node, position) => {
-    if (typeof node === 'string') { parts.push(node); return; }
-    if (node.type === 'pound') { parts.push(number == null ? '#' : formatNumber(number, {}, code)); return; }
-    if (node.type === 'arg') {
-      const value = values?.[node.name];
-      parts.push(value == null ? `{${node.name}}` : typeof value === 'number' ? formatNumber(value, {}, code) : value);
-      return;
-    }
-    if (node.type === 'tag') {
-      const children = formatNodes(node.children, values, code, renderTag, number);
-      if (renderTag) parts.push(renderTag(node.name, children, `${node.name}-${position}`));
-      else parts.push(...children);
-      return;
-    }
-    const raw = values?.[node.name];
-    let branch;
-    if (node.type === 'select') branch = node.options[String(raw)] || node.options.other;
-    else {
-      const value = Number(raw);
-      const category = new Intl.PluralRules(intlLocale(code), { type: node.ordinal ? 'ordinal' : 'cardinal' }).select(value);
-      branch = node.options[`=${value}`] || node.options[category] || node.options.other;
-    }
-    if (branch) parts.push(...formatNodes(branch, values, code, renderTag, node.type === 'plural' ? Number(raw) : number));
-  });
+      if (typeof node === 'string') { parts.push(node); return; }
+      if (node.type === 'pound') { parts.push(number == null ? '#' : formatNumber(number, {}, code)); return; }
+      if (node.type === 'arg') {
+        const value = values?.[node.name];
+        parts.push(value == null ? `{${node.name}}` : typeof value === 'number' ? formatNumber(value, {}, code) : value);
+        return;
+      }
+      if (node.type === 'tag') {
+        const children = formatNodes(node.children, values, code, renderTag, number);
+        if (renderTag) parts.push(renderTag(node.name, children, `${node.name}-${position}`));
+        else parts.push(...children);
+        return;
+      }
+      const raw = values?.[node.name];
+      let branch;
+      if (node.type === 'select') branch = node.options[String(raw)] || node.options.other;
+      else {
+        const value = Number(raw);
+        const category = new Intl.PluralRules(intlLocale(code), { type: node.ordinal ? 'ordinal' : 'cardinal' }).select(value);
+        branch = node.options[`=${value}`] || node.options[category] || node.options.other;
+      }
+      if (branch) parts.push(...formatNodes(branch, values, code, renderTag, node.type === 'plural' ? Number(raw) : number));
+    });
   return parts;
 }
 
@@ -251,11 +251,11 @@ export function messageTokens(message) {
    * @param {string|object} node - Node.
    * @returns {void} Adds tokens.
    */ (node) => {
-    if (typeof node === 'string' || node.type === 'pound') return;
-    if (node.type === 'tag') { tokens.add(`<${node.name}>`); walk(node.children); return; }
-    tokens.add(`{${node.name}}`);
-    if (node.options) Object.values(node.options).forEach(walk);
-  });
+      if (typeof node === 'string' || node.type === 'pound') return;
+      if (node.type === 'tag') { tokens.add(`<${node.name}>`); walk(node.children); return; }
+      tokens.add(`{${node.name}}`);
+      if (node.options) Object.values(node.options).forEach(walk);
+    });
   walk(parseMessage(message));
   return [...tokens].sort();
 }

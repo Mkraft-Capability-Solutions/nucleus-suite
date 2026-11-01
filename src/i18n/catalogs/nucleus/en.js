@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * Company     : MKraft Capability Solutions LLP
- * Copyright   : Copyright (c) 2026 MKraft Capability Solutions LLP
+ * Company     : Britenz Global Private Limited
+ * Copyright   : Copyright (c) 2026 Britenz Global Private Limited
  * Author      : Dhanraj Dadhich
  * Reviewed By : Dhanraj Dadhich
  * Description : "nucleus" catalog, English source of truth for the /nucleus page (Nucleus HRMS landing).
@@ -564,11 +564,11 @@ export default {
   },
   footer: {
     label: 'Site footer',
-    copyright: '© {year} MKraft Capability Solutions LLP. All rights reserved.',
+    copyright: '© {year} Britenz Global Private Limited. All rights reserved.',
     big: 'Capability, multiplied.',
     bookDemo: 'Book a demo',
     brand: 'MultipliersKraft',
-    about: 'MKraft Capability Solutions LLP builds organisational capability and the AI-native platforms that keep it running.',
+    about: 'Britenz Global Private Limited builds organisational capability and the AI-native platforms that keep it running.',
     news: {
       label: 'Field notes, monthly',
       placeholder: 'you@company.com',
