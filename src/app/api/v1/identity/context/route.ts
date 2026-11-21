@@ -9,7 +9,7 @@ import {
 import { recordAudit } from "@/server/platform/access";
 import { requestIdFrom } from "@/server/platform/http";
 
-const ACTIVE_TENANT_COOKIE = "mkraft_active_tenant";
+import { ACTIVE_TENANT_COOKIE } from "@/server/identity/active-tenant";
 const bodySchema = z.object({ tenantId: z.uuid() });
 const headers = { "cache-control": "no-store" };
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const context = await resolveAuthorizationContext(request.headers, parsed.data.tenantId);
+    const context = await resolveAuthorizationContext(request.headers, parsed.data.tenantId, { strict: true });
     const response = NextResponse.json({ context }, { headers });
     response.cookies.set(ACTIVE_TENANT_COOKIE, context.tenantId, {
       httpOnly: true,

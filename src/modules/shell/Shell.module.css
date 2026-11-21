@@ -1,0 +1,115 @@
+/* Redesigned shell: top bar, quick actions, profile menu. Every rule is used inside .scope. */
+
+.topBar {
+  position: relative; z-index: 90; flex-shrink: 0; width: 100%; height: 60px;
+  display: flex; align-items: center; gap: var(--hr-space-4); padding: 0 var(--hr-space-6);
+  background: var(--shell-frame, var(--hr-surface)); border-bottom: 0;
+}
+
+/* Search: the widest element, first in reading order. */
+.searchWrap { position: relative; flex: 1 1 auto; max-width: 640px; min-width: 0; display: flex; align-items: center; }
+.searchIcon { position: absolute; left: 12px; width: 16px; height: 16px; color: var(--hr-text-3); pointer-events: none; }
+.searchInput {
+  width: 100%; height: 40px; padding: 0 72px 0 38px; border: 1px solid var(--hr-border-strong); border-radius: var(--hr-radius-md);
+  background: var(--hr-surface); color: var(--hr-text); font-size: var(--hr-text-md);
+}
+.searchInput:focus { outline: none; background: var(--hr-surface); border-color: var(--hr-accent-strong); box-shadow: 0 0 0 3px var(--hr-accent-soft); }
+.searchInput::-webkit-search-cancel-button { cursor: pointer; }
+.kbd, .shortcuts kbd {
+  font-family: var(--hr-font); font-size: 11px; line-height: 1; padding: 3px 6px; border-radius: var(--hr-radius-sm);
+  border: 1px solid var(--hr-border-strong); background: var(--hr-surface); color: var(--hr-text-3);
+}
+.kbd { position: absolute; right: 10px; pointer-events: none; }
+.results {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 1000; list-style: none; margin: 0; padding: var(--hr-space-1);
+  background: var(--hr-surface); border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); box-shadow: var(--hr-shadow-pop);
+  max-height: 360px; overflow-y: auto;
+}
+.result { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: var(--hr-space-3); padding: var(--hr-space-2) var(--hr-space-3); border: 0; border-radius: var(--hr-radius-md); background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.result:hover, .result:focus-visible { background: var(--hr-surface-hover); }
+.resultText { display: flex; flex-direction: column; min-width: 0; flex: 1; text-align: left; }
+.resultTitle { font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resultSub { font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.resultType { font-size: var(--hr-text-xs); color: var(--hr-text-3); text-transform: capitalize; flex-shrink: 0; }
+
+/* Actions: few, quiet, same size. */
+.barActions { display: flex; align-items: center; gap: var(--hr-space-1); margin-left: auto; flex-shrink: 0; }
+.iconTrigger { position: relative; width: 36px; padding: 0; }
+/* Shown while the screens panel is hidden; the panel does not exist on phones. */
+.showScreens { flex-shrink: 0; }
+@media (max-width: 640px) { .showScreens { display: none; } }
+.iconTrigger[aria-pressed="true"] { background: var(--hr-accent-soft); color: var(--hr-accent-text); }
+.count {
+  position: absolute; top: 2px; right: 0; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px;
+  background: var(--hr-danger); color: #fff; font-size: 10px; font-weight: var(--hr-weight-semibold); line-height: 16px; text-align: center;
+}
+
+.menuWide { min-width: 300px; max-width: min(360px, calc(100vw - 24px)); }
+.menuHeading { padding: var(--hr-space-2) var(--hr-space-3); font-size: var(--hr-text-xs); font-weight: var(--hr-weight-semibold); color: var(--hr-text-3); }
+.menuEmpty { padding: var(--hr-space-3); font-size: var(--hr-text-sm); color: var(--hr-text-3); }
+.notification { align-items: flex-start; padding-top: var(--hr-space-2); padding-bottom: var(--hr-space-2); }
+.unreadDot { width: 8px; height: 8px; border-radius: 50%; background: var(--hr-accent-strong); margin-top: 6px; flex-shrink: 0; }
+
+/* Profile */
+.profileTrigger {
+  display: inline-flex; align-items: center; justify-content: flex-start; gap: var(--hr-space-2); margin-left: var(--hr-space-2);
+  padding: 2px var(--hr-space-2) 2px 2px; border: 1px solid transparent; border-radius: 999px; background: none; color: inherit; font: inherit; cursor: pointer;
+}
+.profileTrigger:hover { background: var(--hr-surface); }
+/* On the tinted frame the avatar needs a solid fill to read as a circle. */
+.profileTrigger > span:first-child { background: var(--hr-accent-strong); color: var(--hr-surface); }
+.profileText { display: flex; flex-direction: column; text-align: left; min-width: 0; max-width: 160px; }
+.profileName { font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profileOrg { font-size: var(--hr-text-xs); color: var(--hr-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.profilePanel { width: 320px; max-width: calc(100vw - 24px); display: flex; flex-direction: column; gap: 2px; padding: var(--hr-space-2); }
+.profileHead { display: flex; align-items: center; gap: var(--hr-space-3); padding: var(--hr-space-2); }
+.profileField { display: flex; flex-direction: column; gap: 4px; padding: var(--hr-space-2); font-size: var(--hr-text-xs); font-weight: var(--hr-weight-semibold); color: var(--hr-text-2); }
+.profileSection { padding: 0; }
+.swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--hr-space-1); }
+.swatch {
+  display: flex; align-items: center; justify-content: flex-start; gap: 6px; height: 32px; padding: 0 var(--hr-space-2);
+  border: 1px solid var(--hr-border-strong); border-radius: var(--hr-radius-md); background: var(--hr-surface);
+  color: var(--hr-text); font: inherit; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); cursor: pointer;
+}
+.swatch:hover { background: var(--hr-surface-hover); }
+.swatch[aria-checked="true"] { border-color: var(--hr-accent-strong); box-shadow: 0 0 0 1px var(--hr-accent-strong); background: var(--hr-accent-wash); }
+.swatchDot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; box-shadow: inset 0 0 0 1px rgb(16 24 40 / 0.18); }
+.profilePanel a.menuItem, .profilePanel a { text-decoration: none; }
+.shortcuts { display: flex; align-items: center; gap: var(--hr-space-2); padding: var(--hr-space-2) var(--hr-space-3); font-size: var(--hr-text-xs); color: var(--hr-text-3); }
+
+/* Quick actions on the dashboard */
+.quickBar { display: flex; align-items: center; gap: var(--hr-space-3); flex-wrap: wrap; }
+.quickTitle { font-size: var(--hr-text-sm); font-weight: var(--hr-weight-semibold); color: var(--hr-text-2); white-space: nowrap; }
+.quickList { display: flex; flex-wrap: wrap; gap: var(--hr-space-2); }
+/* The action's icon carries the brand colour; the label stays in text ink. */
+.quickList > button:not(:last-child) svg { color: var(--hr-accent-strong); }
+/* Quick actions are chips: pill-shaped, lighter than the page's buttons. */
+.quickList > button { border-radius: 999px; padding: 0 14px; }
+
+/* Customise drawer */
+.customise { padding: var(--hr-space-4) var(--hr-space-5); display: flex; flex-direction: column; gap: var(--hr-space-3); }
+.customiseCount { font-size: var(--hr-text-sm); color: var(--hr-text-2); }
+.customiseList { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); }
+.customiseList li + li { border-top: 1px solid var(--hr-border); }
+.customiseRow { display: flex; align-items: center; gap: var(--hr-space-3); min-height: 48px; padding: 0 var(--hr-space-4); cursor: pointer; font-size: var(--hr-text-md); }
+.customiseRow input { width: 16px; height: 16px; accent-color: var(--hr-accent-strong); }
+.customiseRow svg { color: var(--hr-text-3); }
+.customiseDisabled { opacity: 0.5; cursor: not-allowed; }
+.customiseOrder { margin-left: auto; min-width: 22px; height: 22px; border-radius: 11px; background: var(--hr-accent-soft); color: var(--hr-accent-text); font-size: var(--hr-text-xs); font-weight: var(--hr-weight-semibold); display: inline-flex; align-items: center; justify-content: center; }
+
+/* The side menu is hidden on phones (LeftDock, 640px): the all-modules button takes its place. */
+.showNarrow { display: none; }
+@media (max-width: 640px) { .showNarrow { display: inline-flex; } }
+
+@media (max-width: 1023px) {
+  .topBar { padding: 0 var(--hr-space-4); gap: var(--hr-space-2); }
+  .profileText, .kbd { display: none; }
+  .searchInput { padding-right: 12px; }
+}
+@media (max-width: 767px) {
+  .quickBar { flex-wrap: nowrap; align-items: flex-start; flex-direction: column; gap: var(--hr-space-2); }
+  .quickList { flex-wrap: nowrap; overflow-x: auto; width: 100%; padding-bottom: 4px; scrollbar-width: thin; }
+  .quickList > * { flex-shrink: 0; }
+  .barActions { gap: 0; }
+  .profileTrigger { margin-left: 0; padding: 2px; }
+}

@@ -14,10 +14,12 @@ import {
 } from 'lucide-react';
 import styles from './PeopleCoreView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
+import { useAuth } from '@/context/AuthContext';
 import { launchAction } from '@/lib/action-launcher';
 import { getWorkbookRowsForModule, recordCellValue } from '@/lib/demo-workbook-adapter.mjs';
 import EmployeeCreationWizard from './EmployeeCreationWizard';
 import EmployeeDossierModal from './EmployeeDossierModal';
+import GroupStructurePanel from '@/components/People/GroupStructurePanel';
 import BulkOnboardingModal from './BulkOnboardingModal';
 import LegalEntityModal from './LegalEntityModal';
 import LocationMasterModal from './LocationMasterModal';
@@ -26,6 +28,7 @@ import { downloadCSV } from '@/utils/exportUtils';
 import TablePagination from '../Common/TablePagination';
 
 const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
+    const { isEntitled, tenantAccess } = useAuth();
   const { t } = useTranslation();
     const {t: translateText}=useTranslation();
 
@@ -99,12 +102,12 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
                     const dbPeople = json.data.map(item => ({
                         id: item.employeeCode || item.id,
                         name: `${item.firstName || ''} ${item.lastName || ''}`.trim() || 'Employee',
-                        role: item.designation || 'Specialist',
-                        dept: item.department || 'Operations',
-                        manager: 'Rajesh Varma',
-                        location: item.location || 'Bangalore Plant',
-                        status: item.status || 'Active',
-                        band: item.category || 'Regular',
+                        role: item.designation || '',
+                        dept: item.department || '',
+                        manager: item.managerName || item.manager || '',
+                        location: item.location || '',
+                        status: item.status || 'active',
+                        band: item.category || '',
                         details: item
                     }));
                     setCustomEmployees(prev => {
@@ -129,16 +132,45 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
         fetchDbEmployees();
         return () => { active = false; };
     }, []);
-    const [entitiesList, setEntitiesList] = useState([
+    // Legal entities and locations come from the organisation's own records. The sample rows are
+    // shown only to organisations with Administration › Sample data switched on.
+    const SAMPLE_ENTITIES = [
         { entityCode: 'ENT-NUC', registeredName: 'Nucleus HR Solutions India Pvt Ltd', entityType: 'Private Limited', cinLlpin: 'U72900KA2024PTC123456', entityPan: 'AAACN1234F', tan: 'BLRN12345E', status: 'Active', effectiveFrom: '2024-04-01' },
         { entityCode: 'ENT-GLB', registeredName: 'Nucleus Global Holdings Inc', entityType: 'Public Limited', cinLlpin: 'U72900DL2022PLC998877', entityPan: 'BBBCN9988G', tan: 'DELN99887F', status: 'Active', effectiveFrom: '2022-01-15' }
-    ]);
-    const [locationsList, setLocationsList] = useState([
+    ];
+    const SAMPLE_LOCATIONS = [
         { locationCode: 'LOC-BLR-01', locationName: 'Bangalore Electronic City Plant 1', entityCode: 'ENT-NUC', locationType: 'Plant', stateCode: 'KA', timeZone: 'Asia/Kolkata', status: 'Active' },
         { locationCode: 'LOC-MUM-01', locationName: 'Mumbai BKC Corporate HQ', entityCode: 'ENT-NUC', locationType: 'Corporate Office', stateCode: 'MH', timeZone: 'Asia/Kolkata', status: 'Active' },
         { locationCode: 'LOC-DEL-01', locationName: 'Delhi Logistics & Warehouse Hub', entityCode: 'ENT-GLB', locationType: 'Warehouse', stateCode: 'DL', timeZone: 'Asia/Kolkata', status: 'Active' }
-    ]);
+    ];
+    const showSampleData = isEntitled('administration.sample_data') && Boolean(tenantAccess);
+    const [savedEntities, setEntitiesList] = useState([]);
+    const [savedLocations, setLocationsList] = useState([]);
+    const [orgEntities, setOrgEntities] = useState([]);
+    const [orgLocations, setOrgLocations] = useState([]);
+    useEffect(() => {
+        let active = true;
+        fetch('/api/v1/people/directory', { cache: 'no-store' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((json) => {
+                if (!active || !json?.data) return;
+                setOrgEntities((json.data.legalEntities ?? []).map((row) => ({
+                    entityCode: row.code, registeredName: row.legal_name, entityType: '', cinLlpin: '', entityPan: '', tan: '',
+                    status: row.status === 'active' ? 'Active' : row.status, effectiveFrom: '',
+                })));
+                setOrgLocations((json.data.locations ?? []).map((row) => ({
+                    locationCode: row.code, locationName: row.name, entityCode: '', locationType: row.establishment_type ?? '',
+                    stateCode: row.state ?? '', timeZone: '', status: 'Active',
+                })));
+            })
+            .catch(() => {});
+        return () => { active = false; };
+    }, []);
+    const entitiesList = [...savedEntities, ...orgEntities, ...(showSampleData ? SAMPLE_ENTITIES : [])];
+    const locationsList = [...savedLocations, ...orgLocations, ...(showSampleData ? SAMPLE_LOCATIONS : [])];
 
+    // Demo employees from the sample workbook; the server sends an empty workbook unless the
+    // organisation has sample data switched on.
     const workbookEmployees = useMemo(() => getWorkbookRowsForModule('person_record').map((record) => ({
         id: record.source['Employee code'],
         name: record.source['Full name'],
@@ -807,6 +839,7 @@ const PeopleCoreView = ({ onNavigate, onSelectConsole, activeSubFeature }) => {
             )}
 
             {/* Section: Legal Entities Master (SCR-001) */}
+            {activeSection === 'entities' && isEntitled('people.legal_entities.group_structure') && <GroupStructurePanel />}
             {activeSection === 'entities' && (
                 <div className={styles.card}>
                     <div className={styles.cardHeader}>

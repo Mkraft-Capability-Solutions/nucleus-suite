@@ -315,8 +315,24 @@ export const createPersonSchema = z.object({
   location: z.string().trim().min(1).max(80).default("Head Office"),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+  /** Reporting manager (an employee of the same organisation). Optional; additive. */
+  managerEmployeeId: z.string().uuid().optional(),
   ...personProfileShape,
 }).passthrough().superRefine(applyPersonProfileRules);
+
+/** A reporting manager must be an employee of the same organisation (and not the employee). */
+async function assertManager(access: Access, managerEmployeeId: string | undefined | null, employeeId: string | null) {
+  if (!managerEmployeeId) return;
+  if (managerEmployeeId === employeeId) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "An employee cannot report to themselves." });
+  }
+  const [rows] = await tenantTx(access, [
+    sqlClient`select 1 from employees where tenant_id = ${access.tenantId} and id = ${managerEmployeeId} limit 1`,
+  ]);
+  if ((rows as unknown[]).length === 0) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "The reporting manager is not an employee of this organisation." });
+  }
+}
 
 /** Single-person creation (the Add Person form). Enforced by employee.write, audited. */
 export async function createPerson(access: Access, input: z.infer<typeof createPersonSchema>, requestId: string) {
@@ -330,6 +346,7 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
   }
   const personId = randomUUID();
   const employeeId = randomUUID();
+  await assertManager(access, input.managerEmployeeId, employeeId);
   const joining = input.joiningDate ?? new Date().toISOString().slice(0, 10);
   const metadata = personProfileMetadata(input as Record<string, unknown>, { firstName: input.firstName, lastName: input.lastName });
 
@@ -392,7 +409,7 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
         is_trainee, trainee_type, biometric_enrol_id, access_card_no, locker_no,
         bank_account_no, bank_ifsc, bank_name, pan_number, aadhaar_last4, uan, esic_number,
         date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
-        metadata
+        manager_employee_id, metadata
       ) values (
         ${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${workEmail},
         ${input.designation}, ${input.department}, ${input.location}, ${mappedCategory}, ${payrollOwner}, ${joining}, ${status},
@@ -400,7 +417,7 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
         ${isTrainee}, ${traineeType}, ${biometricEnrolId}, ${accessCardNo}, ${lockerNo},
         ${bankAccountNo}, ${bankIfsc}, ${bankName}, ${panNumber}, ${aadhaarLast4}, ${uan}, ${esicNumber},
         ${dateOfBirth ? dateOfBirth : null}, ${emergencyName}, ${emergencyPhone}, ${emergencyRelation},
-        ${JSON.stringify(metadata)}::jsonb
+        ${input.managerEmployeeId ?? null}, ${JSON.stringify(metadata)}::jsonb
       )
     `,
     sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, ...metadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
@@ -432,6 +449,8 @@ export const updatePersonSchema = z.object({
   status: z.string().trim().max(40).optional(),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+  /** Reporting manager; null clears it, absent leaves it unchanged. Additive. */
+  managerEmployeeId: z.string().uuid().nullable().optional(),
 }).passthrough();
 
 /** Update existing employee in database. Enforced by employee.write, audited. */
@@ -468,6 +487,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
   const newJoiningDate = input.joiningDate ?? current.joining_date;
   const newStatus = input.status ?? current.status;
   const newSalary = input.basicSalaryMinor !== undefined ? input.basicSalaryMinor : current.basic_salary_minor;
+  await assertManager(access, input.managerEmployeeId, current.id);
   
   const existingMetadata = (typeof current.metadata === "object" && current.metadata) ? current.metadata : {};
   const updatedMetadata = personProfileMetadata(
@@ -539,6 +559,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
           emergency_contact_name = ${emergencyName},
           emergency_contact_phone = ${emergencyPhone},
           emergency_contact_relation = ${emergencyRelation},
+          manager_employee_id = case when ${input.managerEmployeeId === undefined}::boolean then manager_employee_id else ${input.managerEmployeeId ?? null}::uuid end,
           metadata = ${JSON.stringify(updatedMetadata)}::jsonb,
           updated_at = clock_timestamp()
       where tenant_id = ${access.tenantId} and id = ${current.id}

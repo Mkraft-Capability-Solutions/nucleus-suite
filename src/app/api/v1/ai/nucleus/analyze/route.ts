@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { denyWithoutAccess } from '@/server/platform/route-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,8 @@ export const dynamic = 'force-dynamic';
  * matching enterprise standards.
  */
 export async function POST(request: Request) {
+  const denied = await denyWithoutAccess(request);
+  if (denied) return denied;
   try {
     const { tool, args } = await request.json() as { tool: string; args: Record<string, unknown>; runId?: string };
 

@@ -214,3 +214,28 @@
  .demoNotice{padding-bottom:env(safe-area-inset-bottom);font-size:10px;line-height:16px}
  .mainContainer{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
 }
+
+/* Redesigned shell: no environment banner or floating buttons, so no space is kept for them. */
+.mainContainer[data-shell="redesigned"] { padding-bottom: 0; }
+/*
+ * Redesigned shell: a frame (side rail + top bar, one tinted surface, no dividing lines) around a
+ * content card with a rounded inner corner at the top left. The frame follows the accent colour
+ * (html[data-accent], src/lib/accent.ts); the rail and top bar read --shell-frame.
+ */
+.mainContainer[data-shell="redesigned"] {
+  --shell-frame: #eceef8; --shell-content: #f7f8fc; --shell-line: #dfe2ee;
+  background: var(--shell-frame);
+}
+:global(html[data-accent="red"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #f6eeef; --shell-line: #ecdcde; }
+:global(html[data-accent="sky"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #e7f0fa; --shell-line: #d6e3f3; }
+:global(html[data-theme="dark"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #0a0e1c; --shell-content: #0e1422; --shell-line: #222b3d; }
+:global(html[data-theme="dark"][data-accent="red"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #130b0d; }
+:global(html[data-theme="dark"][data-accent="sky"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #08111c; }
+.mainContainer[data-shell="redesigned"] .bodyLayout {
+  background: var(--shell-content);
+  border-top: 1px solid var(--shell-line); border-left: 1px solid var(--shell-line);
+  border-top-left-radius: 16px;
+}
+@media (max-width: 640px) {
+  .mainContainer[data-shell="redesigned"] .bodyLayout { border-left: 0; border-top-left-radius: 0; }
+}

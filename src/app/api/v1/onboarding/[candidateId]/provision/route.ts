@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OnboardingService } from '@/server/onboarding/application/onboardingService';
-import { auth } from '@/lib/auth';
+import { enforce, requireAccess } from '@/server/platform/access';
+import { fail, requestIdFrom } from '@/server/platform/http';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ candidateId: string }> }) {
   try {
     const { candidateId } = await params;
-    const session = await auth.api.getSession({
-      headers: req.headers
-    });
-    
-    const tenantId = (session?.user as any)?.tenantId || 'tenant_default_123';
+    const access = await requireAccess(req);
+    enforce(access.context, 'employee.write', { tenantId: access.tenantId });
+    const tenantId = access.tenantId;
     const { item, isProvisioned } = await req.json();
     
     const candidate = await OnboardingService.toggleITProvisionItem(tenantId, candidateId, item, isProvisioned);
@@ -20,7 +19,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ can
     
     return NextResponse.json({ candidate });
   } catch (error) {
-    console.error('[Onboarding Provision POST Error]:', error);
+    if ((error as { status?: number })?.status) return fail(error, requestIdFrom(req.headers));
+    console.error('[Onboarding Provision POST Error]:', (error as { code?: string })?.code ?? 'UNKNOWN');
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

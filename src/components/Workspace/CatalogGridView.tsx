@@ -14,9 +14,9 @@ type CatalogGridViewProps = {
 const CatalogGridView = ({ onSelectFeature, searchQuery = '' }: CatalogGridViewProps) => {
     const [filterCategory, setFilterCategory] = useState(readData("components.Workspace.CatalogGridView", "initialState_1"));
 
-    const { user, isModuleAllowed, isConsoleAllowed } = useAuth();
+    const { user, isModuleAllowed, isConsoleAllowed, isNavItemEnabled } = useAuth();
     const catalogCards = getNavigationDomains().flatMap(domain => domain.groups.flatMap(group => group.items
-        .filter(item => canViewNavigationItem(item, isModuleAllowed, user) && (!/^s(10|[1-9])$/i.test(item.id) || isConsoleAllowed(item.id.toUpperCase(), user?.role)))
+        .filter(item => canViewNavigationItem(item, isModuleAllowed, user, isNavItemEnabled) && (!/^s(10|[1-9])$/i.test(item.id) || isConsoleAllowed(item.id.toUpperCase(), user?.role)))
         .map(item => ({ ...item, title: item.label, desc: item.desc || group.heading, domain: domain.id, tag: domain.label, iconColor: 'var(--signal)' }))));
     const categories = ['ALL', ...getNavigationDomains().map(domain => domain.label)];
 

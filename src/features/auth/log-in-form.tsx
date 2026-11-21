@@ -29,6 +29,22 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Where a successful log in lands. */
 const AFTER_LOG_IN_PATH = '/workspace';
 
+/**
+ * Where to go after signing in: a same-origin `callbackUrl`, the platform console for a platform
+ * administrator who belongs to no organisation, otherwise the workspace.
+ */
+function destinationAfterLogIn(): string {
+  const callback = new URLSearchParams(window.location.search).get('callbackUrl');
+  if (callback && callback.startsWith('/') && !callback.startsWith('//') && !callback.startsWith('/\\')) return callback;
+  try {
+    const user = JSON.parse(localStorage.getItem('nucleus_user') || 'null') as { platformAdmin?: boolean; tenantId?: string | null } | null;
+    if (user?.platformAdmin && !user.tenantId) return '/platform';
+  } catch {
+    // Cached profile unreadable: fall through to the workspace.
+  }
+  return AFTER_LOG_IN_PATH;
+}
+
 interface FieldErrors {
   readonly email?: AuthKey;
   readonly password?: AuthKey;
@@ -85,7 +101,7 @@ export function LogInForm({ onBusyChange }: LogInFormProps): ReactNode {
     if (outcome.kind === 'success') {
       // Stay busy: the scene keeps revolving through the workspace loading state until the page has loaded.
       setStatus(t('status.signedIn'));
-      router.push(AFTER_LOG_IN_PATH);
+      router.push(destinationAfterLogIn());
       return;
     }
     setSubmitting(false);

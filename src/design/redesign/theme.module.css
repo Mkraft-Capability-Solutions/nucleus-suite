@@ -1,0 +1,175 @@
+/*
+ * Redesign tokens, shared by every redesigned module. Defined on the module root only (.scope): nothing here reaches other
+ * modules. The classic token names are re-pointed inside the scope so shared components embedded
+ * in the module (career history, group structure) take the redesigned palette without edits.
+ */
+.scope {
+  /* Typography */
+  --hr-font: var(--font-ui-face, "Inter Variable"), "Inter Variable", Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --hr-text-xs: 12px;   --hr-lh-xs: 16px;
+  --hr-text-sm: 13px;   --hr-lh-sm: 18px;
+  --hr-text-md: 14px;   --hr-lh-md: 20px;
+  --hr-text-lg: 16px;   --hr-lh-lg: 24px;
+  --hr-text-xl: 20px;   --hr-lh-xl: 28px;
+  --hr-weight-regular: 400; --hr-weight-medium: 500; --hr-weight-semibold: 600;
+
+  /* Spacing */
+  --hr-space-1: 4px; --hr-space-2: 8px; --hr-space-3: 12px; --hr-space-4: 16px;
+  --hr-space-5: 20px; --hr-space-6: 24px; --hr-space-7: 32px; --hr-space-8: 40px;
+
+  /* Radius, borders, elevation */
+  --hr-radius-sm: 4px; --hr-radius-md: 6px; --hr-radius-lg: 8px;
+  --hr-shadow-pop: 0 8px 24px rgb(15 23 42 / 0.12), 0 2px 6px rgb(15 23 42 / 0.08);
+
+  /* Component dimensions */
+  --hr-control-h: 36px; --hr-row-h: 44px; --hr-icon: 16px; --hr-drawer-w: 760px;
+
+  /* Colour: light */
+  /* Neutrals carry a faint cool (brand) tint so the interface is not flat grey. */
+  --hr-bg: #f4f5fa;
+  --hr-surface: #ffffff;
+  --hr-surface-2: #f8f9fc;
+  --hr-surface-hover: #f0f2f9;
+  --hr-surface-selected: #eef0fd;
+  --hr-border: #e2e5ef;
+  --hr-border-strong: #ccd1de;
+  --hr-text: #101828;
+  --hr-text-2: #475467;
+  --hr-text-3: #667085;
+  --hr-accent: #4338ca;
+  --hr-accent-hover: #3730a3;
+  --hr-accent-soft: #eef0fd;
+  --hr-accent-text: #3730a3;
+  --hr-accent-strong: #4338ca;   /* the accent as a line or icon on a light surface */
+  --hr-accent-2: #0284c7;        /* gradient partner: highlighted text and the page's key item */
+  --hr-accent-wash: #f7f8ff;     /* the lightest brand tint: highlighted panels */
+  --hr-accent-line: #dcdffb;     /* border of a brand-tinted surface */
+  --hr-rail-bg: #eef0fb;         /* the side menu rail */
+  --hr-on-accent: #ffffff;
+  --hr-focus: #4338ca;
+  --hr-success: #067647; --hr-success-soft: #ecfdf3;
+  --hr-warning: #b54708; --hr-warning-soft: #fffaeb;
+  --hr-danger: #b42318;  --hr-danger-soft: #fef3f2;
+  --hr-info: #175cd3;    --hr-info-soft: #eff8ff;
+  --hr-neutral: #475467; --hr-neutral-soft: #f2f4f7;
+  --hr-overlay: rgb(16 24 40 / 0.45);
+
+  /* Classic names, re-pointed inside the scope only */
+  --card: var(--hr-surface);
+  --card-2: var(--hr-surface-2);
+  --surface-2: var(--hr-surface-2);
+  --line: var(--hr-border);
+  --line-glow: var(--hr-accent);
+  --text: var(--hr-text);
+  --text-2: var(--hr-text-2);
+  --text-3: var(--hr-text-3);
+  --signal: var(--hr-accent);
+  --signal-ink: var(--hr-accent-text);
+  --signal-wash: var(--hr-accent-soft);
+  --on-signal: var(--hr-on-accent);
+  --flag: var(--hr-danger);
+  --flag-wash: var(--hr-danger-soft);
+  --status-ok-ink: var(--hr-success);
+  --status-ok-wash: var(--hr-success-soft);
+
+  font-family: var(--hr-font);
+  font-size: var(--hr-text-md);
+  line-height: var(--hr-lh-md);
+  color: var(--hr-text);
+  font-feature-settings: "cv11", "ss01";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* The module's own root (not portalled popups, which position themselves). */
+.root { width: 100%; min-width: 0; }
+
+:global(html[data-theme="dark"]) .scope {
+  --hr-bg: #0c111d;
+  --hr-surface: #111827;
+  --hr-surface-2: #161f2e;
+  --hr-surface-hover: #1d2939;
+  --hr-surface-selected: #1e2350;
+  --hr-border: #26303f;
+  --hr-border-strong: #344054;
+  --hr-text: #f2f4f7;
+  --hr-text-2: #c4cad4;
+  --hr-text-3: #98a2b3;
+  --hr-accent: #8098f9;
+  --hr-accent-hover: #a4bcfd;
+  --hr-accent-soft: #1e2350;
+  --hr-accent-text: #c7d2fe;
+  --hr-accent-strong: #8098f9;
+  --hr-accent-2: #38bdf8;
+  --hr-accent-wash: #151a33;
+  --hr-accent-line: #2b3266;
+  --hr-rail-bg: #0f1428;
+  --hr-on-accent: #0c111d;
+  --hr-focus: #a4bcfd;
+  --hr-success: #47cd89; --hr-success-soft: #0f2f22;
+  --hr-warning: #fdb022; --hr-warning-soft: #36260a;
+  --hr-danger: #f97066;  --hr-danger-soft: #3b1513;
+  --hr-info: #84caff;    --hr-info-soft: #102a4c;
+  --hr-neutral: #c4cad4; --hr-neutral-soft: #1d2939;
+  --hr-overlay: rgb(0 0 0 / 0.6);
+  --hr-shadow-pop: 0 8px 24px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+/*
+ * Accent colours (profile menu → Colour; html[data-accent], src/lib/accent.ts). Each sets the
+ * same tokens in light and dark. --hr-accent is the fill (primary buttons, the selected rail
+ * item) with --hr-on-accent on it; --hr-accent-strong is the accent as a line or icon, kept dark
+ * enough to read on white even when the fill itself is pale (Sky).
+ */
+:global(html[data-accent="red"]) .scope {
+  --hr-accent: #e50914; --hr-accent-hover: #c4070f; --hr-on-accent: #ffffff;
+  --hr-accent-soft: #fdeced; --hr-accent-text: #b1060f; --hr-accent-strong: #e50914; --hr-accent-2: #e8590c;
+  --hr-accent-wash: #fff8f8; --hr-accent-line: #f6d3d5; --hr-rail-bg: #fdf1f1;
+  --hr-surface-selected: #fdeced; --hr-focus: #c4070f;
+}
+:global(html[data-theme="dark"][data-accent="red"]) .scope {
+  --hr-accent: #ff4d55; --hr-accent-hover: #ff6970; --hr-on-accent: #1a0507;
+  --hr-accent-soft: #3b1417; --hr-accent-text: #ffb4b8; --hr-accent-strong: #ff5c63; --hr-accent-2: #ff9a5c;
+  --hr-accent-wash: #1f1012; --hr-accent-line: #4a1d21; --hr-rail-bg: #160c0e;
+  --hr-surface-selected: #3b1417; --hr-focus: #ff8a90;
+}
+:global(html[data-accent="sky"]) .scope {
+  --hr-accent: #cce5ff; --hr-accent-hover: #b5d8ff; --hr-on-accent: #0a3a6b;
+  --hr-accent-soft: #e3f0ff; --hr-accent-text: #0b4f8a; --hr-accent-strong: #1d6fc0; --hr-accent-2: #0e7490;
+  --hr-accent-wash: #f5faff; --hr-accent-line: #cfe3fa; --hr-rail-bg: #eaf4ff;
+  --hr-surface-selected: #e3f0ff; --hr-focus: #1d6fc0;
+}
+:global(html[data-theme="dark"][data-accent="sky"]) .scope {
+  --hr-accent: #cce5ff; --hr-accent-hover: #e3f0ff; --hr-on-accent: #0a2540;
+  --hr-accent-soft: #12263d; --hr-accent-text: #cce5ff; --hr-accent-strong: #8cc4ff; --hr-accent-2: #67e8f9;
+  --hr-accent-wash: #0d1828; --hr-accent-line: #1f3b5e; --hr-rail-bg: #0a1420;
+  --hr-surface-selected: #12263d; --hr-focus: #8cc4ff;
+}
+
+.scope *, .scope *::before, .scope *::after { box-sizing: border-box; }
+.scope h1, .scope h2, .scope h3, .scope h4, .scope p { margin: 0; font-family: var(--hr-font); }
+.scope button, .scope input, .scope select, .scope textarea { font-family: var(--hr-font); }
+.scope :focus-visible { outline: 2px solid var(--hr-focus); outline-offset: 2px; }
+
+@media (max-width: 767px) {
+  .scope { --hr-control-h: 40px; --hr-drawer-w: 100vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scope *, .scope *::before, .scope *::after { transition: none !important; animation: none !important; }
+}
+
+/*
+ * Neutralise the classic global control rules (globals.css) inside the module only. They use
+ * attribute selectors with high specificity, so these resets carry an id in :not() to outrank them.
+ */
+.scope :is(input, select, textarea):not(#hr-scope) { font-size: var(--hr-text-md); min-height: 0; }
+.scope textarea:not(#hr-scope) { min-height: 80px; }
+.scope button:not(#hr-scope) { text-align: inherit; line-height: inherit; }
+.scope button:hover:not(:disabled):not(#hr-scope) { filter: none; }
+.scope button:active:not(:disabled):not(#hr-scope) { transform: none; }
+.scope button > span:not(#hr-scope) { overflow: visible; }
+@media (max-width: 767px) {
+  /* 16px stops mobile browsers zooming into a focused field. */
+  .scope :is(input, select, textarea):not(#hr-scope) { font-size: 16px; }
+}

@@ -1,0 +1,354 @@
+/* Platform console. Plain and token-driven; restyled in the UI/UX phase. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px 48px;
+  font-family: var(--f-ui, Inter, system-ui, sans-serif);
+  color: var(--ink, #101828);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.subTitle {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.muted {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--ink-2, #475467);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.sidebar,
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line, #e4e7ec);
+  border-radius: var(--r-card, 8px);
+  background: var(--card, #fff);
+  min-width: 0;
+}
+
+.main {
+  min-width: 0;
+}
+
+.sidebarHeader,
+.tenantHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tenantList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tenantButton {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--r-control, 6px);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tenantButton:hover {
+  background: var(--card-2, #f2f4f7);
+}
+
+.tenantButton[aria-current="true"] {
+  background: var(--card-2, #eef0fb);
+  box-shadow: inset 3px 0 0 var(--primary, #3a45c2);
+}
+
+.tenantName {
+  font-weight: 500;
+}
+
+.statusForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--line, #e4e7ec);
+}
+
+.tab {
+  padding: 8px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ink-2, #475467);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tab[aria-selected="true"] {
+  border-bottom-color: var(--primary, #3a45c2);
+  color: var(--ink, #101828);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.input {
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--line, #d0d5dd);
+  border-radius: var(--r-control, 6px);
+  background: var(--card, #fff);
+  color: inherit;
+  font: inherit;
+  font-weight: 400;
+}
+
+.fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.checkboxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: 6px 16px;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.caption {
+  padding-bottom: 6px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.table th,
+.table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line, #e4e7ec);
+  text-align: left;
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+.table th {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-2, #475467);
+}
+
+.buttonPrimary,
+.buttonSecondary,
+.buttonDanger {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: var(--r-control, 6px);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.buttonPrimary {
+  border: 1px solid var(--primary, #3a45c2);
+  background: var(--primary, #3a45c2);
+  color: #fff;
+}
+
+.buttonSecondary {
+  border: 1px solid var(--line, #d0d5dd);
+  background: var(--card, #fff);
+  color: inherit;
+}
+
+.buttonDanger {
+  border: 1px solid var(--flag, #b42318);
+  background: var(--card, #fff);
+  color: var(--flag, #b42318);
+}
+
+.buttonPrimary:disabled,
+.buttonSecondary:disabled,
+.buttonDanger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.buttonPrimary:focus-visible,
+.buttonSecondary:focus-visible,
+.buttonDanger:focus-visible,
+.tab:focus-visible,
+.tenantButton:focus-visible,
+.input:focus-visible {
+  outline: 2px solid var(--primary, #3a45c2);
+  outline-offset: 2px;
+}
+
+.alert {
+  padding: 10px 12px;
+  border: 1px solid var(--flag, #d92d20);
+  border-radius: var(--r-control, 6px);
+  background: var(--flag-wash, #fef3f2);
+  color: var(--flag, #b42318);
+  font-size: 0.875rem;
+}
+
+.alert ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--line, #e4e7ec);
+  border-radius: var(--r-control, 6px);
+  background: var(--card-2, #f9fafb);
+  font-size: 0.875rem;
+}
+
+.code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: var(--card-2, #f2f4f7);
+  font-family: var(--f-num, ui-monospace, monospace);
+  user-select: all;
+}
+
+@media (max-width: 1023px) {
+  .page {
+    padding: 20px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px;
+  }
+
+  .table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+
+  .table tr {
+    display: block;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line, #e4e7ec);
+  }
+
+  .table td {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr);
+    gap: 8px;
+    padding: 4px 0;
+    border: 0;
+  }
+
+  .table td::before {
+    content: attr(data-label);
+    font-size: 0.75rem;
+    color: var(--ink-2, #475467);
+  }
+}

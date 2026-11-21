@@ -3,9 +3,12 @@ import "server-only";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { hashPassword } from "better-auth/crypto";
 import { z } from "zod";
+import { MODULE_CATALOG } from "@/lib/entitlements/catalog";
 import { sqlClient } from "@/lib/db";
 import type { PlatformAdmin } from "@/server/platform-admin/access";
 import { HttpError } from "@/server/platform/http";
+import { initialModuleStatements, validateInitialModules } from "@/server/entitlements/service";
+import { ROLE_TEMPLATES } from "@/server/identity/role-templates";
 
 const slug = z.string().trim().toLowerCase().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers, and hyphens.").min(3).max(80);
 const email = z.string().email().transform((value) => value.trim().toLowerCase());
@@ -18,6 +21,8 @@ export const createTenantSchema = z.object({
   currency: z.string().regex(/^[A-Z]{3}$/).default("INR"),
   ownerName: z.string().trim().min(2).max(120),
   ownerEmail: email,
+  /** Module keys to switch on; core modules are always on. Defaults to every core and standard module. */
+  modules: z.array(z.string().trim().min(1).max(60)).max(60).optional(),
 });
 
 export const changeTenantStatusSchema = z.object({
@@ -31,11 +36,6 @@ export const createTenantUserSchema = z.object({
   roleCodes: z.array(z.string().trim().min(1).max(80)).min(1).max(8),
 });
 
-const standardRoles = {
-  "hr-manager": ["tenant.read", "employee.read", "employee.write", "attendance.read", "attendance.write", "leave.read", "leave.approve", "role.manage", "membership.manage"],
-  "payroll-admin": ["tenant.read", "employee.read", "attendance.read", "payroll.read", "payroll.run"],
-  employee: ["tenant.read", "employee.read", "attendance.read", "leave.read"],
-} as const;
 
 type TenantRow = {
   id: string;
@@ -97,7 +97,8 @@ export async function createPlatformTenant(admin: PlatformAdmin, input: z.infer<
   const tenantId = randomUUID();
   const membershipId = randomUUID();
   const ownerRoleId = randomUUID();
-  const standardRoleIds = Object.fromEntries(Object.keys(standardRoles).map((code) => [code, randomUUID()])) as Record<keyof typeof standardRoles, string>;
+  const templateRoleIds = new Map(ROLE_TEMPLATES.map((template) => [template.code, randomUUID()]));
+  const moduleKeys = validateInitialModules(input.modules ?? MODULE_CATALOG.filter((mod) => mod.tier !== "addon").map((mod) => mod.key));
   const userId = existingOwner?.id ?? randomUUID();
   const oneTimePassword = existingOwner ? null : temporaryPassword();
   const passwordHash = oneTimePassword ? await hashPassword(oneTimePassword) : null;
@@ -112,15 +113,30 @@ export async function createPlatformTenant(admin: PlatformAdmin, input: z.infer<
     sqlClient`insert into memberships (id, tenant_id, user_id, role, status) values (${membershipId}, ${tenantId}, ${userId}, 'owner', 'active')`,
     sqlClient`insert into tenant_settings (tenant_id, locale, timezone, currency) values (${tenantId}, 'en-IN', ${input.timezone}, ${input.currency})`,
     sqlClient`insert into roles (id, tenant_id, code, name, system_managed) values (${ownerRoleId}, ${tenantId}, 'owner', 'Workspace Owner', true)`,
-    ...Object.entries(standardRoles).map(([code]) => sqlClient`insert into roles (id, tenant_id, code, name, system_managed) values (${standardRoleIds[code as keyof typeof standardRoles]}, ${tenantId}, ${code}, ${code.replaceAll('-', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())}, true)`),
+    ...ROLE_TEMPLATES.map((template) => sqlClient`insert into roles (id, tenant_id, code, name, system_managed) values (${templateRoleIds.get(template.code)}, ${tenantId}, ${template.code}, ${template.name}, true)`),
     sqlClient`insert into role_permissions (tenant_id, role_id, permission_id) select ${tenantId}, ${ownerRoleId}, id from permissions where status = 'active'`,
-    ...Object.entries(standardRoles).map(([code, permissionKeys]) => sqlClient`insert into role_permissions (tenant_id, role_id, permission_id) select ${tenantId}, ${standardRoleIds[code as keyof typeof standardRoles]}, id from permissions where permission_key = any(${permissionKeys}) and status = 'active'`),
+    ...ROLE_TEMPLATES.map((template) => sqlClient`
+      insert into role_permissions (tenant_id, role_id, permission_id)
+      select ${tenantId}, ${templateRoleIds.get(template.code)}, id from permissions
+      where status = 'active' and permission_key like any(${[...template.include]}::text[])
+        and not (permission_key like any(${[...template.exclude]}::text[]))
+    `),
+    ...initialModuleStatements(tenantId, admin.userId, moduleKeys),
     sqlClient`insert into membership_roles (tenant_id, membership_id, role_id) values (${tenantId}, ${membershipId}, ${ownerRoleId})`,
     sqlClient`insert into invitations (id, tenant_id, email, token_hash, status, invited_by_user_id, accepted_user_id, expires_at, accepted_at) values (${randomUUID()}, ${tenantId}, ${input.ownerEmail}, ${invitationHash}, 'accepted', ${admin.userId}, ${userId}, now() + interval '1 day', now())`,
     sqlClient`insert into audit_events (tenant_id, actor_user_id, action, entity_type, entity_id, reason, after) values (${tenantId}, ${admin.userId}, 'platform.tenant_create', 'tenant', ${tenantId}, 'Platform administrator provisioned client company', ${JSON.stringify({ name: input.name, slug: input.slug, ownerEmail: input.ownerEmail, existingOwner: Boolean(existingOwner) })}::jsonb)`,
   ]);
 
-  return { id: tenantId, name: input.name, slug: input.slug, ownerEmail: input.ownerEmail, oneTimePassword, reusedExistingUser: Boolean(existingOwner) };
+  return { id: tenantId, name: input.name, slug: input.slug, ownerEmail: input.ownerEmail, modules: moduleKeys, oneTimePassword, reusedExistingUser: Boolean(existingOwner) };
+}
+
+/** One organisation's summary for the platform console; 404 when it does not exist. */
+export async function getPlatformTenant(admin: PlatformAdmin, tenantId: string) {
+  const [rows] = await platformTx<Array<Pick<TenantRow, "id" | "name" | "slug" | "status" | "legal_name" | "timezone" | "default_currency">>>(admin, [
+    sqlClient`select id, name, slug, status, legal_name, timezone, default_currency from tenants where id = ${tenantId} limit 1`,
+  ]);
+  if (!rows[0]) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "Company not found." });
+  return rows[0];
 }
 
 export async function changePlatformTenantStatus(admin: PlatformAdmin, tenantId: string, input: z.infer<typeof changeTenantStatusSchema>) {
@@ -194,4 +210,31 @@ export async function createPlatformTenantUser(admin: PlatformAdmin, tenantId: s
     sqlClient`insert into audit_events (tenant_id, actor_user_id, action, entity_type, entity_id, reason, after) values (${tenantId}, ${admin.userId}, 'platform.user_provision', 'membership', ${membershipId}, 'Platform administrator provisioned tenant user', ${JSON.stringify({ email: input.email, roleCodes: input.roleCodes, existingUser: Boolean(existingUser) })}::jsonb)`,
   ]);
   return { membershipId, userId, tenantId, tenantName: tenant.name, email: input.email, roleCodes: input.roleCodes, oneTimePassword, reusedExistingUser: Boolean(existingUser) };
+}
+
+/**
+ * Issues a new one-time password for a member of an organisation and signs them out everywhere.
+ * For an owner who lost the password shown at creation, or any member without email delivery.
+ */
+export async function resetPlatformTenantUserPassword(admin: PlatformAdmin, tenantId: string, membershipId: string) {
+  const [rows] = await platformTx<Array<{ user_id: string; email: string }>>(admin, [
+    sqlClient`
+      select u.id as user_id, u.email from memberships m join "user" u on u.id = m.user_id
+      where m.id = ${membershipId} and m.tenant_id = ${tenantId} limit 1
+    `,
+  ]);
+  const member = rows[0];
+  if (!member) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "That member does not belong to this company." });
+  const oneTimePassword = temporaryPassword();
+  const passwordHash = await hashPassword(oneTimePassword);
+  await platformTx(admin, [
+    sqlClient`
+      insert into account (id, account_id, provider_id, user_id, password)
+      values (${randomUUID()}, ${member.user_id}, 'credential', ${member.user_id}, ${passwordHash})
+      on conflict (provider_id, account_id) do update set password = excluded.password, updated_at = now()
+    `,
+    sqlClient`delete from session where user_id = ${member.user_id}`,
+    sqlClient`insert into audit_events (tenant_id, actor_user_id, action, entity_type, entity_id, reason) values (${tenantId}, ${admin.userId}, 'platform.user_password_reset', 'membership', ${membershipId}, 'Platform administrator issued a one-time password')`,
+  ]);
+  return { email: member.email, oneTimePassword };
 }

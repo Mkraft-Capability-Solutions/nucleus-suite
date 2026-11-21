@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sqlClient } from "@/lib/db";
 import { randomUUID } from "node:crypto";
+import { entitlementConfig, requireEntitlement } from "@/server/entitlements/service";
+import { enforce, requireAccess, tenantTx } from "@/server/platform/access";
+import { fail, HttpError, requestIdFrom } from "@/server/platform/http";
 
 export const dynamic = "force-dynamic";
 
@@ -23,15 +26,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: "No records provided" }, { status: 400 });
     }
 
-    // Resolve tenant ID
-    let tenantId = "c668678c-ed74-4dbb-a98b-0287afc8f286";
-    try {
-      const tenantRows = await sqlClient`SELECT id FROM tenants LIMIT 1;`;
-      if (tenantRows && tenantRows.length > 0) {
-        tenantId = tenantRows[0].id;
-      }
-    } catch {
-      // Fallback to default demo tenant if table query encounters error
+    const access = await requireAccess(req);
+    enforce(access.context, "employee.write", { tenantId: access.tenantId });
+    const tenantId = access.tenantId;
+    // Every statement runs in the caller's tenant context, so row-level security applies.
+    const run = async (statement: unknown) => ((await tenantTx(access, [statement]))[0] ?? []) as Array<Record<string, unknown>>;
+    const isCandidates = importType === "candidates" || importType === "ats" ||
+      records.some((r: any) => r.candidateName || r.CandidateName || r.expectedCTC || r.JobReqCode || r.jobReqCode);
+    const isEmployees = importType === "employee" || records.some((r: any) => r.empId || r.employeeCode || r.id);
+    await requireEntitlement(
+      access,
+      isEmployees ? "people.records.bulk_import"
+        : importType === "biometric" || importType === "attendance" ? "attendance.punches"
+        : importType === "leave" ? "leave.balances"
+        : isCandidates ? "recruitment.candidates"
+        : "people.records.bulk_import",
+    );
+    const maxRows = (await entitlementConfig(access, "people.records")).bulkImportMaxRows as number;
+    if (records.length > maxRows) {
+      throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `This organisation imports at most ${maxRows} rows per file.` });
     }
 
     let insertedCount = 0;
@@ -54,12 +67,12 @@ export async function POST(req: NextRequest) {
 
         try {
           // Check if employee already exists
-          const existing = await sqlClient`
+          const existing = await run(sqlClient`
             SELECT id, person_id FROM employees WHERE tenant_id = ${tenantId} AND employee_code = ${empCode} LIMIT 1;
-          `;
+          `);
 
           if (existing && existing.length > 0) {
-            await sqlClient`
+            await run(sqlClient`
               UPDATE employees SET
                 first_name = ${firstName},
                 last_name = ${lastName},
@@ -71,19 +84,19 @@ export async function POST(req: NextRequest) {
                 basic_salary_minor = ${salaryMinor},
                 updated_at = NOW()
               WHERE tenant_id = ${tenantId} AND employee_code = ${empCode};
-            `;
+            `);
             updatedCount++;
           } else {
             const personId = randomUUID();
             const empId = randomUUID();
 
-            await sqlClient`
+            await run(sqlClient`
               INSERT INTO people (id, tenant_id)
               VALUES (${personId}, ${tenantId})
               ON CONFLICT (id) DO NOTHING;
-            `;
+            `);
 
-            await sqlClient`
+            await run(sqlClient`
               INSERT INTO employees (
                 id, tenant_id, person_id, employee_code, first_name, last_name,
                 work_email, designation, designation_level, department, location,
@@ -95,7 +108,7 @@ export async function POST(req: NextRequest) {
                 ${category}, 'plant', CURRENT_DATE, 'active', ${salaryMinor},
                 'INR', ${JSON.stringify({ sourceFile: fileName, importedAt: new Date().toISOString() })}::jsonb, 1, NOW(), NOW()
               );
-            `;
+            `);
             insertedCount++;
           }
         } catch (dbErr) {
@@ -110,13 +123,13 @@ export async function POST(req: NextRequest) {
         try {
           const punchId = randomUUID();
           const dayId = randomUUID();
-          await sqlClient`
+          await run(sqlClient`
             INSERT INTO attendance_punches (
               id, tenant_id, attendance_day_id, punched_at, type, source, device_reference, created_at, updated_at
             ) VALUES (
               ${punchId}, ${tenantId}, ${dayId}, NOW(), 'IN', 'BIOMETRIC_IMPORT', ${fileName}, NOW(), NOW()
             );
-          `;
+          `);
           insertedCount++;
         } catch (err) {
           console.warn("Attendance punch insert notice:", err);
@@ -129,16 +142,16 @@ export async function POST(req: NextRequest) {
 
         try {
           const balId = randomUUID();
-          const empRows = await sqlClient`SELECT id FROM employees WHERE tenant_id = ${tenantId} LIMIT 1;`;
+          const empRows = await run(sqlClient`SELECT id FROM employees WHERE tenant_id = ${tenantId} LIMIT 1;`);
           const empId = empRows?.[0]?.id || randomUUID();
 
-          await sqlClient`
+          await run(sqlClient`
             INSERT INTO leave_balances (
               id, tenant_id, employee_id, leave_type, balance, as_of_date, created_at, updated_at
             ) VALUES (
               ${balId}, ${tenantId}, ${empId}, ${leaveType}, ${balance}, CURRENT_DATE, NOW(), NOW()
             );
-          `;
+          `);
           insertedCount++;
         } catch (err) {
           console.warn("Leave balance insert notice:", err);
@@ -177,10 +190,10 @@ export async function POST(req: NextRequest) {
 
         try {
           const candId = randomUUID();
-          await sqlClient`
+          await run(sqlClient`
             INSERT INTO candidates (id, tenant_id, attributes)
             VALUES (${candId}, ${tenantId}, ${JSON.stringify(attributes)}::jsonb);
-          `;
+          `);
           insertedCount++;
         } catch (err) {
           console.warn("Candidate insert error during ATS bulk import:", err);
@@ -199,10 +212,8 @@ export async function POST(req: NextRequest) {
       tenantId
     });
   } catch (error: any) {
-    console.error("Bulk import API error:", error);
-    return NextResponse.json({
-      success: false,
-      message: error?.message || "Internal server error during bulk import"
-    }, { status: 500 });
+    if (error instanceof HttpError || error?.constructor?.name === "HttpError") return fail(error, requestIdFrom(req.headers));
+    console.error("Bulk import API error:", error?.code ?? "UNKNOWN");
+    return NextResponse.json({ success: false, message: "Internal server error during bulk import" }, { status: 500 });
   }
 }

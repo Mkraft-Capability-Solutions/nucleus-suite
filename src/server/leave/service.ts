@@ -11,6 +11,7 @@ import {
 import { enforce, tenantTx, uuidOrNull, type Access } from "@/server/platform/access";
 import { actsAsDelegate } from "@/server/delegation/service";
 import { HttpError } from "@/server/platform/http";
+import { entitlementConfig, isEntitled } from "@/server/entitlements/service";
 
 const APPROVAL_LEVELS = ["supervisor", "hod", "hr_head"] as const;
 const TERMINAL = ["approved", "rejected", "cancelled"];
@@ -82,11 +83,28 @@ export const requestLeaveSchema = z.object({
   reason: z.string().trim().min(1).max(500).optional(),
 });
 
+/** Organisation settings for leave requests (Settings → Modules → Leave › Leave requests). */
+async function assertLeaveRequestAllowed(access: Access, input: { leaveType: string; days: number }) {
+  const config = await entitlementConfig(access, "leave.requests");
+  const allowedTypes = config.allowedLeaveTypes as string[];
+  if (!allowedTypes.includes(input.leaveType)) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `${input.leaveType} leave is not offered by this organisation.` });
+  }
+  if (input.leaveType === "COFF" && !(await isEntitled(access, "leave.comp_off"))) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "Compensatory off is not enabled for this organisation." });
+  }
+  const maxDays = config.maxDaysPerRequest as number;
+  if (input.days > maxDays) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `A single request can cover at most ${maxDays} day${maxDays === 1 ? "" : "s"}.` });
+  }
+}
+
 export async function requestLeave(access: Access, input: z.infer<typeof requestLeaveSchema>, requestId: string) {
   enforce(access.context, "leave.read", { tenantId: access.tenantId });
   if (input.endsOn < input.startsOn) {
     throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "The leave period ends before it starts." });
   }
+  await assertLeaveRequestAllowed(access, input);
   const emp = await employeeProfile(access, input.employeeId);
   const targetEmployeeId = emp.id;
   const typeId = await ensureLeaveType(access, input.leaveType);

@@ -1,4 +1,4 @@
-import { requireAccess, tenantTx } from "@/server/platform/access";
+import { enforce, requireAccess, tenantTx } from "@/server/platform/access";
 import { fail, requestIdFrom } from "@/server/platform/http";
 import { sqlClient } from "@/lib/db";
 
@@ -8,6 +8,7 @@ export async function GET(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
     const access = await requireAccess(request);
+    enforce(access.context, "audit.read", { tenantId: access.tenantId });
 
     const [rows] = await tenantTx(access, [
       sqlClient`

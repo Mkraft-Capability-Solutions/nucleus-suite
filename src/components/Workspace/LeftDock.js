@@ -17,6 +17,8 @@ import styles from './LeftDock.module.css';
 import { useAuth } from '@/context/AuthContext';
 import { canViewNavigationDomain } from '@/lib/navigation-access';
 
+const SHOW_FEATURE_CATALOG = false;
+
 const LeftDock = ({ activeDomain, activeTab = readData("components.Workspace.LeftDock", "defaultValue_1"), onSelectDomain, onToggleCatalog, showCatalog }) => {
     const {t: translateText}=useTranslation();
 
@@ -43,7 +45,9 @@ const LeftDock = ({ activeDomain, activeTab = readData("components.Workspace.Lef
         return false;
     };
 
-    const visibleDockItems = dockItems.filter((item) => item.isCatalogToggle || canViewNavigationDomain(item.id, isModuleAllowed, user));
+    // The Feature Catalog entry is hidden: it repeated the module navigation (UI feedback, item 4).
+    // Set SHOW_FEATURE_CATALOG to true to bring it back; search results still use the catalog view.
+    const visibleDockItems = dockItems.filter((item) => item.isCatalogToggle ? SHOW_FEATURE_CATALOG : canViewNavigationDomain(item.id, isModuleAllowed, user));
     const canViewPlatform = canViewNavigationDomain('platform', isModuleAllowed, user);
     const isPlatformActive = !showCatalog && (activeDomain === 'platform' || activeDomain === 'settings' || activeTab === 'settings');
 

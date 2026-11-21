@@ -5,45 +5,56 @@ import { databaseConfigured, sqlClient } from "@/lib/db";
 import { authorize, type AuthorizationContext } from "@/server/identity/authorization";
 import { IdentityError, resolveAuthorizationContext } from "@/server/identity/tenant-context";
 import { HttpError } from "@/server/platform/http";
+import { entitlementForApiPath } from "@/lib/entitlements/routes";
+import type { ResolvedEntitlements } from "@/lib/entitlements/types";
+import { requireEntitlement } from "@/server/entitlements/service";
 
-export const ACTIVE_TENANT_COOKIE = "mkraft_active_tenant";
+export { ACTIVE_TENANT_COOKIE } from "@/server/identity/active-tenant";
+import { ACTIVE_TENANT_COOKIE } from "@/server/identity/active-tenant";
 
 export type Access = {
   context: AuthorizationContext;
   tenantId: string;
+  /** Loaded once per request by requireAccess; see src/server/entitlements/service.ts. */
+  entitlements?: ResolvedEntitlements;
 };
 
-/** Resolve the caller's authorization context from the active-tenant cookie. */
+/**
+ * Resolve the caller's tenant and authorization context, then check that the requested API is part
+ * of that tenant's plan (module → sub-module → feature).
+ *
+ * The tenant is the one asked for (argument, active-tenant cookie or `x-tenant-id` header) when the
+ * signed-in user is an active member of it; otherwise the user's first active membership. There is
+ * no fallback to another user's or tenant's context: no session means 401, no membership means 403.
+ */
 export async function requireAccess(request: Request, tenantId?: string): Promise<Access> {
   if (!databaseConfigured) {
     throw new HttpError({ status: 503, code: "SERVICE_UNAVAILABLE", message: "Identity storage is not configured." });
   }
-  let activeTenantId = tenantId ?? (await cookies()).get(ACTIVE_TENANT_COOKIE)?.value ?? request.headers.get("x-tenant-id");
-  if (!activeTenantId) {
-    try {
-      const tenantRows = await sqlClient`
-        select id from tenants 
-        where status = 'active' 
-        order by (case when slug = 'mkraft' or name ilike '%mkraft%' or name ilike '%nucleus%' then 0 else 1 end) asc, created_at asc 
-        limit 1;
-      `;
-      if (tenantRows?.[0]?.id) activeTenantId = tenantRows[0].id as string;
-    } catch {
-      // Fallback
-    }
-  }
-  if (!activeTenantId) {
-    activeTenantId = "5fd242d5-5627-47d0-a667-b099ef0acba9";
-  }
+  const requestedTenantId = tenantId ?? (await cookies()).get(ACTIVE_TENANT_COOKIE)?.value ?? request.headers.get("x-tenant-id") ?? null;
   try {
-    const context = await resolveAuthorizationContext(request.headers, activeTenantId);
-    return { context, tenantId: context.tenantId };
+    const context = await resolveAuthorizationContext(request.headers, requestedTenantId);
+    const access: Access = { context, tenantId: context.tenantId };
+    await enforceApiEntitlement(access, request);
+    return access;
   } catch (error) {
     if (error instanceof IdentityError) {
       throw new HttpError({ status: error.status === 503 ? 503 : error.status, code: error.status === 401 ? "UNAUTHORIZED" : error.status === 403 ? "FORBIDDEN" : "SERVICE_UNAVAILABLE", message: error.message });
     }
     throw error;
   }
+}
+
+/** 403 FEATURE_DISABLED when the request path belongs to a module, sub-module or feature that is off. */
+async function enforceApiEntitlement(access: Access, request: Request) {
+  let pathname: string;
+  try {
+    pathname = new URL(request.url).pathname;
+  } catch {
+    return;
+  }
+  const guard = entitlementForApiPath(pathname);
+  if (guard.kind === "entitlement") await requireEntitlement(access, guard.key);
 }
 
 /** Enforce a permission check; never leak resource existence on denial. */
@@ -92,15 +103,14 @@ export function stripPrelude<T>(results: T[]): T[] {
  * instead of manual sqlClient.transaction + destructuring.
  */
 export async function tenantTx(access: Access, statements: any[]): Promise<unknown[]> {
-  const neonStatements = statements.map(stmt => {
-    if (stmt && typeof stmt.text === 'string' && Array.isArray(stmt.values)) {
-      const parts = stmt.text.split(/\$\d+/);
-      (parts as any).raw = parts;
-      return sqlClient(parts as unknown as TemplateStringsArray, ...stmt.values);
-    }
-    return stmt;
-  });
-  const results = (await sqlClient.transaction([...tenantPrelude(access), ...neonStatements])) as unknown[];
+  // Statements built with `sqlClient.query(text, values)` carry numbered placeholders that may repeat
+  // ($2 used twice). Re-issue them through the same driver's `query` so values bind by number.
+  const normalised = statements.map((stmt) =>
+    stmt && typeof stmt.text === "string" && Array.isArray(stmt.values) && typeof sqlClient.query === "function"
+      ? sqlClient.query(stmt.text, stmt.values)
+      : stmt,
+  );
+  const results = (await sqlClient.transaction([...tenantPrelude(access), ...normalised])) as unknown[];
   return stripPrelude(results);
 }
 

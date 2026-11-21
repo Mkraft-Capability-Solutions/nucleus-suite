@@ -8,13 +8,15 @@ import {
     User, Bell, Shield, Lock, Globe, Building2,
     Key, CheckCircle2, Save, RotateCcw, Laptop,
     ShieldCheck, Sparkles, Smartphone, Eye,
-    Users, CreditCard, Briefcase, List, Search
+    Users, CreditCard, Briefcase, List, Search, Blocks
 } from 'lucide-react';
 import styles from './SettingsView.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { useAuth } from '@/context/AuthContext';
 import { launchAction } from '@/lib/action-launcher';
 import { getAllPicklists, searchPicklists } from '@/lib/picklist-catalog';
+import TenantModulesPanel from '@/components/Entitlements/TenantModulesPanel';
+import ChangePasswordForm from '@/components/Settings/ChangePasswordForm';
 
 const SettingsView = ({ onNavigate, onSelectConsole }) => {
   const { t } = useTranslation();
@@ -221,7 +223,18 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                     onClick={() => setActiveTab('picklists')}
                 >
                     <List size={16} />{t("components.Workspace.SettingsView.text_picklists_catalog", "Picklists Catalog")}</button>
+                <button
+                    className={`${styles.tabBtn} ${activeTab === 'modules' ? styles.tabActive : ''}`}
+                    onClick={() => setActiveTab('modules')}
+                >
+                    <Blocks size={16} />{t("components.Workspace.SettingsView.text_modules_features", "Modules & features")}</button>
             </div>
+
+            {activeTab === 'modules' && (
+                <div className={styles.sectionCard}>
+                    <TenantModulesPanel />
+                </div>
+            )}
 
             {/* TAB 1: PROFILE & PERSONAL */}
             {activeTab === 'profile' && (
@@ -354,6 +367,8 @@ const SettingsView = ({ onNavigate, onSelectConsole }) => {
                             <p>{readData("components.Workspace.SettingsView", "SettingsView_text_38")}</p>
                         </div>
                     </div>
+
+                    <ChangePasswordForm />
 
                     <div className={styles.toggleList}>
                         <div className={styles.toggleRow}>

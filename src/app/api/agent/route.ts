@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { denyWithoutAccess } from '@/server/platform/route-guard';
 import catalog from '@/config/assistant.json';
 import { getMessagesForLocale } from '@/lib/i18n';
 import { defaultLocale, type SupportedLocale } from '@/locales';
@@ -15,6 +16,8 @@ interface RouteDefinition {
 }
 
 export async function POST(request: Request) {
+  const denied = await denyWithoutAccess(request);
+  if (denied) return denied;
   let body: { message?: string; locale?: string };
   try {
     body = await request.json();

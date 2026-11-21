@@ -71,3 +71,6 @@ next-panic-*.log
 
 # Local workspace packages install their own dev dependencies
 /packages/*/node_modules/
+MULTI_TENANCY.md
+DEPLOY_VERCEL.md
+db/MIGRATIONS.md

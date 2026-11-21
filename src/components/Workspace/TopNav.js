@@ -1,4 +1,5 @@
 "use client";
+import Link from 'next/link';
 import { useTranslation } from '@/context/I18nContext';
 
 import NextImage from 'next/image';
@@ -28,6 +29,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
 import AppearanceToggle from '@/components/AppearanceToggle';
+import UiModeSwitch from '@/components/UiModeSwitch';
 import LanguageSelector from '@/components/LanguageSelector';
 import { NeuralSonicBeacon } from '@/components/AI/NeuralSonicBeacon';
 
@@ -52,7 +54,7 @@ const TopNav = ({
   const { t } = useTranslation();
     const { t: translateText } = useTranslation();
 
-    const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
+    const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed, tenantAccess, switchTenant } = useAuth();
     const { showToast } = useHRMS();
     const userRole = user?.role || readData("components.Workspace.TopNav", "fallback_1");
 
@@ -472,6 +474,39 @@ const TopNav = ({
                                         {userRole.replace('_', ' ')}
                                     </span>
                                 </div>
+                            </div>
+
+                            {/* Organisation: the active tenant, a switcher when the user belongs to several, and the platform console for operators */}
+                            {(tenantAccess?.memberships?.length > 1 || tenantAccess?.platformAdmin || tenantAccess?.tenant?.name) && (
+                                <div className={styles.menuLinks}>
+                                    {tenantAccess?.memberships?.length > 1 ? (
+                                        <label className={styles.menuLinkItem} style={{ flexDirection: 'column', alignItems: 'stretch', gap: 4 }}>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>Organisation</span>
+                                            <select
+                                                value={tenantAccess.tenant?.id ?? ''}
+                                                onChange={(event) => { void switchTenant(event.target.value); }}
+                                                style={{ font: 'inherit', padding: '4px 6px', borderRadius: 6, border: '1px solid var(--line)', background: 'var(--card)', color: 'inherit' }}
+                                            >
+                                                {tenantAccess.memberships.map((membership) => (
+                                                    <option key={membership.id} value={membership.id}>{membership.name}</option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                    ) : tenantAccess?.tenant?.name ? (
+                                        <span className={styles.menuLinkItem} style={{ cursor: 'default' }}>{tenantAccess.tenant.name}</span>
+                                    ) : null}
+                                    {tenantAccess?.platformAdmin && (
+                                        <Link href="/platform" className={styles.menuLinkItem} style={{ textDecoration: 'none' }} onClick={() => setShowProfileMenu(false)}>
+                                            <Settings sx={{ fontSize: 15 }} color="var(--signal)" />
+                                            <span>Platform console</span>
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Interface mode: Classic or Redesigned (redesigned modules only) */}
+                            <div className={styles.menuLinks}>
+                                <UiModeSwitch />
                             </div>
 
                             {/* Quick Links */}

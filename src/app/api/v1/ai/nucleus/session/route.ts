@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { denyWithoutAccess } from '@/server/platform/route-guard';
 import { declarationsFor } from '@/lib/ai/nucleus-tools';
 
 export const dynamic = 'force-dynamic';
@@ -6,7 +7,9 @@ export const dynamic = 'force-dynamic';
 const TOKEN_HOST = 'https://generativelanguage.googleapis.com';
 const TOKEN_API_VERSIONS = ['v1alpha', 'v1beta'] as const;
 
-export async function POST() {
+export async function POST(request: Request) {
+  const denied = await denyWithoutAccess(request);
+  if (denied) return denied;
   const apiKey = (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)?.trim();
 
   if (!apiKey) {

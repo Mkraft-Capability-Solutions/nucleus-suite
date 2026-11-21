@@ -6,7 +6,7 @@ afterEach(() => vi.unstubAllEnvs());
 describe('synthetic workspace access boundary', () => {
   it('does not disclose fixture records when demo access is disabled', async () => {
     vi.stubEnv('DEMO_AUTH_ENABLED', 'false');
-    const response = await GET();
+    const response = await GET(new Request('http://localhost/api/workspace-data'));
     expect(response.status).toBe(503);
     expect((await response.json()).error.code).toBe('WORKSPACE_DISABLED');
     expect(response.headers.get('cache-control')).toContain('no-store');

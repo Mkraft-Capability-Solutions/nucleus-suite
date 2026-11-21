@@ -9,8 +9,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Sparkles, MessageSquare } from 'lucide-react';
 import LeftDock from '@/components/Workspace/LeftDock';
 import TopNav from '@/components/Workspace/TopNav';
+import TopBar from '@/modules/shell/TopBar';
+import { SideRail, SidePanel } from '@/modules/shell/SideNav';
+import { navTarget } from '@/modules/shell/navigation';
+import { useUiMode } from '@/context/UiModeContext';
 import RightSubNav from '@/components/Workspace/RightSubNav';
 import MainWorkspace from '@/components/Workspace/MainWorkspace';
+import ModuleNotEnabled from '@/components/Entitlements/ModuleNotEnabled';
+import { entitlementForNavItem, entitlementForTab } from '@/lib/entitlements/routes';
+import { entitlementLabel } from '@/lib/entitlements/tree';
 import QuantumCopilot from '@/components/AI/QuantumCopilot';
 import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
@@ -62,7 +69,10 @@ const ROUTE_MODULE_MAP = {
 
 const AppContent = () => {
   const { t } = useTranslation();
-  const { user, isLoading, isModuleAllowed } = useAuth();
+  const { user, isLoading, isModuleAllowed, isEntitled, tenantAccess } = useAuth();
+  // Redesigned shell (top bar, navigation, floating buttons): Redesigned mode only.
+  const { isRedesigned } = useUiMode();
+  const shellRedesigned = isRedesigned('shell');
   const pathname = usePathname();
   const router = useRouter();
   const workspaceRef = useRef(null);
@@ -99,9 +109,14 @@ const AppContent = () => {
     savedNav?.activeConsole ?? (user?.defaultConsole || readData("components.AppWorkspace", "initialState_4"))
   );
 
+  // The path this workspace last wrote to the address bar itself (see below); not a navigation to follow.
+  const ownPathRef = useRef(null);
+
   // Sync state when URL pathname changes (e.g. browser back/forward or router.push)
   useEffect(() => {
     if (!pathname || pathname === '/workspace' || pathname === '/login') return;
+    // Reflecting the open screen in the URL must not reset the area and screen the person chose.
+    if (pathname === ownPathRef.current) { ownPathRef.current = null; return; }
     const segment = pathname.replace(/^\//, '').split('/')[0].toLowerCase();
     const mapped = ROUTE_MODULE_MAP[segment];
     if (mapped) {
@@ -150,6 +165,7 @@ const AppContent = () => {
     };
     const targetUrl = tabToPath[activeTab];
     if (targetUrl && window.location.pathname !== targetUrl && window.location.pathname !== '/login') {
+      ownPathRef.current = targetUrl;
       window.history.replaceState(null, '', targetUrl);
     }
   }, [activeTab]);
@@ -447,21 +463,60 @@ const AppContent = () => {
 
   const isDashboard = activeTab === 'dashboard';
 
+  // Opens a navigation item (navigation.catalog.json id) the same way the menus do.
+  const openNavItem = (navId) => {
+    const target = navTarget(navId);
+    handleSelectSubFeature(navId);
+    if (target) setActiveDomain(target.domain);
+    setShowCatalog(false);
+  };
+
+  // The view's module (from the tab) and, when the selected navigation item opens this view, the
+  // sub-module or feature behind that item. Either being outside the organisation's plan blocks it.
+  const navTargetTab = getNavigationDomains().flatMap((domain) => domain.groups.flatMap((group) => group.items))
+    .find((item) => item.id === activeSubFeature)?.targetTab;
+  const blockedKey = [entitlementForTab(activeTab), navTargetTab === activeTab ? entitlementForNavItem(activeSubFeature) : null]
+    .find((key) => key && !isEntitled(key)) ?? null;
+
   return (
-    <div ref={workspaceRef} className={styles.mainContainer} data-workspace-module={activeTab} data-workspace-console={activeConsole}>
-      <div className={styles.demoNotice} role="note">{readData("components.AppWorkspace", "demoNotice")}</div>
-      {/* 1. Sleek Left Vertical Icon Dock (Side Nav - Always Present) */}
-      <LeftDock
-        activeDomain={activeDomain}
-        activeTab={activeTab}
-        onSelectDomain={handleSelectDomain}
-        onToggleCatalog={handleToggleCatalog}
-        showCatalog={showCatalog}
-      />
+    <div ref={workspaceRef} className={styles.mainContainer} data-workspace-module={activeTab} data-workspace-console={activeConsole} data-shell={shellRedesigned ? 'redesigned' : 'classic'}>
+      {!shellRedesigned && <div className={styles.demoNotice} role="note">{readData("components.AppWorkspace", "demoNotice")}</div>}
+      {/* 1. Left navigation: in Redesigned mode a rail of areas (the area's screens are in the content card below) */}
+      {shellRedesigned ? (
+        <SideRail activeDomain={activeDomain} onSelectDomain={handleSelectDomain} onOpenModules={() => setIsModulesOpen(true)} />
+      ) : (
+        <LeftDock
+          activeDomain={activeDomain}
+          activeTab={activeTab}
+          onSelectDomain={handleSelectDomain}
+          onToggleCatalog={handleToggleCatalog}
+          showCatalog={showCatalog}
+        />
+      )}
 
       {/* Main Content Area */}
       <div className={styles.mainColumn}>
         {/* 2. Clean Top Header: Global Search, Theme, Quick Actions, Profile, Modules Launcher, Console Switcher & Sub-Nav Toggle */}
+        {shellRedesigned ? (
+          <TopBar
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onTabChange={(tab, domain, sub) => {
+              setActiveTab(tab);
+              if (domain) setActiveDomain(domain);
+              else if (tab === 'dashboard') setActiveDomain('dashboard');
+              if (sub) setActiveSubFeature(sub);
+              setShowCatalog(false);
+            }}
+            openNav={openNavItem}
+            onOpenAssistant={canUseAIAssistant ? () => setIsCopilotOpen((prev) => !prev) : undefined}
+            onToggleMessages={canUseTeamMessages ? () => toggleDrawer('chat') : undefined}
+            assistantOpen={isCopilotOpen}
+            messagesOpen={isChatPanelOpen}
+            onOpenModules={() => setIsModulesOpen(true)}
+            onShowScreens={!isDashboard && !isRightNavOpen ? () => setIsRightNavOpen(true) : undefined}
+          />
+        ) : (
         <TopNav
           activeTab={activeTab}
           onTabChange={(tab, domain, sub) => {
@@ -480,9 +535,19 @@ const AppContent = () => {
           activeConsole={activeConsole}
           onSelectConsole={handleSelectConsole}
         />
+        )}
 
         {/* 3. Center Workspace + Contextual Right Sub-Navigation */}
         <div className={styles.bodyLayout}>
+          {/* Redesigned: the selected area's screens, inside the rounded content card */}
+          {shellRedesigned && !isDashboard && isRightNavOpen && (
+              <SidePanel
+                activeDomain={activeDomain}
+                activeItem={activeSubFeature}
+                onOpenItem={(id) => { openNavItem(id); if (window.matchMedia('(max-width: 1023px)').matches) setIsRightNavOpen(false); }}
+                onCollapse={() => setIsRightNavOpen(false)}
+              />
+            )}
           {/* Center Workspace (Feature Catalog Grid OR Interactive Module View) */}
           <main
             className={styles.workspaceZone}
@@ -493,6 +558,13 @@ const AppContent = () => {
               padding: isDashboard ? 'clamp(1rem, 3vw, 1.25rem) clamp(1rem, 3vw, 2rem) 5rem' : 'clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 2rem) 5rem'
             }}
           >
+            {blockedKey ? (
+              <ModuleNotEnabled
+                label={entitlementLabel(blockedKey)}
+                tenantName={tenantAccess?.tenant?.name}
+                onBack={() => { setActiveTab('dashboard'); setActiveDomain('dashboard'); }}
+              />
+            ) : (
             <MainWorkspace
               activeTab={activeTab}
               activeSubFeature={activeSubFeature}
@@ -514,17 +586,21 @@ const AppContent = () => {
               searchQuery={searchQuery}
               activeConsole={activeConsole}
               onSelectConsole={handleSelectConsole}
+              onOpenNav={openNavItem}
             />
+            )}
           </main>
 
-          {/* Contextual Right Sub-Navigation Panel (Contextual submodules & consoles) */}
-          <RightSubNav
-            activeDomain={activeDomain}
-            activeSubFeature={activeSubFeature}
-            onSelectSubFeature={(id) => { handleSelectSubFeature(id); if (window.matchMedia('(max-width: 960px)').matches) setIsRightNavOpen(false); }}
-            isOpen={isRightNavOpen}
-            onClose={() => setIsRightNavOpen(false)}
-          />
+          {/* Contextual Right Sub-Navigation Panel (Classic mode; Redesigned uses the left side panel) */}
+          {!shellRedesigned && (
+            <RightSubNav
+              activeDomain={activeDomain}
+              activeSubFeature={activeSubFeature}
+              onSelectSubFeature={(id) => { handleSelectSubFeature(id); if (window.matchMedia('(max-width: 960px)').matches) setIsRightNavOpen(false); }}
+              isOpen={isRightNavOpen}
+              onClose={() => setIsRightNavOpen(false)}
+            />
+          )}
         </div>
       </div>
 
@@ -544,7 +620,8 @@ const AppContent = () => {
       />
 
       {/* Floating Action Buttons Stack (Stacked vertically, never overlapping, only 1 window open at a time) */}
-      {(canUseAIAssistant || canUseTeamMessages) && <div className={styles.fabStack} role="toolbar" aria-label={readData("components.AppWorkspace", "attribute_7")}>
+      {/* In the redesigned shell the assistant and messages live in the top bar, not over the content. */}
+      {!shellRedesigned && (canUseAIAssistant || canUseTeamMessages) && <div className={styles.fabStack} role="toolbar" aria-label={readData("components.AppWorkspace", "attribute_7")}>
         {/* 1. Ask AI Assistant */}
         {canUseAIAssistant && <button
           className={`${styles.fabBtn} ${styles.aiFab} ${isCopilotOpen ? styles.fabActive : ''}`}
@@ -582,6 +659,7 @@ const AppContent = () => {
       <QuantumCopilot
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
+        shortcutEnabled={!shellRedesigned}
         activeDomain={activeDomain}
         activeTab={activeTab}
         onNavigate={(tab, domain, sub) => {

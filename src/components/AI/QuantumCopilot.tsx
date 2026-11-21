@@ -45,6 +45,8 @@ interface QuantumCopilotProps {
   activeDomain?: string;
   activeTab?: string;
   onNavigate?: (tab: string, domain?: string, sub?: string) => void;
+  /** Ctrl/⌘+K toggles the assistant. Off in the redesigned shell, where Ctrl+K is search. */
+  shortcutEnabled?: boolean;
 }
 
 export function QuantumCopilot({
@@ -52,6 +54,7 @@ export function QuantumCopilot({
   onClose,
   activeDomain = "core_hr",
   activeTab = "dashboard",
+  shortcutEnabled = true,
 }: QuantumCopilotProps) {
     const { t } = useTranslation();
   const {
@@ -98,7 +101,7 @@ export function QuantumCopilot({
     const handleOpen = () => setIsOpen(true);
     const handleToggle = () => setIsOpen((prev) => !prev);
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      if (shortcutEnabled && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }
@@ -115,7 +118,7 @@ export function QuantumCopilot({
       window.removeEventListener("nucleus:toggle_copilot", handleToggle);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, shortcutEnabled]);
 
   // Sync live voice turns into dialogue stream
   useEffect(() => {

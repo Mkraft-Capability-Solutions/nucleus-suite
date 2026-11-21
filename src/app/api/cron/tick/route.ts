@@ -18,3 +18,8 @@ export async function POST(request: Request) {
   const summary = await runTick(owner);
   return NextResponse.json({ data: { type: "cron-tick", ...summary }, meta: { owner } }, { headers: { "cache-control": "no-store" } });
 }
+
+/** Vercel Cron Jobs call the path with GET and `Authorization: Bearer $CRON_SECRET`. */
+export async function GET(request: Request) {
+  return POST(request);
+}

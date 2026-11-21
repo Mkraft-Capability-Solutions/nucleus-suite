@@ -5107,6 +5107,8 @@
   },
   "components.Workspace.EmployeeDossierModal": {
     "text_print_dossier": "Print Dossier",
+    "text_career_history": "Career history",
+    "text_not_recorded": "Not recorded",
     "text_edit_profile": "Edit Profile",
     "aria-label_close_dossier": "Close dossier",
     "text_overview_identity": "Overview & Identity",

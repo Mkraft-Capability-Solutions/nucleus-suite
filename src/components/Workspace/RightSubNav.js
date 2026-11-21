@@ -22,7 +22,7 @@ const RightSubNav = ({
 }) => {
   const { t } = useTranslation();
     const { t: translateText } = useTranslation();
-    const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
+    const { user, isConsoleAllowed, isModuleAllowed, isNavItemEnabled } = useAuth();
     const [collapsedGroups, setCollapsedGroups] = React.useState({});
     const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
 
@@ -58,7 +58,7 @@ const RightSubNav = ({
     const currentConfig = {
         ...domainConfig,
         groups: domainConfig.groups
-            .map((group) => ({ ...group, items: group.items.filter((item) => canViewNavigationItem(item, isModuleAllowed, user)) }))
+            .map((group) => ({ ...group, items: group.items.filter((item) => canViewNavigationItem(item, isModuleAllowed, user, isNavItemEnabled)) }))
             .filter((group) => group.items.length > 0),
     };
 

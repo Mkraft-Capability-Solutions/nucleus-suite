@@ -14,7 +14,7 @@ const PUBLIC_PATHS = new Set([
   '/robots.txt',
 ]);
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // 1. Allow public static assets and API routes
@@ -28,13 +28,14 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. Check for active session cookie
+  // Better Auth session cookie (cookiePrefix "mkraft"; "__Secure-" on HTTPS). Presence only gates
+  // navigation; every API call validates the session itself.
   const sessionCookie =
-    request.cookies.get('nucleus_session')?.value ||
-    request.cookies.get('nucleus_token')?.value ||
-    request.cookies.get('better-auth.session_token')?.value;
+    request.cookies.get('mkraft.session_token')?.value ||
+    request.cookies.get('__Secure-mkraft.session_token')?.value;
 
   // 3. For protected routes (like /workspace and /admin), if no session cookie exists, redirect to /login
-  if ((pathname.startsWith('/workspace') || pathname.startsWith('/admin')) && !sessionCookie) {
+  if ((pathname.startsWith('/workspace') || pathname.startsWith('/admin') || pathname.startsWith('/platform')) && !sessionCookie) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);

@@ -57,6 +57,9 @@ import { useAuth } from '@/context/AuthContext';
 import RoleProtected from '../auth/RoleProtected';
 import { ROLES } from '@/utils/permissions';
 import { getOperationalModule } from '@/lib/operational-module-registry';
+import { useUiMode } from '@/context/UiModeContext';
+import CoreHrWorkspace from '@/modules/core-hr/CoreHrWorkspace';
+import DashboardWorkspace from '@/modules/dashboards/DashboardWorkspace';
 
 const ROLE_FALLBACKS = readData("components.Workspace.MainWorkspace", "ROLE_FALLBACKS_1");
 
@@ -72,7 +75,8 @@ const MainWorkspace = ({
     onSelectDomain,
     searchQuery = '',
     activeConsole = readData("components.Workspace.MainWorkspace", "defaultValue_1"),
-    onSelectConsole
+    onSelectConsole,
+    onOpenNav
 }) => {
   const { t } = useTranslation();
     const {t: translateText}=useTranslation();
@@ -90,6 +94,10 @@ const MainWorkspace = ({
         openAccessControl
     } = useAuth();
     const currentRole = authUser?.role || ROLES.SUPER_ADMIN;
+    // Classic or Redesigned: a module renders its redesign only once that redesign is complete.
+    const { isRedesigned } = useUiMode();
+    const coreHrRedesigned = isRedesigned('core_hr');
+    const dashboardsRedesigned = isRedesigned('dashboards');
     const activeProfile = ROLE_FALLBACKS[currentRole] || ROLE_FALLBACKS.SUPER_ADMIN;
     const rawName = authUser?.name || user?.name || activeProfile.name;
     const effectiveName = rawName || activeProfile.name;
@@ -1103,12 +1111,27 @@ const MainWorkspace = ({
                     )}
 
                     {/* Display Content based on Active Tab */}
-                    {activeTab === 'dashboard' && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>{translateText("components.Workspace.MainWorkspace","text_e53d7af293")}</button>}{renderDashboard()}</>}
+                    {activeTab === 'dashboard' && dashboardsRedesigned && (
+                        <DashboardWorkspace
+                            activeConsole={activeDashboardScreen}
+                            permittedConsoles={permittedConsoleIds}
+                            onSelectConsole={handleSetConsole}
+                            onNavigate={onTabChange}
+                            onOpenNav={onOpenNav}
+                            userName={effectiveName}
+                            announcements={announcements}
+                            onOpenAnnouncements={() => setIsCMSModalOpen(true)}
+                            personal={supportsPersonalDashboard ? <PersonalDashboard key={`${authUser?.email}:${activeDashboardScreen}`} consoleId={activeDashboardScreen} onNavigate={onTabChange} onShowConsole={() => {}} /> : null}
+                        />
+                    )}
+                    {activeTab === 'dashboard' && !dashboardsRedesigned && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>{translateText("components.Workspace.MainWorkspace","text_e53d7af293")}</button>}{renderDashboard()}</>}
 
             {/* Module 1: People Core */}
             {activeTab === 'people_core' && (
                 <RoleProtected moduleKey="people_core" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
-                    <PeopleCoreView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
+                    {coreHrRedesigned
+                        ? <CoreHrWorkspace tab="people_core" activeSubFeature={activeSubFeature} />
+                        : <PeopleCoreView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />}
                 </RoleProtected>
             )}
 
@@ -1229,7 +1252,9 @@ const MainWorkspace = ({
 
             {activeTab === 'team' && (
                 <RoleProtected moduleKey="team" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE, ROLES.TRAINEE]}>
-                    <TeamView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
+                    {coreHrRedesigned
+                        ? <CoreHrWorkspace tab="team" activeSubFeature={activeSubFeature} />
+                        : <TeamView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />}
                 </RoleProtected>
             )}
 
