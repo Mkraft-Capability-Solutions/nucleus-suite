@@ -686,7 +686,14 @@ const AppContent = () => {
       )}
 
       {/* Redesigned shell: the assistant pill (bottom centre, movable), floating card or right-docked panel */}
-      {shellRedesigned && canUseAIAssistant && <AssistantDock open={isCopilotOpen} onOpenChange={setIsCopilotOpen} />}
+      {shellRedesigned && canUseAIAssistant && (
+        <AssistantDock
+          open={isCopilotOpen}
+          onOpenChange={setIsCopilotOpen}
+          activeTab={activeTab}
+          onNavigate={(tab) => { setActiveTab(tab); setShowCatalog(false); }}
+        />
+      )}
 
       {/* Revolutionary Multimodal Neural HUD */}
       {!shellRedesigned && <QuantumCopilot
