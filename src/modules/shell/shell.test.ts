@@ -92,7 +92,7 @@ describe("side menu", () => {
     const allowed = AREAS.filter((area) => area.id !== "payroll_finance");
     const { rail, more } = railAreas(["platform", "payroll_finance", "dashboard", "platform"], allowed);
     expect(rail.map((area) => area.id)).toEqual(["platform", "dashboard"]);
-    expect(more.map((area) => area.id)).toEqual(["core_hr", "talent", "workforce_ops", "analytics_ai"]);
+    expect(more.map((area) => area.id)).toEqual(["core_hr", "documents", "talent", "workforce_ops", "analytics_ai"]);
     expect(railAreas(null, AREAS).rail.map((area) => area.id)).toEqual(DEFAULT_RAIL);
   });
 

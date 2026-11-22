@@ -125,7 +125,7 @@ const DOCUMENT_ACTIONS_SELECT = `select doc.id,
     where dv.tenant_id = doc.tenant_id and dv.document_id = doc.id
     order by dv.created_at desc limit 1
   ) latest on true
-  where doc.tenant_id = $1 and doc.employee_id = $2::uuid
+  where doc.tenant_id = $1 and doc.employee_id = $2::uuid and doc.record_status <> 'deleted'
     and (coalesce(latest.scan, 'pending_scan') = 'pending_scan'
       or (expiry.expires_on is not null
         and expiry.expires_on <= to_char(current_date + interval '60 days', 'YYYY-MM-DD')))

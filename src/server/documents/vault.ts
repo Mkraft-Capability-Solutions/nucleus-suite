@@ -107,7 +107,7 @@ export async function listDocumentVault(access: Access, search: string): Promise
   const [rows] = await tenantTx(access, [
     sqlClient.query(
       `${DOCUMENT_VAULT_SELECT}
-       where d.tenant_id = $1
+       where d.tenant_id = $1 and d.record_status <> 'deleted'
          and (coalesce(d.attributes->>'title', '') || ' ' || coalesce(d.attributes->>'code', '') || ' ' || coalesce(dt.attributes->>'name', '') || ' ' || coalesce(e.employee_code, '')) ilike $2
        order by coalesce(d.attributes->>'code', d.id::text) asc limit 100`,
       [access.tenantId, like],
@@ -120,7 +120,7 @@ export async function listDocumentVault(access: Access, search: string): Promise
 export async function getDocumentVaultRecord(access: Access, id: string) {
   enforce(access.context, "employee.read", { tenantId: access.tenantId });
   const [rows] = await tenantTx(access, [
-    sqlClient.query(`${DOCUMENT_VAULT_SELECT} where d.tenant_id = $1 and d.id = $2::uuid limit 1`, [access.tenantId, id]),
+    sqlClient.query(`${DOCUMENT_VAULT_SELECT} where d.tenant_id = $1 and d.id = $2::uuid and d.record_status <> 'deleted' limit 1`, [access.tenantId, id]),
   ]);
   const raw = (rows as DocumentVaultQueryRow[])[0];
   if (!raw) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The requested record was not found." });

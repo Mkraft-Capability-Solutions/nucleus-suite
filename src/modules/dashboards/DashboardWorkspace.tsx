@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import useSWR from "swr";
-import { LayoutGrid, Megaphone, RotateCw, SlidersHorizontal, Star, X } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, LayoutGrid, Megaphone, RotateCw, SlidersHorizontal, Star, X } from "lucide-react";
 import type { Board, BoardId, FilterOptions } from "@/server/dashboards/types";
 import { Alert, Button, ErrorState, PageHeader, Panel, Scope, Select, SkeletonRows, cx, ui } from "@/design/redesign/ui";
 import PanelView from "./PanelView";
+import SummaryBand from "./SummaryBand";
 import { CustomiseQuickActions, QuickActionsBar, useQuickActions } from "@/modules/shell/QuickActions";
 import { usePreference } from "@/modules/shell/quick-actions";
 import { formatCompact, formatDate } from "./format";
@@ -229,6 +230,17 @@ export default function DashboardWorkspace({ activeConsole, permittedConsoles, o
                         <>
                           <span className={styles.kpiLabel}>{kpi.label}</span>
                           <span className={styles.kpiValue}>{value}{kpi.of !== null && kpi.of !== undefined && kpi.value !== null && <span className={styles.kpiOf}> / {kpi.of.toLocaleString("en-IN")}</span>}</span>
+                          {kpi.delta && kpi.value !== null && (() => {
+                            const { value: change, better } = kpi.delta;
+                            const good = better === "neutral" || change === 0 ? "neutral" : (change > 0) === (better === "up") ? "good" : "bad";
+                            const Icon = change > 0 ? ArrowUpRight : change < 0 ? ArrowDownRight : ArrowRight;
+                            const amount = `${change > 0 ? "+" : change < 0 ? "−" : ""}${formatCompact(Math.abs(change), kpi.delta.format, currency)}${kpi.delta.unit ?? ""}`;
+                            return (
+                              <span className={cx(styles.kpiDelta, good === "good" ? styles.deltaGood : good === "bad" ? styles.deltaBad : styles.deltaNeutral)}>
+                                <Icon size={13} aria-hidden="true" />{amount} <span className={styles.deltaLabel}>{kpi.delta.label}</span>
+                              </span>
+                            );
+                          })()}
                           {kpi.hint && <span className={styles.kpiHint}>{kpi.hint}</span>}
                         </>
                       );
@@ -241,13 +253,7 @@ export default function DashboardWorkspace({ activeConsole, permittedConsoles, o
                   </ul>
                 )}
 
-                {data.insights.length > 0 && (
-                  <section className={cx(ui.panel, ui.highlight, styles.summary)} aria-labelledby="board-summary">
-                    <h2 id="board-summary" className={ui.panelTitle}>Summary</h2>
-                    <ul>{data.insights.map((insight) => <li key={insight}>{insight}</li>)}</ul>
-                    <p className={styles.summaryNote}>Computed from {data.scope.audience.toLowerCase()} at {new Date(data.generatedAt).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}.</p>
-                  </section>
-                )}
+                {data.insights.length > 0 && <SummaryBand insights={data.insights} evidence={data.evidence} audience={data.scope.audience} generatedAt={data.generatedAt} />}
 
                 <div className={styles.grid}>
                   {data.panels.map((panel) => <PanelView key={`${data.board}-${panel.id}`} panel={panel} currency={currency} onNavigate={onNavigate} />)}

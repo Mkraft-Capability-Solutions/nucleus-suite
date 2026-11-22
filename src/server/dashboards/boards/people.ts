@@ -2,12 +2,12 @@ import "server-only";
 
 import {
   annualisedAttrition, barPanel, dayLabel, partsPanel, headcountInsight, heatmapPanel, humanise, largest, linePanel,
-  listPanel, monthLabel, num, pct, periodLabel, plural, round, tablePanel, TENURE_BANDS, withSource,
+  listPanel, monthLabel, num, numOrNull, pct, periodLabel, plural, round, tablePanel, TENURE_BANDS, withSource,
 } from "../compose";
 import { can, runAll, scoped, type Row, type Scope } from "../query";
-import type { Kpi, Panel } from "../types";
+import type { Insight, Kpi, Panel } from "../types";
 
-type Built = { kpis: Kpi[]; panels: Panel[]; insights: string[]; employeesInScope: number };
+type Built = { kpis: Kpi[]; panels: Panel[]; insights: Array<string | Insight>; employeesInScope: number; evidence?: string[] };
 
 const rowsOf = (rows: Row[] | null) => rows ?? [];
 const first = (rows: Row[] | null): Row => rows?.[0] ?? {};
@@ -16,6 +16,29 @@ const named = (rows: Row[] | null) => rowsOf(rows).map((row) => ({ name: String(
 /* ================================================================== */
 /* S1 · People command centre                                          */
 /* ================================================================== */
+
+/** Attrition level by annualised rate: the colour bands of "Attrition by function". */
+export function attritionLevel(rate: number): "positive" | "attention" | "risk" {
+  return rate >= 20 ? "risk" : rate >= 10 ? "attention" : "positive";
+}
+
+/**
+ * A simple run-rate model: what is already committed each month, plus the average net monthly
+ * change of the last year carried forward, with an 80% range from how much that change varied.
+ */
+export function headcountModel(committed: number[], monthlyNet: number[]) {
+  const mean = monthlyNet.length ? monthlyNet.reduce((sum, value) => sum + value, 0) / monthlyNet.length : 0;
+  const variance = monthlyNet.length > 1 ? monthlyNet.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (monthlyNet.length - 1) : 0;
+  const spread = Math.sqrt(variance);
+  return committed.map((base, index) => {
+    const horizon = index + 1;
+    const centre = base + mean * horizon;
+    const width = 1.2816 * spread * Math.sqrt(horizon);
+    return { centre: round(centre, 0), lower: round(Math.max(0, centre - width), 0), upper: round(centre + width, 0) };
+  });
+}
+
+const FORECAST_MONTHS = 6;
 
 export async function peopleCommandCentre(scope: Scope): Promise<Built> {
   const months = scope.filters.months;
@@ -29,9 +52,18 @@ export async function peopleCommandCentre(scope: Scope): Promise<Built> {
         count(*) filter (where joined_on <= t.d - make_interval(months => $5::int)
           and (exit_date is null or exit_date > t.d - make_interval(months => $5::int))
           and (active or exit_date is not null))::int as headcount_at_start,
+        count(*) filter (where joined_on > t.d - make_interval(months => $5::int * 2) and joined_on <= t.d - make_interval(months => $5::int))::int as joiners_prev,
+        count(*) filter (where exit_date > t.d - make_interval(months => $5::int * 2) and exit_date <= t.d - make_interval(months => $5::int))::int as leavers_prev,
+        count(*) filter (where joined_on <= t.d - make_interval(months => $5::int * 2)
+          and (exit_date is null or exit_date > t.d - make_interval(months => $5::int * 2))
+          and (active or exit_date is not null))::int as headcount_at_prev_start,
         coalesce(avg(case when active and joined_on <= t.d then (t.d - joined_on) / 365.25 end), 0)::float as avg_tenure,
-        count(*) filter (where active and joined_on <= t.d and department is null)::int as no_department
+        count(*) filter (where active and joined_on <= t.d and department is null)::int as no_department,
+        count(*)::int as records,
+        count(*) filter (where not active)::int as former,
+        to_char(min(joined_on), 'YYYY') as earliest
       from emp, today t`, [months]),
+    // Always a year of history: the model needs it even when a shorter period is shown.
     trend: scoped(scope, `
       with months as (
         select gs::date as month_start,
@@ -43,9 +75,38 @@ export async function peopleCommandCentre(scope: Scope): Promise<Built> {
         count(e.id) filter (where e.joined_on <= m.month_end and (e.exit_date is null or e.exit_date > m.month_end)
                               and (e.active or e.exit_date is not null))::int as headcount,
         count(e.id) filter (where e.joined_on between m.month_start and m.month_end)::int as joiners,
-        count(e.id) filter (where e.exit_date between m.month_start and m.month_end)::int as leavers
+        count(e.id) filter (where e.exit_date between m.month_start and m.month_end)::int as leavers,
+        (select count(*) from employee_job_history h where h.tenant_id = $1::uuid and h.employee_id in (select id from emp)
+          and h.movement_type in ('promotion', 'transfer', 'group_transfer', 'redesignation', 'secondment', 'demotion')
+          and h.effective_from between m.month_start and m.month_end
+          and not exists (select 1 from employee_job_history c where c.tenant_id = h.tenant_id and c.supersedes_id = h.id))::int as moves
       from months m left join emp e on true
-      group by m.month_start order by m.month_start`, [trendMonths]),
+      group by m.month_start, m.month_end order by m.month_start`, [Math.max(trendMonths, 12)]),
+    // Headcount already committed: today's active staff, plus joiners with a joining date by each
+    // month end, less exits with a last working day by then.
+    committed: scoped(scope, `
+      select to_char(gs, 'YYYY-MM') as month,
+        (select count(*) filter (where active and joined_on <= t.d) + count(*) filter (where joining_date > t.d and joining_date <= (gs + interval '1 month' - interval '1 day')::date) from emp)::int
+        - (select count(*) from offboarding_cases o join employments em on em.tenant_id = o.tenant_id and em.id = o.employment_id join emp e on e.id = em.employee_id
+            where o.tenant_id = $1::uuid and coalesce(o.attributes->>'status', '') not in ('settled', 'closed', 'completed', 'cancelled', 'withdrawn')
+              and o.attributes->>'last_working_day' ~ '^\\d{4}-\\d{2}-\\d{2}$' and (o.attributes->>'last_working_day')::date > t.d
+              and (o.attributes->>'last_working_day')::date <= (gs + interval '1 month' - interval '1 day')::date)::int as committed
+      from today t, generate_series(date_trunc('month', t.d::timestamp) + interval '1 month', date_trunc('month', t.d::timestamp) + make_interval(months => $5::int), interval '1 month') gs
+      order by gs`, [FORECAST_MONTHS]),
+    // Sanctioned strength in force at each month end: the manpower plan lines effective by then.
+    plan: scoped(scope, `
+      select to_char(gs, 'YYYY-MM') as month,
+        (select sum(case when ml.attributes->>'sanctioned' ~ '^[0-9]+$' then (ml.attributes->>'sanctioned')::int end)
+          from manpower_plan_lines ml
+          left join departments dp on dp.tenant_id = ml.tenant_id and dp.id = ml.department_id
+          left join locations lo on lo.tenant_id = ml.tenant_id and lo.id = ml.location_id
+          where ml.tenant_id = $1::uuid and ml.attributes->>'effective_from' ~ '^\\d{4}-\\d{2}-\\d{2}'
+            and left(ml.attributes->>'effective_from', 10)::date <= (gs + interval '1 month' - interval '1 day')::date
+            and ($3::text is null or dp.attributes->>'name' = $3::text)
+            and ($2::text is null or lo.attributes->>'code' = $2::text or lo.attributes->>'city' = $2::text))::int as planned
+      from today t, generate_series(date_trunc('month', t.d::timestamp) - make_interval(months => $5::int - 1),
+                                    date_trunc('month', t.d::timestamp) + make_interval(months => $6::int), interval '1 month') gs
+      order by gs`, [trendMonths, FORECAST_MONTHS]),
     byDepartment: scoped(scope, `
       select coalesce(department, 'Not recorded') as name,
         count(*) filter (where active and joined_on <= t.d)::int as value,
@@ -72,6 +133,14 @@ export async function peopleCommandCentre(scope: Scope): Promise<Built> {
       select count(*) filter (where a.status in ('present', 'half_day'))::int as present, count(*)::int as recorded
       from attendance_days a join emp e on e.id = a.employee_id, today t
       where a.tenant_id = $1::uuid and a.attendance_date = t.d and e.active`),
+    // The last earlier day with attendance recorded, for the change on the attendance tile.
+    attendanceBefore: scoped(scope, `
+      select to_char(a.attendance_date, 'YYYY-MM-DD') as day, count(*) filter (where a.status in ('present', 'half_day'))::int as present,
+        count(*) filter (where a.status in ('present', 'half_day', 'absent', 'leave'))::int as recorded
+      from attendance_days a join emp e on e.id = a.employee_id, today t
+      where a.tenant_id = $1::uuid and a.attendance_date < t.d and a.attendance_date >= t.d - 10
+        and a.status in ('present', 'half_day', 'absent', 'leave')
+      group by a.attendance_date order by a.attendance_date desc limit 1`),
   });
 
   const summary = first(data.summary);
@@ -80,59 +149,96 @@ export async function peopleCommandCentre(scope: Scope): Promise<Built> {
   const joiners = num(summary.joiners);
   const atStart = num(summary.headcount_at_start);
   const attrition = annualisedAttrition(leavers, (headcount + atStart) / 2, months);
+  const attritionBefore = annualisedAttrition(num(summary.leavers_prev), (atStart + num(summary.headcount_at_prev_start)) / 2, months);
   const attendance = first(data.attendance);
   const recorded = num(attendance.recorded);
+  const attendanceRate = recorded ? pct(num(attendance.present), headcount) : null;
+  const before = first(data.attendanceBefore);
+  const attendanceBefore = num(before.recorded) ? pct(num(before.present), num(before.recorded)) : null;
   const period = periodLabel(months);
+  const previousPeriod = months === 1 ? "the month before" : `the ${months} months before`;
+  const versusPrevious = months === 1 ? "vs prior month" : `vs prior ${months} months`;
 
-  const kpis: Kpi[] = [
-    { id: "headcount", label: "Active headcount", value: data.summary ? headcount : null, format: "count", hint: "Employees on the rolls today", target: "people_core" },
-    { id: "joiners", label: "Joiners", value: data.summary ? joiners : null, format: "count", hint: period, tone: "positive" },
-    { id: "leavers", label: "Leavers", value: data.summary ? leavers : null, format: "count", hint: period, tone: leavers > 0 ? "attention" : "neutral" },
-    { id: "attrition", label: "Annualised attrition", value: attrition, format: "percent", hint: attrition === null ? "Needs headcount history" : `Leavers ÷ average headcount, ${period}`, tone: attrition !== null && attrition >= 15 ? "risk" : "neutral" },
-    { id: "attendance", label: "Attendance today", value: recorded ? pct(num(attendance.present), headcount) : null, format: "percent", hint: recorded ? `${num(attendance.present).toLocaleString("en-IN")} present of ${headcount.toLocaleString("en-IN")}` : "No attendance recorded today", target: "attendance" },
-    { id: "tenure", label: "Average tenure", value: headcount ? round(num(summary.avg_tenure), 1) : null, format: "years", hint: "Active employees" },
-  ];
-
-  const trend = rowsOf(data.trend);
+  const fullTrend = rowsOf(data.trend);
+  const trend = fullTrend.slice(-trendMonths);
   const monthKeys = trend.map((row) => String(row.month));
   const monthNames = monthKeys.map(monthLabel);
   const headcountSeries = trend.map((row) => num(row.headcount));
+  const lastMonthEnd = headcountSeries.length > 1 ? headcountSeries[headcountSeries.length - 2]! : null;
+
+  const kpis: Kpi[] = [
+    { id: "headcount", label: "Active headcount", value: data.summary ? headcount : null, format: "count", hint: "Employees on the rolls today", target: "people_core",
+      ...(lastMonthEnd !== null && data.trend ? { delta: { value: headcount - lastMonthEnd, format: "count" as const, label: `vs end ${monthNames[monthNames.length - 2]}`, better: "neutral" as const } } : {}) },
+    { id: "joiners", label: "Joiners", value: data.summary ? joiners : null, format: "count", hint: period, tone: "positive",
+      ...(data.summary ? { delta: { value: joiners - num(summary.joiners_prev), format: "count" as const, label: versusPrevious, better: "neutral" as const } } : {}) },
+    { id: "leavers", label: "Leavers", value: data.summary ? leavers : null, format: "count", hint: period, tone: leavers > 0 ? "attention" : "neutral",
+      ...(data.summary ? { delta: { value: leavers - num(summary.leavers_prev), format: "count" as const, label: versusPrevious, better: "down" as const } } : {}) },
+    { id: "attrition", label: "Annualised attrition", value: attrition, format: "percent", hint: attrition === null ? "Needs headcount history" : `Leavers ÷ average headcount, ${period}`, tone: attrition !== null && attrition >= 15 ? "risk" : "neutral",
+      ...(attrition !== null && attritionBefore !== null ? { delta: { value: round(attrition - attritionBefore, 1), format: "decimal" as const, unit: " pts", label: versusPrevious, better: "down" as const } } : {}) },
+    { id: "attendance", label: "Attendance today", value: attendanceRate, format: "percent", hint: recorded ? `${num(attendance.present).toLocaleString("en-IN")} present of ${headcount.toLocaleString("en-IN")}` : attendanceBefore !== null ? `No attendance recorded today · ${dayLabel(String(before.day))}: ${attendanceBefore}%` : "No attendance recorded today", target: "attendance",
+      ...(attendanceRate !== null && attendanceBefore !== null ? { delta: { value: round(attendanceRate - attendanceBefore, 1), format: "decimal" as const, unit: " pts", label: `vs ${dayLabel(String(before.day))}`, better: "up" as const } } : {}) },
+    { id: "tenure", label: "Average tenure", value: headcount ? round(num(summary.avg_tenure), 1) : null, format: "years", hint: "Active employees" },
+  ];
+
+  // Workforce momentum: actual, plan in force and a modelled six months ahead.
+  const committed = rowsOf(data.committed);
+  const forecastNames = committed.map((row) => monthLabel(String(row.month)));
+  const monthlyNet = fullTrend.slice(-12).map((row) => num(row.joiners) - num(row.leavers));
+  const model = headcountModel(committed.map((row) => num(row.committed)), monthlyNet);
+  const planRows = rowsOf(data.plan);
+  const planned = planRows.map((row) => numOrNull(row.planned));
+  const lastActual = headcountSeries.length - 1;
+  const atJoin = (values: number[]) => [...headcountSeries.map((value, index) => (index === lastActual ? value : null)), ...values];
+  const hasPlan = planned.some((value) => value !== null);
 
   const departments = rowsOf(data.byDepartment).map((row) => {
     const value = num(row.value);
     const departmentLeavers = num(row.leavers);
-    const rate = annualisedAttrition(departmentLeavers, (value + num(row.at_start)) / 2, months);
+    const rate = annualisedAttrition(departmentLeavers, (value + num(row.at_start)) / 2, months) ?? (departmentLeavers > 0 ? 100 : 0);
     return { name: String(row.name), value, leavers: departmentLeavers, rate };
   });
   const byHeadcount = [...departments].filter((row) => row.value > 0).sort((a, b) => b.value - a.value).slice(0, 12);
-  const byAttrition = departments.filter((row) => row.leavers > 0 && row.rate !== null).sort((a, b) => (b.rate ?? 0) - (a.rate ?? 0)).slice(0, 12);
+  const byAttrition = departments.filter((row) => row.value > 0 || row.leavers > 0).sort((a, b) => b.rate - a.rate || b.value - a.value).slice(0, 14).reverse();
+  const levels = [["positive", "Under 10%"], ["attention", "10–20%"], ["risk", "20% and over"]] as const;
   const locations = named(data.byLocation).slice(0, 12);
   const tenure = named(data.tenure);
 
   const panels: Panel[] = [
-    withSource(data.trend, linePanel(
-      { id: "headcount-trend", title: "Headcount trend", subtitle: `Month-end headcount, last ${trendMonths} months`, span: 7, format: "count", emptyMessage: "Appears once employees with joining dates are recorded.", target: "people_core" },
-      monthNames, [{ name: "Headcount", data: headcountSeries }],
+    withSource(data.trend, {
+      ...linePanel(
+        { id: "headcount-trend", title: "Workforce momentum", subtitle: `Month-end headcount, plan and a ${FORECAST_MONTHS}-month model`, span: 7, format: "count", emptyMessage: "Appears once employees with joining dates are recorded.", target: "people_core",
+          note: "Plan: sanctioned strength in force from the manpower plan. Model: joiners and exits already on record, plus the last 12 months' average net monthly change; the band is its 80% range." },
+        [...monthNames, ...forecastNames],
+        [
+          { name: "Actual", data: [...headcountSeries, ...forecastNames.map(() => null)], hue: 0 },
+          ...(hasPlan ? [{ name: "Plan", data: planned, hue: 2, dotted: true }] : []),
+          ...(model.length ? [{ name: "Modelled", data: atJoin(model.map((step) => step.centre)), hue: 6, dashed: true }] : []),
+        ],
+      ),
+      ...(model.length ? { band: { name: "Modelled range (80%)", of: "Modelled", lower: atJoin(model.map((step) => step.lower)), upper: atJoin(model.map((step) => step.upper)) } } : {}),
+    }),
+    withSource(data.byDepartment, barPanel(
+      { id: "attrition-department", title: "Attrition by function", subtitle: `Annualised %, ${period}, highest first`, span: 6, format: "percent", emptyMessage: `No one has left in the ${period}.`,
+        note: "Leavers ÷ average headcount of the department, scaled to a year. Under 10% healthy, 10–20% watch, 20% and over act." },
+      byAttrition.map((row) => row.name),
+      levels.map(([tone, name]) => ({ name, tone, stack: "level", data: byAttrition.map((row) => (attritionLevel(row.rate) === tone ? row.rate : null)) })),
+      true,
     )),
     withSource(data.trend, barPanel(
-      { id: "joiners-leavers", title: "Joiners and leavers", subtitle: "By month", span: 5, format: "count", emptyMessage: "Appears once joining or exit dates are recorded." },
-      monthNames, [{ name: "Joiners", data: trend.map((row) => num(row.joiners)) }, { name: "Leavers", data: trend.map((row) => num(row.leavers)) }],
+      { id: "joiners-leavers", title: "Movement by month", subtitle: "Joiners, internal moves and leavers", span: 6, format: "count", emptyMessage: "Appears once joining, move or exit dates are recorded." },
+      monthNames, [{ name: "Joiners", data: trend.map((row) => num(row.joiners)), hue: 2 }, { name: "Internal moves", data: trend.map((row) => num(row.moves)), hue: 6 }, { name: "Leavers", data: trend.map((row) => num(row.leavers)), hue: 7 }],
     )),
     withSource(data.byDepartment, barPanel(
       { id: "department", title: "Headcount by department", subtitle: "Active employees", span: 6, format: "count", emptyMessage: "Appears once employees are recorded.", target: "people_core" },
-      byHeadcount.map((row) => row.name).reverse(), [{ name: "Employees", data: byHeadcount.map((row) => row.value).reverse() }], true,
-    )),
-    withSource(data.byDepartment, barPanel(
-      { id: "attrition-department", title: "Attrition by department", subtitle: `Annualised, ${period}`, span: 6, format: "percent", emptyMessage: `No one has left in the ${period}.` },
-      byAttrition.map((row) => row.name).reverse(), [{ name: "Attrition %", data: byAttrition.map((row) => row.rate ?? 0).reverse() }], true,
+      byHeadcount.map((row) => row.name).reverse(), [{ name: "Employees", data: byHeadcount.map((row) => row.value).reverse(), hue: 0 }], true,
     )),
     withSource(data.byLocation, barPanel(
       { id: "location", title: "Headcount by location", subtitle: "Active employees", span: 6, format: "count", emptyMessage: "Appears once employees have locations recorded." },
-      locations.map((row) => row.name).reverse(), [{ name: "Employees", data: locations.map((row) => row.value).reverse() }], true,
+      locations.map((row) => row.name).reverse(), [{ name: "Employees", data: locations.map((row) => row.value).reverse(), hue: 2 }], true,
     )),
     withSource(data.tenure, barPanel(
       { id: "tenure", title: "Length of service", subtitle: "Active employees", span: 6, format: "count", emptyMessage: "Appears once joining dates are recorded." },
-      TENURE_BANDS, [{ name: "Employees", data: TENURE_BANDS.map((band) => tenure.find((row) => row.name === band)?.value ?? 0) }],
+      TENURE_BANDS, [{ name: "Employees", data: TENURE_BANDS.map((band) => tenure.find((row) => row.name === band)?.value ?? 0), hue: 6 }],
     )),
     withSource(data.category, partsPanel(
       { id: "category", title: "Workforce mix", subtitle: "By worker category", span: 6, format: "count", emptyMessage: "Appears once employees are recorded." },
@@ -144,18 +250,48 @@ export async function peopleCommandCentre(scope: Scope): Promise<Built> {
     )),
   ];
 
-  const insights: string[] = [];
-  const headline = headcountInsight(monthKeys, headcountSeries);
-  if (headline) insights.push(headline);
-  if (joiners || leavers) insights.push(`${plural(joiners, "joiner")} and ${plural(leavers, "leaver")} in the ${period}.`);
-  const topAttrition = byAttrition[0];
-  if (topAttrition && topAttrition.rate !== null) insights.push(`Attrition is highest in ${topAttrition.name}: ${topAttrition.rate}% annualised (${plural(topAttrition.leavers, "leaver")}).`);
-  const biggest = largest(byHeadcount);
-  if (biggest && headcount) insights.push(`${biggest.name} is the largest department with ${pct(biggest.value, headcount, 0)}% of headcount.`);
+  // Findings: what to act on first (ranked by the board), then context the tiles do not already say.
+  const insights: Array<string | Insight> = [];
+  const topAttrition = [...byAttrition].reverse().find((row) => row.leavers > 0);
+  if (topAttrition) {
+    const level = attritionLevel(topAttrition.rate);
+    insights.push({
+      tone: level === "risk" ? "risk" : level === "attention" ? "attention" : "positive", title: `Attrition in ${topAttrition.name}`, figure: `${topAttrition.rate}%`, panel: "attrition-department",
+      text: `${plural(topAttrition.leavers, "leaver")} in the ${period}, annualised${attrition !== null ? `; ${attrition}% across the organisation` : ""}.`,
+    });
+  }
+  const lastModel = model[model.length - 1];
+  const lastPlan = planned[planned.length - 1];
+  const horizon = forecastNames[forecastNames.length - 1];
+  if (lastModel && lastPlan !== null && lastPlan !== undefined) {
+    const gap = lastPlan - lastModel.centre;
+    insights.push(gap > 0
+      ? { tone: "attention", title: `Short of plan by ${horizon}`, figure: `${gap}`, panel: "headcount-trend", text: `The model reaches ${lastModel.centre} against a plan of ${lastPlan}: ${plural(gap, "position")} still to fill.` }
+      : { tone: "positive", title: `On plan by ${horizon}`, figure: `${lastModel.centre}`, panel: "headcount-trend", text: `The model reaches ${lastModel.centre}, ${gap === 0 ? "level with" : "above"} the plan of ${lastPlan}.` });
+  }
+  if (attrition !== null && attritionBefore !== null && Math.abs(attrition - attritionBefore) >= 2) {
+    const rising = attrition > attritionBefore;
+    insights.push({ tone: rising ? "attention" : "positive", title: rising ? "Attrition rising" : "Attrition falling", figure: `${rising ? "+" : "−"}${round(Math.abs(attrition - attritionBefore), 1)} pts`, panel: "attrition-department",
+      text: `${attrition}% annualised, against ${attritionBefore}% in ${previousPeriod}.` });
+  }
   const noDepartment = num(summary.no_department);
-  if (noDepartment) insights.push(`${plural(noDepartment, "active employee has", "active employees have")} no department recorded.`);
+  if (noDepartment) insights.push({ tone: "attention", title: "Records without a department", figure: `${noDepartment}`, panel: "department", text: `${plural(noDepartment, "active employee is", "active employees are")} left out of the department views.` });
+  const headline = headcountInsight(monthKeys, headcountSeries);
+  if (headline) insights.push({ tone: "info", text: headline, panel: "headcount-trend" });
+  const biggest = largest(byHeadcount);
+  if (biggest && headcount) insights.push({ tone: "info", text: `${biggest.name} is the largest department, with ${pct(biggest.value, headcount, 0)}% of headcount.`, panel: "department" });
+  const newcomers = tenure.find((row) => row.name === "Under 1 year")?.value ?? 0;
+  if (newcomers && headcount) insights.push({ tone: "info", text: `${pct(newcomers, headcount, 0)}% of people have been here less than a year.`, panel: "tenure" });
 
-  return { kpis, panels, insights, employeesInScope: headcount };
+  const evidence = data.summary ? [
+    `${plural(num(summary.records), "employee record")} read: ${headcount.toLocaleString("en-IN")} active today, ${num(summary.former).toLocaleString("en-IN")} former.`,
+    `Movement from ${monthNames[0] ?? "—"} to today; joining dates go back to ${summary.earliest ?? "—"}.`,
+    `Attrition uses last working days from exit cases, ${period}, against the average headcount over the same period.`,
+    ...(noDepartment ? [`${plural(noDepartment, "active employee")} without a department ${noDepartment === 1 ? "is" : "are"} left out of the department views.`] : []),
+    ...(model.length ? [`The model's monthly net change: average ${round(monthlyNet.reduce((sum, value) => sum + value, 0) / Math.max(monthlyNet.length, 1), 2)} over ${plural(monthlyNet.length, "month")}.`] : []),
+  ] : [];
+
+  return { kpis, panels, insights, employeesInScope: headcount, evidence };
 }
 
 /* ================================================================== */

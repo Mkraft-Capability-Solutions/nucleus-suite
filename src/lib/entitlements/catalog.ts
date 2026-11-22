@@ -97,6 +97,7 @@ export const MODULE_CATALOG: readonly ModuleDefinition[] = [
           { key: "bulk_import", name: "Bulk import", description: "Import employees from a spreadsheet.", defaultEnabled: true, api: ["/v1/people/import-preview", "/v1/people/import-apply", "/v1/bulk-import"] },
           { key: "profile_photos", name: "Profile photos", description: "Employees and HR can upload profile photos.", defaultEnabled: true, api: ["/v1/operations/photos"] },
           { key: "career_history", name: "Career history", description: "Every position an employee has held across the group's companies, as a timeline and a tree, with recorded moves and corrections.", defaultEnabled: true, api: ["/v1/career-history"] },
+          { key: "employee_flags", name: "Warnings and alerts", description: "Rules that flag passport and visa expiry, medical examinations due and retirement; a message after sign-in for the employee and their manager, and a read-only list for HR.", defaultEnabled: true, nav: ["employee_flags"], api: ["/v1/employee-flags"] },
         ],
       },
       {
@@ -134,7 +135,7 @@ export const MODULE_CATALOG: readonly ModuleDefinition[] = [
       },
       { key: "assignments", name: "Assignments", description: "Job, location and policy assignments over time.", defaultEnabled: true, nav: ["assignment_admin"], api: ["/v1/employee-assignments"] },
       { key: "access_scopes", name: "Access scopes", description: "Which employees each manager or HR user can see.", defaultEnabled: true, nav: ["access_scope"], api: ["/v1/access-scopes", "/v1/commands/grant_location"] },
-      { key: "documents", name: "Document vault", description: "Employee documents with expiry tracking.", defaultEnabled: true, nav: ["document_vault"], api: ["/v1/documents", "/v1/ops/modules/document_vault"] },
+      { key: "documents", name: "Documents", description: "Employee documents filed by company, department and person, with expiry tracking.", defaultEnabled: true, nav: ["document_vault", "documents"], api: ["/v1/documents", "/v1/ops/modules/document_vault"] },
       {
         key: "letters",
         name: "Letters",

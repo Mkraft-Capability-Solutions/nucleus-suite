@@ -101,7 +101,7 @@ export type OrgNode = {
 export type EmployeeRecord = {
   id: string; version: number; employeeCode: string; firstName: string; lastName: string; workEmail: string | null; designation: string | null;
   department: string | null; location: string | null; category: string | null; status: string | null; joiningDate: string | null;
-  basicSalary: { amount: string; currency: string } | null; salaryMasked?: boolean; metadata: Record<string, unknown>;
+  basicSalary: { amount: string; minor?: number; currency: string } | null; salaryMasked?: boolean; currency?: string; metadata: Record<string, unknown>;
 };
 
 export type TimelinePayload = { employee: Record<string, unknown>; state: string; onLeave: boolean | null; auditTrail: AuditRow[] };

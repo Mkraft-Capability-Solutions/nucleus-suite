@@ -59,6 +59,7 @@ import { ROLES } from '@/utils/permissions';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import { useUiMode } from '@/context/UiModeContext';
 import CoreHrWorkspace from '@/modules/core-hr/CoreHrWorkspace';
+import DocumentsWorkspace from '@/modules/documents/DocumentsWorkspace';
 import DashboardWorkspace from '@/modules/dashboards/DashboardWorkspace';
 
 const ROLE_FALLBACKS = readData("components.Workspace.MainWorkspace", "ROLE_FALLBACKS_1");
@@ -91,7 +92,8 @@ const MainWorkspace = ({
         getPermittedConsoles,
         isAccessControlOpen,
         closeAccessControl,
-        openAccessControl
+        openAccessControl,
+        tenantAccess
     } = useAuth();
     const currentRole = authUser?.role || ROLES.SUPER_ADMIN;
     // Classic or Redesigned: a module renders its redesign only once that redesign is complete.
@@ -1089,7 +1091,7 @@ const MainWorkspace = ({
             ) : (
                 <>
                     {/* Breadcrumb back to domain/catalog */}
-                    {activeTab !== 'dashboard' && (
+                    {activeTab !== 'dashboard' && activeTab !== 'documents' && (
                         <div className={styles.breadcrumbBar} aria-label={t("components.Workspace.MainWorkspace.aria-label_breadcrumb", "Breadcrumb")}>
                             <button
                                 className={styles.backToCatalogBtn}
@@ -1125,6 +1127,9 @@ const MainWorkspace = ({
                         />
                     )}
                     {activeTab === 'dashboard' && !dashboardsRedesigned && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>{translateText("components.Workspace.MainWorkspace","text_e53d7af293")}</button>}{renderDashboard()}</>}
+
+            {/* Documents: the library by company, department and person (access decided by the API) */}
+            {activeTab === 'documents' && <DocumentsWorkspace organisation={tenantAccess?.tenant?.name} />}
 
             {/* Module 1: People Core */}
             {activeTab === 'people_core' && (

@@ -3,27 +3,28 @@
 import { useCallback, useMemo, useState } from "react";
 import { Tabs } from "@base-ui/react/tabs";
 import { useSWRConfig } from "swr";
-import { Download, FileText, History, LayoutDashboard, Layers, Network, Upload, UserPlus, Users } from "lucide-react";
+import { Download, FileText, History, LayoutDashboard, Layers, Network, TriangleAlert, Upload, UserPlus, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useHRMS } from "@/context/HRMSContext";
 import { getWorkbookRowsForModule, recordCellValue } from "@/lib/demo-workbook-adapter.mjs";
 import { downloadCSV } from "@/utils/exportUtils";
 import BulkOnboardingModal from "@/components/Workspace/BulkOnboardingModal";
-import { Button, MenuButton, PageHeader, Scope, ui } from "@/design/redesign/ui";
+import { Button, MenuButton, PageHeader, Scope, cx, ui } from "@/design/redesign/ui";
 import { STATUS_LABELS, fullName, usePeople, type DirectoryRow, type DirectoryStatus } from "./data";
 import Directory, { type PersonRow } from "./sections/Directory";
-import { Audit, Documents, Organisation, Overview, Positions } from "./sections/Registers";
+import { Audit, Organisation, Overview, Positions } from "./sections/Registers";
 import EmployeeProfile from "./profile/EmployeeProfile";
 import EmployeeForm from "./form/EmployeeForm";
+import Flags from "./sections/Flags";
 
-type SectionId = "overview" | "directory" | "organisation" | "positions" | "documents" | "audit";
+type SectionId = "overview" | "directory" | "organisation" | "positions" | "flags" | "audit";
 
 const SECTIONS: Array<{ id: SectionId; label: string; icon: typeof Users }> = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "directory", label: "Directory", icon: Users },
   { id: "organisation", label: "Organisation", icon: Network },
   { id: "positions", label: "Positions", icon: Layers },
-  { id: "documents", label: "Documents", icon: FileText },
+  { id: "flags", label: "Warnings & alerts", icon: TriangleAlert },
   { id: "audit", label: "Audit trail", icon: History },
 ];
 
@@ -35,10 +36,10 @@ export function sectionForSubFeature(subFeature: string | null | undefined, tab?
       return "organisation";
     case "position_register": case "positions": case "sanctioned_strength": case "manpower":
       return "positions";
-    case "document_vault": case "documents":
-      return "documents";
     case "audit":
       return "audit";
+    case "employee_flags":
+      return "flags";
     case "core_people": case "people_core": case "overview":
       return "overview";
     default:
@@ -47,6 +48,8 @@ export function sectionForSubFeature(subFeature: string | null | undefined, tab?
 }
 
 const EDIT_ROLES = new Set(["SUPER_ADMIN", "ADMIN", "HR_MANAGER"]);
+/** Who may change the warning and alert rules (the API checks tenant.manage). */
+const RULE_ROLES = new Set(["SUPER_ADMIN", "ADMIN"]);
 
 function toStatus(raw: string | undefined): DirectoryStatus {
   const value = String(raw ?? "").toLowerCase();
@@ -77,6 +80,7 @@ export default function CoreHrWorkspace({ activeSubFeature, tab }: { activeSubFe
   }
 
   const canEdit = EDIT_ROLES.has(String(user?.role ?? "").toUpperCase());
+  const showFlags = canEdit && isEntitled("people.records.employee_flags");
   const organisation = tenantAccess?.tenant?.name ?? "";
   const showSample = Boolean(tenantAccess) && isEntitled("administration.sample_data");
 
@@ -119,8 +123,8 @@ export default function CoreHrWorkspace({ activeSubFeature, tab }: { activeSubFe
   }
 
   return (
-    <Scope module="core-hr">
-      <div className={ui.page}>
+    <Scope module="core-hr" className={ui.fit}>
+      <div className={cx(ui.page, ui.fit)}>
         {openPerson ? (
           <EmployeeProfile
             key={openPerson.id}
@@ -146,24 +150,24 @@ export default function CoreHrWorkspace({ activeSubFeature, tab }: { activeSubFe
                 </>
               }
             />
-            <Tabs.Root value={section} onValueChange={(value) => setSection(value as SectionId)}>
+            <Tabs.Root className={ui.fit} value={section} onValueChange={(value) => setSection(value as SectionId)}>
               <Tabs.List className={ui.tabsList} aria-label="People sections">
-                {SECTIONS.map(({ id, label, icon: Icon }) => (
+                {SECTIONS.filter(({ id }) => id !== "flags" || showFlags).map(({ id, label, icon: Icon }) => (
                   <Tabs.Tab key={id} value={id} className={ui.tab}>
                     <Icon aria-hidden="true" />{label}{counts[id] !== undefined && <span className={ui.tabCount}>{counts[id]}</span>}
                   </Tabs.Tab>
                 ))}
                 <Tabs.Indicator className={ui.tabIndicator} />
               </Tabs.List>
-              <div style={{ marginTop: 16 }}>
-                <Tabs.Panel value="overview"><Overview data={people.data} people={rows} onOpen={open} onShow={(id) => setSection(id as SectionId)} /></Tabs.Panel>
-                <Tabs.Panel value="directory">
+              <div className={ui.fit} style={{ marginTop: 16 }}>
+                <Tabs.Panel className={ui.fitPane} value="overview"><Overview data={people.data} people={rows} onOpen={open} onShow={(id) => setSection(id as SectionId)} /></Tabs.Panel>
+                <Tabs.Panel className={ui.fitPane} value="directory">
                   <Directory rows={rows} loading={people.isLoading} error={people.error?.message ?? null} onRetry={() => void people.mutate()} canEdit={canEdit} onOpen={open} onEdit={edit} onAdd={add} />
                 </Tabs.Panel>
-                <Tabs.Panel value="organisation"><Organisation data={people.data} people={rows} canSeeGroup={isEntitled("people.legal_entities.group_structure")} onOpen={open} /></Tabs.Panel>
-                <Tabs.Panel value="positions"><Positions /></Tabs.Panel>
-                <Tabs.Panel value="documents"><Documents onOpenEmployee={openByCode} /></Tabs.Panel>
-                <Tabs.Panel value="audit"><Audit rows={people.data ? people.data.auditTrail : people.error ? null : []} onOpenEmployee={openById} /></Tabs.Panel>
+                <Tabs.Panel className={ui.fitPane} value="organisation"><Organisation data={people.data} people={rows} canSeeGroup={isEntitled("people.legal_entities.group_structure")} onOpen={open} /></Tabs.Panel>
+                <Tabs.Panel className={ui.fitPane} value="positions"><Positions /></Tabs.Panel>
+                {showFlags && <Tabs.Panel className={ui.fitPane} value="flags"><Flags canManageRules={RULE_ROLES.has(String(user?.role ?? "").toUpperCase())} onOpenEmployee={openById} /></Tabs.Panel>}
+                <Tabs.Panel className={ui.fitPane} value="audit"><Audit rows={people.data ? people.data.auditTrail : people.error ? null : []} onOpenEmployee={openById} /></Tabs.Panel>
               </div>
             </Tabs.Root>
           </>

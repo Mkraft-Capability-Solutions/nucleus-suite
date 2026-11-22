@@ -72,7 +72,10 @@ export async function attendanceBoard(scope: Scope): Promise<Built> {
       where r.tenant_id = $1::uuid and coalesce(r.attributes->>'status', '') in ('submitted', 'pending')
         and (r.attributes->>'employee_id' is null or (r.attributes->>'employee_id') in (select id::text from emp))`),
     exceptions: scoped(scope, `
-      select to_char(a.attendance_date, 'YYYY-MM-DD') as day, e.name, e.department, a.status, a.exception_reason as reason
+      select to_char(a.attendance_date, 'YYYY-MM-DD') as day, e.name, e.department, a.status, a.exception_reason as reason,
+        (select to_char(min(p.punched_at) at time zone $4::text, 'HH24:MI') from attendance_punches p where p.tenant_id = a.tenant_id and p.attendance_day_id = a.id and p.type = 'in') as first_in,
+        (select to_char(max(p.punched_at) at time zone $4::text, 'HH24:MI') from attendance_punches p where p.tenant_id = a.tenant_id and p.attendance_day_id = a.id and p.type = 'out') as last_out,
+        a.gross_span_minutes, a.productive_minutes
       from attendance_days a join emp e on e.id = a.employee_id, today t
       where a.tenant_id = $1::uuid and ${window} and (a.exception_reason is not null or a.status = 'pending')
       order by a.attendance_date desc, e.name limit 12`),
@@ -134,9 +137,13 @@ export async function attendanceBoard(scope: Scope): Promise<Built> {
       rowsOf(data.sources).map((row) => ({ name: humanise(String(row.name)), value: num(row.value) })),
     )),
     withSource(data.exceptions, tablePanel(
-      { id: "exceptions", title: "Recent exceptions", subtitle: "Days the time office could not settle", span: 8, emptyMessage: "No attendance exceptions in the last 30 days.", target: "attendance" },
-      [{ key: "day", label: "Date", format: "date" }, { key: "name", label: "Employee" }, { key: "department", label: "Department" }, { key: "status", label: "Status" }, { key: "reason", label: "Reason" }],
-      rowsOf(data.exceptions).map((row) => ({ day: String(row.day), name: String(row.name ?? ""), department: row.department ? String(row.department) : null, status: humanise(String(row.status)), reason: row.reason ? String(row.reason) : null })),
+      { id: "exceptions", title: "Time-office exceptions and calculated spans", subtitle: "Days the time office could not settle, with the punches and hours it worked out", span: 12, emptyMessage: "No attendance exceptions in the last 30 days.", target: "attendance" },
+      [{ key: "day", label: "Date", format: "date" }, { key: "name", label: "Employee" }, { key: "department", label: "Department" }, { key: "in", label: "In" }, { key: "out", label: "Out" }, { key: "span", label: "Span", format: "hours" }, { key: "worked", label: "Worked", format: "hours" }, { key: "status", label: "Status" }, { key: "reason", label: "Reason" }],
+      rowsOf(data.exceptions).map((row) => ({
+        day: String(row.day), name: String(row.name ?? ""), department: row.department ? String(row.department) : null, in: row.first_in ? String(row.first_in) : null, out: row.last_out ? String(row.last_out) : null,
+        span: row.gross_span_minutes ? round(num(row.gross_span_minutes) / 60, 1) : null, worked: row.productive_minutes ? round(num(row.productive_minutes) / 60, 1) : null,
+        status: humanise(String(row.status)), reason: row.reason ? String(row.reason) : null,
+      })),
     )),
   ];
 

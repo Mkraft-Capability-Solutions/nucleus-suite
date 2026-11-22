@@ -55,7 +55,10 @@ export async function talentAcquisition(scope: Scope): Promise<Built> {
     requisitions: plain(scope, `
       select coalesce(r.attributes->>'code', '—') as code, coalesce(r.attributes->>'title', r.attributes->>'name', 'Untitled') as title,
         coalesce(r.attributes->>'status', 'draft') as status, (t.d - r.created_at::date)::int as age_days,
-        (select count(*) from applications a where a.tenant_id = r.tenant_id and a.requisition_id = r.id)::int as applications
+        (select count(*) from applications a where a.tenant_id = r.tenant_id and a.requisition_id = r.id)::int as applications,
+        (select coalesce(a.attributes->>'stage', 'applied') from applications a where a.tenant_id = r.tenant_id and a.requisition_id = r.id
+          and coalesce(a.attributes->>'stage', 'applied') not in ${TERMINAL_STAGE} and coalesce(a.attributes->>'stage', 'applied') not in ('hired', 'offer_declined')
+          group by 1 order by count(*) desc, 1 limit 1) as bottleneck
       from requisitions r, today t
       where r.tenant_id = $1::uuid and coalesce(r.attributes->>'status', 'draft') not in ${CLOSED_REQUISITION}
       order by r.created_at limit 12`),
@@ -105,9 +108,9 @@ export async function talentAcquisition(scope: Scope): Promise<Built> {
       named(data.sources),
     )),
     withSource(data.requisitions, tablePanel(
-      { id: "requisitions", title: "Open requisitions", subtitle: "Oldest first", span: 8, emptyMessage: "No requisitions are open.", target: "recruitment" },
-      [{ key: "code", label: "Code" }, { key: "title", label: "Role" }, { key: "status", label: "Status" }, { key: "applications", label: "Applications", format: "count" }, { key: "age", label: "Open for", format: "days" }],
-      rowsOf(data.requisitions).map((row) => ({ code: String(row.code), title: String(row.title), status: humanise(String(row.status)), applications: num(row.applications), age: num(row.age_days) })),
+      { id: "requisitions", title: "Open requisitions and bottlenecks", subtitle: "Oldest first, with the stage most candidates are waiting at", span: 8, emptyMessage: "No requisitions are open.", target: "recruitment" },
+      [{ key: "code", label: "Code" }, { key: "title", label: "Role" }, { key: "status", label: "Status" }, { key: "applications", label: "Applications", format: "count" }, { key: "bottleneck", label: "Most waiting at" }, { key: "age", label: "Open for", format: "days" }],
+      rowsOf(data.requisitions).map((row) => ({ code: String(row.code), title: String(row.title), status: humanise(String(row.status)), applications: num(row.applications), bottleneck: row.bottleneck ? humanise(String(row.bottleneck)) : "—", age: num(row.age_days) })),
     )),
     withSource(data.offers, partsPanel(
       { id: "offers", title: "Offers", subtitle: "By status", span: 4, format: "count", emptyMessage: "No offers have been made." },
@@ -210,7 +213,7 @@ export async function performanceBoard(scope: Scope): Promise<Built> {
 
   const panels: Panel[] = [
     withSource(data.reviewStatus, partsPanel(
-      { id: "review-status", title: "Review progress", subtitle: "People in review, by status", span: 4, format: "count", emptyMessage: "No one has been enrolled in a review cycle.", target: "performance" },
+      { id: "review-status", title: "Review progress", subtitle: "People in review, by status", span: 6, format: "count", emptyMessage: "No one has been enrolled in a review cycle.", target: "performance" },
       named(data.reviewStatus),
     )),
     withSource(data.ratings, barPanel(
@@ -218,7 +221,7 @@ export async function performanceBoard(scope: Scope): Promise<Built> {
       ["1", "2", "3", "4", "5"], [{ name: "Ratings", data: ratingCounts }],
     )),
     withSource(data.objectives, barPanel(
-      { id: "progress", title: "Goal progress", subtitle: "Active objectives by progress", span: 4, format: "count", emptyMessage: "No objectives have been set." },
+      { id: "progress", title: "Goal progress", subtitle: "Active objectives by progress", span: 6, format: "count", emptyMessage: "No objectives have been set." },
       bands.map(([, , label]) => label), [{ name: "Objectives", data: bands.map(([low, high]) => progress.filter((value) => value >= low && value < high).length) }],
     )),
     withSource(data.recognition, linePanel(

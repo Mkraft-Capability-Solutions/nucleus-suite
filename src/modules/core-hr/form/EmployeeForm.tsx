@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { SALARY_CURRENCIES, currencyDigits, currencySymbol, formatMoney, toMinorUnits } from "@/lib/currencies";
 import { useFieldArray, useForm, useWatch, type Control, type FieldErrors, type Resolver, type UseFormRegister } from "react-hook-form";
 import { Check, Plus, Trash2 } from "lucide-react";
 import { validateFormFields } from "@/hooks/useFormValidation";
@@ -39,6 +40,13 @@ export function crossFieldErrors(values: FormValues): Record<string, string> {
     if (values.disabilityPercent === "" || values.disabilityPercent === undefined) errors.disabilityPercent = "Record the disability percentage.";
   }
   if (values.dateOfBirth && String(values.dateOfBirth) > today()) errors.dateOfBirth = "The date of birth cannot be in the future.";
+  const salary = String(values.basicSalary ?? "").trim();
+  const currency = String(values.salaryCurrency ?? "");
+  if (salary && !currency) errors.basicSalary = "Choose the currency the salary is paid in.";
+  else if (salary && toMinorUnits(salary, currency) === null) {
+    const digits = currencyDigits(currency);
+    errors.basicSalary = digits === 0 ? `Enter a whole amount in ${currency} (it has no decimals).` : `Enter an amount in ${currency} with up to ${digits} decimals.`;
+  }
   return errors;
 }
 
@@ -209,7 +217,7 @@ export default function EmployeeForm({ open, mode, employeeId, directory, onClos
                   {section.fields.length > 0 && (
                     <div className={styles.grid}>
                       {section.fields.filter((field) => !field.showIf || field.showIf(values)).map((field) => (
-                        <FormInput key={field.key} field={field} register={register} error={errors[field.key]?.message as string | undefined} required={field.required} disabled={mode === "edit" && field.lockedOnEdit} managers={managers} />
+                        <FormInput key={field.key} field={field} register={register} error={errors[field.key]?.message as string | undefined} required={field.required} disabled={mode === "edit" && field.lockedOnEdit} managers={managers} values={values} />
                       ))}
                     </div>
                   )}
@@ -235,12 +243,37 @@ export default function EmployeeForm({ open, mode, employeeId, directory, onClos
   );
 }
 
-function FormInput({ field, register, error, required, disabled, managers }: {
-  field: FormField; register: UseFormRegister<FormValues>; error?: string; required?: boolean; disabled?: boolean; managers: DirectoryRow[];
+function FormInput({ field, register, error, required, disabled, managers, values }: {
+  field: FormField; register: UseFormRegister<FormValues>; error?: string; required?: boolean; disabled?: boolean; managers: DirectoryRow[]; values: FormValues;
 }) {
   const id = `employee-${field.key}`;
   const describedBy = error ? `${id}-error` : field.hint ? `${id}-hint` : undefined;
   const common = { id, "aria-invalid": error ? true : undefined, "aria-describedby": describedBy, "aria-required": required || undefined, disabled, ...register(field.key) };
+  if (field.type === "money" && field.currencyKey) {
+    // One control: the currency the salary is paid in, and the amount in that currency.
+    const currency = String(values[field.currencyKey] ?? "INR");
+    const amount = String(values[field.key] ?? "").trim();
+    const minor = amount ? toMinorUnits(amount, currency) : null;
+    const digits = currencyDigits(currency);
+    const masked = Boolean(values.salaryMasked);
+    const preview = minor !== null ? `${formatMoney(minor, currency)} a month · ${formatMoney(minor * 12, currency)} a year` : null;
+    return (
+      <div className={cx(styles.cell, field.wide && styles.wide)}>
+        <Field id={id} label={field.label} required={required} hint={error ? undefined : preview ?? (masked ? "The current amount is hidden for your role. Enter an amount only to replace it." : field.hint)} error={error}>
+          <div className={styles.money}>
+            <Select id={`${id}-currency`} aria-label="Salary currency" className={styles.moneyCurrency} disabled={disabled} {...register(field.currencyKey)}>
+              {SALARY_CURRENCIES.map((option) => <option key={option.code} value={option.code}>{option.code} · {option.name}</option>)}
+            </Select>
+            <div className={styles.moneyAmount}>
+              <span className={styles.moneySymbol} aria-hidden="true">{currencySymbol(currency)}</span>
+              <Input {...common} type="text" inputMode={digits === 0 ? "numeric" : "decimal"} autoComplete="off"
+                placeholder={masked ? "Hidden for your role" : digits === 0 ? "250000" : digits === 3 ? "1500.000" : "150000.00"} />
+            </div>
+          </div>
+        </Field>
+      </div>
+    );
+  }
   if (field.type === "checkbox") {
     return (
       <div className={cx(styles.cell, styles.checkboxCell)}>

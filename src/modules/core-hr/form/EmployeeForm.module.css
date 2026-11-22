@@ -55,3 +55,15 @@
   .grid { grid-template-columns: minmax(0, 1fr); }
   .footerNote { width: 100%; }
 }
+
+/* Salary: the currency and the amount are one control, so the amount is always read in its currency. */
+.money { display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr); gap: 0; }
+.moneyCurrency { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; border-right-width: 0 !important; }
+.moneyAmount { position: relative; display: flex; align-items: center; min-width: 0; }
+.moneyAmount input { border-top-left-radius: 0 !important; border-bottom-left-radius: 0 !important; padding-left: 34px !important; font-variant-numeric: tabular-nums; }
+.moneySymbol { position: absolute; left: 12px; color: var(--hr-text-3); font-size: var(--hr-text-md); pointer-events: none; }
+@media (max-width: 520px) {
+  .money { grid-template-columns: 1fr; gap: var(--hr-space-2); }
+  .moneyCurrency { border-radius: var(--hr-radius-md) !important; border-right-width: 1px !important; }
+  .moneyAmount input { border-radius: var(--hr-radius-md) !important; }
+}

@@ -211,3 +211,26 @@
   background: linear-gradient(90deg, var(--hr-accent-strong), var(--hr-accent-2));
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
+
+/* ---------- Fit to the viewport (desktop) ----------
+ * A module that opts in (AppWorkspace sets data-fit on <main>) fills the visible height: its header
+ * and tabs stay put, and a long table scrolls inside its own panel with the column headings pinned,
+ * instead of the whole page scrolling. Short or narrow screens keep normal page scrolling.
+ *   .fit      a column that fills its parent and passes the height down
+ *   .fitPane  a tab's content: fills, and scrolls itself only if what it holds cannot shrink
+ *   .fill     a panel that takes the remaining height; its table (or body) scrolls inside
+ */
+@media (min-width: 768px) and (min-height: 560px) {
+  .fit { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+  /* Headers, tabs and toolbars keep their height; only the filling parts give way. */
+  /* (Zero specificity, so a component that should give way can say so with any class.) */
+  :where(.fit, .fitPane) > :where(:not(.fit, .fitPane, .fill)) { flex-shrink: 0; }
+  .page.fit { padding-bottom: var(--hr-space-2); }
+  .fitPane { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: auto; }
+  /* Below this height a table is too cramped to use: the tab scrolls instead. */
+  .fill { display: flex; flex-direction: column; flex: 1 1 0; min-height: 260px; overflow: hidden; }
+  .fill > .panelHeader { flex-shrink: 0; }
+  .fill > .panelBody, .fill > .panelBodyFlush { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: auto; }
+  .fill .tableWrap { flex: 1 1 auto; min-height: 0; overflow: auto; }
+}
+.fit[hidden], .fitPane[hidden] { display: none; }

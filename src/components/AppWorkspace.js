@@ -11,14 +11,17 @@ import LeftDock from '@/components/Workspace/LeftDock';
 import TopNav from '@/components/Workspace/TopNav';
 import TopBar from '@/modules/shell/TopBar';
 import { SideRail, SidePanel } from '@/modules/shell/SideNav';
+import FlagNotices from '@/modules/shell/FlagNotices';
 import { navTarget } from '@/modules/shell/navigation';
 import { useUiMode } from '@/context/UiModeContext';
+import { redesignedModuleForTab } from '@/lib/ui-mode';
 import RightSubNav from '@/components/Workspace/RightSubNav';
 import MainWorkspace from '@/components/Workspace/MainWorkspace';
 import ModuleNotEnabled from '@/components/Entitlements/ModuleNotEnabled';
 import { entitlementForNavItem, entitlementForTab } from '@/lib/entitlements/routes';
 import { entitlementLabel } from '@/lib/entitlements/tree';
 import QuantumCopilot from '@/components/AI/QuantumCopilot';
+import AssistantDock from '@/modules/assistant/AssistantDock';
 import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
@@ -35,6 +38,9 @@ import toastStyles from '@/components/Workspace/Toast.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_STATE_KEY = 'nucleus_nav_state';
+
+/** Redesigned modules whose screens fit the viewport (tables scroll inside their panels). */
+const FIT_MODULES = new Set(['core_hr', 'documents']);
 
 // Route-to-Tab dictionary for direct URLs like /people, /leave, /attendance, /payroll
 const ROUTE_MODULE_MAP = {
@@ -65,6 +71,8 @@ const ROUTE_MODULE_MAP = {
   insights: { tab: 'analytics', domain: 'analytics_ai', sub: 'analytics_exec' },
   helpdesk: { tab: 'helpdesk', domain: 'platform', sub: 'core_operations' },
   contract_workforce: { tab: 'contract_workforce', domain: 'core_hr', sub: 'core_workforce' },
+  documents: { tab: 'documents', domain: 'documents', sub: 'documents' },
+  document_vault: { tab: 'documents', domain: 'documents', sub: 'documents' },
 };
 
 const AppContent = () => {
@@ -161,6 +169,7 @@ const AppContent = () => {
       analytics: '/analytics',
       helpdesk: '/helpdesk',
       contract_workforce: '/contract_workforce',
+      documents: '/documents',
       dashboard: '/workspace',
     };
     const targetUrl = tabToPath[activeTab];
@@ -266,6 +275,12 @@ const AppContent = () => {
       setActiveSubFeature(activeConsole.toLowerCase());
       return;
     }
+    if (domainId === 'documents') {
+      setShowCatalog(false);
+      setActiveTab('documents');
+      setActiveSubFeature('documents');
+      return;
+    }
 
     // Default tab per domain matching 6 Primary Categories
     const domainDefaults = {
@@ -297,6 +312,13 @@ const AppContent = () => {
   const handleSelectSubFeature = (subFeatureId) => {
     setActiveSubFeature(subFeatureId);
     setShowCatalog(false);
+
+    // The document library: one screen of its own
+    if (['documents', 'document_vault', 'my_documents'].includes(subFeatureId)) {
+      setActiveTab('documents');
+      setActiveDomain('documents');
+      return;
+    }
 
     // AI Copilot special action
     if (subFeatureId === 'analytics_copilot') {
@@ -356,7 +378,7 @@ const AppContent = () => {
     // 5. Onboarding & Lifecycle
     const onboardingItems = [
       'onboarding', 'core_onboarding', 'joining_chain', 'clearance_board', 'asset_register',
-      'letters_register', 'document_vault', 'policy_acknowledgements', 'lifecycle'
+      'letters_register', 'policy_acknowledgements', 'lifecycle'
     ];
     if (onboardingItems.includes(subFeatureId) || subFeatureId.startsWith('onboarding')) {
       setActiveTab('onboarding');
@@ -462,6 +484,11 @@ const AppContent = () => {
   };
 
   const isDashboard = activeTab === 'dashboard';
+  // Screens that stand alone: no list of screens beside them.
+  const isSingleScreen = isDashboard || activeTab === 'documents';
+  // Redesigned modules laid out to fit the viewport: their tables scroll, the page does not.
+  const fitModule = redesignedModuleForTab(activeTab);
+  const fitsViewport = Boolean(fitModule && FIT_MODULES.has(fitModule) && isRedesigned(fitModule) && !showCatalog);
 
   // Opens a navigation item (navigation.catalog.json id) the same way the menus do.
   const openNavItem = (navId) => {
@@ -514,7 +541,7 @@ const AppContent = () => {
             assistantOpen={isCopilotOpen}
             messagesOpen={isChatPanelOpen}
             onOpenModules={() => setIsModulesOpen(true)}
-            onShowScreens={!isDashboard && !isRightNavOpen ? () => setIsRightNavOpen(true) : undefined}
+            onShowScreens={!isSingleScreen && !isRightNavOpen ? () => setIsRightNavOpen(true) : undefined}
           />
         ) : (
         <TopNav
@@ -540,7 +567,7 @@ const AppContent = () => {
         {/* 3. Center Workspace + Contextual Right Sub-Navigation */}
         <div className={styles.bodyLayout}>
           {/* Redesigned: the selected area's screens, inside the rounded content card */}
-          {shellRedesigned && !isDashboard && isRightNavOpen && (
+          {shellRedesigned && !isSingleScreen && isRightNavOpen && (
               <SidePanel
                 activeDomain={activeDomain}
                 activeItem={activeSubFeature}
@@ -554,10 +581,13 @@ const AppContent = () => {
             id="main-content"
             role="main"
             aria-label={readData("components.AppWorkspace", "attribute_6")}
+            data-fit={fitsViewport && !blockedKey ? 'true' : undefined}
             style={{
-              padding: isDashboard ? 'clamp(1rem, 3vw, 1.25rem) clamp(1rem, 3vw, 2rem) 5rem' : 'clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 2rem) 5rem'
+              padding: isDashboard ? 'clamp(1rem, 3vw, 1.25rem) clamp(1rem, 3vw, 2rem) 5rem' : `clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 2rem) ${fitsViewport ? '1rem' : '5rem'}`
             }}
           >
+            {/* Warnings and alerts on the person's own record and their team's, after signing in */}
+            <FlagNotices />
             {blockedKey ? (
               <ModuleNotEnabled
                 label={entitlementLabel(blockedKey)}
@@ -655,8 +685,11 @@ const AppContent = () => {
         </div>
       )}
 
+      {/* Redesigned shell: the assistant pill (bottom centre, movable), floating card or right-docked panel */}
+      {shellRedesigned && canUseAIAssistant && <AssistantDock open={isCopilotOpen} onOpenChange={setIsCopilotOpen} />}
+
       {/* Revolutionary Multimodal Neural HUD */}
-      <QuantumCopilot
+      {!shellRedesigned && <QuantumCopilot
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
         shortcutEnabled={!shellRedesigned}
@@ -668,7 +701,7 @@ const AppContent = () => {
           if (sub) setActiveSubFeature(sub);
           setShowCatalog(false);
         }}
-      />
+      />}
 
       {/* Talent CTC Exception Approval Modal */}
       <CtcExceptionModal

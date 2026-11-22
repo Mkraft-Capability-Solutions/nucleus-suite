@@ -21,6 +21,8 @@ export type Kpi = {
   hint?: string;
   tone?: "positive" | "risk" | "attention" | "neutral";
   target?: string;
+  /** Change against a comparison point; `better` says which direction is good (colour), "neutral" when neither is. */
+  delta?: { value: number; format: ValueFormat; label: string; better: "up" | "down" | "neutral"; unit?: string };
 };
 
 export type PanelState = "ok" | "empty" | "unavailable" | "forbidden";
@@ -37,20 +39,47 @@ type PanelBase = {
   /** Workspace tab that holds the underlying records. */
   target?: string;
   format?: ValueFormat;
+  /** How the figures are defined or computed, shown under the chart. */
+  note?: string;
 };
 
-export type Series = { name: string; data: number[]; stack?: string; kind?: "bar" | "line" };
+/** A series; `kind: "line"` on a bar panel draws a line over the bars (`dashed` for a reference or guideline). */
+export type Series = {
+  name: string; data: Array<number | null>; stack?: string; kind?: "bar" | "line"; dashed?: boolean; dotted?: boolean;
+  /** Fixed palette slot (0–7) so a series keeps its colour wherever it appears. */
+  hue?: number;
+  /** A status band (e.g. attrition level): drawn in the reserved status colours, always with a label. */
+  tone?: "positive" | "attention" | "risk";
+};
 
 export type BarPanel = PanelBase & { kind: "bar"; horizontal?: boolean; categories: string[]; series: Series[] };
-export type LinePanel = PanelBase & { kind: "line"; categories: string[]; series: Series[] };
+/** `band`: a shaded range (e.g. a forecast's 80% interval), drawn in the colour of the series it belongs to. */
+export type LinePanel = PanelBase & { kind: "line"; categories: string[]; series: Series[]; band?: { name: string; of: string; lower: Array<number | null>; upper: Array<number | null> } };
 export type PartsPanel = PanelBase & { kind: "parts"; items: Array<{ name: string; value: number }> };
-export type HeatmapPanel = PanelBase & { kind: "heatmap"; x: string[]; y: string[]; cells: Array<[number, number, number]> };
+/** `scale: "warm"` for risk measures (attrition); `notes` add a line per cell to the tooltip (same order as cells). */
+export type HeatmapPanel = PanelBase & { kind: "heatmap"; x: string[]; y: string[]; cells: Array<[number, number, number]>; scale?: "cool" | "warm"; showZero?: boolean; notes?: string[] };
 export type TableColumn = { key: string; label: string; format?: ValueFormat };
 export type TablePanel = PanelBase & { kind: "table"; columns: TableColumn[]; rows: Array<Record<string, string | number | null>> };
 export type ListItem = { label: string; detail?: string; value?: number | string | null; format?: ValueFormat; status?: string; tone?: Kpi["tone"]; target?: string };
 export type ListPanel = PanelBase & { kind: "list"; items: ListItem[] };
 
-export type Panel = BarPanel | LinePanel | PartsPanel | HeatmapPanel | TablePanel | ListPanel;
+/** A labelled grid of counts, e.g. the nine-box (rows top to bottom, columns left to right). */
+export type MatrixCell = { row: number; col: number; label: string; value: number; hint?: string; tone?: Kpi["tone"]; people?: string[] };
+export type MatrixPanel = PanelBase & { kind: "matrix"; rows: string[]; cols: string[]; rowAxis: string; colAxis: string; cells: MatrixCell[] };
+/** Several measures on one scale per series, e.g. competency ratings against a benchmark. */
+export type RadarPanel = PanelBase & { kind: "radar"; indicators: Array<{ name: string; max: number }>; series: Series[] };
+/** One point per record against two measures. */
+export type ScatterPoint = { x: number; y: number; label: string; group: string; size?: number };
+/** With `size`, a bubble chart (bubbles labelled); `xRef`/`yRef` draw reference lines that split it into quadrants. */
+export type ScatterPanel = PanelBase & { kind: "scatter"; xLabel: string; yLabel: string; xFormat: ValueFormat; yFormat: ValueFormat; points: ScatterPoint[]; sizeLabel?: string; xRef?: number; yRef?: number; groupHues?: Record<string, number> };
+/** A walk from a starting total through increases and decreases to an end total. */
+export type BridgeStep = { name: string; value: number; total?: boolean };
+export type BridgePanel = PanelBase & { kind: "bridge"; steps: BridgeStep[] };
+/** Flows from sources, through a core, to destinations (e.g. hires and moves into the workforce, exits out of it). */
+export type SankeyNode = { name: string; value: number; side: "in" | "core" | "out"; hue: number };
+export type SankeyPanel = PanelBase & { kind: "sankey"; nodes: SankeyNode[]; links: Array<{ source: string; target: string; value: number }> };
+
+export type Panel = BarPanel | LinePanel | PartsPanel | HeatmapPanel | TablePanel | ListPanel | MatrixPanel | RadarPanel | ScatterPanel | BridgePanel | SankeyPanel;
 
 export type BoardFilters = {
   location: string | null;
@@ -75,10 +104,24 @@ export type Board = {
   };
   kpis: Kpi[];
   panels: Panel[];
-  /** Plain statements derived from the figures above; empty when there is nothing to say. */
-  insights: string[];
+  /** Findings derived from the figures above, most urgent first; empty when there is nothing to say. */
+  insights: Array<string | Insight>;
+  /** How the summary was computed: records read, the date range and what was left out. */
+  evidence?: string[];
   /** Board-level message, e.g. the account is not linked to an employee record. */
   notice?: string;
+};
+
+/**
+ * A finding the board leads with. `tone` ranks it (risk first); `figure` is its headline number;
+ * `panel` is the chart that shows the evidence. A plain string is context with no rank.
+ */
+export type Insight = {
+  text: string;
+  title?: string;
+  figure?: string;
+  tone?: "risk" | "attention" | "positive" | "info";
+  panel?: string;
 };
 
 export type FilterOptions = { locations: string[]; departments: string[] };

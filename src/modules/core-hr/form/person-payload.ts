@@ -7,6 +7,8 @@
  *   - the reporting manager is sent as `managerEmployeeId` (the employee's id) as well as by name.
  */
 
+import { toMinorUnits } from "@/lib/currencies";
+
 export type FormValues = Record<string, unknown>;
 
 const text = (value: unknown): string | undefined => {
@@ -39,6 +41,12 @@ export function buildPersonPayload(values: FormValues, manager: { id: string; na
     fullLegalName: [text(values.firstName), text(values.middleName), text(values.lastName)].filter(Boolean).join(" "),
   };
   delete details.accountConfirm;
+  // Pay is sent in its own fields below and stored in its own columns, never in the profile.
+  delete details.basicSalary;
+  delete details.salaryCurrency;
+  delete details.salaryMasked;
+  const currency = text(values.salaryCurrency);
+  const salaryMinor = currency && text(values.basicSalary) ? toMinorUnits(text(values.basicSalary), currency) : null;
 
   const aadhaar = text(values.aadhaarToken);
   const payload: Record<string, unknown> = {
@@ -73,6 +81,11 @@ export function buildPersonPayload(values: FormValues, manager: { id: string; na
     biometricEnrolId: text(values.biometricEnrolId),
     accessCardNo: text(values.accessCardNo),
     lockerNo: text(values.lockerNo),
+    basicSalary: undefined,
+    salaryCurrency: undefined,
+    salaryMasked: undefined,
+    basicSalaryMinor: salaryMinor ?? undefined,
+    currency,
     details: { ...details, employeeCode: text(values.employeeCode) },
   };
   // The API rejects empty strings for optional fields: drop them, keep false and 0.
@@ -90,6 +103,7 @@ export function suggestEmployeeCode(existingCodes: string[]): string {
 export function valuesFromRecord(record: {
   employeeCode: string; firstName: string; lastName: string; workEmail: string | null; designation: string | null; department: string | null;
   location: string | null; status: string | null; joiningDate: string | null; metadata: Record<string, unknown>;
+  basicSalary?: { amount: string; currency: string } | null; salaryMasked?: boolean; currency?: string;
 }, base: FormValues): FormValues {
   const meta = record.metadata ?? {};
   const fromMeta = Object.fromEntries(Object.entries(meta).filter(([key]) => key in base || ["education", "experience", "dependants", "nominees"].includes(key)));
@@ -117,5 +131,9 @@ export function valuesFromRecord(record: {
     experience: Array.isArray(meta.experience) ? meta.experience : [],
     dependants: Array.isArray(meta.dependants) ? meta.dependants : [],
     nominees: Array.isArray(meta.nominees) ? meta.nominees : [],
+    // Shown only to those who may read pay; others see it as hidden and can replace it.
+    basicSalary: record.basicSalary?.amount ?? "",
+    salaryCurrency: record.currency ?? record.basicSalary?.currency ?? base.salaryCurrency,
+    salaryMasked: Boolean(record.salaryMasked),
   };
 }

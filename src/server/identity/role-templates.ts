@@ -21,7 +21,7 @@ export const ROLE_TEMPLATES: readonly RoleTemplate[] = [
     include: [
       "payroll.%", "loan.%", "compliance.%", "tenant.read", "employee.read", "employee.bank.read", "employee.tax.read",
       "attendance.read", "leave.read", "audit.read", "membership.read", "role.read", "workforce.travel.read",
-      "workforce.travel.approve", "integration.sync",
+      "workforce.travel.approve", "integration.sync", "document.self.%",
     ],
     exclude: [],
   },
@@ -30,14 +30,14 @@ export const ROLE_TEMPLATES: readonly RoleTemplate[] = [
     name: "Manager",
     include: [
       "tenant.read", "employee.read", "attendance.read", "attendance.self.%", "leave.read", "leave.approve",
-      "hr.helpdesk.self.%", "hr.helpdesk.team.%", "workforce.%.self.%", "workforce.%.team.%",
+      "hr.helpdesk.self.%", "hr.helpdesk.team.%", "workforce.%.self.%", "workforce.%.team.%", "document.self.%",
     ],
     exclude: [],
   },
   {
     code: "employee",
     name: "Employee",
-    include: ["tenant.read", "employee.read", "attendance.read", "leave.read", "attendance.self.%", "hr.helpdesk.self.%", "workforce.%.self.%"],
+    include: ["tenant.read", "employee.read", "attendance.read", "leave.read", "attendance.self.%", "hr.helpdesk.self.%", "workforce.%.self.%", "document.self.%"],
     exclude: [],
   },
 ];

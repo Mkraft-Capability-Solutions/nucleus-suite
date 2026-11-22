@@ -7,7 +7,7 @@ import { getPicklistOptions } from "@/lib/picklist-catalog";
  * so the stored record reads the same in both interfaces.
  */
 
-export type FieldType = "text" | "email" | "tel" | "date" | "select" | "checkbox" | "textarea" | "number" | "manager";
+export type FieldType = "text" | "email" | "tel" | "date" | "select" | "checkbox" | "textarea" | "number" | "manager" | "money";
 
 export type FormField = {
   key: string;
@@ -25,6 +25,8 @@ export type FormField = {
   showIf?: (values: Record<string, unknown>) => boolean;
   /** Read-only when editing an existing record. */
   lockedOnEdit?: boolean;
+  /** For "money": the field holding the amount's currency (shown as one control with the amount). */
+  currencyKey?: string;
 };
 
 export type Repeater = {
@@ -147,6 +149,7 @@ export const FORM_SECTIONS: FormSection[] = [
       { key: "isInternationalWorker", label: "International worker", type: "checkbox" },
       { key: "countryOfOrigin", label: "Country of origin", showIf: (values) => values.isInternationalWorker === true },
       { key: "workPermitNo", label: "Work permit number", showIf: (values) => values.isInternationalWorker === true },
+      { key: "workPermitExpiry", label: "Work permit / visa expiry", type: "date", showIf: (values) => values.isInternationalWorker === true, hint: "Raises a warning, then an alert, as the date approaches." },
       { key: "bankName", label: "Bank name", required: true },
       { key: "bankBranch", label: "Branch" },
       { key: "accountToken", label: "Account number", required: true, inputMode: "numeric" },
@@ -198,6 +201,7 @@ export const FORM_SECTIONS: FormSection[] = [
       { key: "location", label: "Work location", required: true },
       { key: "manager", label: "Reporting manager", type: "manager", required: true },
       { key: "joiningDate", label: "Date of joining", type: "date", required: true },
+      { key: "basicSalary", label: "Monthly basic salary", type: "money", currencyKey: "salaryCurrency", wide: true, hint: "In the chosen currency. Payroll pays people whose salary is in the run's currency." },
       { key: "workerClass", label: "Worker class", type: "select", required: true, options: pick("PL_WORKER_CLASS") },
       { key: "workerCategory", label: "Worker category", type: "select", options: ["PERM", "CONTRACT", "THIRD_PARTY_EMP", "THIRD_PARTY_HELPER", "TRAINEE_DET", "TRAINEE_GET"], hint: "Decides labour-law treatment and overtime." },
       { key: "status", label: "Status", type: "select", options: ["Active", "Probation", "On Leave", "Notice", "Inactive"] },
@@ -274,7 +278,7 @@ export const FORM_RULES: Record<string, FieldRule[]> = {
 export const ALL_FORM_RULES = Object.values(FORM_RULES).flat();
 
 /** Empty values for a new employee. No invented defaults: every field starts blank or neutral. */
-export function emptyEmployeeValues(today: string): Record<string, unknown> {
+export function emptyEmployeeValues(today: string, currency = "INR"): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const section of FORM_SECTIONS) {
     for (const field of section.fields) values[field.key] = field.type === "checkbox" ? false : "";
@@ -296,5 +300,7 @@ export function emptyEmployeeValues(today: string): Record<string, unknown> {
     salaryLocationScope: "PLANT",
     assignedShift: "GENERAL",
     canteenEligible: true,
+    // The organisation's own currency until someone picks another.
+    salaryCurrency: currency,
   };
 }

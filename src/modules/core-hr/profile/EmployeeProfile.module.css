@@ -42,3 +42,15 @@
   .activityWhen { grid-row: auto; }
   .activityWhy { grid-column: auto; }
 }
+
+/* Fit to the viewport (desktop): the header and section list stay put; the section scrolls. */
+@media (min-width: 768px) and (min-height: 560px) {
+  .page { flex: 1 1 auto; min-height: 0; }
+  .topBar, .header { flex-shrink: 0; }
+  .body { flex: 1 1 auto; min-height: 0; grid-template-rows: minmax(0, 1fr); align-items: stretch; }
+  .nav { position: static; overflow-y: auto; }
+  .content { min-height: 0; overflow-y: auto; padding-right: var(--hr-space-1); }
+}
+@media (min-width: 768px) and (max-width: 1023px) and (min-height: 560px) {
+  .body { grid-template-rows: auto minmax(0, 1fr); }
+}

@@ -239,3 +239,9 @@
 @media (max-width: 640px) {
   .mainContainer[data-shell="redesigned"] .bodyLayout { border-left: 0; border-top-left-radius: 0; }
 }
+/* A module that fits the viewport (data-fit): <main> passes its height down instead of scrolling. */
+@media (min-width: 768px) and (min-height: 560px) {
+  .workspaceZone[data-fit="true"] { display: flex; flex-direction: column; }
+  .workspaceZone[data-fit="true"] > * { flex-shrink: 0; }
+  .workspaceZone[data-fit="true"] > :last-child { flex: 1 1 auto; min-height: 0; height: auto; display: flex; flex-direction: column; }
+}

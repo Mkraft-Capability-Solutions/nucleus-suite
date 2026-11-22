@@ -99,7 +99,7 @@ export function Overview({ data, people, onOpen, onShow }: {
 export function Organisation({ data, canSeeGroup, onOpen, people }: { data: PeoplePayload | undefined; canSeeGroup: boolean; onOpen: (row: PersonRow) => void; people: PersonRow[] }) {
   const [view, setView] = useState<"reporting" | "companies" | "locations">("reporting");
   return (
-    <div className={styles.stack}>
+    <div className={cx(styles.stack, ui.fit)}>
       <div className={styles.segment} role="tablist" aria-label="Organisation views">
         {([["reporting", "Reporting lines", Network], ["companies", "Companies", Layers], ["locations", "Locations", MapPin]] as const).map(([id, label, Icon]) => (
           <button key={id} type="button" role="tab" aria-selected={view === id} className={styles.segmentButton} onClick={() => setView(id)}><Icon aria-hidden="true" size={16} />{label}</button>
@@ -152,7 +152,7 @@ function ReportingTree({ onOpen }: { onOpen: (id: string) => void }) {
   };
 
   return (
-    <Panel title="Reporting lines" subtitle={chart.data ? `${count} active employees` : undefined} actions={
+    <Panel fill title="Reporting lines" subtitle={chart.data ? `${count} active employees` : undefined} actions={
       <div className={ui.searchBox} style={{ width: 240 }}><Search aria-hidden="true" /><Input type="search" aria-label="Find a person in the reporting tree" placeholder="Find a person…" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
     } flush>
       {chart.error ? <div style={{ padding: 16 }}><ErrorState message={chart.error.message} onRetry={() => void chart.mutate()} /></div>
@@ -166,7 +166,7 @@ function ReportingTree({ onOpen }: { onOpen: (id: string) => void }) {
 function LocationsTable({ rows }: { rows: LocationRow[] | null }) {
   if (rows === null) return <Panel title="Locations"><ErrorState message="Locations could not be loaded." /></Panel>;
   return (
-    <Panel title="Locations and work sites" subtitle={`${rows.length} recorded`} flush>
+    <Panel fill title="Locations and work sites" subtitle={`${rows.length} recorded`} flush>
       {rows.length === 0 ? <EmptyState icon={MapPin} title="No locations recorded">Locations are added with the Location master in the record screens.</EmptyState> : (
         <div className={ui.tableWrap}>
           <table className={ui.table}>
@@ -195,8 +195,8 @@ export function Positions() {
   const [filter, setFilter] = useState("");
   const rows = (positions.data ?? []).filter((row) => !filter || row.vacancy === filter);
   return (
-    <div className={styles.stack}>
-      <Panel title="Position register" subtitle={positions.data ? `${positions.data.length} positions · ${positions.data.filter((row) => row.vacancy === "vacant").length} vacant` : undefined}
+    <div className={cx(styles.stack, ui.fit)}>
+      <Panel fill title="Position register" subtitle={positions.data ? `${positions.data.length} positions · ${positions.data.filter((row) => row.vacancy === "vacant").length} vacant` : undefined}
         actions={<Select aria-label="Filter positions" value={filter} onChange={(event) => setFilter(event.target.value)} style={{ width: 160 }}><option value="">All positions</option><option value="filled">Filled</option><option value="vacant">Vacant</option></Select>} flush>
         {positions.error ? <div style={{ padding: 16 }}><ErrorState message={positions.error.message} onRetry={() => void positions.mutate()} /></div>
           : positions.isLoading ? <SkeletonRows rows={5} columns={6} />
@@ -218,7 +218,7 @@ export function Positions() {
             </div>
           )}
       </Panel>
-      <Panel title="Sanctioned strength" subtitle="Approved headcount against people deployed" flush>
+      <Panel fill title="Sanctioned strength" subtitle="Approved headcount against people deployed" flush>
         {sanctioned.error ? <div style={{ padding: 16 }}><ErrorState message={sanctioned.error.message} onRetry={() => void sanctioned.mutate()} /></div>
           : sanctioned.isLoading ? <SkeletonRows rows={3} columns={5} />
           : (sanctioned.data ?? []).length === 0 ? <EmptyState icon={Users} title="No manpower plan recorded">Sanctioned strength appears once a manpower plan is approved.</EmptyState>
@@ -229,8 +229,8 @@ export function Positions() {
                 <tbody>
                   {(sanctioned.data ?? []).map((row) => (
                     <tr key={row.id}>
-                      <td className={ui.mono}>{String(row.code ?? row.record ?? "—")}</td>
-                      <td>{String(row.department ?? row.org_unit ?? "—")}</td>
+                      <td className={ui.mono}>{String(row.record_code ?? row.code ?? row.record ?? "—")}</td>
+                      <td>{String(row.organisation ?? row.department ?? row.org_unit ?? "—")}</td>
                       <td>{String(row.designation ?? "—")}</td>
                       <td className={ui.numeric}>{String(row.sanctioned ?? "—")}</td>
                       <td className={ui.numeric}>{String(row.filled ?? "—")}</td>
@@ -259,7 +259,7 @@ export function Documents({ onOpenEmployee }: { onOpenEmployee: (code: string) =
   const rows = (documents.data ?? []).filter((row) => (!status || row.status === status)
     && (!query || `${row.title} ${row.employee_name ?? ""} ${row.employee_code ?? ""} ${row.document_type}`.toLowerCase().includes(query.toLowerCase())));
   return (
-    <Panel title="Document vault" subtitle={documents.data ? `${documents.data.length} documents` : undefined} actions={
+    <Panel fill title="Document vault" subtitle={documents.data ? `${documents.data.length} documents` : undefined} actions={
       <div className={styles.filters}>
         <div className={ui.searchBox}><Search aria-hidden="true" /><Input type="search" aria-label="Search documents" placeholder="Search documents…" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
         <Select aria-label="Document status" value={status} onChange={(event) => setStatus(event.target.value)}>
@@ -308,7 +308,7 @@ export function Audit({ rows, onOpenEmployee }: { rows: AuditRow[] | null; onOpe
   if (rows === null) return <Panel title="Audit trail"><ErrorState message="The audit trail could not be loaded, or your role cannot read it." /></Panel>;
   const filtered = rows.filter((row) => !query || `${row.action} ${row.entity_type} ${row.reason ?? ""}`.toLowerCase().includes(query.toLowerCase()));
   return (
-    <Panel title="Audit trail" subtitle="The 50 most recent changes in this organisation" actions={
+    <Panel fill title="Audit trail" subtitle="The 50 most recent changes in this organisation" actions={
       <div className={ui.searchBox} style={{ width: 240 }}><Search aria-hidden="true" /><Input type="search" aria-label="Search the audit trail" placeholder="Search actions…" value={query} onChange={(event) => setQuery(event.target.value)} /></div>
     } flush>
       {filtered.length === 0 ? <EmptyState icon={History} title={rows.length ? "No entries match" : "No changes recorded"}>Every create, update and approval is recorded here.</EmptyState> : (

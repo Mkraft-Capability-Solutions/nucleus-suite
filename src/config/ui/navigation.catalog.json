@@ -203,6 +203,14 @@
               "tag": "Core"
             },
             {
+              "id": "employee_flags",
+              "label": "Warnings & Alerts",
+              "targetTab": "people_core",
+              "icon": "WarningAmberOutlined",
+              "desc": "Passport and visa expiry, medical examinations due and retirement across the group's companies.",
+              "tag": "Core"
+            },
+            {
               "id": "assignment_admin",
               "label": "Assignment And Policy Attributes",
               "targetTab": "assignment_admin",
@@ -225,14 +233,6 @@
               "icon": "GroupsOutlined",
               "desc": "Manage sanctioned strength board with a scoped work queue, record history and controlled actions.",
               "tag": "Hierarchy"
-            },
-            {
-              "id": "document_vault",
-              "label": "Document Vault",
-              "targetTab": "document_vault",
-              "icon": "FolderSharedOutlined",
-              "desc": "Manage document vault with a scoped work queue, record history and controlled actions.",
-              "tag": "Organization"
             },
             {
               "id": "joining_chain",
@@ -427,6 +427,27 @@
               "tag": "Governance",
               "desc": "Resignation submission, notice period calculation, and exit approvals",
               "icon": "ExitToAppOutlined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "documents",
+      "label": "Documents",
+      "icon": "FolderSharedOutlined",
+      "badge": "Library",
+      "groups": [
+        {
+          "heading": "Document library",
+          "items": [
+            {
+              "id": "document_vault",
+              "label": "Documents",
+              "targetTab": "documents",
+              "icon": "FolderSharedOutlined",
+              "desc": "Every employee document, filed by company, department and person: folders or one list; upload, open and delete.",
+              "tag": "Organization"
             }
           ]
         }

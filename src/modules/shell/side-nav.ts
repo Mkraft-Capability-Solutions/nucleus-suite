@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, House, Settings2, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
+import { BarChart3, Briefcase, FolderOpen, House, Settings2, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
 
 /** The areas of the redesigned side menu (navigation domains), and which sit on the rail. */
 
@@ -7,6 +7,7 @@ export type Area = { id: string; label: string; icon: LucideIcon };
 export const AREAS: Area[] = [
   { id: "dashboard", label: "Home", icon: House },
   { id: "core_hr", label: "Core HR", icon: Users },
+  { id: "documents", label: "Documents", icon: FolderOpen },
   { id: "talent", label: "Talent", icon: UserPlus },
   { id: "payroll_finance", label: "Payroll", icon: Wallet },
   { id: "workforce_ops", label: "Workforce", icon: Briefcase },
@@ -15,7 +16,10 @@ export const AREAS: Area[] = [
 ];
 
 /** Areas on the rail by default; the rest are under More. */
-export const DEFAULT_RAIL = ["dashboard", "core_hr", "talent", "payroll_finance", "workforce_ops"];
+export const DEFAULT_RAIL = ["dashboard", "core_hr", "documents", "talent", "payroll_finance", "workforce_ops"];
+
+/** Areas that open one screen of their own rather than a list of screens (no side panel). */
+export const SINGLE_SCREEN_AREAS = new Set(["dashboard", "documents"]);
 export const MAX_RAIL = 6;
 
 /** Aliases the workspace uses for the same area. */

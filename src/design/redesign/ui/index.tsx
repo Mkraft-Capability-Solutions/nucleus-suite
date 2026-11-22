@@ -87,13 +87,17 @@ export function PageHeader({ eyebrow, title, description, actions }: { eyebrow?:
   );
 }
 
-/** `highlight`: the one most important item on the page (gradient border); use at most once per page. */
-export function Panel({ title, subtitle, actions, children, flush = false, as: As = "section", id, highlight = false }: {
-  title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; flush?: boolean; as?: "section" | "div"; id?: string; highlight?: boolean;
+/**
+ * `highlight`: the one most important item on the page (gradient border); use at most once per page.
+ * `fill`: in a screen that fits the viewport, the panel takes the remaining height and its table
+ * (or body) scrolls inside it.
+ */
+export function Panel({ title, subtitle, actions, children, flush = false, as: As = "section", id, highlight = false, fill = false }: {
+  title?: ReactNode; subtitle?: ReactNode; actions?: ReactNode; children: ReactNode; flush?: boolean; as?: "section" | "div"; id?: string; highlight?: boolean; fill?: boolean;
 }) {
   const headingId = useId();
   return (
-    <As className={cx(ui.panel, highlight && ui.highlight)} aria-labelledby={title ? headingId : undefined} id={id}>
+    <As className={cx(ui.panel, highlight && ui.highlight, fill && ui.fill)} aria-labelledby={title ? headingId : undefined} id={id}>
       {(title || actions) && (
         <div className={ui.panelHeader}>
           <div>

@@ -5,6 +5,7 @@ import { ArrowLeft, CalendarClock, GitBranch, Pencil, Printer } from "lucide-rea
 import CareerHistory, { fetchCareer, formatDay } from "@/components/People/CareerHistory";
 import { durationLabel, MOVEMENT_LABELS } from "@/lib/career";
 import { launchAction } from "@/lib/action-launcher";
+import { currencyDigits, formatMoney } from "@/lib/currencies";
 import { downloadPrintableDocument } from "@/utils/exportUtils";
 import { Alert, Avatar, Badge, Button, Details, EmptyState, ErrorState, Panel, SkeletonRows, cx, ui } from "@/design/redesign/ui";
 import {
@@ -202,7 +203,7 @@ function Job({ person, record, meta, onOpenManager }: { person: PersonRow; recor
           { label: "Overtime eligibility", value: humanise(text(meta.otEligibility)) },
           { label: "Weekly rest days", value: meta.hasRestDays === undefined ? null : meta.hasRestDays ? "Yes" : "No" },
           { label: "Salary processed at", value: text(meta.salaryLocationScope) },
-          { label: "Basic salary", value: record.salaryMasked ? "Restricted" : record.basicSalary ? `${record.basicSalary.currency} ${Number(record.basicSalary.amount).toLocaleString("en-IN")}` : null },
+          { label: "Basic salary", value: record.salaryMasked ? `Restricted${record.currency ? ` · paid in ${record.currency}` : ""}` : record.basicSalary ? `${formatMoney(record.basicSalary.minor ?? Math.round(Number(record.basicSalary.amount) * 10 ** currencyDigits(record.basicSalary.currency)), record.basicSalary.currency)} a month` : null },
         ]} />
       </Panel>
     </div>

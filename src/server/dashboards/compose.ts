@@ -1,4 +1,4 @@
-import type { BarPanel, BoardFilters, PartsPanel, HeatmapPanel, LinePanel, ListItem, ListPanel, Panel, Series, TableColumn, TablePanel } from "./types";
+import type { Insight, BarPanel, BoardFilters, BridgePanel, BridgeStep, SankeyNode, SankeyPanel, PartsPanel, HeatmapPanel, LinePanel, ListItem, ListPanel, MatrixCell, MatrixPanel, Panel, RadarPanel, ScatterPanel, ScatterPoint, Series, TableColumn, TablePanel, ValueFormat } from "./types";
 
 /** Database numerics (bigint, numeric, count) arrive as strings or numbers; anything else is 0. */
 export function num(value: unknown): number {
@@ -84,7 +84,7 @@ export function periodLabel(months: number): string {
 type Common = Omit<Panel, "kind" | "state"> & { emptyMessage: string };
 
 function seriesHasData(series: Series[]) {
-  return series.some((entry) => entry.data.some((value) => value !== 0));
+  return series.some((entry) => entry.data.some((value) => value !== 0 && value !== null));
 }
 
 export function barPanel(common: Common, categories: string[], series: Series[], horizontal = false): BarPanel {
@@ -118,6 +118,30 @@ export function heatmapPanel(common: Common, rows: Array<{ x: string; y: string;
   return { ...common, kind: "heatmap", x, y, cells, state: ok ? "ok" : "empty" };
 }
 
+export function matrixPanel(common: Common, shape: { rows: string[]; cols: string[]; rowAxis: string; colAxis: string }, cells: MatrixCell[]): MatrixPanel {
+  return { ...common, kind: "matrix", ...shape, cells, state: cells.some((cell) => cell.value > 0) ? "ok" : "empty" };
+}
+
+export function radarPanel(common: Common, indicators: Array<{ name: string; max: number }>, series: Series[]): RadarPanel {
+  const ok = indicators.length >= 3 && seriesHasData(series);
+  return { ...common, kind: "radar", indicators, series, state: ok ? "ok" : "empty" };
+}
+
+export function scatterPanel(common: Common, axes: { xLabel: string; yLabel: string; xFormat: ValueFormat; yFormat: ValueFormat }, points: ScatterPoint[]): ScatterPanel {
+  return { ...common, kind: "scatter", ...axes, points, state: points.length >= 2 ? "ok" : "empty" };
+}
+
+export function sankeyPanel(common: Common, nodes: SankeyNode[], links: SankeyPanel["links"]): SankeyPanel {
+  const kept = links.filter((link) => link.value > 0);
+  const used = new Set(kept.flatMap((link) => [link.source, link.target]));
+  return { ...common, kind: "sankey", nodes: nodes.filter((node) => used.has(node.name)), links: kept, state: kept.length ? "ok" : "empty" };
+}
+
+export function bridgePanel(common: Common, steps: BridgeStep[]): BridgePanel {
+  const ok = steps.some((step) => step.value !== 0);
+  return { ...common, kind: "bridge", steps, state: ok ? "ok" : "empty" };
+}
+
 /** Replaces a panel whose source could not be read with an honest "unavailable" state. */
 export function unavailable<T extends Panel>(panel: T): T {
   return { ...panel, state: "unavailable" };
@@ -132,6 +156,11 @@ export function forbidden(common: Common & { kind: Panel["kind"] }): Panel {
     case "parts": return { ...base, kind: "parts", items: [] };
     case "heatmap": return { ...base, kind: "heatmap", x: [], y: [], cells: [] };
     case "table": return { ...base, kind: "table", columns: [], rows: [] };
+    case "matrix": return { ...base, kind: "matrix", rows: [], cols: [], rowAxis: "", colAxis: "", cells: [] };
+    case "radar": return { ...base, kind: "radar", indicators: [], series: [] };
+    case "scatter": return { ...base, kind: "scatter", xLabel: "", yLabel: "", xFormat: "count", yFormat: "count", points: [] };
+    case "bridge": return { ...base, kind: "bridge", steps: [] };
+    case "sankey": return { ...base, kind: "sankey", nodes: [], links: [] };
     default: return { ...base, kind: "list", items: [] };
   }
 }
@@ -179,6 +208,13 @@ export function humanise(code: string | null | undefined): string {
   if (/^[A-Z0-9]{1,4}$/.test(text)) return text;
   const spaced = text.replace(/[._-]+/g, " ").toLowerCase();
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
+const SEVERITY = { risk: 0, attention: 1, positive: 2, info: 3 } as const;
+/** Findings in order of urgency (risk, attention, positive, then context); equal ones keep their order. */
+export function rankInsights(insights: Array<string | Insight>): Array<string | Insight> {
+  const weight = (item: string | Insight) => (typeof item === "string" ? SEVERITY.info : SEVERITY[item.tone ?? "info"]);
+  return insights.map((item, index) => ({ item, index })).sort((a, b) => weight(a.item) - weight(b.item) || a.index - b.index).map(({ item }) => item);
 }
 
 /** A panel whose source failed to load is shown as unavailable rather than empty. */

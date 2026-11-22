@@ -8,10 +8,38 @@ import { hrOperations, peopleCommandCentre } from "./boards/people";
 import { payrollBoard } from "./boards/payroll";
 import { capabilityBoard, performanceBoard, talentAcquisition } from "./boards/talent";
 import { employeeHome, managerCockpit } from "./boards/team";
+import {
+  attendanceExtras, capabilityExtras, employeeExtras, governanceExtras, hrOperationsExtras, managerExtras, payrollExtras, peopleExtras,
+  performanceExtras, talentExtras,
+} from "./boards/extras";
+import { rankInsights } from "./compose";
 import { canAny, organisationContext, plain, runAll, type Scope } from "./query";
-import { BOARD_IDS, type Board, type BoardFilters, type BoardId, type FilterOptions, type Kpi, type Panel } from "./types";
+import { BOARD_IDS, type Board, type BoardFilters, type BoardId, type FilterOptions, type Insight, type Kpi, type Panel } from "./types";
 
-type Built = { kpis: Kpi[]; panels: Panel[]; insights: string[]; employeesInScope: number | null; notice?: string; audience?: string };
+type Built = { kpis: Kpi[]; panels: Panel[]; insights: Array<string | Insight>; employeesInScope: number | null; notice?: string; audience?: string; evidence?: string[] };
+type Extras = Panel[] | { panels: Panel[]; insights: Insight[] };
+
+
+/**
+ * A board plus the panels its classic console also had (./boards/extras), built in parallel.
+ * `replaces` drops base panels an extra supersedes. Personal boards skip the extras when the
+ * sign-in is not linked to an employee record (the base board explains why).
+ */
+function withExtras(base: (scope: Scope) => Promise<Built>, extras: (scope: Scope) => Promise<Extras>, layout: { order: string[]; replaces?: string[] }) {
+  return async (scope: Scope): Promise<Built> => {
+    const [built, extra] = await Promise.all([base(scope), extras(scope)]);
+    if (built.notice) return built;
+    const more = Array.isArray(extra) ? extra : extra.panels;
+    const insights = rankInsights([...built.insights, ...(Array.isArray(extra) ? [] : extra.insights)]);
+    // Panels in reading order (rows of the 12-column grid); anything not listed keeps its place at the end.
+    const rank = (panel: Panel) => { const index = layout.order.indexOf(panel.id); return index < 0 ? layout.order.length : index; };
+    const panels = [...built.panels.filter((panel) => !(layout.replaces ?? []).includes(panel.id)), ...more];
+    return { ...built, insights, panels: panels.map((panel, index) => ({ panel, index })).sort((a, b) => rank(a.panel) - rank(b.panel) || a.index - b.index).map(({ panel }) => panel) };
+  };
+}
+
+const personal = (extras: (scope: Scope, employeeId: string) => Promise<Panel[]>) => (scope: Scope) =>
+  scope.access.context.employeeId ? extras(scope, scope.access.context.employeeId) : Promise.resolve([]);
 
 /**
  * Each board: who may open it (any one of the permissions; owners and administrators hold all),
@@ -24,16 +52,16 @@ export const BOARD_DEFINITIONS: Record<BoardId, {
   audience: string;
   build: (scope: Scope) => Promise<Built>;
 }> = {
-  s1: { title: "People command centre", permissions: ["hr.lifecycle.read", "employee.write", "tenant.manage"], filters: true, audience: "The whole organisation", build: peopleCommandCentre },
-  s2: { title: "HR operations console", permissions: ["hr.lifecycle.read", "employee.write"], filters: true, audience: "The whole organisation", build: hrOperations },
-  s3: { title: "Attendance & shifts", permissions: ["attendance.write", "attendance.evaluate"], filters: true, audience: "The whole organisation", build: attendanceBoard },
-  s4: { title: "Talent acquisition", permissions: ["recruitment.requisition.write", "employee.write"], filters: false, audience: "The whole organisation", build: talentAcquisition },
-  s5: { title: "Payroll control room", permissions: ["payroll.read"], filters: false, audience: "The whole organisation", build: payrollBoard },
-  s6: { title: "Performance & talent", permissions: ["employee.write", "hr.lifecycle.read"], filters: true, audience: "The whole organisation", build: performanceBoard },
-  s7: { title: "Manager cockpit", permissions: "member", filters: false, audience: "Your direct reports", build: managerCockpit },
-  s8: { title: "Employee home", permissions: "member", filters: false, audience: "Your own records", build: employeeHome },
-  s9: { title: "Capability", permissions: ["employee.write", "hr.lifecycle.read"], filters: true, audience: "The whole organisation", build: capabilityBoard },
-  s10: { title: "Workspace governance", permissions: ["tenant.manage", "role.manage", "audit.read"], filters: false, audience: "The whole organisation", build: governanceBoard },
+  s1: { title: "People command centre", permissions: ["hr.lifecycle.read", "employee.write", "tenant.manage"], filters: true, audience: "The whole organisation", build: withExtras(peopleCommandCentre, peopleExtras, { order: ["headcount-trend", "org-health", "talent-flow", "attrition-department", "pay-performance", "attrition-heat", "joiners-leavers", "department", "location", "tenure", "category", "heat"] }) },
+  s2: { title: "HR operations console", permissions: ["hr.lifecycle.read", "employee.write"], filters: true, audience: "The whole organisation", build: withExtras(hrOperations, hrOperationsExtras, { order: ["queue", "joining", "approvals", "onboarding", "absence", "tickets", "absence-calendar", "sla", "renewals", "ticket-categories", "moments", "missing"] }) },
+  s3: { title: "Attendance & shifts", permissions: ["attendance.write", "attendance.evaluate"], filters: true, audience: "The whole organisation", build: withExtras(attendanceBoard, attendanceExtras, { order: ["daily", "status", "location", "overtime", "attendance-absenteeism", "punctuality", "coverage", "sources", "signals", "regularisations", "exceptions"] }) },
+  s4: { title: "Talent acquisition", permissions: ["recruitment.requisition.write", "employee.write"], filters: false, audience: "The whole organisation", build: withExtras(talentAcquisition, talentExtras, { order: ["funnel", "sources", "requisitions", "offers", "source-yield", "shortlist", "leakage", "candidate-experience", "trend", "interviews"] }) },
+  s5: { title: "Payroll control room", permissions: ["payroll.read"], filters: false, audience: "The whole organisation", build: withExtras(payrollBoard, payrollExtras, { order: ["cost", "severity", "cost-bridge", "composition", "exceptions", "rules", "statutory", "accuracy", "cost-per-employee", "deductions", "basic", "runs"] }) },
+  s6: { title: "Performance & talent", permissions: ["employee.write", "hr.lifecycle.read"], filters: true, audience: "The whole organisation", build: withExtras(performanceBoard, performanceExtras, { replaces: ["ratings"], order: ["nine-box", "rating-distribution", "competencies", "calibration", "review-status", "progress", "recognition", "succession", "succession-cover"] }) },
+  s7: { title: "Manager cockpit", permissions: "member", filters: false, audience: "Your direct reports", build: withExtras(managerCockpit, personal(managerExtras), { order: ["team", "leave", "my-approvals", "capacity", "goals", "overtime", "skill-coverage"] }) },
+  s8: { title: "Employee home", permissions: "member", filters: false, audience: "Your own records", build: withExtras(employeeHome, personal(employeeExtras), { order: ["payslip", "my-goals", "allocation", "actions", "balances", "timesheet", "hours", "requests", "learning", "reporting"] }) },
+  s9: { title: "Capability", permissions: ["employee.write", "hr.lifecycle.read"], filters: true, audience: "The whole organisation", build: withExtras(capabilityBoard, capabilityExtras, { order: ["skill-matrix", "skill-deficit", "gap-to-path", "skills", "proficiency", "capability-movement", "programme-funnel", "completions", "department", "learning-hours", "learning-impact", "overdue"] }) },
+  s10: { title: "Workspace governance", permissions: ["tenant.manage", "role.manage", "audit.read"], filters: false, audience: "The whole organisation", build: withExtras(governanceBoard, governanceExtras, { order: ["activity", "roles", "actions", "recent", "modules", "integrations", "agents", "model-register", "ai"] }) },
 };
 
 export function isBoardId(value: string): value is BoardId {
@@ -75,6 +103,7 @@ export async function buildBoard(access: Access, board: BoardId, filters: BoardF
     kpis: built.kpis,
     panels: built.panels,
     insights: built.insights,
+    ...(built.evidence?.length ? { evidence: built.evidence } : {}),
     ...(built.notice ? { notice: built.notice } : {}),
   };
 }

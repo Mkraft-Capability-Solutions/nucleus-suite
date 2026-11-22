@@ -42,7 +42,7 @@ export const QUICK_ACTIONS: readonly QuickAction[] = [
   { id: "add_employee", label: "Add an employee", icon: UserPlus, personas: HR, nav: "core_people" },
   { id: "import_people", label: "Import employees", icon: Upload, personas: HR, nav: "core_people" },
   { id: "attendance_exceptions", label: "Attendance exceptions", icon: ClipboardCheck, personas: HR, nav: "attendance_exceptions" },
-  { id: "documents", label: "Document vault", icon: FileText, personas: HR, nav: "document_vault" },
+  { id: "documents", label: "Documents", icon: FileText, personas: EVERYONE, nav: "document_vault" },
   { id: "payroll_runs", label: "Payroll runs", icon: Wallet, personas: ["SUPER_ADMIN", "ADMIN", "FINANCE_MANAGER"], nav: "payroll_runs" },
   { id: "announcements", label: "Announcements", icon: Megaphone, personas: HR, nav: "announcement_management" },
   { id: "access", label: "Roles and access", icon: ShieldCheck, personas: ["SUPER_ADMIN", "ADMIN"], nav: "platform_roles" },

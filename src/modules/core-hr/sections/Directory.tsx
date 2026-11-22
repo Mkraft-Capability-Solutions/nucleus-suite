@@ -141,7 +141,7 @@ export default function Directory({ rows, loading, error, onRetry, canEdit, onOp
   }
 
   return (
-    <section className={ui.panel} aria-labelledby="directory-title">
+    <section className={cx(ui.panel, ui.fill)} aria-labelledby="directory-title">
       <div className={styles.toolbar}>
         <h2 id="directory-title" className={styles.srOnly}>Employee directory</h2>
         <div className={cx(ui.searchBox, styles.search)}>
