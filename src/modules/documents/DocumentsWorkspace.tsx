@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Dialog } from "@base-ui/react/dialog";
 import {
   Building2, ChevronRight, Download, Eye, File, FileImage, FileSpreadsheet, FileText, Folder, FolderOpen, LayoutGrid, List, MoreHorizontal, Search, Trash2, Upload, X,
 } from "lucide-react";
@@ -16,6 +17,9 @@ import styles from "./Documents.module.css";
  * folders or as one list. HR and administrators see and manage everyone's; everyone else sees their
  * own folder, can add to it, and can delete what they uploaded. What each person may do comes from
  * the server (the tree's `reach`), never from the role name in the browser.
+ *
+ * It opens in a modal (DocumentsModal): `initialEmployee` starts in that person's folder and
+ * `initialDocument` opens that document in the viewer once the folder has loaded.
  */
 
 type Place = { company?: string; department?: string; employee?: string };
@@ -46,9 +50,17 @@ function findPerson(data: LibraryTree | undefined, employeeId: string | undefine
   return null;
 }
 
-export default function DocumentsWorkspace({ organisation }: { organisation?: string }) {
+type Props = {
+  organisation?: string;
+  /** Rendered inside the documents modal: its header holds the dialog title and the close button. */
+  inModal?: boolean;
+  initialEmployee?: string;
+  initialDocument?: string;
+};
+
+export default function DocumentsWorkspace({ organisation, inModal = false, initialEmployee, initialDocument }: Props) {
   const tree = useTree();
-  const [place, setPlace] = useState<Place>({});
+  const [place, setPlace] = useState<Place>(() => (initialEmployee ? { employee: initialEmployee } : {}));
   const [view, setViewState] = useState<View>(() => {
     try { return (typeof window !== "undefined" && localStorage.getItem(VIEW_KEY) === "list") ? "list" : "folders"; } catch { return "folders"; }
   });
@@ -56,6 +68,8 @@ export default function DocumentsWorkspace({ organisation }: { organisation?: st
   const [type, setType] = useState("");
   const [uploading, setUploading] = useState(false);
   const [viewing, setViewing] = useState<LibraryDocument | null>(null);
+  /** The document asked for when the modal was opened; shown once its folder's list has it. */
+  const [pendingDocument, setPendingDocument] = useState<string | null>(initialDocument ?? null);
   const [removing, setRemoving] = useState<LibraryDocument | null>(null);
   const [reason, setReason] = useState("");
   const [notice, setNotice] = useState<{ tone: "success" | "danger"; text: string } | null>(null);
@@ -79,10 +93,12 @@ export default function DocumentsWorkspace({ organisation }: { organisation?: st
   } : null;
   const documents = useDocuments(filters);
   const rows = documents.data?.documents ?? [];
+  const opened = viewing ?? (pendingDocument ? rows.find((document) => document.id === pendingDocument && document.hasFile) ?? null : null);
+  const closeViewer = () => { setViewing(null); setPendingDocument(null); };
 
   const canUploadHere = data?.reach.write === "all" || (data?.reach.write === "self" && Boolean(data.me));
   const refresh = () => { void tree.mutate(); void documents.mutate(); };
-  const go = (next: Place) => { setPlace(next); setSearch(""); };
+  const go = (next: Place) => { setPlace(next); setSearch(""); setPendingDocument(null); };
 
   async function confirmDelete() {
     const target = removing;
@@ -91,7 +107,7 @@ export default function DocumentsWorkspace({ organisation }: { organisation?: st
     try {
       await deleteDocument(target.id, reason);
       setNotice({ tone: "success", text: `"${target.title}" was deleted. The record of it stays in the audit trail.` });
-      if (viewing?.id === target.id) setViewing(null);
+      if (opened?.id === target.id) closeViewer();
       refresh();
     } catch (error) {
       setNotice({ tone: "danger", text: (error as Error).message });
@@ -300,15 +316,27 @@ export default function DocumentsWorkspace({ organisation }: { organisation?: st
     ? `${person.designation ?? ""}${person.designation ? " · " : ""}${person.department.name} · ${person.company.name}${person.former ? " · Former employee" : ""}`
     : department ? `${department.people} people · ${department.documents} documents` : company ? `${company.departments.length} departments · ${company.documents} documents` : data ? `${data.companies.length} companies · ${data.companies.reduce((sum, entry) => sum + entry.documents, 0)} documents` : "";
 
+  const description = selfOnly ? "Your documents: add your own, open or download any of them." : "Every employee document, filed by company, department and person.";
+  const uploadButton = canUploadHere ? <Button icon={Upload} variant="primary" onClick={() => setUploading(true)}>Upload</Button> : undefined;
+
   return (
-    <Scope module="documents" className={ui.fit}>
-      <div className={cx(ui.page, ui.fit)}>
-        <PageHeader
-          eyebrow={organisation || "Documents"}
-          title="Documents"
-          description={selfOnly ? "Your documents: add your own, open or download any of them." : "Every employee document, filed by company, department and person."}
-          actions={canUploadHere ? <Button icon={Upload} variant="primary" onClick={() => setUploading(true)}>Upload</Button> : undefined}
-        />
+    <Scope module="documents" className={cx(ui.fit, inModal && styles.modalScope)}>
+      <div className={cx(ui.page, ui.fit, inModal && styles.modalPage)}>
+        {inModal ? (
+          <header className={cx(ui.pageHeader, styles.modalHeader)}>
+            <div className={ui.pageTitleBlock}>
+              {organisation && <span className={ui.eyebrow}>{organisation}</span>}
+              <Dialog.Title className={ui.pageTitle}>Documents</Dialog.Title>
+              <Dialog.Description className={ui.pageDescription}>{description}</Dialog.Description>
+            </div>
+            <div className={cx(ui.actions, styles.modalActions)}>
+              {uploadButton}
+              <Dialog.Close className={cx(ui.button, ui.ghost, ui.iconButton)} aria-label="Close documents" title="Close (Esc)"><X aria-hidden="true" /></Dialog.Close>
+            </div>
+          </header>
+        ) : (
+          <PageHeader eyebrow={organisation || "Documents"} title="Documents" description={description} actions={uploadButton} />
+        )}
 
         {notice && (
           <div className={cx(styles.notice, notice.tone === "danger" ? styles.noticeDanger : styles.noticeSuccess)} role="status">
@@ -371,7 +399,7 @@ export default function DocumentsWorkspace({ organisation }: { organisation?: st
           }}
         />
       )}
-      {viewing && <Viewer document={viewing} onClose={() => setViewing(null)} onDelete={viewing.canDelete ? () => setRemoving(viewing) : undefined} />}
+      {opened && <Viewer document={opened} onClose={closeViewer} onDelete={opened.canDelete ? () => setRemoving(opened) : undefined} />}
       <ConfirmDialog open={Boolean(removing)} title="Delete this document?" confirmLabel="Delete" tone="danger" onCancel={() => { setRemoving(null); setReason(""); }} onConfirm={() => void confirmDelete()}>
         <p className={styles.confirmText}><strong>{removing?.title}</strong>{removing ? ` · ${removing.employeeName}` : ""}. The file is removed for good; a record that it existed, and who deleted it, stays in the audit trail.</p>
         <label className={styles.confirmLabel} htmlFor="delete-reason">Reason (optional)</label>

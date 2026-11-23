@@ -82,6 +82,7 @@ describe("side menu", () => {
   it("maps workspace aliases to their area", () => {
     expect(areaFor("people")).toBe("core_hr");
     expect(areaFor("helpdesk")).toBe("core_hr");
+    expect(areaFor("documents")).toBe("core_hr");
     expect(areaFor("payroll")).toBe("payroll_finance");
     expect(areaFor("settings")).toBe("platform");
     expect(areaFor("talent")).toBe("talent");
@@ -92,7 +93,7 @@ describe("side menu", () => {
     const allowed = AREAS.filter((area) => area.id !== "payroll_finance");
     const { rail, more } = railAreas(["platform", "payroll_finance", "dashboard", "platform"], allowed);
     expect(rail.map((area) => area.id)).toEqual(["platform", "dashboard"]);
-    expect(more.map((area) => area.id)).toEqual(["core_hr", "documents", "talent", "workforce_ops", "analytics_ai"]);
+    expect(more.map((area) => area.id)).toEqual(["core_hr", "talent", "workforce_ops", "analytics_ai"]);
     expect(railAreas(null, AREAS).rail.map((area) => area.id)).toEqual(DEFAULT_RAIL);
   });
 
@@ -143,6 +144,22 @@ describe("screens panel", () => {
       { heading: "workforce operations", items: [{ id: "c", label: "C" }] },
     ]);
     expect(merged.map((group) => [group.heading, group.items.map((item) => item.id)])).toEqual([["Workforce Operations", ["a", "b", "c"]]]);
+  });
+
+  it("keeps a standalone entry apart from the groups", () => {
+    const merged = mergeGroups([
+      { heading: "Foundation", items: [{ id: "a", label: "A" }] },
+      { heading: "Documents", standalone: true, items: [{ id: "document_vault", label: "Documents" }] },
+    ]);
+    expect(merged.map((group) => [group.heading, Boolean(group.standalone)])).toEqual([["Foundation", false], ["Documents", true]]);
+  });
+
+  it("lists Core HR's documents last, on its own, not inside a group", () => {
+    const core = (navigation as { domains: Array<{ id: string; groups: Array<{ heading: string; standalone?: boolean; items: Array<{ id: string }> }> }> }).domains.find((domain) => domain.id === "core_hr")!;
+    const last = core.groups[core.groups.length - 1]!;
+    expect(last.standalone).toBe(true);
+    expect(last.items.map((item) => item.id)).toEqual(["document_vault"]);
+    expect(core.groups.slice(0, -1).flatMap((group) => group.items.map((item) => item.id))).not.toContain("document_vault");
   });
 
   it("opens the group holding the open screen, otherwise the first", () => {

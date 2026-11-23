@@ -528,22 +528,38 @@ async function seedRecords(client: PoolClient, tenantId: string, leavePlan: Leav
   await insert(client, "documents", documents);
   await insert(client, "document_versions", versions);
 
-  // Onboarding (recent and upcoming joiners) and exits
-  const tasks = ["Sign the offer and NDA", "Submit identity documents", "Laptop and access card", "Bank account and PF nomination", "Induction: values, POSH and safety", "Meet your buddy", "30-day check-in with manager"];
-  await insert(client, "onboarding_templates", [{ id: id("ot:std"), tenant_id: tenantId, attributes: { code: "DAY1-STD", name: "Standard onboarding", tasks: tasks.map((title, index) => ({ code: `T${index + 1}`, title })) } }]);
-  await insert(client, "onboarding_instances", ["TG1024", "TG1015", "TG1034"].map((code) => {
+  // Onboarding (recent and upcoming joiners) and exits. Checklist tasks live in onboarding_tasks and
+  // clearance items carry item_name/owner/blocking: the fields the lifecycle services and screens read.
+  const tasks: Array<{ key: string; title: string; required: boolean; owner: string }> = [
+    { key: "offer", title: "Sign the offer and NDA", required: true, owner: "hr" },
+    { key: "documents", title: "Submit identity documents", required: true, owner: "hr" },
+    { key: "assets", title: "Laptop and access card", required: true, owner: "it" },
+    { key: "payroll", title: "Bank account and PF nomination", required: true, owner: "payroll" },
+    { key: "induction", title: "Induction: values, POSH and safety", required: true, owner: "hr" },
+    { key: "buddy", title: "Meet your buddy", required: false, owner: "manager" },
+    { key: "checkin", title: "30-day check-in with manager", required: false, owner: "manager" },
+  ];
+  await insert(client, "onboarding_templates", [{ id: id("ot:std"), tenant_id: tenantId, attributes: { code: "DAY1-STD", name: "Standard onboarding", status: "active", tasks } }]);
+  const joiners = ["TG1024", "TG1015", "TG1034"];
+  await insert(client, "onboarding_instances", joiners.map((code) => {
     const person = byCode.get(code)!;
     const done = person.joined > TODAY ? 2 : code === "TG1015" ? 7 : 5;
-    return { tenant_id: tenantId, employee_id: id(`emp:${code}`), employment_id: id(`employment:${code}`), onboarding_template_id: id("ot:std"),
-      attributes: { status: done === 7 ? "completed" : "active", template: "DAY1-STD", start_date: person.joined, tasks: tasks.map((title, index) => ({ code: `T${index + 1}`, title, status: index < done ? "done" : "open" })) } };
+    return { id: id(`oi:${code}`), tenant_id: tenantId, employee_id: id(`emp:${code}`), employment_id: id(`employment:${code}`), onboarding_template_id: id("ot:std"),
+      attributes: { status: done === 7 ? "completed" : "active", template: "DAY1-STD", start_date: person.joined } };
+  }));
+  await insert(client, "onboarding_tasks", joiners.flatMap((code) => {
+    const person = byCode.get(code)!;
+    const done = person.joined > TODAY ? 2 : code === "TG1015" ? 7 : 5;
+    return tasks.map((task, index) => ({ tenant_id: tenantId, onboarding_instance_id: id(`oi:${code}`), attributes: { ...task, status: index < done ? "done" : "pending" } }));
   }));
   for (const person of PEOPLE.filter((entry) => entry.exit)) {
     const caseId = id(`off:${person.code}`);
     const settled = person.exit!.state === "settled";
-    await insert(client, "offboarding_cases", [{ id: caseId, tenant_id: tenantId, employment_id: id(`employment:${person.code}`), created_at: `${addDays(person.exit!.lastDay, -30) < TODAY ? addDays(person.exit!.lastDay, -30) : TODAY}T10:00:00+05:30`,
-      attributes: { status: settled ? "settled" : "in_progress", reason: person.exit!.reason, resignation_date: addDays(person.exit!.lastDay, -30), last_working_day: person.exit!.lastDay, notice_days: 30 } }]);
+    const resigned = addDays(person.exit!.lastDay, -30);
+    await insert(client, "offboarding_cases", [{ id: caseId, tenant_id: tenantId, employment_id: id(`employment:${person.code}`), created_at: `${resigned < TODAY ? resigned : TODAY}T10:00:00+05:30`,
+      attributes: { status: settled ? "settled" : "clearance_active", reason: person.exit!.reason, resignation_date: resigned, resigned_on: resigned, last_working_day: person.exit!.lastDay, notice_days: 30, ff_state: settled ? "settled" : "pending" } }]);
     await insert(client, "clearance_items", ["IT assets returned", "Finance: advances and dues", "Access card and ID", "Knowledge transfer sign-off"].map((title, index) => ({
-      tenant_id: tenantId, offboarding_case_id: caseId, attributes: { title, department: ["IT", "Finance", "Admin", "Reporting manager"][index], status: settled || index === 3 ? "cleared" : "pending" } })));
+      tenant_id: tenantId, offboarding_case_id: caseId, attributes: { title, item_name: title, department: ["IT", "Finance", "Admin", "Reporting manager"][index], owner: ["it", "finance", "facilities", "manager"][index], blocking: index < 2, status: settled || index === 3 ? "cleared" : "pending" } })));
   }
 
   // Hiring

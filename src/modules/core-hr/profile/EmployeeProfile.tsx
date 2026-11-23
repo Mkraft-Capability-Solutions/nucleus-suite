@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
-import { ArrowLeft, CalendarClock, GitBranch, Pencil, Printer } from "lucide-react";
+import { ArrowLeft, CalendarClock, FolderOpen, GitBranch, Pencil, Printer } from "lucide-react";
 import CareerHistory, { fetchCareer, formatDay } from "@/components/People/CareerHistory";
 import { durationLabel, MOVEMENT_LABELS } from "@/lib/career";
 import { launchAction } from "@/lib/action-launcher";
 import { currencyDigits, formatMoney } from "@/lib/currencies";
 import { downloadPrintableDocument } from "@/utils/exportUtils";
+import { openDocuments } from "@/modules/documents/launcher";
 import { Alert, Avatar, Badge, Button, Details, EmptyState, ErrorState, Panel, SkeletonRows, cx, ui } from "@/design/redesign/ui";
 import {
   formatDate, formatDateTime, humanise, STATUS_LABELS, tenure, useDocuments, useDossier, useEmployee, useTimeline,
@@ -133,7 +134,7 @@ export default function EmployeeProfile({ person, organisation, canEdit, showCar
               {section === "contact" && <Contact employeeId={person.id} meta={meta} />}
               {section === "statutory" && <Statutory employeeId={person.id} />}
               {section === "family" && <Family employeeId={person.id} meta={meta} />}
-              {section === "documents" && <EmployeeDocuments code={person.employee_code} />}
+              {section === "documents" && <EmployeeDocuments employeeId={person.id} code={person.employee_code} />}
               {section === "activity" && <Activity employeeId={person.id} />}
             </>
           )}
@@ -320,12 +321,15 @@ function Family({ employeeId, meta }: { employeeId: string; meta: Record<string,
   );
 }
 
-function EmployeeDocuments({ code }: { code: string }) {
+/** The person's documents; a document opens in the document library, in this person's folder. */
+function EmployeeDocuments({ employeeId, code }: { employeeId: string; code: string }) {
   const documents = useDocuments();
   const rows = useMemo(() => (documents.data ?? []).filter((row) => row.employee_code === code), [documents.data, code]);
   return (
-    <Panel title="Documents" subtitle="From the document vault" flush>
-      <DocumentsTable rows={rows} loading={documents.isLoading} error={documents.error?.message ?? null} onRetry={() => void documents.mutate()} total={rows.length} showEmployee={false} />
+    <Panel title="Documents" subtitle="From the document vault. Select a document to open it in the library." flush
+      actions={<Button size="sm" icon={FolderOpen} onClick={() => openDocuments({ employee: employeeId })}>Open folder</Button>}>
+      <DocumentsTable rows={rows} loading={documents.isLoading} error={documents.error?.message ?? null} onRetry={() => void documents.mutate()} total={rows.length} showEmployee={false}
+        onOpenDocument={(row) => openDocuments({ employee: employeeId, document: row.id })} />
     </Panel>
   );
 }

@@ -22,6 +22,8 @@ import { entitlementForNavItem, entitlementForTab } from '@/lib/entitlements/rou
 import { entitlementLabel } from '@/lib/entitlements/tree';
 import QuantumCopilot from '@/components/AI/QuantumCopilot';
 import AssistantDock from '@/modules/assistant/AssistantDock';
+import DocumentsModal from '@/modules/documents/DocumentsModal';
+import { openDocuments } from '@/modules/documents/launcher';
 import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
@@ -40,7 +42,10 @@ import { usePathname, useRouter } from 'next/navigation';
 const NAV_STATE_KEY = 'nucleus_nav_state';
 
 /** Redesigned modules whose screens fit the viewport (tables scroll inside their panels). */
-const FIT_MODULES = new Set(['core_hr', 'documents']);
+const FIT_MODULES = new Set(['core_hr', 'attendance', 'leave', 'lifecycle']);
+
+/** Navigation ids that open the document library; it is a modal over the current screen, not a screen. */
+const DOCUMENT_LIBRARY_IDS = new Set(['documents', 'document_vault', 'my_documents']);
 
 // Route-to-Tab dictionary for direct URLs like /people, /leave, /attendance, /payroll
 const ROUTE_MODULE_MAP = {
@@ -71,8 +76,9 @@ const ROUTE_MODULE_MAP = {
   insights: { tab: 'analytics', domain: 'analytics_ai', sub: 'analytics_exec' },
   helpdesk: { tab: 'helpdesk', domain: 'platform', sub: 'core_operations' },
   contract_workforce: { tab: 'contract_workforce', domain: 'core_hr', sub: 'core_workforce' },
-  documents: { tab: 'documents', domain: 'documents', sub: 'documents' },
-  document_vault: { tab: 'documents', domain: 'documents', sub: 'documents' },
+  // Old links to the document library: the library opens as a modal over Core HR (see setActiveTab).
+  documents: { tab: 'documents', domain: 'core_hr', sub: 'core_people' },
+  document_vault: { tab: 'documents', domain: 'core_hr', sub: 'core_people' },
 };
 
 const AppContent = () => {
@@ -105,9 +111,15 @@ const AppContent = () => {
   const [activeSubFeature, setActiveSubFeature] = useState(
     initialMapped?.sub ?? savedNav?.activeSubFeature ?? (user?.defaultConsole?.toLowerCase() || readData("components.AppWorkspace", "initialState_2"))
   );
-  const [activeTab, setActiveTab] = useState(
-    initialMapped?.tab ?? savedNav?.activeTab ?? readData("components.AppWorkspace", "initialState_3")
-  );
+  // The document library is a modal, not a screen: a request for its old screen (a /documents link,
+  // a saved session, the assistant, a menu) opens the modal over the current screen instead.
+  const requestedTab = initialMapped?.tab ?? savedNav?.activeTab ?? readData("components.AppWorkspace", "initialState_3");
+  const startsInLibrary = useRef(requestedTab === 'documents');
+  const [activeTab, setActiveTabState] = useState(requestedTab === 'documents' ? 'people_core' : requestedTab);
+  const setActiveTab = (tab) => {
+    if (tab === 'documents') { openDocuments(); return; }
+    setActiveTabState(tab);
+  };
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);
   const [searchQuery, setSearchQuery] = useState('');
@@ -134,6 +146,11 @@ const AppContent = () => {
       setShowCatalog(false);
     }
   }, [pathname]);
+
+  // Opened on an old /documents link (or a session saved on that screen): Core HR with the library over it.
+  useEffect(() => {
+    if (startsInLibrary.current) openDocuments();
+  }, []);
 
   // Persist nav state to sessionStorage on every navigation change
   useEffect(() => {
@@ -169,7 +186,6 @@ const AppContent = () => {
       analytics: '/analytics',
       helpdesk: '/helpdesk',
       contract_workforce: '/contract_workforce',
-      documents: '/documents',
       dashboard: '/workspace',
     };
     const targetUrl = tabToPath[activeTab];
@@ -268,6 +284,11 @@ const AppContent = () => {
 
   // Handle selecting a domain from LeftDock
   const handleSelectDomain = (domainId) => {
+    if (domainId === 'documents') {
+      setShowCatalog(false);
+      openDocuments();
+      return;
+    }
     setActiveDomain(domainId);
     if (domainId === 'dashboard') {
       setShowCatalog(false);
@@ -275,13 +296,6 @@ const AppContent = () => {
       setActiveSubFeature(activeConsole.toLowerCase());
       return;
     }
-    if (domainId === 'documents') {
-      setShowCatalog(false);
-      setActiveTab('documents');
-      setActiveSubFeature('documents');
-      return;
-    }
-
     // Default tab per domain matching 6 Primary Categories
     const domainDefaults = {
       core_hr: { tab: 'people_core', sub: 'core_people' },
@@ -310,15 +324,15 @@ const AppContent = () => {
 
   // Handle selecting an item from the contextual RightSubNav
   const handleSelectSubFeature = (subFeatureId) => {
-    setActiveSubFeature(subFeatureId);
-    setShowCatalog(false);
-
-    // The document library: one screen of its own
-    if (['documents', 'document_vault', 'my_documents'].includes(subFeatureId)) {
-      setActiveTab('documents');
-      setActiveDomain('documents');
+    // The document library opens as a modal over whatever screen is open.
+    if (DOCUMENT_LIBRARY_IDS.has(subFeatureId)) {
+      setShowCatalog(false);
+      openDocuments();
       return;
     }
+
+    setActiveSubFeature(subFeatureId);
+    setShowCatalog(false);
 
     // AI Copilot special action
     if (subFeatureId === 'analytics_copilot') {
@@ -485,13 +499,15 @@ const AppContent = () => {
 
   const isDashboard = activeTab === 'dashboard';
   // Screens that stand alone: no list of screens beside them.
-  const isSingleScreen = isDashboard || activeTab === 'documents';
+  const isSingleScreen = isDashboard;
   // Redesigned modules laid out to fit the viewport: their tables scroll, the page does not.
   const fitModule = redesignedModuleForTab(activeTab);
   const fitsViewport = Boolean(fitModule && FIT_MODULES.has(fitModule) && isRedesigned(fitModule) && !showCatalog);
 
   // Opens a navigation item (navigation.catalog.json id) the same way the menus do.
   const openNavItem = (navId) => {
+    // The document library opens over the current screen and leaves the menu where it is.
+    if (DOCUMENT_LIBRARY_IDS.has(navId)) { handleSelectSubFeature(navId); return; }
     const target = navTarget(navId);
     handleSelectSubFeature(navId);
     if (target) setActiveDomain(target.domain);
@@ -643,7 +659,7 @@ const AppContent = () => {
         onSelectConsole={handleSelectConsole}
         onSelectTab={(targetTab, domainId, subId) => {
           handleSelectSubFeature(subId || targetTab);
-          if (domainId) setActiveDomain(domainId);
+          if (domainId && !DOCUMENT_LIBRARY_IDS.has(subId || targetTab)) setActiveDomain(domainId);
           setShowCatalog(false);
           setIsModulesOpen(false);
         }}
@@ -709,6 +725,9 @@ const AppContent = () => {
           setShowCatalog(false);
         }}
       />}
+
+      {/* The document library (Core HR menu, employee profiles, quick actions) */}
+      <DocumentsModal />
 
       {/* Talent CTC Exception Approval Modal */}
       <CtcExceptionModal

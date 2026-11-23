@@ -88,13 +88,18 @@ export async function startOnboarding(access: Access, input: z.infer<typeof star
   if ((dupRows as unknown[]).length > 0) {
     throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: "Onboarding already started for this employee and template." });
   }
+  // The joiner's checklist is the template's own steps; the built-in Day-1 list only when it has none.
+  const [templateRows] = await tenantTx(access, [
+    sqlClient`select attributes->'tasks' as tasks from onboarding_templates where tenant_id = ${access.tenantId} and id = ${templateId} limit 1`,
+  ]);
+  const steps = templateSteps((templateRows as Array<{ tasks: unknown }>)[0]?.tasks);
   const id = crypto.randomUUID();
   await tenantTx(access, [
     sqlClient`
       insert into onboarding_instances (id, tenant_id, employee_id, employment_id, onboarding_template_id, attributes)
       values (${id}, ${access.tenantId}, ${input.employeeId}, ${employmentId}, ${templateId}, '{"status":"active"}'::jsonb)
     `,
-    ...DAY1_TASKS.map((task) => sqlClient`
+    ...steps.map((task) => sqlClient`
       insert into onboarding_tasks (tenant_id, onboarding_instance_id, attributes)
       values (${access.tenantId}, ${id}, ${JSON.stringify({ key: task.key, title: task.title, required: task.required, owner: task.owner, status: "pending" })}::jsonb)
     `),
@@ -104,7 +109,27 @@ export async function startOnboarding(access: Access, input: z.infer<typeof star
         'lifecycle.onboard_start', 'onboarding_instance', ${id}, 'Onboarding started', ${uuidOrNull(requestId)}::uuid)
     `,
   ]);
-  return { id, tasks: DAY1_TASKS.length, status: "active" };
+  return { id, tasks: steps.length, status: "active" };
+}
+
+type Step = { key: string; title: string; required: boolean; owner: string };
+
+/** A template's steps as stored (`key` or the older `code`), or the built-in Day-1 list when it has none (unit-tested). */
+export function templateSteps(value: unknown): Step[] {
+  const list = Array.isArray(value) ? value : [];
+  const steps = list
+    .map((entry, index) => {
+      const task = (entry ?? {}) as Record<string, unknown>;
+      const title = typeof task.title === "string" ? task.title.trim() : "";
+      return {
+        key: typeof task.key === "string" && task.key ? task.key : typeof task.code === "string" && task.code ? task.code : `step-${index + 1}`,
+        title,
+        required: task.required !== false,
+        owner: typeof task.owner === "string" && task.owner ? task.owner : "hr",
+      };
+    })
+    .filter((task) => task.title !== "");
+  return steps.length ? steps : DAY1_TASKS.map((task) => ({ ...task }));
 }
 
 export type OnboardingInstanceView = {
@@ -274,9 +299,11 @@ export async function settleFullAndFinal(access: Access, caseId: string, request
   const [itemRows] = await tenantTx(access, [
     sqlClient`select attributes from clearance_items where tenant_id = ${access.tenantId} and offboarding_case_id = ${caseId}`,
   ]);
-  const pending = (itemRows as Array<{ attributes: { status: string; owner: string } }>).filter((item) => item.attributes.status !== "cleared");
+  // A waived item (clearance-board.ts stores "Waived") settles the same as a cleared one.
+  const pending = (itemRows as Array<{ attributes: { status: string; owner?: string; item_name?: string; title?: string } }>)
+    .filter((item) => !["cleared", "waived"].includes(String(item.attributes.status ?? "").toLowerCase()));
   if (pending.length > 0) {
-    throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: `No-dues pending from: ${pending.map((item) => item.attributes.owner).join(", ")}.` });
+    throw new HttpError({ status: 409, code: "VERSION_CONFLICT", message: `No-dues pending from: ${pending.map((item) => item.attributes.owner ?? item.attributes.item_name ?? item.attributes.title ?? "an owner").join(", ")}.` });
   }
   const [employmentRows] = await tenantTx(access, [
     sqlClient`

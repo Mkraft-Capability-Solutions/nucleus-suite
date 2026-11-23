@@ -1,0 +1,59 @@
+/* Redesigned leave (LeaveWorkspace.tsx). Tokens come from the redesign theme (--hr-*), scoped to the module. */
+
+.section { display: flex; flex-direction: column; gap: var(--hr-space-4); min-width: 0; }
+.pad { padding: var(--hr-space-4); }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--hr-space-3); flex-wrap: wrap; min-width: 0; }
+.toolbar :global(input[type="search"]) { width: 260px; }
+.tabBadge {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 999px;
+  background: var(--hr-warning-soft); color: var(--hr-warning); font-size: 11px; font-weight: var(--hr-weight-semibold); font-variant-numeric: tabular-nums;
+}
+.monthNav { display: inline-flex; align-items: center; gap: var(--hr-space-1); }
+.monthTitle { min-width: 136px; text-align: center; font-size: var(--hr-text-md); line-height: var(--hr-lh-md); font-weight: var(--hr-weight-semibold); color: var(--hr-text); }
+
+/* ---------- Balances: one row of figures with dividers ---------- */
+.balances { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 0; padding: 0; list-style: none; border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); overflow: hidden; }
+.balance { display: flex; flex-direction: column; gap: 2px; padding: var(--hr-space-3) var(--hr-space-4); border-right: 1px solid var(--hr-border); min-width: 0; }
+.balance:last-child { border-right: 0; }
+.balanceName { font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); font-weight: var(--hr-weight-medium); }
+.balanceValue { font-size: 24px; line-height: 32px; font-weight: var(--hr-weight-semibold); color: var(--hr-text); font-variant-numeric: tabular-nums; }
+.balanceUnit { font-size: var(--hr-text-sm); font-weight: var(--hr-weight-regular); color: var(--hr-text-3); }
+.balanceMeta { display: flex; flex-direction: column; font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.negative { color: var(--hr-danger); }
+.footNote { margin: var(--hr-space-3) 0 0; font-size: var(--hr-text-xs); color: var(--hr-text-3); }
+.warnText { display: block; font-size: var(--hr-text-xs); color: var(--hr-warning); }
+
+/* ---------- Tables ---------- */
+.sub { display: block; font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.reason { max-width: 320px; color: var(--hr-text-2); }
+.rowActions { width: 1%; white-space: nowrap; text-align: right; }
+.decision { display: inline-flex; gap: var(--hr-space-1); }
+
+/* ---------- Forms ---------- */
+.form { display: flex; flex-direction: column; gap: var(--hr-space-4); padding: var(--hr-space-4) var(--hr-space-5); }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hr-space-3); }
+.formNote { margin: 0; font-size: var(--hr-text-sm); line-height: var(--hr-lh-sm); color: var(--hr-text-2); }
+.charge { display: flex; gap: var(--hr-space-5); flex-wrap: wrap; padding: var(--hr-space-3) var(--hr-space-4); border: 1px solid var(--hr-border); border-radius: var(--hr-radius-md); background: var(--hr-surface-2); }
+.charge > div { display: flex; flex-direction: column; gap: 2px; }
+.chargeLabel { font-size: var(--hr-text-xs); color: var(--hr-text-3); }
+.chargeValue { font-size: var(--hr-text-lg); line-height: var(--hr-lh-lg); color: var(--hr-text); font-variant-numeric: tabular-nums; }
+.charge .negative { font-size: var(--hr-text-lg); line-height: var(--hr-lh-lg); font-variant-numeric: tabular-nums; }
+.confirmText { display: block; margin-bottom: var(--hr-space-2); }
+.confirmLabel { display: block; margin: var(--hr-space-2) 0 4px; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); }
+.fieldError { display: block; margin-top: 4px; font-size: var(--hr-text-xs); color: var(--hr-danger); }
+
+/* ---------- Rules ---------- */
+.ruleList { margin: var(--hr-space-3) 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: var(--hr-text-sm); color: var(--hr-text-2); }
+
+@media (max-width: 767px) {
+  .hideSm { display: none; }
+  .toolbar { align-items: stretch; }
+  .toolbar > * { flex: 1 1 auto; }
+  .toolbar :global(input[type="search"]) { width: 100%; }
+  .balance { border-bottom: 1px solid var(--hr-border); }
+}
+@media (max-width: 480px) {
+  .formRow { grid-template-columns: 1fr; }
+  .balances { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .monthTitle { min-width: 0; }
+}

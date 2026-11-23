@@ -33,6 +33,9 @@ export const REDESIGNED_MODULES: Record<string, RedesignedModule> = {
   dashboards: { label: "Dashboards — consoles S1–S10", status: "completed", tabs: ["dashboard"] },
   documents: { label: "Documents — library by company, department and person", status: "completed", tabs: ["documents"] },
   shell: { label: "Shell — top bar, navigation, quick actions", status: "completed", tabs: [] },
+  attendance: { label: "Time & attendance — my attendance, team, requests, exceptions, overtime, rules", status: "completed", tabs: ["attendance"] },
+  leave: { label: "Leave — my leave, approvals, who's away, all requests, comp-off, policies", status: "completed", tabs: ["leaves"] },
+  lifecycle: { label: "Onboarding & exit — joiners, exits, checklists", status: "completed", tabs: ["onboarding"] },
 };
 
 export function normaliseUiMode(value: unknown): UiMode {

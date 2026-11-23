@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { Popover } from "@base-ui/react/popover";
-import { ChevronRight, Ellipsis, Grid2x2, History, PanelLeftClose, Pencil, Search, X } from "lucide-react";
+import { ChevronRight, Ellipsis, FolderOpen, Grid2x2, History, Layers, Maximize2, PanelLeftClose, Pencil, Search, X, type LucideIcon } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import { useAuth } from "@/context/AuthContext";
 import { useTranslation } from "@/context/I18nContext";
@@ -22,7 +22,10 @@ import styles from "./SideNav.module.css";
 const canViewDomain = canViewDomainJs as (domainId: string, isModuleAllowed: unknown, user: unknown) => boolean;
 const canViewItem = canViewItemJs as (item: { id: string; targetTab?: string }, isModuleAllowed: unknown, user: unknown, isNavItemEnabled: (id: string) => boolean) => boolean;
 
-type NavDomain = { id: string; label: string; groups: Array<{ heading: string; items: Array<{ id: string; label: string; targetTab?: string }> }> };
+type NavDomain = { id: string; label: string; groups: Array<{ heading: string; standalone?: boolean; items: Array<{ id: string; label: string; targetTab?: string }> }> };
+
+/** Entries shown on their own below an area's groups; they open over the current screen. */
+const STANDALONE_ICONS: Record<string, LucideIcon> = { document_vault: FolderOpen };
 type AuthShape = {
   user?: { role?: string; id?: string; email?: string } | null;
   isModuleAllowed: unknown;
@@ -158,14 +161,17 @@ export function SidePanel({ activeDomain, activeItem, onOpenItem, onCollapse }: 
   const label = AREAS.find((entry) => entry.id === area)?.label ?? domain?.label ?? "";
   const allGroups = mergeGroups((domain?.groups ?? []).map((group) => ({
     heading: displayLabel(t(group.heading)),
+    standalone: group.standalone,
     items: group.items
       .filter((item) => canViewItem(item, isModuleAllowed, user, isNavItemEnabled))
       .map((item) => ({ ...item, label: displayLabel(t(item.label)) })),
   })));
   const needle = query.trim().toLowerCase();
-  const groups = needle
+  const matching = needle
     ? allGroups.map((group) => ({ ...group, items: group.items.filter((item) => item.label.toLowerCase().includes(needle) || group.heading.toLowerCase().includes(needle)) })).filter((group) => group.items.length > 0)
     : allGroups;
+  const groups = matching.filter((group) => !group.standalone);
+  const standalone = matching.filter((group) => group.standalone).flatMap((group) => group.items);
   const defaultOpen = defaultOpenGroup(allGroups, activeItem);
   const byId = new Map(allGroups.flatMap((group) => group.items.map((item) => [item.id, item] as const)));
   const recentItems = needle ? [] : (recent[area] ?? []).map((id) => byId.get(id)).filter((item): item is PanelItem => Boolean(item));
@@ -211,7 +217,7 @@ export function SidePanel({ activeDomain, activeItem, onOpenItem, onCollapse }: 
             </ul>
           </section>
         )}
-        {groups.length === 0 && <p className={styles.empty}>{needle ? "No screens match." : "No screens available in this area."}</p>}
+        {groups.length === 0 && standalone.length === 0 && <p className={styles.empty}>{needle ? "No screens match." : "No screens available in this area."}</p>}
         {groups.map((group, index) => {
           const key = `${area}:${group.heading}`;
           const allIndex = allGroups.findIndex((entry) => entry.heading === group.heading);
@@ -230,6 +236,23 @@ export function SidePanel({ activeDomain, activeItem, onOpenItem, onCollapse }: 
           );
         })}
       </div>
+      {/* Pinned to the bottom of the panel, below the scrolling groups. */}
+      {standalone.length > 0 && (
+        <ul className={cx(styles.items, styles.standalone)}>
+          {standalone.map((item) => {
+            const Icon = STANDALONE_ICONS[item.id] ?? Layers;
+            return (
+              <li key={`standalone-${item.id}`}>
+                <button type="button" className={styles.standaloneItem} title="Opens in a window over this screen" onClick={() => open(item.id)}>
+                  <span className={styles.standaloneIcon}><Icon aria-hidden="true" /></span>
+                  <span className={styles.groupName}>{item.label}</span>
+                  <Maximize2 aria-hidden="true" className={styles.standaloneHint} />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </aside>
   );
 }

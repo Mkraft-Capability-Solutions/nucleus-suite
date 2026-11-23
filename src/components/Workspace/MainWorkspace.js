@@ -59,8 +59,10 @@ import { ROLES } from '@/utils/permissions';
 import { getOperationalModule } from '@/lib/operational-module-registry';
 import { useUiMode } from '@/context/UiModeContext';
 import CoreHrWorkspace from '@/modules/core-hr/CoreHrWorkspace';
-import DocumentsWorkspace from '@/modules/documents/DocumentsWorkspace';
 import DashboardWorkspace from '@/modules/dashboards/DashboardWorkspace';
+import AttendanceWorkspace from '@/modules/attendance/AttendanceWorkspace';
+import LeaveWorkspace from '@/modules/leave/LeaveWorkspace';
+import LifecycleWorkspace from '@/modules/lifecycle/LifecycleWorkspace';
 
 const ROLE_FALLBACKS = readData("components.Workspace.MainWorkspace", "ROLE_FALLBACKS_1");
 
@@ -93,12 +95,14 @@ const MainWorkspace = ({
         isAccessControlOpen,
         closeAccessControl,
         openAccessControl,
-        tenantAccess
     } = useAuth();
     const currentRole = authUser?.role || ROLES.SUPER_ADMIN;
     // Classic or Redesigned: a module renders its redesign only once that redesign is complete.
     const { isRedesigned } = useUiMode();
     const coreHrRedesigned = isRedesigned('core_hr');
+    const attendanceRedesigned = isRedesigned('attendance');
+    const leaveRedesigned = isRedesigned('leave');
+    const lifecycleRedesigned = isRedesigned('lifecycle');
     const dashboardsRedesigned = isRedesigned('dashboards');
     const activeProfile = ROLE_FALLBACKS[currentRole] || ROLE_FALLBACKS.SUPER_ADMIN;
     const rawName = authUser?.name || user?.name || activeProfile.name;
@@ -1091,7 +1095,7 @@ const MainWorkspace = ({
             ) : (
                 <>
                     {/* Breadcrumb back to domain/catalog */}
-                    {activeTab !== 'dashboard' && activeTab !== 'documents' && (
+                    {activeTab !== 'dashboard' && (
                         <div className={styles.breadcrumbBar} aria-label={t("components.Workspace.MainWorkspace.aria-label_breadcrumb", "Breadcrumb")}>
                             <button
                                 className={styles.backToCatalogBtn}
@@ -1128,9 +1132,6 @@ const MainWorkspace = ({
                     )}
                     {activeTab === 'dashboard' && !dashboardsRedesigned && <>{supportsPersonalDashboard && !personalDashboard && <button style={{ margin: '12px 0', padding: '10px 16px', borderRadius: 8, border: '1px solid var(--line)', background: 'var(--card)', color: 'var(--signal)', cursor: 'pointer' }} onClick={() => setPersonalDashboard(true)}>{translateText("components.Workspace.MainWorkspace","text_e53d7af293")}</button>}{renderDashboard()}</>}
 
-            {/* Documents: the library by company, department and person (access decided by the API) */}
-            {activeTab === 'documents' && <DocumentsWorkspace organisation={tenantAccess?.tenant?.name} />}
-
             {/* Module 1: People Core */}
             {activeTab === 'people_core' && (
                 <RoleProtected moduleKey="people_core" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
@@ -1157,7 +1158,9 @@ const MainWorkspace = ({
             {/* Module 4: Onboarding & Lifecycle */}
             {activeTab === 'onboarding' && (
                 <RoleProtected moduleKey="onboarding" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.EMPLOYEE]}>
-                    <OnboardingView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
+                    {lifecycleRedesigned
+                        ? <LifecycleWorkspace activeSubFeature={activeSubFeature} onOpenNav={onOpenNav} />
+                        : <OnboardingView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />}
                 </RoleProtected>
             )}
 
@@ -1171,12 +1174,16 @@ const MainWorkspace = ({
             {/* Module 6: Attendance & Leaves */}
             {activeTab === 'attendance' && (
                 <RoleProtected moduleKey="attendance" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <AttendanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
+                    {attendanceRedesigned
+                        ? <AttendanceWorkspace activeSubFeature={activeSubFeature} onOpenDashboard={onSelectConsole ? () => onSelectConsole('S3') : undefined} />
+                        : <AttendanceView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />}
                 </RoleProtected>
             )}
             {activeTab === 'leaves' && (
                 <RoleProtected moduleKey="leaves" allowedRoles={[ROLES.SUPER_ADMIN, ROLES.HR_MANAGER, ROLES.PROJECT_MANAGER, ROLES.TEAM_LEAD, ROLES.FINANCE_MANAGER, ROLES.EMPLOYEE]}>
-                    <LeaveView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />
+                    {leaveRedesigned
+                        ? <LeaveWorkspace activeSubFeature={activeSubFeature} />
+                        : <LeaveView onNavigate={onTabChange} onSelectConsole={onSelectConsole} activeSubFeature={activeSubFeature} />}
                 </RoleProtected>
             )}
 

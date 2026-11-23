@@ -273,8 +273,11 @@ export function Documents({ onOpenEmployee }: { onOpenEmployee: (code: string) =
   );
 }
 
-export function DocumentsTable({ rows, loading, error, onRetry, total, onOpenEmployee, showEmployee = true }: {
-  rows: DocumentRow[]; loading: boolean; error: string | null; onRetry: () => void; total: number; onOpenEmployee?: (code: string) => void; showEmployee?: boolean;
+export function DocumentsTable({ rows, loading, error, onRetry, total, onOpenEmployee, onOpenDocument, showEmployee = true }: {
+  rows: DocumentRow[]; loading: boolean; error: string | null; onRetry: () => void; total: number; onOpenEmployee?: (code: string) => void;
+  /** Makes each row open its document (the employee profile opens it in the document library). */
+  onOpenDocument?: (row: DocumentRow) => void;
+  showEmployee?: boolean;
 }) {
   if (error) return <div style={{ padding: 16 }}><ErrorState message={error} onRetry={onRetry} /></div>;
   if (loading) return <SkeletonRows rows={4} columns={5} />;
@@ -285,8 +288,13 @@ export function DocumentsTable({ rows, loading, error, onRetry, total, onOpenEmp
         <thead><tr><th>Document</th>{showEmployee && <th>Employee</th>}<th>Type</th><th>Expires</th><th>Status</th></tr></thead>
         <tbody>
           {rows.map((row) => (
-            <tr key={row.id}>
-              <td><span className={styles.strong}>{row.title}</span><span className={styles.sub}>{row.code}</span></td>
+            <tr key={row.id} className={onOpenDocument ? styles.openRow : undefined} onClick={onOpenDocument ? () => onOpenDocument(row) : undefined}>
+              <td>
+                {onOpenDocument
+                  ? <button type="button" className={cx(styles.strong, styles.openTitle)} onClick={(event) => { event.stopPropagation(); onOpenDocument(row); }}>{row.title}</button>
+                  : <span className={styles.strong}>{row.title}</span>}
+                <span className={styles.sub}>{row.code}</span>
+              </td>
               {showEmployee && <td>{row.employee_code && onOpenEmployee ? <button type="button" className={styles.linkButton} onClick={() => onOpenEmployee(row.employee_code!)}>{row.employee_name ?? row.employee_code}</button> : row.employee_name ?? "—"}</td>}
               <td>{humanise(row.document_type)}</td>
               <td className={ui.nowrap}>{formatDate(row.expires_on) || "—"}</td>

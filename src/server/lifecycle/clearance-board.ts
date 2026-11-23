@@ -52,6 +52,8 @@ export type ClearanceBoardRow = {
   last_working_day: string | null;
   resigned_on: string | null;
   ff_state: string | null;
+  /** The exit case's own status ("settled" once full and final is computed). */
+  case_status: string | null;
 };
 
 type ClearanceQueryRow = Omit<ClearanceBoardRow, "status"> & { raw_status: string | null };
@@ -72,7 +74,8 @@ const CLEARANCE_BOARD_SELECT = `select item.id, item.offboarding_case_id as case
     item.attributes->>'status' as raw_status,
     ocase.attributes->>'last_working_day' as last_working_day,
     ocase.attributes->>'resigned_on' as resigned_on,
-    ocase.attributes->>'ff_state' as ff_state
+    ocase.attributes->>'ff_state' as ff_state,
+    ocase.attributes->>'status' as case_status
   from clearance_items item
   left join offboarding_cases ocase on ocase.tenant_id = item.tenant_id and ocase.id = item.offboarding_case_id
   left join employments employment on employment.tenant_id = item.tenant_id and employment.id = ocase.employment_id
@@ -97,6 +100,7 @@ function toClearanceRow(raw: ClearanceQueryRow): ClearanceBoardRow {
     last_working_day: raw.last_working_day ?? null,
     resigned_on: raw.resigned_on ?? null,
     ff_state: raw.ff_state ?? null,
+    case_status: raw.case_status ?? null,
   };
 }
 

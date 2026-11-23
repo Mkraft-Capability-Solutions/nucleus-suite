@@ -167,3 +167,36 @@
 .folder > .folderMeta:not(#documents-clip),
 .fileOpen > .fileTitle:not(#documents-clip),
 .fileOpen > .fileMeta:not(#documents-clip) { overflow: hidden; }
+
+/* ---------- Library modal (DocumentsModal.tsx) ----------
+ * 95% of the viewport on a desktop (never smaller than a usable 720 × 520), the whole screen on a
+ * phone. It sits under the upload drawer (1200), the viewer and confirmations (1300) and menus (1400),
+ * which open on top of it. A narrow modal stacks the folder tree above the files. */
+.libraryBackdrop:not(#documents-modal) { z-index: 1100; }
+.libraryModal {
+  position: fixed; z-index: 1101; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: max(95vw, min(720px, calc(100vw - 16px))); height: max(95vh, min(520px, calc(100vh - 16px)));
+  max-width: calc(100vw - 16px); max-height: calc(100vh - 16px);
+  display: flex; flex-direction: column; background: var(--hr-bg); border-radius: var(--hr-radius-lg); box-shadow: var(--hr-shadow-pop);
+  outline: none; overflow: hidden; container: documents / inline-size;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.libraryModal[data-starting-style], .libraryModal[data-ending-style] { opacity: 0; transform: translate(-50%, -48%); }
+.modalScope { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; overflow: auto; padding: var(--hr-space-4) var(--hr-space-5) var(--hr-space-2); }
+.modalHeader:not(#documents-modal) { flex-wrap: nowrap; align-items: flex-start; }
+.modalHeader > :first-child { flex: 1 1 auto; }
+.modalHeader > .modalActions:not(#documents-modal) { width: auto; flex: none; flex-wrap: nowrap; }
+.libraryBlocked { position: relative; flex: 1 1 auto; display: grid; place-items: center; padding: var(--hr-space-6, 24px); overflow: auto; }
+.libraryBlockedClose { position: absolute; top: var(--hr-space-3); right: var(--hr-space-3); }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+@container documents (max-width: 760px) {
+  .layout { grid-template-columns: minmax(0, 1fr); }
+  .tree { max-height: 200px; }
+  .tools :global(input[type="search"]) { width: 100%; }
+}
+@media (max-width: 640px) {
+  .libraryModal { inset: 0; top: 0; left: 0; transform: none; width: 100vw; height: 100dvh; max-width: none; max-height: none; border-radius: 0; }
+  .libraryModal[data-starting-style], .libraryModal[data-ending-style] { transform: translateY(16px); }
+  .modalScope { padding: var(--hr-space-3); }
+}

@@ -1,0 +1,76 @@
+/* Redesigned onboarding & exit (LifecycleWorkspace.tsx). Tokens come from the redesign theme (--hr-*), scoped to the module. */
+
+.section { display: flex; flex-direction: column; gap: var(--hr-space-4); min-width: 0; }
+.pad { padding: var(--hr-space-4); }
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--hr-space-3); flex-wrap: wrap; min-width: 0; }
+.toolbarEnd { display: flex; align-items: center; gap: var(--hr-space-2); flex-wrap: wrap; min-width: 0; }
+.toolbarEnd :global(input[type="search"]) { width: 240px; }
+
+.person { display: flex; flex-direction: column; min-width: 0; text-align: left; }
+.personName { font-weight: var(--hr-weight-medium); color: var(--hr-text); }
+.personCode { font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.personButton { display: inline-flex; align-items: center; gap: var(--hr-space-2); padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; min-width: 0; }
+.personButton:hover .personName { color: var(--hr-accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.stacked { display: flex; flex-direction: column; gap: 2px; }
+.sub { display: block; font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.warnText { display: block; font-size: var(--hr-text-xs); color: var(--hr-warning); }
+.inlineBadges { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+.progress { display: inline-flex; align-items: center; gap: 8px; }
+.progressBar { display: inline-block; width: 72px; height: 6px; border-radius: 999px; background: var(--hr-neutral-soft); overflow: hidden; }
+.progressBar > span { display: block; height: 100%; border-radius: inherit; background: var(--hr-accent-strong); }
+
+/* ---------- Drawers ---------- */
+.drawerMeta { display: inline-flex; align-items: center; gap: var(--hr-space-2); flex-wrap: wrap; }
+.drawerStack { display: flex; flex-direction: column; gap: var(--hr-space-4); padding: var(--hr-space-4) var(--hr-space-5); }
+.drawerHeading { margin: 0 0 var(--hr-space-2); font-size: var(--hr-text-sm); line-height: var(--hr-lh-sm); font-weight: var(--hr-weight-semibold); color: var(--hr-text); }
+.checklist { margin: 0; padding: 0; list-style: none; border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); }
+.checkItem { display: flex; align-items: center; gap: var(--hr-space-3); padding: var(--hr-space-3); }
+.checkItem + .checkItem { border-top: 1px solid var(--hr-border); }
+.checkIcon { flex: none; width: 18px; height: 18px; color: var(--hr-text-3); }
+.checkDone .checkIcon { color: var(--hr-success); }
+.checkDone .checkTitle { color: var(--hr-text-2); }
+.checkText { display: flex; flex-direction: column; gap: 2px; flex: 1 1 auto; min-width: 0; }
+.checkTitle { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); }
+.checkMeta { font-size: var(--hr-text-xs); color: var(--hr-text-3); }
+.optional { font-weight: var(--hr-weight-regular); color: var(--hr-text-3); }
+.itemActions { display: inline-flex; gap: var(--hr-space-1); flex: none; }
+.confirmText { display: block; margin-bottom: var(--hr-space-2); }
+.confirmLabel { display: block; margin: var(--hr-space-2) 0 4px; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); }
+.fieldError { display: block; margin-top: 4px; font-size: var(--hr-text-xs); color: var(--hr-danger); }
+
+/* ---------- Forms ---------- */
+.form { display: flex; flex-direction: column; gap: var(--hr-space-4); padding: var(--hr-space-4) var(--hr-space-5); }
+.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: var(--hr-space-3); }
+.steps { display: flex; flex-direction: column; gap: var(--hr-space-2); margin: 0; padding: 0; border: 0; min-width: 0; }
+.stepRow { display: grid; grid-template-columns: minmax(0, 1fr) 130px auto auto; gap: var(--hr-space-2); align-items: center; }
+.stepButtons { display: inline-flex; }
+.checkLabel { display: inline-flex; align-items: center; gap: 6px; font-size: var(--hr-text-sm); color: var(--hr-text-2); white-space: nowrap; }
+
+/* ---------- Checklists (templates) ---------- */
+.templateGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--hr-space-4); align-items: start; }
+.stepList { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; font-size: var(--hr-text-sm); color: var(--hr-text); }
+.stepList li span:first-child { display: block; }
+
+/* ---------- Related ---------- */
+.related { margin: 0; padding: 0; list-style: none; }
+.related li + li { border-top: 1px solid var(--hr-border); }
+.relatedLink { display: flex; align-items: center; justify-content: space-between; gap: var(--hr-space-3); width: 100%; padding: var(--hr-space-3) var(--hr-space-4); border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.relatedLink:hover { background: var(--hr-surface-hover); }
+.relatedLink:hover .personName { color: var(--hr-accent-text); }
+.relatedIcon { flex: none; width: 16px; height: 16px; color: var(--hr-text-3); }
+
+@media (max-width: 767px) {
+  .hideSm { display: none; }
+  .toolbar, .toolbarEnd { align-items: stretch; }
+  .toolbarEnd { width: 100%; }
+  .toolbarEnd > * { flex: 1 1 auto; }
+  .toolbarEnd :global(input[type="search"]) { width: 100%; }
+  .checkItem { flex-wrap: wrap; }
+  .itemActions { width: 100%; padding-left: 30px; }
+  .stepRow { grid-template-columns: minmax(0, 1fr) auto; }
+  .templateGrid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .formRow { grid-template-columns: 1fr; }
+}

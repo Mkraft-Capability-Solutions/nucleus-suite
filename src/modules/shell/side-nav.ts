@@ -1,4 +1,4 @@
-import { BarChart3, Briefcase, FolderOpen, House, Settings2, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
+import { BarChart3, Briefcase, House, Settings2, UserPlus, Users, Wallet, type LucideIcon } from "lucide-react";
 
 /** The areas of the redesigned side menu (navigation domains), and which sit on the rail. */
 
@@ -7,7 +7,6 @@ export type Area = { id: string; label: string; icon: LucideIcon };
 export const AREAS: Area[] = [
   { id: "dashboard", label: "Home", icon: House },
   { id: "core_hr", label: "Core HR", icon: Users },
-  { id: "documents", label: "Documents", icon: FolderOpen },
   { id: "talent", label: "Talent", icon: UserPlus },
   { id: "payroll_finance", label: "Payroll", icon: Wallet },
   { id: "workforce_ops", label: "Workforce", icon: Briefcase },
@@ -16,16 +15,17 @@ export const AREAS: Area[] = [
 ];
 
 /** Areas on the rail by default; the rest are under More. */
-export const DEFAULT_RAIL = ["dashboard", "core_hr", "documents", "talent", "payroll_finance", "workforce_ops"];
+export const DEFAULT_RAIL = ["dashboard", "core_hr", "talent", "payroll_finance", "workforce_ops"];
 
 /** Areas that open one screen of their own rather than a list of screens (no side panel). */
-export const SINGLE_SCREEN_AREAS = new Set(["dashboard", "documents"]);
+export const SINGLE_SCREEN_AREAS = new Set(["dashboard"]);
 export const MAX_RAIL = 6;
 
 /** Aliases the workspace uses for the same area. */
 export function areaFor(domain: string | null | undefined): string {
   switch (domain) {
-    case "people": case "compliance": case "helpdesk": return "core_hr";
+    // The document library is a modal opened from Core HR; it is no longer an area of its own.
+    case "people": case "compliance": case "helpdesk": case "documents": return "core_hr";
     case "payroll": return "payroll_finance";
     case "analytics": return "analytics_ai";
     case "settings": return "platform";
@@ -49,7 +49,8 @@ export function railAreas(saved: readonly string[] | null | undefined, allowed: 
 /* ------------------------------------------------------------------ */
 
 export type PanelItem = { id: string; label: string; targetTab?: string };
-export type PanelGroup = { heading: string; items: PanelItem[] };
+/** `standalone`: a single entry shown on its own below the groups (Core HR › Documents), not as a foldable group. */
+export type PanelGroup = { heading: string; items: PanelItem[]; standalone?: boolean };
 
 const MINOR_WORDS = new Set(["And", "Or", "Of", "The", "To", "For", "In", "On", "With", "By", "A", "An"]);
 
@@ -66,7 +67,7 @@ export function mergeGroups(groups: readonly PanelGroup[]): PanelGroup[] {
   const byHeading = new Map<string, PanelGroup>();
   for (const group of groups) {
     const key = group.heading.trim().toLowerCase();
-    const target = byHeading.get(key) ?? { heading: group.heading, items: [] };
+    const target = byHeading.get(key) ?? { heading: group.heading, items: [], ...(group.standalone ? { standalone: true } : {}) };
     for (const item of group.items) {
       if (seen.has(item.id)) continue;
       seen.add(item.id);

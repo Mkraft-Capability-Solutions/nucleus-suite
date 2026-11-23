@@ -429,25 +429,17 @@
               "icon": "ExitToAppOutlined"
             }
           ]
-        }
-      ]
-    },
-    {
-      "id": "documents",
-      "label": "Documents",
-      "icon": "FolderSharedOutlined",
-      "badge": "Library",
-      "groups": [
+        },
         {
-          "heading": "Document library",
+          "heading": "Documents",
+          "standalone": true,
           "items": [
             {
               "id": "document_vault",
               "label": "Documents",
               "targetTab": "documents",
               "icon": "FolderSharedOutlined",
-              "desc": "Every employee document, filed by company, department and person: folders or one list; upload, open and delete.",
-              "tag": "Organization"
+              "desc": "Every employee document, filed by company, department and person: folders or one list; upload, open and delete."
             }
           ]
         }
