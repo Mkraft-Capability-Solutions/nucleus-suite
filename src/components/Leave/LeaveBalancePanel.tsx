@@ -1,273 +1,104 @@
 "use client";
-import React from "react";
+
+import { useState } from "react";
 import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
-import { getLeaveEmployees } from "@/app/actions/leaveActions";
-import { useMemo, useRef, useState } from "react";
+import LeaveAdjustmentDialog from "./LeaveAdjustmentDialog";
+import { ResourceView } from "./LeaveBits";
+import styles from "./Leave.module.css";
 import {
-  Alert,
-  Button,
-  Card,
-  CardContent,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useHRMS } from "@/context/HRMSContext";
-import { useAuth } from "@/context/AuthContext";
-import { useTranslation } from "@/context/I18nContext";
-import { readData } from "@/services/workspace-data.mjs";
-import { LEAVE_TYPES, evaluateCompOffValidity } from "@/app/actions/leaveActions";
-import type { LeaveRequest } from "@/app/actions/leaveActions";
-const keys: Record<string, string> = {
-  privilege: "PRIVILEGE",
-  sick: "SICK",
-  casual: "CASUAL",
-  wellness: "WELLNESS",
-  comp_off: "COMP_OFF",
-  birthday: "BIRTHDAY",
-};
+  formatDays,
+  formatLeaveDate,
+  useLeaveChanged,
+  useLeaveResource,
+  useLeaveT,
+  type BalanceCard,
+  type CompOffEntry,
+  type LeaveContext,
+  type LeaveEmployee,
+} from "./leave-client";
+
+const NS = "components.Leave.LeaveBalancePanel";
+
+type RequestRow = { id: string; leave_type: string; requested_days: number; status: string };
+
+/**
+ * Balance summary for the caller (or, for HR/approvers, any employee they pick):
+ * ledger cards from /api/v1/leave/balance-cards, days held by pending requests
+ * from /api/v1/leave-requests and comp-off credits from /api/v1/leave/comp-off-clock.
+ */
 export default function LeaveBalancePanel() {
-  const { user: authUser } = useAuth() || {};
-  const { leaveState: contextLeaveState, adjustLeaveAllocation, showToast } = (useHRMS() as any) || {};
-  const user = authUser || { role: "HR_MANAGER", employeeId: "MK-102", name: "Dhanraj Dadhich" };
-  const { t } = useTranslation();
-  const text = (key: string) => t("leave", key);
-  const admin = ["HR_MANAGER", "SUPER_ADMIN"].includes(user?.role || "EMPLOYEE");
-  const profiles = useMemo(
-    () =>
-      getLeaveEmployees().filter(
-        (p) => p.employeeId && (admin || p.employeeId === user.employeeId),
-      ),
-    [admin, user.employeeId],
-  );
-  const [employee, setEmployee] = useState(
-    user.employeeId ?? profiles[0]?.employeeId ?? "",
-  );
-  const [open, setOpen] = useState(false),
-    [code, setCode] = useState(""),
-    [days, setDays] = useState(""),
-    [reason, setReason] = useState(""),
-    [error, setError] = useState(""),
-    [busy, setBusy] = useState(false);
-  const lock = useRef(false);
+  const { t, locale } = useLeaveT();
+  const context = useLeaveResource<LeaveContext>("/api/v1/leave/context", t(`${NS}.text_context_failed`, "Your leave profile could not be loaded."));
+  const ctx = context.state.status === "ready" ? context.state.data : null;
+  const [picked, setPicked] = useState<LeaveEmployee | null>(null);
+  const employee = picked ?? ctx?.employee ?? null;
+  const [adjusting, setAdjusting] = useState(false);
+  const cards = useLeaveResource<BalanceCard[]>(employee ? `/api/v1/leave/balance-cards?employeeId=${employee.id}` : null, t(`${NS}.text_failed`, "Balances could not be loaded."));
+  const requests = useLeaveResource<RequestRow[]>(employee ? `/api/v1/leave-requests?employeeId=${employee.id}&pageSize=100` : null, t(`${NS}.text_failed`, "Balances could not be loaded."));
+  const coff = useLeaveResource<CompOffEntry[]>("/api/v1/leave/comp-off-clock", t(`${NS}.text_coff_failed`, "Comp-off credits could not be loaded."));
+  useLeaveChanged(cards.reload);
+  useLeaveChanged(requests.reload);
+  useLeaveChanged(coff.reload);
 
-  const defaultAccounts: Record<string, { available: number; total: number }> = {
-    privilege: { available: 16, total: 25 },
-    casual: { available: 6, total: 6 },
-    sick: { available: 6, total: 6 },
-    wellness: { available: 3, total: 4 },
-    comp_off: { available: 2, total: 3 },
-  };
+  const pendingFor = (code: string) =>
+    requests.state.status === "ready"
+      ? requests.state.data.filter((row) => row.leave_type === code && row.status.toLowerCase().startsWith("pending")).reduce((sum, row) => sum + Number(row.requested_days || 0), 0)
+      : null;
+  const credits = coff.state.status === "ready" && employee ? coff.state.data.filter((row) => row.employeeCode === employee.employeeCode) : [];
+  const typeNames = cards.state.status === "ready" ? Object.fromEntries(cards.state.data.map((card) => [card.leaveType, card.leaveTypeName ?? card.leaveType])) : {};
 
-  const leaveState = contextLeaveState || {
-    balances: {
-      "MK-102": defaultAccounts,
-      "MK-104": defaultAccounts,
-      "MK-107": defaultAccounts,
-    },
-    credits: [],
-    requests: [],
-    events: [],
-  };
-
-  const accounts = leaveState?.balances?.[employee] ?? defaultAccounts;
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (lock.current || !event.currentTarget.reportValidity()) return;
-    lock.current = true;
-    setBusy(true);
-    setError("");
-    try {
-      if (typeof adjustLeaveAllocation === "function") {
-        const result = await adjustLeaveAllocation({
-          employeeId: employee,
-          code,
-          days: Number(days),
-          reason,
-        });
-        if (result?.success) {
-          setOpen(false);
-          setDays("");
-          setReason("");
-          if (showToast) showToast("Allocation Adjusted", "Leave allocation updated.", "success");
-        } else setError(result?.reason || text("failure"));
-      } else {
-        const targetKey = Object.keys(keys).find(k => keys[k] === code) || code.toLowerCase();
-        if (accounts[targetKey]) {
-          accounts[targetKey].available += Number(days);
-          accounts[targetKey].total += Number(days);
-        }
-        setOpen(false);
-        setDays("");
-        setReason("");
-        if (showToast) showToast("Allocation Adjusted", "Leave allocation updated.", "success");
-      }
-    } catch {
-      setError(text("failure"));
-    } finally {
-      lock.current = false;
-      setBusy(false);
-    }
-  };
   return (
-    <Stack component="section" aria-label={text("balanceSummary")} spacing={2}>
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        spacing={2}
-        alignItems="center"
-      >
-        <Typography variant="h6" sx={{ flex: 1 }}>
-          {text("balanceSummary")}
-        </Typography>
-        <LeaveEmployeeSelect
-          label={text("scope")}
-          options={profiles}
-          value={employee}
-          onChange={setEmployee}
-        />
-        {admin && (
-          <Button
-            disabled={!employee}
-            onClick={() => {
-              setError("");
-              setOpen(true);
-            }}
-          >
-            {text("allocation")}
-          </Button>
-        )}
-      </Stack>
-      <Stack direction="row" flexWrap="wrap" gap={2}>
-        {Object.entries(accounts).map(([key, value]) => {
-          const stored = value as { available: number; total: number };
-          const credits =
-            key === "comp_off"
-              ? evaluateCompOffValidity(
-                  (leaveState.credits || []).filter(
-                    (credit: { employee_id: string }) =>
-                      credit.employee_id === employee,
-                  ),
-                )
-              : null;
-          const account = credits
-            ? { ...stored, available: credits.active_balance }
-            : stored;
-          const requests = ((leaveState.requests || []) as LeaveRequest[]).filter(
-            (app) =>
-              app.employee_id === employee && app.leave_type_code === keys[key],
-          );
-          return (
-            <Card variant="outlined" key={key} sx={{ flex: "1 1 180px" }}>
-              <CardContent>
-                <Typography>{LEAVE_TYPES[keys[key]]?.label}</Typography>
-                <Typography variant="h5">{account.available}</Typography>
-                <Typography variant="body2">
-                  {text("available")} / {text("allocated")}: {account.total}
-                </Typography>
-                <Typography variant="body2">
-                  {text("pending")}:{" "}
-                  {requests
-                    .filter((app) => app.status.startsWith("PENDING_"))
-                    .reduce((sum, app) => sum + app.chargeable_days, 0)}
-                </Typography>
-                {credits && (
-                  <details>
-                    <summary>{text("creditHistory")}</summary>
-                    {credits.credits.map((credit) => (
-                      <Typography
-                        variant="caption"
-                        display="block"
-                        key={credit.id}
-                      >
-                        {credit.credited_at} → {credit.expires_at} ·{" "}
-                        {credit.remaining_days} · {text(credit.status)}
-                      </Typography>
-                    ))}
-                  </details>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </Stack>
-      {Object.keys(accounts).length === 0 && (
-        <Alert severity="info">{text("noAllocation")}</Alert>
+    <section className={styles.stack} aria-labelledby="leave-balance-title">
+      <div className={styles.spread}>
+        <h3 id="leave-balance-title" className={styles.itemTitle}>{t(`${NS}.text_title`, "Balance summary")}</h3>
+        <div className={styles.row}>
+          {ctx?.actsForOthers && (
+            <div className={styles.picker}>
+              <LeaveEmployeeSelect label={t(`${NS}.label_scope`, "Employee")} value={employee} onChange={setPicked} />
+            </div>
+          )}
+          {ctx?.canMaintain && (
+            <button type="button" className={styles.secondary} disabled={!employee} onClick={() => setAdjusting(true)}>
+              {t(`${NS}.button_adjust`, "Adjust allocation")}
+            </button>
+          )}
+        </div>
+      </div>
+      {context.state.status === "error" && <ResourceView resource={context.state} onRetry={context.reload}>{() => null}</ResourceView>}
+      {ctx && !employee && <div className={styles.state}>{t(`${NS}.text_no_employee`, "Your login is not linked to an employee record, so there is no balance to show.")}</div>}
+      {employee && (
+        <ResourceView resource={cards.state} onRetry={cards.reload} isEmpty={(data) => data.length === 0} empty={t(`${NS}.text_no_allocation`, "No leave has been credited to this employee yet.")}>
+          {(data) => (
+            <div className={styles.grid}>
+              {data.map((card) => {
+                const pending = pendingFor(card.leaveType);
+                return (
+                  <article key={card.leaveType} className={styles.card}>
+                    <div className={styles.kpiLabel}>{card.leaveTypeName ?? card.leaveType}</div>
+                    <div className={styles.kpiValue}>{formatDays(card.available, locale)}<span className={styles.kpiUnit}>{t(`${NS}.text_days`, "days")}</span></div>
+                    <div className={styles.muted}>{t(`${NS}.text_allocated_availed`, "Allocated {allocated} · Availed {availed}", { allocated: formatDays(card.allocated, locale), availed: formatDays(card.availed, locale) })}</div>
+                    <div className={styles.muted}>
+                      {pending === null ? t(`${NS}.text_pending_unknown`, "Pending: not available") : t(`${NS}.text_pending`, "Pending approval: {days}", { days: formatDays(pending, locale) })}
+                    </div>
+                    {card.accrualNote && <div className={styles.muted}>{card.accrualNote}</div>}
+                    {card.leaveType === "COFF" && credits.length > 0 && (
+                      <details className={styles.details}>
+                        <summary>{t(`${NS}.text_credit_history`, "Credit history")}</summary>
+                        {credits.map((credit) => (
+                          <div key={credit.id} className={styles.muted}>
+                            {formatLeaveDate(credit.earnedOn, locale)} → {formatLeaveDate(credit.expiresOn, locale)} · {formatDays(credit.daysRemaining, locale)}
+                          </div>
+                        ))}
+                      </details>
+                    )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </ResourceView>
       )}
-      <Dialog
-        open={open}
-        onClose={() => {
-          if (!busy) setOpen(false);
-        }}
-        fullWidth
-        maxWidth="sm"
-        aria-labelledby="leave-allocation-title"
-      >
-        <form onSubmit={submit}>
-          <DialogTitle id="leave-allocation-title">
-            {text("allocation")}
-          </DialogTitle>
-          <DialogContent>
-            <Stack spacing={2} sx={{ pt: 1 }}>
-              {error && <Alert severity="error">{error}</Alert>}
-              <TextField
-                select
-                required
-                label={text("type")}
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              >
-                {(
-                  Object.values(LEAVE_TYPES) as unknown as Array<{
-                    code: string;
-                    label: string;
-                    requestable?: boolean;
-                  }>
-                )
-                  .filter(
-                    (item) =>
-                      item.requestable !== false &&
-                      !["LOP", "COMP_OFF"].includes(item.code),
-                  )
-                  .map((item) => (
-                    <MenuItem key={item.code} value={item.code}>
-                      {item.label}
-                    </MenuItem>
-                  ))}
-              </TextField>
-              <TextField
-                required
-                type="number"
-                label={text("adjustmentDays")}
-                value={days}
-                onChange={(e) => setDays(e.target.value)}
-                slotProps={{ htmlInput: { min: -366, max: 366, step: 0.5 } }}
-              />
-              <TextField
-                required
-                multiline
-                minRows={3}
-                label={text("adjustmentReason")}
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                slotProps={{ htmlInput: { maxLength: 2000 } }}
-              />
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button disabled={busy} onClick={() => setOpen(false)}>
-              {text("cancel")}
-            </Button>
-            <Button type="submit" disabled={busy} aria-busy={busy}>
-              {text("confirm")}
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
-    </Stack>
+      {adjusting && <LeaveAdjustmentDialog employee={employee} typeNames={typeNames} onClose={() => setAdjusting(false)} />}
+    </section>
   );
 }

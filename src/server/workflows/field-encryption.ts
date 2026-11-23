@@ -21,3 +21,20 @@ export function decryptFields(data: Record<string, unknown>, context: string): R
   decipher.setAuthTag(Buffer.from(String(data.tag), "base64"));
   return JSON.parse(Buffer.concat([decipher.update(Buffer.from(String(data.encrypted), "base64")), decipher.final()]).toString("utf8"));
 }
+
+/** Encrypt one scalar into a compact bytea layout: 12-byte IV | 16-byte tag | ciphertext. */
+export function encryptToBytes(value: string, context: string): Buffer {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv("aes-256-gcm", key(), iv);
+  cipher.setAAD(Buffer.from(context));
+  const ciphertext = Buffer.concat([cipher.update(value, "utf8"), cipher.final()]);
+  return Buffer.concat([iv, cipher.getAuthTag(), ciphertext]);
+}
+
+export function decryptFromBytes(payload: Uint8Array, context: string): string {
+  const bytes = Buffer.from(payload);
+  const decipher = createDecipheriv("aes-256-gcm", key(), bytes.subarray(0, 12));
+  decipher.setAAD(Buffer.from(context));
+  decipher.setAuthTag(bytes.subarray(12, 28));
+  return Buffer.concat([decipher.update(bytes.subarray(28)), decipher.final()]).toString("utf8");
+}

@@ -266,7 +266,7 @@
 
 .nodeCode {
     font-family: var(--f-num);
-    font-size: 0.7rem;
+    font-size: 12.5px;
     color: var(--text-3);
     font-weight: 500;
 }
@@ -288,7 +288,7 @@
     background: var(--card-2);
     border: 1px solid var(--line-soft);
     border-radius: var(--r-pill);
-    font-size: 0.7rem;
+    font-size: 12.5px;
     color: var(--text-2);
     align-self: flex-start;
 }
@@ -306,7 +306,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.72rem;
+    font-size: 12.5px;
     color: var(--text-2);
     font-weight: 600;
 }
@@ -322,7 +322,7 @@
     border: 1px solid var(--line);
     border-radius: var(--r-control);
     padding: 0.25rem 0.55rem;
-    font-size: 0.72rem;
+    font-size: 12.5px;
     color: var(--text-2);
     cursor: pointer;
     display: inline-flex;
@@ -448,3 +448,17 @@
     transform: translateY(-1px);
     background: var(--card);
 }
+
+.nodeInfoRow { display: flex; justify-content: space-between; align-items: center; }
+.nodeLocation { font-size: 12.5px; color: var(--text-3); display: flex; align-items: center; gap: 3px; }
+.muted { color: var(--text-3); }
+.childSlot { position: relative; }
+.toolbarBtn { height: 38px; padding: 0 0.85rem; }
+.stateBox { color: var(--text-3); text-align: center; padding: 3rem; display: grid; gap: 0.75rem; justify-items: center; }
+.deptCountPill { font-size: 0.75rem; font-weight: 700; color: var(--signal-ink); background: var(--signal-wash); padding: 0.2rem 0.65rem; border-radius: var(--r-pill); }
+.deptAvatar { width: 36px; height: 36px; font-size: 0.82rem; }
+.deptEmpMeta { flex: 1; min-width: 0; }
+.deptEmpName { font-weight: 600; color: var(--text); font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.deptEmpRole { font-size: 12.5px; color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.signalIcon { color: var(--signal); }
+button.deptCard { font: inherit; color: inherit; text-align: inherit; }

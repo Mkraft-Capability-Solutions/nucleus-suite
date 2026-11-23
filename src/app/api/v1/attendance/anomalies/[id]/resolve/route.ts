@@ -1,70 +1,37 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
-import { requireAccess, tenantTx, uuidOrNull } from "@/server/platform/access";
-import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
-import { sqlClient } from "@/lib/db";
+import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
+import { fail, HttpError, ok, rejectCrossOrigin, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { resolveAnomaly, resolveAnomalySchema } from "@/server/attendance/anomaly-resolution";
 
 export const dynamic = "force-dynamic";
 
-export const resolveAnomalySchema = z.object({
-  action: z.enum(["RESOLVE", "WAIVE", "ESCALATE", "resolve", "waive", "escalate"]).default("RESOLVE"),
-  reason: z.string().trim().max(500).optional(),
-});
+const OPERATION = "attendance.anomaly_resolve";
 
+/** POST records a review decision (RESOLVE / WAIVE / ESCALATE) on an open anomaly (attendance.write, Idempotency-Key). */
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const requestId = requestIdFrom(request.headers);
   try {
+    rejectCrossOrigin(request);
     const access = await requireAccess(request);
+    const key = requireIdempotencyKey(request.headers);
     const { id } = await params;
-    const body = await request.json().catch(() => ({}));
-    const parsed = resolveAnomalySchema.safeParse(body);
+    if (!z.string().uuid().safeParse(id).success) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The requested record was not found." });
+    const parsed = resolveAnomalySchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) {
-      throw new HttpError({
-        status: 400,
-        code: "BAD_REQUEST",
-        message: "Invalid anomaly resolution payload.",
-        details: parsed.error.issues.map((i) => ({ field: i.path.join("."), issue: i.message })),
-      });
+      throw new HttpError({ status: 400, code: "VALIDATION_FAILED", message: parsed.error.issues[0]?.message ?? "Invalid anomaly resolution payload.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }
-
-    const action = parsed.data.action.toUpperCase();
-    const reason = parsed.data.reason ?? `Biometric anomaly ${action.toLowerCase()}d by supervisor`;
-    const newStatus = action === "RESOLVE" ? "resolved" : action === "WAIVE" ? "waived" : "escalated";
-
-    await tenantTx(access, [
-      sqlClient`
-        update attendance_exceptions
-        set record_status = ${newStatus},
-            attributes = coalesce(attributes, '{}'::jsonb) || ${JSON.stringify({
-              status: newStatus,
-              resolution_action: action,
-              resolution_reason: reason,
-              resolved_by: access.context.actorUserId,
-              resolved_at: new Date().toISOString(),
-            })}::jsonb,
-            updated_at = now()
-        where tenant_id = ${access.tenantId} and id = ${id}::uuid
-      `,
-      sqlClient`
-        insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
-        values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
-          'attendance.anomaly_resolve', 'attendance_exception', ${id}, ${reason},
-          ${JSON.stringify({ action, status: newStatus, reason })}::jsonb, ${uuidOrNull(requestId)}::uuid)
-      `,
-    ]);
-
-    return ok({
-      type: "attendance-anomaly",
-      id,
-      version: 1,
-      attributes: {
-        id,
-        action,
-        status: newStatus,
-        reason,
-      },
-      requestId,
-      self: `/api/v1/attendance/anomalies/${id}`,
-    });
+    const fingerprint = createHash("sha256").update(JSON.stringify({ id, ...parsed.data })).digest("hex");
+    const prior = await checkIdempotency(access, OPERATION, key, fingerprint);
+    if (prior.outcome === "conflict") {
+      throw new HttpError({ status: 409, code: "IDEMPOTENCY_KEY_REUSED", message: "This Idempotency-Key was already used with a different payload." });
+    }
+    if (prior.outcome === "replay" && prior.responseLocator) {
+      return ok({ type: "attendance-anomaly", id, version: 1, attributes: { id, replayed: true }, requestId, self: `/api/v1/attendance/anomalies/${id}` });
+    }
+    const result = await resolveAnomaly(access, id, parsed.data, requestId);
+    await storeIdempotency(access, OPERATION, key, fingerprint, 200, id);
+    return ok({ type: "attendance-anomaly", id, version: 1, attributes: result, requestId, self: `/api/v1/attendance/anomalies/${id}` });
   } catch (error) {
     return fail(error, requestId);
   }

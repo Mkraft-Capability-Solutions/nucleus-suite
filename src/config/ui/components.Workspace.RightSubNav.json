@@ -58,7 +58,7 @@
   },
   "dashboard_fields_2": {
     "title": "Role Consoles",
-    "subtitle": "MultipliersKraft Dashboard Consoles (S1\u2013S10)"
+    "subtitle": "MultipliersKraft Dashboard Consoles"
   },
   "groups_fields_3": {
     "heading": "EXECUTIVE & LEADERSHIP"
@@ -68,7 +68,7 @@
     "label": "People Command Centre"
   },
   "items_fields_5": {
-    "desc": "S1 \u2022 CHRO & C-Suite Leadership",
+    "desc": "• CHRO & C-Suite Leadership",
     "highlight": true
   },
   "items_fields_6": {
@@ -76,28 +76,28 @@
     "label": "HR Operations Console"
   },
   "items_fields_7": {
-    "desc": "S2 \u2022 HRBP & Daily Operations"
+    "desc": "• HRBP & Daily Operations"
   },
   "items_fields_8": {
     "id": "s3",
     "label": "Attendance & Shift Intelligence"
   },
   "items_fields_9": {
-    "desc": "S3 \u2022 Workforce & Shifts"
+    "desc": "• Workforce & Shifts"
   },
   "items_fields_10": {
     "id": "s4",
     "label": "Talent Acquisition Command"
   },
   "items_fields_11": {
-    "desc": "S4 \u2022 ATS & Recruiting Lead"
+    "desc": "• ATS & Recruiting Lead"
   },
   "items_fields_12": {
     "id": "s5",
     "label": "Payroll Control Room"
   },
   "items_fields_13": {
-    "desc": "S5 \u2022 Finance & Statutory"
+    "desc": "• Finance & Statutory"
   },
   "groups_fields_14": {
     "heading": "MANAGERS, TALENT & AI"
@@ -107,35 +107,35 @@
     "label": "Performance & Talent"
   },
   "items_fields_16": {
-    "desc": "S6 \u2022 9-Box Grid & Calibration"
+    "desc": "• 9-Box Grid & Calibration"
   },
   "items_fields_17": {
     "id": "s7",
     "label": "Manager Cockpit"
   },
   "items_fields_18": {
-    "desc": "S7 \u2022 Team Lead 90-sec Triage"
+    "desc": "• Team Lead 90-sec Triage"
   },
   "items_fields_19": {
     "id": "s8",
     "label": "Employee Home"
   },
   "items_fields_20": {
-    "desc": "S8 \u2022 Zero-Surveillance Self-Service"
+    "desc": "• Zero-Surveillance Self-Service"
   },
   "items_fields_21": {
     "id": "s9",
     "label": "Magnetix Capability"
   },
   "items_fields_22": {
-    "desc": "S9 \u2022 Skills & Capability Index"
+    "desc": "• Skills & Capability Index"
   },
   "items_fields_23": {
     "id": "s10",
-    "label": "S10: Workspace Governance"
+    "label": "Workspace Governance"
   },
   "items_fields_24": {
-    "desc": "S10 \u2022 Model Governance",
+    "desc": "• Model Governance",
     "highlight": true
   },
   "core_hr_fields_25": {

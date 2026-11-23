@@ -118,9 +118,9 @@ export function NeuralSonicBeacon({ onOpenCopilot, className }: NeuralSonicBeaco
                 {t("components.AI.NeuralSonicBeacon.text_live", "Live")}
               </span>
             ) : isConnecting ? (
-              "Connecting…"
+              t("components.AI.NeuralSonicBeacon.text_connecting", "Connecting…")
             ) : (
-              "Nucleus Assistance"
+              t("components.AI.NeuralSonicBeacon.text_assistant", "Assistant")
             )}
           </span>
           <span className={styles.shortcutKey}>{t("components.AI.NeuralSonicBeacon.text_k", "⌘K")}</span>

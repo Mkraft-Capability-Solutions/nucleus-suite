@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { useNucleusSession } from "@/context/NucleusSessionProvider";
 import styles from "./QuantumCopilot.module.css";
+import { NucleusDataBlock as DataBlock } from "./NucleusDataBlock";
 
 interface CitationDetail {
   title: string;
@@ -33,10 +34,20 @@ interface MessageTurn {
   text: string;
   sources?: string[];
   isVoice?: boolean;
-  telemetry?: {
-    tool: string;
-    result: Record<string, unknown>;
-  };
+  data?: ChatDataBlock[];
+  opened?: string;
+}
+
+interface ChatDataBlock {
+  tool: string;
+  args: Record<string, unknown>;
+  result: unknown;
+}
+
+interface ChatReply {
+  answer: string;
+  data: ChatDataBlock[];
+  navigate: { tab: string; domain?: string; sub: string; label: string } | null;
 }
 
 interface QuantumCopilotProps {
@@ -45,6 +56,13 @@ interface QuantumCopilotProps {
   activeDomain?: string;
   activeTab?: string;
   onNavigate?: (tab: string, domain?: string, sub?: string) => void;
+  /** Current sub-screen and record shown behind the panel, sent as context. */
+  activeSub?: string;
+  entityId?: string;
+  /** Company selected in the shell; the server re-checks it against the caller's scope. */
+  activeCompanyId?: string | null;
+  /** Ctrl/⌘+K toggles the assistant. Off in the redesigned shell, where Ctrl+K is search. */
+  shortcutEnabled?: boolean;
 }
 
 export function QuantumCopilot({
@@ -52,12 +70,16 @@ export function QuantumCopilot({
   onClose,
   activeDomain = "core_hr",
   activeTab = "dashboard",
+  onNavigate,
+  activeSub,
+  entityId,
+  activeCompanyId = null,
+  shortcutEnabled = true,
 }: QuantumCopilotProps) {
     const { t } = useTranslation();
   const {
     status,
     turns: liveTurns,
-    analysis,
     draft,
     confirmDraft,
     cancelDraft,
@@ -75,9 +97,10 @@ export function QuantumCopilot({
     {
       id: "initial-welcome",
       role: "assistant",
-      text: "Greetings. I am Nucleus Neural Intelligence. Click the mic to speak naturally, or type any inquiry below. All workforce analytics and policies are mathematically verified in real time.",
+      text: t("components.AI.QuantumCopilot.text_welcome_assistant", "Hello, I am Nucleus Assistant. Click the mic to speak, or type a question below."),
     },
   ]);
+  const sessionIdRef = useRef<string>(typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : String(Date.now()));
   const [selectedCitation, setSelectedCitation] = useState<CitationDetail | null>(null);
 
   // Audio level state for 60 FPS acoustic wave animation
@@ -98,7 +121,7 @@ export function QuantumCopilot({
     const handleOpen = () => setIsOpen(true);
     const handleToggle = () => setIsOpen((prev) => !prev);
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      if (shortcutEnabled && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }
@@ -115,7 +138,7 @@ export function QuantumCopilot({
       window.removeEventListener("nucleus:toggle_copilot", handleToggle);
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, shortcutEnabled]);
 
   // Sync live voice turns into dialogue stream
   useEffect(() => {
@@ -232,32 +255,38 @@ export function QuantumCopilot({
     setIsSubmittingText(true);
 
     try {
-      const res = await fetch("/api/assistant", {
+      const history = chatMessages
+        .filter((m) => m.id !== "initial-welcome" && m.text)
+        .slice(-12)
+        .map((m) => ({ role: m.role, text: m.text.slice(0, 4000) }));
+      const res = await fetch("/api/v1/assistant/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: query }),
+        body: JSON.stringify({
+          prompt: query,
+          sessionId: sessionIdRef.current,
+          activeCompanyId,
+          history,
+          context: { activeTab, activeDomain, activeSub, entityId, locale: document.documentElement.lang || undefined },
+        }),
       });
-
-      const data = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
-
-      const assistantMsg: MessageTurn = {
-        id: crypto.randomUUID(),
-        role: "assistant",
-        text: data?.answer || "Processed policy inquiry successfully.",
-        sources: Array.isArray(data?.sources) ? data.sources : undefined,
-      };
-      setChatMessages((prev) => [...prev, assistantMsg]);
-    } catch (e: unknown) {
-      const err = e instanceof Error ? e.message : "Error contacting policy assistant";
+      const payload = (await res.json().catch(() => null)) as { data?: ChatReply; error?: { message?: string } } | null;
+      if (!res.ok || !payload?.data) throw new Error(payload?.error?.message || t("components.AI.QuantumCopilot.text_request_failed", "The assistant could not answer right now."));
+      const reply = payload.data;
+      if (reply.navigate && onNavigate) onNavigate(reply.navigate.tab, reply.navigate.domain, reply.navigate.sub);
       setChatMessages((prev) => [
         ...prev,
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          text: `Notice: ${err}. Please ensure your query relates to verified company policies.`,
+          text: reply.answer || (reply.navigate ? t("components.AI.QuantumCopilot.text_opened", "Opened {label}.").replace("{label}", reply.navigate.label) : ""),
+          data: reply.data.length > 0 ? reply.data : undefined,
+          opened: reply.navigate?.label,
         },
       ]);
+    } catch (e: unknown) {
+      const err = e instanceof Error ? e.message : t("components.AI.QuantumCopilot.text_request_failed", "The assistant could not answer right now.");
+      setChatMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "assistant", text: err }]);
     } finally {
       setIsSubmittingText(false);
     }
@@ -292,22 +321,20 @@ export function QuantumCopilot({
       {/* Screen-Perimeter Apple Intelligence Chromatic Aura */}
       {isLive && <div className={styles.chromaticAuraOverlay} />}
 
-      {/* Frosted Ambient Backdrop */}
-      <div className={styles.backdropOverlay} onClick={handleClose} />
 
       {/* Floating Apple Dynamic Neural Capsule */}
       <aside
         className={`${styles.copilotIsland} ${isExpanded ? styles.expandedIsland : ""}`}
         role="dialog"
-        aria-label={t("components.AI.QuantumCopilot.aria-label_nucleus_neural_intelligence", "Nucleus Neural Intelligence")}
+        aria-label={t("components.AI.QuantumCopilot.text_nucleus_assistant", "Nucleus Assistant")}
       >
         {/* Top Bar with Fluid Header */}
         <div className={styles.islandHeader}>
           <div className={styles.brandGroup}>
             <div className={styles.headerTitleSection}>
               <div className={styles.systemTitleRow}>
-                <h3 className={styles.systemTitle}>{t("components.AI.QuantumCopilot.text_nucleus_neural_intelligence", "Nucleus Neural Intelligence")}</h3>
-                <span className={styles.versionBadge}>{t("components.AI.QuantumCopilot.text_gemini_31_live_hd", "Gemini 3.1 Live HD")}</span>
+                <h3 className={styles.systemTitle}>{t("components.AI.QuantumCopilot.text_nucleus_assistant", "Nucleus Assistant")}</h3>
+                <span className={styles.versionBadge}>{t("components.AI.QuantumCopilot.text_live", "Live")}</span>
               </div>
               <span className={styles.systemSubtext}>
                 <span
@@ -321,7 +348,7 @@ export function QuantumCopilot({
                 />
                 {isLive
                   ? isSpeaking
-                    ? "Nucleus AI Speaking (Kore 24kHz HD Voice)"
+                    ? t("components.AI.QuantumCopilot.text_assistant_speaking", "Nucleus Assistant is speaking")
                     : isUserSpeaking
                     ? "Listening to your voice…"
                     : "Live Audio Connected — Speak freely"
@@ -394,14 +421,14 @@ export function QuantumCopilot({
           <span className={styles.acousticPromptText}>
             {isLive ? (
               isSpeaking ? (
-                "Nucleus AI is answering…"
+                t("components.AI.QuantumCopilot.text_assistant_answering", "Nucleus Assistant is answering…")
               ) : (
                 <>
                   <span style={{ color: "#ef4444" }}>{t("components.AI.QuantumCopilot.text_listening", "● Listening")}</span>  {t("components.AI.QuantumCopilot.text_click_to_stop", "— Click to Stop")}
                 </>
               )
             ) : (
-              "Click to Speak with Nucleus Neural Intelligence"
+              t("components.AI.QuantumCopilot.text_click_to_speak_assistant", "Click to speak with Nucleus Assistant")
             )}
           </span>
 
@@ -440,7 +467,7 @@ export function QuantumCopilot({
               }`}
             >
               <div className={styles.turnCardHeader}>
-                <span>{msg.role === "user" ? "You" : "Nucleus Neural Intelligence"}</span>
+                <span>{msg.role === "user" ? t("components.AI.QuantumCopilot.text_you", "You") : t("components.AI.QuantumCopilot.text_nucleus_assistant", "Nucleus Assistant")}</span>
                 {msg.isVoice && (
                   <span className={styles.voiceTag}>
                     <Volume2 size={10} />
@@ -479,46 +506,10 @@ export function QuantumCopilot({
                     </div>
                   )}
 
-                  {/* Structured Telemetry Widgets (Proportional, Clean Apple Widgets) */}
-                  {analysis && analysis.tool === "attendance_analysis" && (
-                    <div className={styles.telemetryGrid}>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_present_rate", "Present Rate")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_936", "93.6%")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_988_1056_days", "988 / 1,056 Days")}</span>
-                      </div>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_overtime", "Overtime")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_640h", "64.0h")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_approved_ot", "Approved OT")}</span>
-                      </div>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_absence_rate", "Absence Rate")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_42", "4.2%")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_44_days", "44 Days")}</span>
-                      </div>
-                    </div>
+                  {msg.opened && (
+                    <span className={styles.openedChip}>{t("components.AI.QuantumCopilot.text_opened_in_workspace", "Open in workspace")}: {msg.opened}</span>
                   )}
-
-                  {analysis && analysis.tool === "leave_analysis" && (
-                    <div className={styles.telemetryGrid}>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_casual_leave", "Casual Leave")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_45_days", "4.5 Days")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_available", "Available")}</span>
-                      </div>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_earned_leave", "Earned Leave")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_140_days", "14.0 Days")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_accrued", "Accrued")}</span>
-                      </div>
-                      <div className={styles.telemetrySlate}>
-                        <span className={styles.telemetrySlateLabel}>{t("components.AI.QuantumCopilot.text_pending", "Pending")}</span>
-                        <span className={styles.telemetrySlateValue}>{t("components.AI.QuantumCopilot.text_4_requests", "4 Requests")}</span>
-                        <span className={styles.telemetrySlateSub}>{t("components.AI.QuantumCopilot.text_in_review", "In Review")}</span>
-                      </div>
-                    </div>
-                  )}
+                  {msg.data?.map((block, i) => <DataBlock key={`${msg.id}-${i}`} block={block} onNavigate={onNavigate} />)}
                 </div>
               )}
             </div>
@@ -527,7 +518,7 @@ export function QuantumCopilot({
           {isSubmittingText && (
             <div className={`${styles.turnCard} ${styles.turnCardAssistant}`}>
               <div className={styles.turnCardHeader}>
-                <span>{t("components.AI.QuantumCopilot.text_nucleus_neural_intelligence", "Nucleus Neural Intelligence")}</span>
+                <span>{t("components.AI.QuantumCopilot.text_nucleus_assistant", "Nucleus Assistant")}</span>
               </div>
               <div className={styles.assistantContentCard}>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6366f1" }}>

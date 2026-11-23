@@ -27,7 +27,8 @@ const SAMPLE_BATCH_ROWS = [
 export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
     const { t } = useTranslation();
     const { showToast } = useHRMS();
-    const [step, setStep] = useState(1); // 1: Upload, 2: Column Mapping, 3: Validation, 4: Complete
+    const [step, setStep] = useState(1);
+    const [batchResult, setBatchResult] = useState(null); // 1: Upload, 2: Column Mapping, 3: Validation, 4: Complete
     const [fileName, setFileName] = useState('employee_bulk_onboarding_sample.csv');
     const [batchRows, setBatchRows] = useState(SAMPLE_BATCH_ROWS);
     const [mappings, setMappings] = useState({
@@ -112,56 +113,45 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
         reader.readAsText(file);
     };
 
-    const handleCommitBatch = () => {
-        const newRecords = batchRows.map((r, i) => {
-            const code = r[mappings.employeeCode] || r.employeeCode || r.StaffCode || r.EmpId || `EMP-BATCH-${i + 1}`;
-            const firstName = r[mappings.firstName] || r.firstName || r.FirstName || (r.FullName ? r.FullName.split(' ')[0] : 'Employee');
-            const lastName = r[mappings.lastName] || r.lastName || r.LastName || (r.FullName ? r.FullName.split(' ').slice(1).join(' ') : `#${i + 1}`);
-            const role = r[mappings.designation] || r.designation || r.Role || 'Specialist';
-            const dept = r[mappings.department] || r.department || r.Department || 'Operations';
-            const location = r[mappings.location] || r.location || r.Location || 'Bengaluru Corporate Office';
-            const band = r.workerClass || r.WorkerClass || 'Permanent Full-Time';
-            return {
-                id: code,
-                employeeCode: code,
-                name: `${firstName} ${lastName}`.trim(),
-                firstName,
-                lastName,
-                officialEmail: r[mappings.officialEmail] || r.officialEmail || `${firstName.toLowerCase()}.${lastName.toLowerCase()}@nucleus.com`,
-                role,
-                dept,
-                manager: 'Ananya Roy',
-                location,
-                status: 'Active',
-                band,
-                panNumber: r.panNumber || r.PAN || '',
-                aadhaarNumber: r.aadhaarNumber || r.Aadhaar || '',
-                uanNumber: r.uanNumber || r.UAN || '',
-                pfNumber: r.pfNumber || r.PFNumber || '',
-                bankName: r.bankName || r.BankName || '',
-                ifsc: r.ifsc || r.IFSC || '',
-                accountNumber: r.accountNumber || r.AccountNumber || '',
-                joiningDate: r.joiningDate || r.DateOfJoining || new Date().toISOString().split('T')[0],
-                attributes: r,
-                metadata: r
-            };
-        });
-
-        try {
-            fetch('/api/v1/bulk-import', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    importType: 'employee',
-                    records: newRecords,
-                    fileName
-                })
-            }).catch(e => console.warn('Bulk onboarding database sync notice:', e));
-        } catch {}
-
-        if (onIngest) onIngest(newRecords);
+    const handleCommitBatch = async () => {
+        // Only what the file contains is sent; the server validates every row and invents nothing.
+        const value = (r, key, ...aliases) => {
+            for (const k of [mappings[key], key, ...aliases]) {
+                if (k && r[k] !== undefined && String(r[k]).trim() !== '') return String(r[k]).trim();
+            }
+            return undefined;
+        };
+        const records = batchRows.map((r) => ({
+            employeeCode: value(r, 'employeeCode', 'StaffCode', 'EmpId'),
+            firstName: value(r, 'firstName', 'FirstName'),
+            lastName: value(r, 'lastName', 'LastName'),
+            name: value(r, 'FullName'),
+            workEmail: value(r, 'officialEmail', 'workEmail', 'email'),
+            designation: value(r, 'designation', 'Role'),
+            department: value(r, 'department', 'Department'),
+            location: value(r, 'location', 'Location'),
+            joiningDate: value(r, 'joiningDate', 'DateOfJoining'),
+        }));
+        const response = await fetch('/api/v1/bulk-import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+            body: JSON.stringify({ importType: 'employee', records, fileName })
+        }).catch(() => null);
+        const payload = response ? await response.json().catch(() => null) : null;
+        if (!response || !response.ok || !payload?.data) {
+            showToast(t("components.Workspace.BulkOnboardingModal.text_import_failed_title", "Onboarding failed"), payload?.error?.message || t("components.Workspace.BulkOnboardingModal.text_import_failed", "No employee was created. Check the file and try again."), 'error');
+            return;
+        }
+        const result = payload.data;
+        const createdRows = new Set(result.details.filter((d) => d.outcome === 'created').map((d) => d.row));
+        if (onIngest) onIngest(records.filter((_, index) => createdRows.has(index + 1)));
+        setBatchResult(result);
         setStep(4);
-        showToast('Batch Onboarded', `${newRecords.length} employees onboarded into directory & database.`, 'success');
+        showToast(
+            t("components.Workspace.BulkOnboardingModal.text_import_done_title", "Onboarding finished"),
+            t("components.Workspace.BulkOnboardingModal.text_import_done", "{accepted} employees created, {rejected} rows rejected.", { accepted: result.accepted, rejected: result.rejected }),
+            result.rejected > 0 ? 'warning' : 'success'
+        );
     };
 
     const resetAndClose = () => {
@@ -171,7 +161,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
 
     return (
         <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modal} role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
@@ -263,7 +253,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                                 </select>
                                             </td>
                                             <td>
-                                                <span style={{ color: '#10b981', fontSize: '0.78rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                                <span style={{ color: 'var(--status-ok)', fontSize: '0.78rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                     <Check size={14} />  {t("components.Workspace.BulkOnboardingModal.text_auto-matched", "Auto-Matched")}
                                                 </span>
                                             </td>
@@ -281,7 +271,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                 <div style={{ flex: 1, background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '0.85rem', borderRadius: '10px', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                                     <CheckCircle2 size={24} color="#10b981" />
                                     <div>
-                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#10b981' }}>{batchRows.length}  {t("components.Workspace.BulkOnboardingModal.text_rows_valid", "Rows Valid")}</div>
+                                        <div style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--status-ok)' }}>{batchRows.length}  {t("components.Workspace.BulkOnboardingModal.text_rows_valid", "Rows Valid")}</div>
                                         <div style={{ fontSize: '0.78rem', color: '#94a3b8' }}>{t("components.Workspace.BulkOnboardingModal.text_passed_email_aadhaarpan_format_mandatory", "Passed email, Aadhaar/PAN format & mandatory field checks")}</div>
                                     </div>
                                 </div>
@@ -309,7 +299,7 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                                         const loc = row[mappings.location] || row.location || row.Location || 'Bangalore Plant';
                                         return (
                                             <tr key={i}>
-                                                <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 700 }}>{t("components.Workspace.BulkOnboardingModal.text_valid", "VALID")}</span></td>
+                                                <td><span style={{ background: 'rgba(16, 185, 129, 0.2)', color: '#34d399', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '12.5px', fontWeight: 700 }}>{t("components.Workspace.BulkOnboardingModal.text_valid", "VALID")}</span></td>
                                                 <td><strong>{code}</strong></td>
                                                 <td>{fn} {ln}</td>
                                                 <td>{email}</td>
@@ -326,13 +316,22 @@ export default function BulkOnboardingModal({ isOpen, onClose, onIngest }) {
                     {/* STEP 4 */}
                     {step === 4 && (
                         <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
+                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.2)', color: 'var(--status-ok)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem' }}>
                                 <Check size={36} />
                             </div>
-                            <h3 style={{ margin: '0 0 0.5rem', color: '#ffffff' }}>{t("components.Workspace.BulkOnboardingModal.text_bulk_employee_batch_successfully_ingeste", "Bulk Employee Batch Successfully Ingested")}</h3>
-                            <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
-                                {batchRows.length}  {t("components.Workspace.BulkOnboardingModal.text_employee_master_records_have_been_batch_", "employee master records have been batch added into the employee directory.")}
-                            </p>
+                            <h3 className={styles.resultTitle}>{t("components.Workspace.BulkOnboardingModal.text_import_done_title", "Onboarding finished")}</h3>
+                            {batchResult && (
+                                <div role="status" className={styles.resultBody}>
+                                    <p>{t("components.Workspace.BulkOnboardingModal.text_import_done", "{accepted} employees created, {rejected} rows rejected.", { accepted: batchResult.accepted, rejected: batchResult.rejected })}</p>
+                                    {batchResult.rejected > 0 && (
+                                        <ul>
+                                            {batchResult.details.filter((d) => d.outcome === 'rejected').slice(0, 50).map((d) => (
+                                                <li key={d.row}>{t("components.Workspace.BulkOnboardingModal.text_row_rejected", "Row {row}: {reason}", { row: d.row, reason: d.reason })}</li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>

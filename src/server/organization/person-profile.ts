@@ -177,6 +177,11 @@ export function personProfileMetadata(
     ...input,
   };
   delete merged.details;
+  // Pay lives in its own columns (basic_salary_minor, currency), readable only with payroll.rate.read;
+  // a copy in the profile would show it to everyone who can open the record.
+  delete merged.basicSalaryMinor;
+  delete merged.basicSalary;
+  delete merged.salaryAmount;
 
   const profile: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(merged)) {

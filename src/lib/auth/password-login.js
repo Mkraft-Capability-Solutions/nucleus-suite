@@ -1,13 +1,10 @@
-import { signIn } from '@/lib/auth-client';
-
 export const PASSWORD_LOGIN_PATH = '/api/auth/login';
 
 /**
- * Remembers the signed-in user the way AuthContext reads it back on load (localStorage `nucleus_user` plus the
- * `nucleus_session` cookie the middleware checks), then opens the better-auth session.
+ * Remembers the signed-in user's profile the way AuthContext reads it back on load. The session
+ * itself is the httpOnly Better Auth cookie set by PASSWORD_LOGIN_PATH; `nucleus_session` is only a
+ * hint that a cached profile exists and never identifies anyone to the server.
  */
-export async function storeSignedInUser(user, email, password) {
+export async function storeSignedInUser(user) {
     localStorage.setItem('nucleus_user', JSON.stringify(user));
-    document.cookie = `nucleus_session=${encodeURIComponent(user.id)}; path=/; max-age=604800; SameSite=Lax`;
-    await signIn.email({ email, password }).catch(() => {});
 }

@@ -1,82 +1,37 @@
-import { z } from "zod";
-import { requireAccess, tenantTx, uuidOrNull } from "@/server/platform/access";
-import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
-import { sqlClient } from "@/lib/db";
+import { createHash } from "node:crypto";
+import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
+import { fail, HttpError, ok, rejectCrossOrigin, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { submitTimesheetSchema, submitWeeklyTimesheet } from "@/server/attendance/timesheet-submission";
 
 export const dynamic = "force-dynamic";
 
-export const submitTimesheetSchema = z.object({
-  employeeId: z.string().uuid().optional(),
-  weekRange: z.string().trim().min(1).max(100).optional(),
-  totalHours: z.number().min(0).max(168).optional(),
-  billableHours: z.number().min(0).max(168).optional(),
-  notes: z.string().trim().max(1000).optional(),
-});
+const OPERATION = "attendance.timesheet_submit";
 
+/**
+ * POST submits one employee-week. Hours are summed on the server from the computed attendance days; the client
+ * sends only the week and optional notes (attendance.write, Idempotency-Key required).
+ */
 export async function POST(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
+    rejectCrossOrigin(request);
     const access = await requireAccess(request);
-    const body = await request.json().catch(() => ({}));
-    const parsed = submitTimesheetSchema.safeParse(body);
+    const key = requireIdempotencyKey(request.headers);
+    const parsed = submitTimesheetSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) {
-      throw new HttpError({
-        status: 400,
-        code: "BAD_REQUEST",
-        message: "Invalid timesheet submission payload.",
-        details: parsed.error.issues.map((i) => ({ field: i.path.join("."), issue: i.message })),
-      });
+      throw new HttpError({ status: 400, code: "VALIDATION_FAILED", message: parsed.error.issues[0]?.message ?? "Invalid timesheet submission payload.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }
-
-    let employeeId = parsed.data.employeeId ?? access.context.employeeId;
-    if (!employeeId) {
-      const [empRows] = await tenantTx(access, [
-        sqlClient`select id from employees where tenant_id = ${access.tenantId} and status = 'active' order by created_at asc limit 1`,
-      ]);
-      employeeId = (empRows as Array<{ id: string }>)[0]?.id;
+    const fingerprint = createHash("sha256").update(JSON.stringify(parsed.data)).digest("hex");
+    const prior = await checkIdempotency(access, OPERATION, key, fingerprint);
+    if (prior.outcome === "conflict") {
+      throw new HttpError({ status: 409, code: "IDEMPOTENCY_KEY_REUSED", message: "This Idempotency-Key was already used with a different payload." });
     }
-
-    if (!employeeId) {
-      throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "No active employee profile associated." });
+    if (prior.outcome === "replay" && prior.responseLocator) {
+      return ok({ type: "timesheet-submission", id: prior.responseLocator, version: 1, attributes: { id: prior.responseLocator, replayed: true }, requestId, self: `/api/v1/attendance/timesheets/${prior.responseLocator}` });
     }
-
-    const submissionId = crypto.randomUUID();
-    const attributes = {
-      submission_type: "weekly_timesheet",
-      week_range: parsed.data.weekRange ?? "Current Week",
-      total_hours: parsed.data.totalHours ?? 40,
-      billable_hours: parsed.data.billableHours ?? 36,
-      notes: parsed.data.notes ?? "",
-      status: "submitted",
-      submitted_at: new Date().toISOString(),
-      submitted_by: access.context.actorUserId,
-    };
-
-    await tenantTx(access, [
-      sqlClient`
-        insert into attendance_entries (id, tenant_id, employee_id, attributes)
-        values (${submissionId}, ${access.tenantId}, ${employeeId}::uuid, ${JSON.stringify(attributes)}::jsonb)
-      `,
-      sqlClient`
-        insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
-        values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
-          'attendance.timesheet_submit', 'timesheet', ${submissionId}, 'Weekly timesheet submitted for approval',
-          ${JSON.stringify(attributes)}::jsonb, ${uuidOrNull(requestId)}::uuid)
-      `,
-    ]);
-
-    return ok({
-      type: "timesheet-submission",
-      id: submissionId,
-      version: 1,
-      attributes: {
-        id: submissionId,
-        status: "submitted",
-        ...attributes,
-      },
-      requestId,
-      self: `/api/v1/attendance/timesheets/${submissionId}`,
-    });
+    const result = await submitWeeklyTimesheet(access, parsed.data, requestId);
+    await storeIdempotency(access, OPERATION, key, fingerprint, 201, result.id);
+    return ok({ type: "timesheet-submission", id: result.id, version: 1, attributes: result, requestId, self: `/api/v1/attendance/timesheets/${result.id}` });
   } catch (error) {
     return fail(error, requestId);
   }

@@ -25,13 +25,13 @@
 .titleBlock h2 {
     font-size: 1.35rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .titleBlock p {
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     font-size: 0.85rem;
     margin: 0.2rem 0 0;
 }
@@ -102,7 +102,7 @@
 
 .btnSecondary {
     background: var(--card, #FFFFFF);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     border: 1px solid var(--line, #D8DEDA);
     padding: 0.5rem 1.1rem;
     border-radius: var(--r-control, 5px);
@@ -122,3 +122,15 @@
 .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
 .headerRow > *{min-width:0;max-width:100%}
 }
+
+.actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+.btnAccent { composes: btnSecondary; display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--agent); background: var(--agent-wash); color: var(--agent); font-weight: 700; }
+.cardMeta { display: flex; justify-content: space-between; align-items: center; margin-block-end: 0.5rem; gap: 0.5rem; }
+.category { font-size: 0.78rem; color: var(--signal); font-weight: 700; text-transform: uppercase; }
+.badge { font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: var(--r-pill); background: var(--signal-wash); color: var(--signal-ink); }
+.courseTitle { font-size: 1.05rem; color: var(--text); display: block; }
+.muted { font-size: 0.85rem; color: var(--text-3); margin: 0.35rem 0 0; }
+.cardFoot { margin-block-start: 1.5rem; }
+.progressRow { display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 600; }
+.cardFoot .btnPrimary { width: 100%; justify-content: center; margin-block-start: 0.5rem; padding: 0.5rem; }
+.sectionTitle { margin: 0; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem; }

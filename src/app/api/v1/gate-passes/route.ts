@@ -1,95 +1,58 @@
-import { requireAccess, tenantTx } from "@/server/platform/access";
-import { NextResponse, NextRequest } from "next/server";
-import { gatePasses, employeesTable } from "@/lib/db/schema";
-import { eq, or, and } from "drizzle-orm";
-import { db } from "@/lib/db";
+import { createHash } from "node:crypto";
+import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
+import { collection, fail, HttpError, ok, rejectCrossOrigin, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { requestGatePass, requestGatePassSchema } from "@/server/attendance/service";
+import { listGatePassRegister } from "@/server/attendance/gate-pass-register";
 
-export async function GET(req: NextRequest) {
-  const access = await requireAccess(req);
+export const dynamic = "force-dynamic";
 
+const OPERATION = "attendance.gate_pass_request";
+
+/**
+ * GET lists gate passes in the caller's attendance scope (attendance.read). Errors are returned, never an empty list.
+ * POST requests a gate pass through the attendance service, which validates the employee, the duration and the
+ * monthly personal-pass ceiling (attendance.write, Idempotency-Key required). Nothing is fabricated on failure.
+ */
+export async function GET(request: Request) {
+  const requestId = requestIdFrom(request.headers);
   try {
-    const query = db.select().from(gatePasses).where(eq(gatePasses.tenantId, access.tenantId)).toSQL();
-    const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
-    return NextResponse.json({ data: rows || [] });
-  } catch {
-    return NextResponse.json({ data: [] });
+    const access = await requireAccess(request);
+    const rows = await listGatePassRegister(access, new URL(request.url).searchParams.get("search") ?? "");
+    return collection({
+      type: "gate-pass",
+      items: rows.map(({ type, ...row }) => ({ ...row, pass_type: type, version: 1 })),
+      requestId,
+      self: "/api/v1/gate-passes",
+      nextCursor: null,
+      total: rows.length,
+    });
+  } catch (error) {
+    return fail(error, requestId);
   }
 }
 
-export async function POST(req: NextRequest) {
-  const access = await requireAccess(req);
-  const body = await req.json().catch(() => ({}));
-
-  const passType = body.passType || body.type || body.purpose || body.reason || "Official Duty";
-  const purpose = body.purpose || body.reason || passType;
-  const minutes = Number(body.minutes) || 120;
-
-  // Resolve employee UUID
-  let resolvedEmployeeId: string | null = null;
-  const rawEmpId = body.employeeId || body.employee_id;
-
-  const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
-
-  if (rawEmpId && isUuid(rawEmpId)) {
-    resolvedEmployeeId = rawEmpId;
-  } else {
-    try {
-      const empQuery = db.select({ id: employeesTable.id })
-        .from(employeesTable)
-        .where(
-          rawEmpId 
-            ? and(eq(employeesTable.tenantId, access.tenantId), eq(employeesTable.employeeCode, rawEmpId))
-            : eq(employeesTable.tenantId, access.tenantId)
-        )
-        .limit(1)
-        .toSQL();
-      const [empRows] = await tenantTx(access, [ { text: empQuery.sql, values: empQuery.params } ]);
-      const rowsList = empRows as any[];
-      if (rowsList && rowsList.length > 0 && rowsList[0]?.id) {
-        resolvedEmployeeId = rowsList[0].id;
-      }
-    } catch {}
-  }
-
-  if (!resolvedEmployeeId) {
-    // Final fallback UUID for tenant system demo
-    resolvedEmployeeId = crypto.randomUUID();
-  }
-
-  const outTime = body.validFrom ? new Date(body.validFrom) : (body.outTime ? new Date(body.outTime) : new Date());
-  const expectedInTime = body.validUntil 
-    ? new Date(body.validUntil) 
-    : (body.expectedInTime ? new Date(body.expectedInTime) : new Date(outTime.getTime() + minutes * 60_000));
-
+export async function POST(request: Request) {
+  const requestId = requestIdFrom(request.headers);
   try {
-    const query = db.insert(gatePasses).values({
-      tenantId: access.tenantId,
-      employeeId: resolvedEmployeeId,
-      purpose,
-      outTime,
-      expectedInTime,
-      status: "active"
-    }).returning().toSQL();
-    
-    const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
-    const insertedList = inserted as any[];
-    if (insertedList && insertedList.length > 0) {
-      return NextResponse.json({ data: insertedList[0] }, { status: 201 });
+    rejectCrossOrigin(request);
+    const access = await requireAccess(request);
+    const key = requireIdempotencyKey(request.headers);
+    const parsed = requestGatePassSchema.safeParse(await request.json().catch(() => null));
+    if (!parsed.success) {
+      throw new HttpError({ status: 400, code: "VALIDATION_FAILED", message: parsed.error.issues[0]?.message ?? "The gate pass payload is invalid.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }
-  } catch (dbErr) {
-    // If table foreign key constraint or DB write fails, return a compliant record
+    const fingerprint = createHash("sha256").update(JSON.stringify(parsed.data)).digest("hex");
+    const prior = await checkIdempotency(access, OPERATION, key, fingerprint);
+    if (prior.outcome === "conflict") {
+      throw new HttpError({ status: 409, code: "IDEMPOTENCY_KEY_REUSED", message: "This Idempotency-Key was already used with a different payload." });
+    }
+    if (prior.outcome === "replay" && prior.responseLocator) {
+      return ok({ type: "gate-pass", id: prior.responseLocator, version: 1, attributes: { id: prior.responseLocator, replayed: true }, requestId, self: "/api/v1/gate-passes" });
+    }
+    const result = await requestGatePass(access, parsed.data, requestId);
+    await storeIdempotency(access, OPERATION, key, fingerprint, 201, result.id);
+    return ok({ type: "gate-pass", id: result.id, version: 1, attributes: result, requestId, self: `/api/v1/gate-passes/register/${result.id}` });
+  } catch (error) {
+    return fail(error, requestId);
   }
-
-  return NextResponse.json({
-    data: {
-      id: crypto.randomUUID(),
-      tenantId: access.tenantId,
-      employeeId: resolvedEmployeeId,
-      purpose,
-      outTime,
-      expectedInTime,
-      status: "active",
-      createdAt: new Date().toISOString()
-    }
-  }, { status: 201 });
 }

@@ -1,0 +1,101 @@
+/* Redesigned side navigation: rail (primary) + panel (secondary). Used inside .scope only. */
+
+.rail {
+  width: 76px; flex-shrink: 0; height: 100%; position: relative; z-index: 100; overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column; align-items: center; gap: var(--hr-space-2);
+  padding: 0 var(--hr-space-2) var(--hr-space-3); background: var(--shell-frame, var(--hr-rail-bg));
+}
+.logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: 8px 0 var(--hr-space-2); border: 0; border-radius: var(--hr-radius-lg); background: none; cursor: pointer; }
+.logo:hover { background: var(--hr-surface); }
+.logoImage { display: block; }
+.railList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--hr-space-1); width: 100%; }
+.railFoot { margin-top: auto; width: 100%; padding-top: var(--hr-space-2); }
+.railItem {
+  width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 6px 2px; border: 0; border-radius: var(--hr-radius-lg); background: none; color: var(--hr-text-2); font: inherit; cursor: pointer;
+}
+.railIcon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 32px; border-radius: var(--hr-radius-lg); transition: background-color 120ms ease, color 120ms ease; }
+.railIcon svg { width: 20px; height: 20px; }
+.railLabel { font-size: 11px; line-height: 14px; font-weight: var(--hr-weight-medium); text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.railItem:hover .railIcon { background: var(--hr-surface); color: var(--hr-accent-text); }
+.railItem:hover { color: var(--hr-text); }
+.railItem[aria-current="page"] { color: var(--hr-accent-text); }
+.railItem[aria-current="page"] .railLabel { font-weight: var(--hr-weight-semibold); }
+.railItem[aria-current="page"] .railIcon { background: var(--hr-accent); color: var(--hr-on-accent); box-shadow: 0 1px 2px rgb(16 24 40 / 0.14), inset 0 0 0 1px var(--hr-accent-line); }
+.railItem:focus-visible { outline: 2px solid var(--hr-focus); outline-offset: -2px; }
+
+.morePanel { width: 248px; padding: var(--hr-space-2); display: flex; flex-direction: column; gap: 2px; }
+.grow { flex: 1; }
+.kbd { font-size: 11px; line-height: 1; padding: 3px 6px; border-radius: var(--hr-radius-sm); border: 1px solid var(--hr-border-strong); color: var(--hr-text-3); }
+
+.panel {
+  width: 248px; flex-shrink: 0; height: 100%; display: flex; flex-direction: column; min-height: 0;
+  background: var(--hr-surface); border-right: 1px solid var(--shell-line, var(--hr-border));
+}
+.panelHead { display: flex; align-items: center; gap: var(--hr-space-1); height: 56px; padding: 0 var(--hr-space-2) 0 var(--hr-space-4); border-bottom: 1px solid var(--hr-border); flex-shrink: 0; }
+.panelTitleBlock { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.panelTitle { font-size: var(--hr-text-lg); line-height: 22px; font-weight: var(--hr-weight-semibold); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panelCount { font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.headButton { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex-shrink: 0; border: 0; border-radius: var(--hr-radius-md); background: none; color: var(--hr-text-3); cursor: pointer; }
+.headButton:hover { background: var(--hr-surface-hover); color: var(--hr-text); }
+.headButton svg { width: 18px; height: 18px; }
+.filterBox { flex: 1; display: flex; align-items: center; gap: var(--hr-space-1); min-width: 0; }
+.filterBox > svg { width: 16px; height: 16px; color: var(--hr-text-3); flex-shrink: 0; }
+.filterInput { flex: 1; min-width: 0; height: 32px; border: 0; background: none; color: var(--hr-text); font-size: var(--hr-text-md); }
+.filterInput:focus { outline: none; box-shadow: none; }
+.panelBody { flex: 1; overflow-y: auto; padding: var(--hr-space-2) var(--hr-space-2) var(--hr-space-6); scrollbar-width: thin; }
+.empty { padding: var(--hr-space-3); font-size: var(--hr-text-sm); color: var(--hr-text-3); }
+
+/* Recently opened screens of this area */
+.recent { margin-bottom: var(--hr-space-2); padding-bottom: var(--hr-space-2); border-bottom: 1px solid var(--hr-border); }
+.recentTitle { display: flex; align-items: center; gap: 6px; padding: 4px var(--hr-space-2) 2px; font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); font-weight: var(--hr-weight-semibold); color: var(--hr-text-3); }
+.recentTitle svg { width: 13px; height: 13px; }
+
+/* Groups: a clear heading row (chevron, name, count); only one is open by default. */
+.group { border-radius: var(--hr-radius-lg); }
+.group + .group { margin-top: 2px; }
+.groupOpen { background: var(--hr-surface-2); padding-bottom: var(--hr-space-1); }
+.groupHead {
+  width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: var(--hr-space-2); min-height: 38px; padding: 0 var(--hr-space-2);
+  border: 0; border-radius: var(--hr-radius-lg); background: none; color: var(--hr-text); font: inherit;
+  font-size: var(--hr-text-sm); font-weight: var(--hr-weight-semibold); cursor: pointer; text-align: left;
+}
+.groupHead:hover { background: var(--hr-surface-hover); }
+.groupName { flex: 1; min-width: 0; }
+.groupHeadActive .groupName { color: var(--hr-accent-text); }
+.groupCount {
+  flex-shrink: 0; min-width: 22px; height: 20px; padding: 0 6px; border-radius: 999px; background: var(--hr-neutral-soft);
+  color: var(--hr-text-3); font-size: 11px; font-weight: var(--hr-weight-semibold); display: inline-flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums;
+}
+.groupOpen .groupCount { background: var(--hr-surface); }
+.chevron { width: 14px; height: 14px; color: var(--hr-text-3); transition: transform 120ms ease; flex-shrink: 0; }
+.chevronOpen { transform: rotate(90deg); }
+.items { list-style: none; margin: 0; padding: 0; }
+/* Screens of an open group hang from a guide line under the chevron. */
+.groupItems { margin: 0 var(--hr-space-1) 0 15px; padding-left: var(--hr-space-2); border-left: 1px solid var(--hr-border-strong); }
+.item {
+  position: relative; width: 100%; display: flex; align-items: center; justify-content: flex-start; min-height: 32px; padding: 6px 10px;
+  border: 0; border-radius: var(--hr-radius-md); background: none; color: var(--hr-text-2); font: inherit; font-size: var(--hr-text-sm); text-align: left; cursor: pointer;
+}
+.item:hover { background: var(--hr-surface-hover); color: var(--hr-text); }
+.item[aria-current="page"] { background: var(--hr-accent-soft); color: var(--hr-accent-text); font-weight: var(--hr-weight-medium); }
+.groupItems .item[aria-current="page"]::before { content: ""; position: absolute; left: -9px; top: 4px; bottom: 4px; width: 2px; border-radius: 2px; background: var(--hr-accent-strong); }
+.item:focus-visible, .groupHead:focus-visible, .headButton:focus-visible, .logo:focus-visible { outline: 2px solid var(--hr-focus); outline-offset: -2px; }
+
+.customise { padding: var(--hr-space-4) var(--hr-space-5); display: flex; flex-direction: column; gap: var(--hr-space-3); }
+.customiseList { list-style: none; margin: 0; padding: 0; border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); }
+.customiseList li + li { border-top: 1px solid var(--hr-border); }
+.customiseRow { display: flex; align-items: center; gap: var(--hr-space-3); min-height: 48px; padding: 0 var(--hr-space-4); cursor: pointer; font-size: var(--hr-text-md); }
+.customiseRow input { width: 16px; height: 16px; accent-color: var(--hr-accent-strong); }
+.customiseRow svg { color: var(--hr-text-3); }
+.disabled { opacity: 0.5; cursor: not-allowed; }
+.order { margin-left: auto; min-width: 22px; height: 22px; border-radius: 11px; background: var(--hr-accent-soft); color: var(--hr-accent-text); font-size: var(--hr-text-xs); font-weight: var(--hr-weight-semibold); display: inline-flex; align-items: center; justify-content: center; }
+
+/* Tablets: the panel floats over the content instead of taking width. */
+@media (max-width: 1023px) {
+  .panel { position: absolute; left: 0; top: 0; bottom: 0; z-index: 95; box-shadow: var(--hr-shadow-pop); height: auto; }
+}
+/* Phones: the rail and panel give way to the All modules button in the top bar. */
+@media (max-width: 640px) {
+  .rail, .panel { display: none; }
+}

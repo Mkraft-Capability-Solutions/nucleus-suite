@@ -60,20 +60,20 @@
     margin: 0;
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 .header p {
     margin: 0.15rem 0 0 0;
     font-size: 0.8rem;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
 }
 
 .closeBtn {
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     padding: 0.35rem;
     border-radius: var(--r-control, 5px);
     transition: all 0.15s;
@@ -81,7 +81,7 @@
 
 .closeBtn:hover {
     background: var(--line-2, #E8EBE8);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 /* Stepper progress */
@@ -100,7 +100,7 @@
     gap: 0.45rem;
     font-size: 0.8rem;
     font-weight: 600;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
 }
 
 .stepItem.active {
@@ -117,11 +117,11 @@
     height: 22px;
     border-radius: var(--r-pill, 100px);
     background: var(--line, #D8DEDA);
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.72rem;
+    font-size: 12.5px;
     font-weight: 700;
     font-family: var(--f-num, monospace);
 }
@@ -176,13 +176,13 @@
     margin: 0;
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 .uploadArea p {
     margin: 0;
     font-size: 0.8rem;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
 }
 
 .presetSection {
@@ -192,7 +192,7 @@
 .presetTitle {
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     margin-bottom: 0.6rem;
 }
 
@@ -227,13 +227,13 @@
     margin: 0 0 0.25rem 0;
     font-size: 0.82rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 .presetCard p {
     margin: 0;
-    font-size: 0.72rem;
-    color: var(--text-2, #5A6B78);
+    font-size: 12.5px;
+    color: var(--text-2, var(--slate));
 }
 
 /* Step 2: Mapping */
@@ -250,7 +250,7 @@
     border-bottom: 1px solid var(--line, #D8DEDA);
     font-size: 0.76rem;
     font-weight: 700;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     text-transform: uppercase;
 }
 
@@ -262,14 +262,14 @@
 
 .sourceColName {
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     font-family: var(--f-num, monospace);
     font-size: 0.82rem;
 }
 
 .sourcePreview {
-    font-size: 0.72rem;
-    color: var(--text-2, #5A6B78);
+    font-size: 12.5px;
+    color: var(--text-2, var(--slate));
     margin-top: 0.15rem;
 }
 
@@ -280,7 +280,7 @@
     border-radius: var(--r-control, 5px);
     font-size: 0.82rem;
     background: var(--card, #ffffff);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 .targetSelect:focus {
@@ -292,7 +292,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 12.5px;
     font-weight: 700;
     padding: 0.15rem 0.45rem;
     border-radius: var(--r-data, 3px);
@@ -301,13 +301,13 @@
 }
 
 .matchBadge.manual {
-    background: var(--info-wash, #E7F0F7);
-    color: var(--info, #1B6CA8);
+    background: var(--info-wash, var(--info-wash));
+    color: var(--info, var(--info));
 }
 
 .matchBadge.ignored {
     background: var(--card-2, #F6F8F6);
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
 }
 
 /* Step 3: Validation Preview */
@@ -332,12 +332,12 @@
     display: block;
     font-size: 1.05rem;
     font-family: var(--f-num, monospace);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
 
 .valCard span {
-    font-size: 0.74rem;
-    color: var(--text-2, #5A6B78);
+    font-size: 12.5px;
+    color: var(--text-2, var(--slate));
 }
 
 .previewTableWrap {
@@ -358,14 +358,14 @@
     background: var(--card-2, #F6F8F6);
     border-bottom: 1px solid var(--line, #D8DEDA);
     font-weight: 700;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     white-space: nowrap;
 }
 
 .previewTable td {
     padding: 0.5rem 0.75rem;
     border-bottom: 1px solid var(--line-2, #E8EBE8);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     white-space: nowrap;
 }
 
@@ -386,7 +386,7 @@
     background: var(--card, #ffffff);
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     cursor: pointer;
     transition: all 0.15s;
 }
@@ -420,3 +420,6 @@
     cursor: not-allowed;
 }
 
+.importReport { margin-top: 12px; padding: 12px; border-radius: var(--r-card); border: 1px solid var(--line); background: var(--card-2); font-size: 14px; color: var(--text-2); }
+.importReport ul { margin: 8px 0 0; padding-inline-start: 18px; max-height: 180px; overflow-y: auto; }
+.importReport li { margin: 2px 0; }

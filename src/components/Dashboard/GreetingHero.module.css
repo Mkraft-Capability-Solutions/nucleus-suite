@@ -1,0 +1,27 @@
+/* Mockup .hero */
+.hero {
+  position: relative; display: flex; align-items: center; gap: 28px; padding: 28px; min-width: 0; border-radius: 20px;
+  border: 1px solid var(--p-edge, var(--line)); background: var(--hero-bg, var(--card)); box-shadow: var(--p-card-shadow, none);
+  backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2);
+}
+.copy { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--p-cyan, var(--signal)); font-weight: 700; }
+.kicker i { width: 7px; height: 7px; border-radius: 50%; background: var(--p-mint, var(--status-ok)); box-shadow: 0 0 10px var(--p-mint, var(--status-ok)); }
+.title { margin: 0; font: 600 clamp(26px, 2.4vw, 40px)/1.08 var(--f-ui); letter-spacing: -.02em; color: var(--text); text-wrap: balance; }
+.role { align-self: flex-start; font-size: 12.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--p-cyan, var(--signal)); border: 1px solid var(--p-nav-on-ring, var(--line)); background: var(--signal-wash); border-radius: 999px; padding: 3px 10px; }
+.purpose { margin: 0; font-size: 15px; color: var(--text-2); max-width: 520px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.action { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--p-edge, var(--line)); background: var(--p-hover, var(--card-2)); color: var(--text); font: 600 14px var(--f-ui); cursor: pointer; }
+.action:hover { border-color: var(--p-edge-2, var(--line)); }
+.action:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.emphasis { color: var(--p-cyan, var(--signal)); border-color: var(--p-nav-on-ring, var(--signal)); background: var(--signal-wash); }
+.clock { flex-shrink: 0; padding-inline-start: 28px; border-inline-start: 1px solid var(--p-edge, var(--line)); }
+@media (max-width: 1280px) { .hero { flex-direction: column; align-items: stretch; } .clock { padding-inline-start: 0; border-inline-start: 0; } }
+@media (max-width: 640px) { .hero { padding: 20px; } }
+/* Stack the clock under the greeting when the row itself is narrow (e.g. both side panels open). */
+@container (max-width: 960px) {
+  .hero { flex-direction: column; align-items: stretch; gap: 16px; }
+  .clock { padding-inline-start: 0; border-inline-start: 0; }
+  .title { font-size: 28px; }
+}
+@container (max-width: 960px) { .clock > div { min-height: 0; min-width: 0; align-items: flex-start; text-align: start; } }

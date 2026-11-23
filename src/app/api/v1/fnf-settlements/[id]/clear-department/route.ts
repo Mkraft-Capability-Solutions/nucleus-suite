@@ -19,3 +19,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return fail(error, requestId);
   }
 }
+
+/**
+ * POST is accepted as an alias of PATCH: existing callers (the workspace context) send POST, and a
+ * department clearance is idempotent by nature (re-clearing a cleared department changes nothing
+ * but the remarks and the verification stamp).
+ */
+export const POST = PATCH;

@@ -5,7 +5,7 @@
   flex-direction: column;
   gap: 1.15rem;
   width: 100%;
-  max-width: 1600px;
+  max-width: none;
   margin: 0 auto;
   font-family: var(--f-ui, 'Plex Sans', -apple-system, sans-serif);
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -46,14 +46,14 @@
 
 .screenTitle {
   font-family: var(--f-heading, 'Montserrat', sans-serif);
-  font-size: 1.15rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   color: var(--text, #F1F5F9);
   letter-spacing: -0.015em;
 }
 
 .scopeMetadata {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-2, #94A3B8);
   display: flex;
   align-items: center;
@@ -70,7 +70,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 9999px;
-  font-size: 0.74rem;
+  font-size: var(--fs-2xs);
   color: var(--text-2, #94A3B8);
   transition: all 0.2s ease;
 }
@@ -95,7 +95,7 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: var(--text, #F1F5F9);
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
@@ -147,7 +147,7 @@
 
 .anomalyBadge {
   font-family: var(--f-display, 'Sora', sans-serif);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -158,7 +158,7 @@
 }
 
 .anomalyText {
-  font-size: 0.84rem;
+  font-size: var(--fs-xs);
   color: var(--text, #E6EDF6);
   line-height: 1.4;
 }
@@ -175,7 +175,7 @@
   color: #060D18;
   border: none;
   border-radius: 4px;
-  font-size: 0.76rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   cursor: pointer;
   transition: opacity 0.15s ease;
@@ -191,7 +191,7 @@
   color: #F2A93B;
   border: 1px solid rgba(242, 169, 59, 0.4);
   border-radius: 4px;
-  font-size: 0.76rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   cursor: pointer;
 }
@@ -228,7 +228,7 @@
   align-items: center;
   gap: 0.45rem;
   font-family: var(--f-heading, 'Montserrat', sans-serif);
-  font-size: 0.76rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -236,12 +236,12 @@
 }
 
 .narrativeTime {
-  font-size: 0.74rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3, #64748B);
 }
 
 .narrativeBody {
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   color: var(--text, #F1F5F9);
   line-height: 1.55;
   max-width: 1200px;
@@ -256,7 +256,7 @@
 }
 
 .narrativeBtn {
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   color: #C4B5FD;
   background: rgba(155, 140, 255, 0.1);
@@ -375,14 +375,14 @@
 
 .cardTitle {
   font-family: var(--f-heading, 'Montserrat', sans-serif);
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--text, #F1F5F9);
   letter-spacing: -0.01em;
 }
 
 .cardSublabel {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-2, #94A3B8);
 }
 
@@ -393,7 +393,7 @@
 }
 
 .periodPill {
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   padding: 0.2rem 0.55rem;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -506,7 +506,7 @@
 }
 
 .kpiLabel {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   color: var(--text-2, #94A3B8);
   font-weight: 500;
 }
@@ -520,7 +520,7 @@
 
 .kpiValue {
   font-family: var(--f-heading, 'Montserrat', 'Sora', sans-serif);
-  font-size: 1.9rem;
+  font-size: var(--fs-3xl);
   font-weight: 800;
   color: #FFFFFF;
   background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
@@ -532,7 +532,7 @@
 }
 
 .kpiDelta {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -568,7 +568,7 @@
 }
 
 .kpiSub {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3, #64748B);
 }
 
@@ -576,7 +576,7 @@
 .dataTable {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
 }
 
 .dataTable th {
@@ -585,7 +585,7 @@
   color: var(--text-3, #5F7691);
   font-weight: 600;
   border-bottom: 1px solid var(--line, #1C3450);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   text-transform: capitalize;
 }
 
@@ -605,7 +605,7 @@
   align-items: center;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
 }
 
@@ -614,7 +614,7 @@
   align-items: center;
   padding: 0.15rem 0.5rem;
   border-radius: 4px;
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
 }
 
@@ -632,7 +632,7 @@
   border: 1px solid var(--line, #1C3450);
   background: var(--card-raised, #14263D);
   color: var(--text, #E6EDF6);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -651,7 +651,7 @@
   flex-direction: column;
   gap: 1.15rem;
   width: 100%;
-  max-width: 1600px;
+  max-width: none;
   margin: 0 auto;
   font-family: var(--f-ui, 'Plex Sans', -apple-system, sans-serif);
   animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -693,7 +693,7 @@
   gap: 0.35rem;
   padding: 0.22rem 0.6rem;
   border-radius: 9999px;
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   letter-spacing: 0.02em;
   backdrop-filter: blur(6px);
@@ -735,7 +735,7 @@
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: var(--text, #F1F5F9);
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 500;
   padding: 0.42rem 0.88rem;
   border-radius: 10px;
@@ -756,7 +756,7 @@
   background: var(--signal);
   color: var(--on-signal);
   border: 1px solid var(--signal);
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   padding: 0.45rem 0.95rem;
   border-radius: 10px;
@@ -780,7 +780,7 @@
   color: var(--text, #F1F5F9);
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   padding: 0.45rem 0.95rem;
   border-radius: 10px;
@@ -802,7 +802,7 @@
   background: transparent;
   color: #05CD99;
   border: none;
-  font-size: 0.76rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   cursor: pointer;
@@ -870,7 +870,7 @@
 }
 
 .cardSubtitle {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-2, #93A6BF);
   margin-top: 0.15rem;
 }
@@ -884,7 +884,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
 }
 
 .table th {
@@ -893,7 +893,7 @@
   color: var(--text-3, #5F7691);
   font-weight: 600;
   border-bottom: 1px solid var(--line, #1C3450);
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   text-transform: capitalize;
 }
 
@@ -940,3 +940,42 @@
 .narrativeBtnPrimary:hover:not(:disabled) { background: var(--signal-ink); border-color: var(--signal-ink); color: var(--on-signal); }
 .narrativeBtn:disabled { opacity: 1; color: var(--text-2); background: var(--card-2); border-color: var(--line); box-shadow: none; transform: none; cursor: not-allowed; }
 .narrativeBtn:not(.narrativeBtnPrimary):not(:disabled):hover { color: var(--signal-ink); background: var(--signal-wash); border-color: var(--signal); }
+
+/* ── Pulse: cards (glass, 20px radius, 20px padding). Chart styles are untouched. ─────────────────────────── */
+.widgetCard, .kpiTile, .aiNarrativeCard, .scopeBar, .pageHeader { border-radius: 20px; border: 1px solid var(--line); background: color-mix(in srgb, var(--card) 88%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2); box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.04); }
+.widgetCard, .kpiTile { padding: 20px; }
+.aiNarrativeCard { background: radial-gradient(100% 120% at 100% 0%, var(--agent-wash), transparent 60%), color-mix(in srgb, var(--card) 88%, transparent); }
+.grid12 { gap: 16px; }
+.dashboardCanvas { gap: 16px; }
+.cardTitle { font-size: var(--fs-md); font-weight: 600; letter-spacing: -0.005em; }
+.cardSublabel { font-size: var(--fs-2xs); color: var(--text-3); }
+.kpiValue { font-size: 2.375rem; font-weight: 600; letter-spacing: -0.03em; }
+.kpiLabel { font-size: var(--fs-xs); color: var(--text-2); }
+
+/* ===== Pulse cards (mockup .card / .c-head / .kpi) ===== */
+.widgetCard, .kpiTile, .kpiCard, .aiNarrativeCard {
+  position: relative; border-radius: 20px; padding: 20px; gap: 14px; min-width: 0; overflow: visible;
+  background: var(--p-glass, var(--card)); border: 1px solid var(--p-edge, var(--line));
+  backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: var(--p-card-shadow, none);
+}
+.cardHeader { min-height: 36px; gap: 12px; align-items: center; }
+.cardTitle { font: 600 18px/1.3 var(--f-ui) !important; letter-spacing: -.005em; color: var(--text); margin: 0; }
+.cardTitle + p, .cardHeader p { font-size: 14px; color: var(--text-3); margin: 2px 0 0; text-transform: none; letter-spacing: 0; }
+.kpiValue { font: 600 37px/1 var(--f-ui) !important; letter-spacing: -.03em; font-variant-numeric: tabular-nums; color: var(--text); }
+.kpiValue small { font-size: 18px; color: var(--text-2); font-weight: 500; margin-inline-start: 3px; }
+.kpiLabel { font-size: 14px !important; color: var(--text-2) !important; text-transform: none; letter-spacing: 0; font-weight: 400; }
+.kpiSub { font-size: 12.5px; color: var(--text-3); }
+.grid12 { gap: 16px !important; }
+.dashboard, .screen { gap: 16px !important; }
+.cardSubtitle, .cardSublabel { font-size: 14px !important; color: var(--text-3) !important; text-transform: none !important; letter-spacing: 0 !important; font-weight: 400 !important; margin-top: 2px; }
+.kpiTopRow { display: flex; align-items: center; justify-content: space-between; }
+.kpiIconSquircle, .kpiIconAmber, .kpiIconCoral, .kpiIconSky, .kpiIconViolet { width: 40px; height: 40px; border-radius: 13px; }
+.kpiDelta { font-size: 12.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+/* Four KPI tiles per row (mockup .kpi span 3), two per row on narrow content. */
+.grid12 { container-type: inline-size; }
+.grid12 > .kpiTile, .grid12 > .kpiCard { grid-column: span 3 !important; }
+@container (max-width: 700px) { .grid12 > .kpiTile, .grid12 > .kpiCard { grid-column: span 6 !important; } }
+.kpiRow { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; width: 100%; container-type: inline-size; }
+@media (max-width: 900px) { .kpiRow { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .kpiRow { grid-template-columns: 1fr; } }

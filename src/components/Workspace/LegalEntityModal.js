@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslation } from '@/context/I18nContext';
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, Building2, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
 import styles from './LegalEntityModal.module.css';
 import { useHRMS } from '@/context/HRMSContext';
@@ -27,11 +27,12 @@ const ENTITY_RULES = [
 
 export default function LegalEntityModal({ isOpen, onClose, onSave, existingEntities = [] }) {
     const { t } = useTranslation();
+    const idempotencyKey = useRef(crypto.randomUUID());
     const { showToast } = useHRMS();
     const { isDuplicate } = useDuplicateCheck(existingEntities);
     const { getFieldError, setFieldTouched, handleSubmitGuard, resetValidation, getTabErrorCount } = useFormValidation(ENTITY_RULES);
 
-    const [formData, setFormData] = useState({
+    const [rawForm, setFormData] = useState({
         entityCode: '',
         registeredName: '',
         tradeName: '',
@@ -55,15 +56,8 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
         status: 'Active',
         effectiveFrom: new Date().toISOString().split('T')[0]
     });
-
-    // Auto-generate entity code from name
-    useEffect(() => {
-        if (formData.registeredName.trim().length >= 3) {
-            const existingCodes = existingEntities.map(e => e.entityCode);
-            const code = generateEntityCode(formData.registeredName, existingCodes);
-            setFormData(prev => ({ ...prev, entityCode: code }));
-        }
-    }, [formData.registeredName, existingEntities]);
+    // Code is derived from the form values (no state sync effect).
+    const formData = { ...rawForm, entityCode: rawForm.registeredName.trim().length >= 3 ? generateEntityCode(rawForm.registeredName, existingEntities.map(e => e.entityCode)) : '' };
 
     if (!isOpen) return null;
 
@@ -73,7 +67,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleSubmitGuard(formData, (values) => {
+        handleSubmitGuard(formData, async () => {
             // Duplicate checks
             if (isDuplicate('cinLlpin', formData.cinLlpin)) {
                 showToast('Duplicate Entry', `A legal entity with CIN/LLPIN "${formData.cinLlpin}" already exists.`, 'error');
@@ -87,26 +81,25 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                 showToast('Duplicate Entry', `Entity code "${formData.entityCode}" already exists.`, 'error');
                 return;
             }
-            // Live persistence to Neon DB via Next.js API
-            try {
-                fetch('/api/v1/operations/legal-entities', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Idempotency-Key': crypto.randomUUID()
-                    },
-                    body: JSON.stringify(formData)
-                }).catch(() => null);
-            } catch {}
-
-            if (onSave) onSave(formData);
-            showToast('Legal Entity Saved', `Legal entity ${formData.registeredName} (${formData.entityCode}) saved.`, 'success');
+            const response = await fetch('/api/v1/organization/legal-entities', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey.current },
+                body: JSON.stringify(formData)
+            }).catch(() => null);
+            const payload = response ? await response.json().catch(() => null) : null;
+            if (!response || !response.ok) {
+                showToast(t("components.Workspace.LegalEntityModal.text_save_failed_title", "Not saved"), payload?.error?.message || t("components.Workspace.LegalEntityModal.text_save_failed", "The record could not be saved. Try again."), 'error');
+                return;
+            }
+            idempotencyKey.current = crypto.randomUUID();
+            if (onSave) onSave({ ...formData, id: payload?.data?.id });
+            showToast(t("components.Workspace.LegalEntityModal.text_saved_title", "Saved"), t("components.Workspace.LegalEntityModal.text_saved", "The record was saved."), 'success');
             resetValidation();
             onClose();
         });
     };
 
-    const FieldError = ({ fieldKey }) => {
+    const renderFieldError = (fieldKey) => {
         const err = getFieldError(fieldKey);
         if (!err) return null;
         return (
@@ -123,7 +116,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
 
     return (
         <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modal} role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -161,7 +154,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 placeholder={t("components.Workspace.LegalEntityModal.placeholder_eg_nucleus_hr_solutions_india_pvt_ltd", "e.g. Nucleus HR Solutions India Pvt Ltd")}
                                 required
                             />
-                            <FieldError fieldKey="registeredName" />
+                            {renderFieldError("registeredName")}
                         </label>
 
                         <label className={styles.field}>
@@ -181,7 +174,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 <option>{t("components.Workspace.LegalEntityModal.text_private_limited", "Private Limited")}</option><option>{t("components.Workspace.LegalEntityModal.text_public_limited", "Public Limited")}</option>
                                 <option>{t("components.Workspace.LegalEntityModal.text_llp", "LLP")}</option><option>{t("components.Workspace.LegalEntityModal.text_partnership", "Partnership")}</option><option>{t("components.Workspace.LegalEntityModal.text_proprietorship", "Proprietorship")}</option>
                             </select>
-                            <FieldError fieldKey="entityType" />
+                            {renderFieldError("entityType")}
                         </label>
 
                         <label className={styles.field}>
@@ -195,7 +188,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 maxLength={21}
                                 required
                             />
-                            <FieldError fieldKey="cinLlpin" />
+                            {renderFieldError("cinLlpin")}
                         </label>
 
                         <label className={styles.field}>
@@ -209,7 +202,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 maxLength={10}
                                 required
                             />
-                            <FieldError fieldKey="entityPan" />
+                            {renderFieldError("entityPan")}
                         </label>
 
                         <label className={styles.field}>
@@ -223,7 +216,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 maxLength={10}
                                 required
                             />
-                            <FieldError fieldKey="tan" />
+                            {renderFieldError("tan")}
                         </label>
 
                         <label className={styles.field}>
@@ -236,7 +229,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 placeholder={t("components.Workspace.LegalEntityModal.placeholder_29aaacn1234f1z5", "29AAACN1234F1Z5")}
                                 maxLength={15}
                             />
-                            <FieldError fieldKey="gstin" />
+                            {renderFieldError("gstin")}
                         </label>
 
                         <label className={styles.field}>
@@ -265,7 +258,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 <option value="">{t("components.Workspace.LegalEntityModal.text_select", "— Select —")}</option>
                                 <option>{t("components.Workspace.LegalEntityModal.text_factory", "Factory")}</option><option>{t("components.Workspace.LegalEntityModal.text_shop_amp_establishment", "Shop &amp; Establishment")}</option><option>{t("components.Workspace.LegalEntityModal.text_it_park", "IT Park")}</option>
                             </select>
-                            <FieldError fieldKey="establishmentType" />
+                            {renderFieldError("establishmentType")}
                         </label>
                     </div>
 
@@ -281,7 +274,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 placeholder={t("components.Workspace.LegalEntityModal.placeholder_full_registered_office_address", "Full registered office address")}
                                 required
                             />
-                            <FieldError fieldKey="registeredAddress" />
+                            {renderFieldError("registeredAddress")}
                         </label>
 
                         <label className={styles.field}>
@@ -308,7 +301,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 placeholder={t("components.Workspace.LegalEntityModal.placeholder_authorised_signatory_full_name", "Authorised signatory full name")}
                                 required
                             />
-                            <FieldError fieldKey="signatoryName" />
+                            {renderFieldError("signatoryName")}
                         </label>
 
                         <label className={styles.field}>
@@ -321,7 +314,7 @@ export default function LegalEntityModal({ isOpen, onClose, onSave, existingEnti
                                 placeholder={t("components.Workspace.LegalEntityModal.placeholder_eg_director_chief_people_officer", "e.g. Director & Chief People Officer")}
                                 required
                             />
-                            <FieldError fieldKey="signatoryDesignation" />
+                            {renderFieldError("signatoryDesignation")}
                         </label>
                     </div>
 

@@ -4,6 +4,12 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut as betterAuthSignOut } from '@/lib/auth-client';
 import { PASSWORD_LOGIN_PATH, storeSignedInUser } from '@/lib/auth/password-login';
+import { entitlementForNavItem, entitlementForTab, snapshotAllows } from '@/lib/entitlements/routes';
+
+const TENANT_ACCESS_PATH = '/api/v1/tenant/entitlements';
+/** localStorage keys that hold organisation records; cleared when the user or organisation changes. */
+const TENANT_CACHE_KEYS = ['nucleus_custom_employees'];
+const DATA_SCOPE_KEY = 'nucleus_data_scope';
 
 const AuthContext = createContext({
     user: null,
@@ -14,6 +20,13 @@ const AuthContext = createContext({
     hasPermission: (permission) => false,
     isModuleAllowed: (...args) => true,
     isConsoleAllowed: (...args) => true,
+    tenantAccess: null,
+    isEntitled: () => true,
+    isNavItemEnabled: () => true,
+    isTabEnabled: () => true,
+    entitlementConfig: () => ({}),
+    refreshTenantAccess: async () => {},
+    switchTenant: async () => false,
 });
 
 export const DEFAULT_MODULE_PERMISSIONS = {
@@ -58,6 +71,8 @@ export const AuthProvider = ({ children }) => {
     const [consolePermissions, setConsolePermissions] = useState(DEFAULT_CONSOLE_PERMISSIONS);
     const { data: session, isPending: isLoading } = useSession();
     const [liveProfile, setLiveProfile] = useState(null);
+    // The active organisation's plan and the member's persona, from the server (never from client state).
+    const [tenantAccess, setTenantAccess] = useState(null);
     
     const [savedUser, setSavedUser] = useState(() => {
         if (typeof window === 'undefined') return null;
@@ -76,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         if (!activeIdentity?.email) return;
         let active = true;
-        fetch(`/api/v1/operations/profile?email=${encodeURIComponent(activeIdentity.email)}`)
+        fetch('/api/v1/operations/profile', { cache: 'no-store' })
             .then(res => res.ok ? res.json() : null)
             .then(json => {
                 if (active && json?.data?.name) {
@@ -123,6 +138,82 @@ export const AuthProvider = ({ children }) => {
         } : {})
     } : null;
 
+    const userWithTenant = user && tenantAccess && activeIdentity ? {
+        ...user,
+        role: tenantAccess.persona,
+        defaultConsole: tenantAccess.defaultConsole,
+        tenantId: tenantAccess.tenant?.id ?? user.tenantId,
+        tenantName: tenantAccess.tenant?.name ?? user.tenantName,
+        tenantSlug: tenantAccess.tenant?.slug ?? user.tenantSlug,
+        platformAdmin: tenantAccess.platformAdmin,
+    } : user;
+
+    const loadTenantAccess = async () => {
+        try {
+            const res = await fetch(TENANT_ACCESS_PATH, { cache: 'no-store', credentials: 'same-origin' });
+            if (!res.ok) {
+                setTenantAccess(null);
+                return null;
+            }
+            const json = await res.json();
+            setTenantAccess(json?.data ?? null);
+            return json?.data ?? null;
+        } catch {
+            return null;
+        }
+    };
+
+    useEffect(() => {
+        if (!activeIdentity?.id) return;
+        let active = true;
+        const refresh = () => fetch(TENANT_ACCESS_PATH, { cache: 'no-store', credentials: 'same-origin' })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((json) => { if (active) setTenantAccess(json?.data ?? null); })
+            .catch(() => {});
+        refresh();
+        window.addEventListener('nucleus:entitlements-changed', refresh);
+        return () => {
+            active = false;
+            window.removeEventListener('nucleus:entitlements-changed', refresh);
+        };
+    }, [activeIdentity?.id]);
+
+    // Browser-cached organisation data (employees created in the workspace) belongs to one user in one
+    // organisation. When a different user or organisation becomes active in this browser, drop it and
+    // reload so no screen starts from another organisation's records.
+    const dataScope = activeIdentity?.id && tenantAccess?.tenant?.id ? `${activeIdentity.id}:${tenantAccess.tenant.id}` : null;
+    useEffect(() => {
+        if (!dataScope || typeof window === 'undefined') return;
+        try {
+            const previous = localStorage.getItem(DATA_SCOPE_KEY);
+            if (previous === dataScope) return;
+            localStorage.setItem(DATA_SCOPE_KEY, dataScope);
+            const hadCachedRecords = TENANT_CACHE_KEYS.some((key) => localStorage.getItem(key) !== null);
+            TENANT_CACHE_KEYS.forEach((key) => localStorage.removeItem(key));
+            if (hadCachedRecords) window.location.reload();
+        } catch { /* storage unavailable: nothing cached */ }
+    }, [dataScope]);
+
+    const snapshot = activeIdentity ? (tenantAccess?.snapshot ?? null) : null;
+    /** True when the module / sub-module / feature key is active for the organisation (unknown until loaded: true). */
+    const isEntitled = (key) => snapshotAllows(snapshot, key);
+    const isNavItemEnabled = (navId) => snapshotAllows(snapshot, entitlementForNavItem(navId));
+    const isTabEnabled = (tab) => snapshotAllows(snapshot, entitlementForTab(tab));
+    const entitlementConfig = (key) => snapshot?.config?.[key] ?? {};
+
+    /** Make another organisation the active one (server checks membership), then reload the workspace. */
+    const switchTenant = async (tenantId) => {
+        const res = await fetch('/api/v1/identity/context', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tenantId }),
+        }).catch(() => null);
+        if (!res?.ok) return false;
+        try { sessionStorage.clear(); } catch {}
+        window.location.href = '/workspace';
+        return true;
+    };
+
     const login = async (email, password) => {
         try {
             const res = await fetch(PASSWORD_LOGIN_PATH, {
@@ -136,7 +227,7 @@ export const AuthProvider = ({ children }) => {
                 setLiveProfile(null);
                 setSavedUser(json.user);
                 if (typeof window !== 'undefined') {
-                    storeSignedInUser(json.user, email, password);
+                    storeSignedInUser(json.user);
                 }
                 return true;
             }
@@ -153,6 +244,8 @@ export const AuthProvider = ({ children }) => {
         if (typeof window !== 'undefined') {
             try {
                 localStorage.removeItem('nucleus_user');
+                TENANT_CACHE_KEYS.forEach((key) => localStorage.removeItem(key));
+                localStorage.removeItem(DATA_SCOPE_KEY);
                 sessionStorage.clear();
                 document.cookie = 'nucleus_session=; path=/; max-age=0';
                 document.cookie = 'better-auth.session_token=; path=/; max-age=0';
@@ -175,7 +268,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     const isModuleAllowed = (moduleKey, roleKey) => {
-        const role = roleKey || user?.role || 'EMPLOYEE';
+        if (!isTabEnabled(moduleKey)) return false;
+        const role = roleKey || userWithTenant?.role || 'EMPLOYEE';
         if (role === 'SUPER_ADMIN' || role === 'ADMIN') return true;
         const allowedRoles = modulePermissions[moduleKey];
         if (!allowedRoles) return true;
@@ -183,7 +277,8 @@ export const AuthProvider = ({ children }) => {
     };
 
     const isConsoleAllowed = (consoleId, roleKey) => {
-        const role = roleKey || user?.role || 'EMPLOYEE';
+        if (consoleId && !isEntitled(`dashboards.${String(consoleId).toLowerCase()}`)) return false;
+        const role = roleKey || userWithTenant?.role || 'EMPLOYEE';
         if (role === 'SUPER_ADMIN' || role === 'ADMIN') return true;
         const allowedRoles = consolePermissions[consoleId];
         if (!allowedRoles) return true;
@@ -226,7 +321,14 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{
-            user,
+            user: userWithTenant,
+            tenantAccess: activeIdentity ? tenantAccess : null,
+            isEntitled,
+            isNavItemEnabled,
+            isTabEnabled,
+            entitlementConfig,
+            refreshTenantAccess: loadTenantAccess,
+            switchTenant,
             login,
             logout,
             hasPermission,

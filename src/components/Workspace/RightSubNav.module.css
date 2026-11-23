@@ -192,7 +192,7 @@
 }
 
 .groupCountBadge {
-    font-size: 0.62rem;
+    font-size: var(--fs-2xs);
     padding: 0.05rem 0.35rem;
     border-radius: var(--r-pill, 4px);
     background: var(--card-2);
@@ -284,3 +284,56 @@
         padding: 0.75rem 0.85rem 1.25rem;
     }
 }
+
+/* ── Pulse: right panel (matches docs/plans/V1.0/DASHBOARD-PULSE-MOCKUP.html) ───────────────────────────── */
+.rightNavContainer { width: 300px; background: var(--rail); border-left: 1px solid var(--line); box-shadow: none; }
+.rightNavCollapsed { width: 76px; background: var(--rail); padding: 16px 12px; justify-content: space-between; }
+.header { padding: 18px 16px 12px; }
+.header h3 { font-size: var(--fs-md); font-weight: 600; letter-spacing: -0.005em; }
+.subTitle { font-size: var(--fs-xs); color: var(--text-3); }
+.scrollArea { padding: 12px 14px 16px; }
+.navItem { min-height: 44px; gap: 12px; padding: 8px 10px; border-radius: 14px; font-size: var(--fs-sm); color: var(--rail-text); }
+.navItem:hover { background: var(--rail-hover); color: var(--rail-active); }
+.navItemActive { background: linear-gradient(90deg, var(--rail-selected), transparent); color: var(--rail-active); box-shadow: inset 0 0 0 1px var(--signal-wash); }
+.itemIcon { width: 36px; height: 36px; border-radius: 12px; background: var(--card-2); border: 1px solid var(--line); color: var(--text-2); }
+.navItemActive .itemIcon { color: var(--signal); border-color: var(--signal-wash); }
+.itemIcon svg { font-size: 20px !important; }
+.railFooter { margin-top: auto; padding: 12px 14px; border-top: 1px solid var(--line); display: flex; justify-content: center; }
+.rightNavCollapsed .railFooter { width: 100%; padding: 12px 0 0; }
+.footerToggle { width: 100%; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--card-2); color: var(--text-2); font-size: var(--fs-sm); font-weight: 600; cursor: pointer; }
+.footerToggle:hover, .expandRailBtn:hover { color: var(--rail-active); background: var(--rail-hover); }
+.footerToggle:focus-visible, .expandRailBtn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--signal-wash); }
+.expandRailBtn { width: 40px; height: 40px; border-radius: 12px; }
+
+/* ===== Pulse right rail: values from the mockup (.right, .con) ===== */
+.rightNavContainer { width: 320px; padding: 18px 14px; gap: 12px; background: var(--p-rail, var(--rail)); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-inline-start: 1px solid var(--p-edge, var(--line)); box-shadow: none; font-family: var(--f-ui); }
+.rightNavCollapsed { width: 80px; padding: 18px 12px; background: var(--p-rail, var(--rail)); border-inline-start: 1px solid var(--p-edge, var(--line)); }
+.header { padding: 0; border: 0; background: none; align-items: flex-start; }
+.headerTitleWrap h3 { font: 600 18px/1.3 var(--f-ui); color: var(--text); margin: 0; }
+.subTitle { font-size: 12.5px; color: var(--text-3); margin: 0; }
+.iconBtn, .closeBtn { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--p-edge, var(--line)); background: var(--p-chip, transparent); color: var(--text-2); display: grid; place-items: center; }
+.scrollArea { gap: 6px; padding: 0; }
+.groupHeadingBtn { padding: 10px 6px 4px; background: none; border: 0; }
+.groupHeadingText { font-size: 12.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--text-3); }
+.itemsList { gap: 6px; }
+.navItem { min-height: 56px; height: auto; gap: 12px; padding: 10px; border-radius: 14px; color: var(--text-2); font: 500 14px var(--f-ui); background: none; border: 0; }
+.navItem:hover { background: var(--p-hover, var(--rail-hover)); color: var(--text); }
+.navItemActive, .navItemActive:hover { color: var(--text); background: var(--p-nav-on, var(--rail-selected)); box-shadow: inset 0 0 0 1px var(--p-nav-on-ring, transparent); }
+.itemIcon { width: 36px; height: 36px; border-radius: 12px; display: grid; place-items: center; background: var(--p-hover, var(--card-2)); border: 1px solid var(--p-edge, var(--line)); color: var(--text-2); flex-shrink: 0; }
+.navItemActive .itemIcon { color: var(--p-cyan, var(--signal)); border-color: var(--p-nav-on-ring, var(--signal)); }
+.itemLabel { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; color: inherit; }
+.itemTag { margin-inline-start: auto; flex-shrink: 0; font-size: 12.5px; font-weight: 700; letter-spacing: .04em; color: var(--text-3); text-transform: uppercase; }
+.railFooter { border-top: 1px solid var(--p-edge, var(--line)); padding-top: 12px; }
+.footerToggle, .expandRailBtn { height: 40px; border-radius: 12px; border: 1px solid var(--p-edge, var(--line)); background: var(--p-chip, transparent); color: var(--text-2); font: 600 14px var(--f-ui); }
+.rightNavContainer, .rightNavCollapsed { z-index: 10; }
+/* Mockup .right-head: single-line title and subtitle, never wrapped */
+.headerTitleWrap { min-width: 0; }
+.headerTitleWrap h3, .subTitle, .groupHeadingText { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.subTitle { text-transform: none; }
+
+/* Placed on the left, after the main rail: its divider is on the inline-end side. */
+.rightNavContainer, .rightNavCollapsed { border-inline-start: 0 !important; border-inline-end: 1px solid var(--p-edge, var(--line)) !important; }
+/* Icon-only collapse control (mockup .right-toggle). */
+.railFooter { display: flex; justify-content: flex-start; border-top: 0; }
+.rightNavCollapsed .railFooter { justify-content: center; }
+.footerToggle, .expandRailBtn { width: 40px; height: 40px; padding: 0; display: grid; place-items: center; border-radius: 12px; }

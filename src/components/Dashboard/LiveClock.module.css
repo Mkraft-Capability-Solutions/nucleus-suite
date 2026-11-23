@@ -1,0 +1,3 @@
+.clock { min-width: 200px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; }
+.time { font: 700 40px/1 var(--f-ui); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--text); }
+.date { font-size: 12.5px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }

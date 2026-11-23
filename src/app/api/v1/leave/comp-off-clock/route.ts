@@ -1,6 +1,7 @@
 import { requireAccess } from "@/server/platform/access";
 import { collection, fail, requestIdFrom } from "@/server/platform/http";
 import { listCompOffClock } from "@/server/leave/engine-console";
+import { ownScope } from "@/server/leave/workspace";
 
 export const dynamic = "force-dynamic";
 
@@ -8,7 +9,7 @@ export async function GET(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
     const access = await requireAccess(request);
-    const rows = await listCompOffClock(access);
+    const rows = await listCompOffClock(access, ownScope(access));
     return collection({
       type: "comp-off-grant",
       items: rows.map((row) => ({ ...row, version: 1 })),

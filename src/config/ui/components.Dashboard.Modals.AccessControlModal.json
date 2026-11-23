@@ -199,7 +199,7 @@
   "content_text_29": "Target Role:",
   "content_text_30": "Functional Modules (",
   "content_text_31": ")",
-  "content_text_32": "Dashboard Cockpits S1\u2013S10 (",
+  "content_text_32": "Dashboard Cockpits (",
   "content_text_33": ")",
   "content_placeholder_34": "Filter permissions...",
   "content_text_35": "Reset to Defaults",
@@ -209,10 +209,10 @@
   "initialState_1": "modules",
   "display_2": "revoke",
   "display_3": "grant",
-  "display_4": "Granted \u2713",
-  "display_5": "Restricted \u2715",
+  "display_4": "Granted ✓",
+  "display_5": "Restricted ✕",
   "display_6": "hide",
   "display_7": "show",
-  "display_8": "Visible \u2713",
-  "display_9": "Hidden \u2715"
+  "display_8": "Visible ✓",
+  "display_9": "Hidden ✕"
 }

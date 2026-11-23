@@ -84,7 +84,7 @@
 }
 
 .headerTitle {
-  font-size: 0.88rem;
+  font-size: var(--fs-sm);
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.01em;
@@ -92,7 +92,7 @@
 }
 
 .headerSubtitle {
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
   margin: 0;
 }
@@ -121,7 +121,7 @@
   border-radius: 6px;
   padding: 0 2rem 0 2.25rem;
   color: var(--text);
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-family: inherit;
   transition: all 0.15s ease;
 }
@@ -201,7 +201,7 @@
 }
 
 .columnLabel {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -275,7 +275,7 @@
 }
 
 .moduleName {
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -283,7 +283,7 @@
 }
 
 .moduleMeta {
-  font-size: 0.66rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
   margin-top: 0.1rem;
 }
@@ -329,7 +329,7 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 0.74rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
 }
 
@@ -339,7 +339,7 @@
 }
 
 .paneBadge {
-  font-size: 0.68rem;
+  font-size: var(--fs-2xs);
   color: #9B8CFF;
   background: rgba(155, 140, 255, 0.12);
   border: 1px solid rgba(155, 140, 255, 0.25);
@@ -374,7 +374,7 @@
 }
 
 .groupHeading {
-  font-size: 0.66rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -488,7 +488,7 @@
 }
 
 .subCardTitle {
-  font-size: 0.78rem;
+  font-size: var(--fs-2xs);
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
@@ -502,7 +502,7 @@
 }
 
 .subCardDesc {
-  font-size: 0.69rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
   line-height: 1.35;
   transition: color 140ms ease;
@@ -518,7 +518,7 @@
 
 /* Highlights / Badges */
 .cardTag {
-  font-size: 0.62rem;
+  font-size: var(--fs-2xs);
   font-weight: 700;
   color: var(--signal);
   background: rgba(45, 212, 168, 0.1);
@@ -564,7 +564,7 @@
 }
 
 .searchCountBar {
-  font-size: 0.72rem;
+  font-size: var(--fs-2xs);
   color: var(--text-2);
   margin-bottom: 0.4rem;
 }
@@ -576,7 +576,7 @@
   justify-content: center;
   padding: 3rem 1rem;
   color: var(--text-3);
-  font-size: 0.8rem;
+  font-size: var(--fs-xs);
   gap: 0.5rem;
 }
 
@@ -588,7 +588,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.7rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
 }
 
@@ -605,7 +605,7 @@
 }
 
 .kbd {
-  font-size: 0.65rem;
+  font-size: var(--fs-2xs);
   color: var(--text-3);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -668,9 +668,9 @@
 @media(max-width:720px){
  .leftColumn{width:112px;flex-shrink:0}
  .moduleItem{flex-direction:column;gap:4px;white-space:normal}
- .moduleTextCol{display:block;font-size:11px;text-align:center}
+ .moduleTextCol{display:block;font-size: var(--fs-2xs);text-align:center}
  .moduleMeta{display:none}
- .moduleName{display:block;font-size:11px;white-space:normal;overflow-wrap:anywhere}
+ .moduleName{display:block;font-size: var(--fs-2xs);white-space:normal;overflow-wrap:anywhere}
  .rightColumn{min-width:0}
  .subCard{white-space:normal;overflow-wrap:anywhere}
  .header{flex-wrap:wrap;gap:8px}

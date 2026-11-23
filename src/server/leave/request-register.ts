@@ -104,7 +104,7 @@ const REQUEST_SELECT = `select r.id, r.employee_id,
 /** Leave request queue with the applicant resolved to a named employee. */
 export async function listLeaveRequestQueue(
   access: Access,
-  args: { search: string; status: string | null },
+  args: { search: string; status: string | null; employeeId?: string | null },
 ): Promise<LeaveRequestRow[]> {
   enforce(access.context, "leave.read", { tenantId: access.tenantId });
   const like = `%${args.search.replace(/[%_]/g, "").slice(0, 80)}%`;
@@ -114,10 +114,11 @@ export async function listLeaveRequestQueue(
       `${REQUEST_SELECT}
        where r.tenant_id = $1
          and ($3::text is null or r.status = $3)
+         and ($4::text is null or r.employee_id::text = $4)
          and ($2 = '%%' or (coalesce(emp.employee_code, '') || ' ' || coalesce(emp.first_name, '') || ' '
               || coalesce(emp.last_name, '') || ' ' || coalesce(r.leave_type, '')) ilike $2)
        order by r.created_at desc, r.id desc limit 100`,
-      [access.tenantId, like, status],
+      [access.tenantId, like, status, args.employeeId ?? null],
     ),
   ]);
   return (rows as LeaveRequestQueryRow[]).map((row) => ({

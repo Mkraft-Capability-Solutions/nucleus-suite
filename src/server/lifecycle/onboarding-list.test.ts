@@ -15,10 +15,13 @@ describe("onboarding worklist", () => {
   });
 
   it("renders the worklist instead of endpoint instructions", () => {
-    const page = readFileSync(resolve(process.cwd(), "src/components/Workspace/OnboardingView.js"), "utf8");
+    const page = readFileSync(resolve(process.cwd(), "src/components/Workspace/OnboardingView.tsx"), "utf8");
+    const tab = readFileSync(resolve(process.cwd(), "src/components/Workspace/onboarding/LifecycleTabs.tsx"), "utf8");
 
-    expect(page).toContain("useHRMS()");
-    expect(page).toContain("onboardingTasks.map");
+    expect(page).toContain('"/api/v1/onboarding/instances"');
+    expect(page).not.toContain("readData");
+    expect(tab).toContain("state.data.map((instance)");
+    expect(tab).toContain("/api/v1/onboarding/tasks/");
     expect(page).not.toContain("cases have no list endpoint");
   });
 });

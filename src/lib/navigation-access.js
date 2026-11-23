@@ -10,7 +10,12 @@ export function navigationModuleKey(itemId, targetTab) {
     return operational?.primary || getItemModuleKeys()[itemId] || getItemModuleKeys()[targetTab] || targetTab || null;
 }
 
-export function canViewNavigationItem({ id, targetTab }, isModuleAllowed, user) {
+/**
+ * `isNavItemEnabled` (from useAuth) hides items whose module, sub-module or feature is not part of
+ * the organisation's plan; the role check below then decides within what the plan allows.
+ */
+export function canViewNavigationItem({ id, targetTab }, isModuleAllowed, user, isNavItemEnabled = () => true) {
+    if (!isNavItemEnabled(id)) return false;
     if (/^s(10|[1-9])$/i.test(id || '')) return true;
     const moduleKey = navigationModuleKey(id, targetTab);
     return !moduleKey || isModuleAllowed(moduleKey, user?.role, user?.id || user?.email);

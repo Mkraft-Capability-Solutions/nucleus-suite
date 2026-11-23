@@ -1,0 +1,34 @@
+.kpiGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; width: 100%; }
+@media (max-width: 900px) { .kpiGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .kpiGrid { grid-template-columns: 1fr; } }
+
+.empty { margin: 0; padding-block: 2rem; text-align: center; color: var(--text-2); font-size: 0.85rem; }
+.muted { color: var(--text-2); font-size: 0.75rem; }
+.note { margin: 8px 0 0; font-size: 12.5px; color: var(--text-3); }
+.code { display: block; font-family: var(--f-mono, monospace); font-size: 12.5px; color: var(--text-3); }
+.tableWrap { overflow-x: auto; }
+
+.triageList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.triageRow { border-block-end: 1px solid var(--line); padding-block: 8px; }
+.triageRow:last-child { border-block-end: 0; }
+.triageHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.triageText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.triageActions { display: flex; align-items: center; justify-content: flex-end; gap: 0.35rem; flex-wrap: wrap; }
+.amount { font-weight: 600; font-size: 0.8rem; color: var(--text); }
+
+.approveBtn, .rejectBtn, .rerouteBtn { min-height: 24px; font-size: 12.5px; padding: 0.2rem 0.5rem; }
+.approveBtn { color: var(--status-ok-ink, var(--status-ok)); border-color: color-mix(in srgb, var(--status-ok) 35%, transparent); background: var(--status-ok-wash); }
+.rejectBtn { color: var(--flag); border-color: color-mix(in srgb, var(--flag) 35%, transparent); background: var(--flag-wash); }
+.rerouteBtn { color: var(--signal-ink, var(--signal)); border-color: color-mix(in srgb, var(--signal) 35%, transparent); background: var(--signal-wash); }
+.rerouteBtn:disabled { opacity: 0.55; cursor: not-allowed; }
+.approveBtn:focus-visible, .rejectBtn:focus-visible, .rerouteBtn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+.decisionForm { margin-block-start: 8px; display: flex; flex-direction: column; gap: 6px; }
+.reasonLabel { font-size: 0.75rem; font-weight: 600; color: var(--text); }
+.reasonInput { width: 100%; resize: vertical; padding: 6px 8px; border-radius: var(--r-control, 8px); border: 1px solid var(--line); background: var(--card-2); color: var(--text); font: inherit; font-size: 0.8rem; }
+.reasonInput:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+.error { margin: 0; font-size: 0.75rem; color: var(--flag); }
+.formActions { display: flex; justify-content: flex-end; gap: 6px; }
+
+.toast { margin: 0 0 8px; padding: 0.5rem 0.75rem; border-radius: var(--r-control, 6px); border: 1px solid var(--status-ok); background: var(--card-2); color: var(--text); font-size: 0.8rem; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }

@@ -27,7 +27,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--color-text-on-accent);
     font-weight: 800;
 }
 
@@ -38,7 +38,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-2);
     border-radius: 12px;
     border: 1px solid var(--glass-border);
     padding: 0 1rem;
@@ -65,7 +65,7 @@
 .shortcut {
     font-size: 0.75rem;
     color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--card-2);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
 }
@@ -84,7 +84,7 @@
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    color: white;
+    color: var(--color-text-on-accent);
     font-weight: 500;
     cursor: pointer;
     transition: opacity 0.2s;
@@ -106,7 +106,7 @@
 }
 
 .iconBtn:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--card-2);
     color: var(--text-primary);
 }
 
@@ -115,8 +115,8 @@
     top: 0;
     right: 0;
     background: var(--accent);
-    color: white;
-    font-size: 0.7rem;
+    color: var(--color-text-on-accent);
+    font-size: 12.5px;
     width: 16px;
     height: 16px;
     border-radius: 50%;

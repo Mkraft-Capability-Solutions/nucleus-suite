@@ -7,6 +7,30 @@ import { readData } from '../../services/workspace-data.mjs';
 
 export const NUCLEUS_COLORS = readData("components.Charts.theme", "NUCLEUS_COLORS_1");
 
+// The JSON palette above is dark-only. Text and grid colours must follow the active theme,
+// so they are read from the design tokens on the page (--text, --text-2, --line) at render time.
+const TOKEN_FALLBACK = {
+    textPrimary: NUCLEUS_COLORS.textPrimary,
+    textMuted: NUCLEUS_COLORS.textMuted,
+    lineMuted: NUCLEUS_COLORS.lineMuted,
+};
+
+/** `themeKey` identifies the active theme; the result is cached per key and re-read when it changes. */
+let tokenCache = { key: null, value: TOKEN_FALLBACK };
+export function chartTokenColors(themeKey) {
+    if (typeof window === 'undefined' || typeof getComputedStyle !== 'function') return TOKEN_FALLBACK;
+    if (tokenCache.key === themeKey) return tokenCache.value;
+    const style = getComputedStyle(document.documentElement);
+    const token = (name, fallback) => style.getPropertyValue(name).trim() || fallback;
+    const value = {
+        textPrimary: token('--text', TOKEN_FALLBACK.textPrimary),
+        textMuted: token('--text-2', TOKEN_FALLBACK.textMuted),
+        lineMuted: token('--line', TOKEN_FALLBACK.lineMuted),
+    };
+    tokenCache = { key: themeKey, value };
+    return value;
+}
+
 // Fixed Categorical Series Order: Electric Cyan -> Royal Sapphire -> Electric Violet -> Amber -> Crisp Jade -> Coral -> Slate
 export const NUCLEUS_SERIES_COLORS = [
     NUCLEUS_COLORS.cyan,

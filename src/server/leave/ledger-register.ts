@@ -39,7 +39,8 @@ export function splitMovement(
 ): { credit: number; debit: number } {
   const normalized = (transactionType ?? "").trim().toLowerCase();
   const magnitude = Number.isFinite(days) ? Math.abs(days) : 0;
-  if (normalized === "credit") return { credit: magnitude, debit: 0 };
+  // The accrual job books "accrual" and comp-off grants book "grant": both add days.
+  if (["credit", "accrual", "grant"].includes(normalized)) return { credit: magnitude, debit: 0 };
   if (["debit", "reversal", "encashment", "encashed"].includes(normalized)) return { credit: 0, debit: magnitude };
   return { credit: 0, debit: 0 };
 }

@@ -70,61 +70,61 @@
     {
       "id": "S1",
       "title": "People Command Centre",
-      "shortTitle": "S1 People Command",
+      "shortTitle": "People Command",
       "persona": "CHRO / Leadership"
     },
     {
       "id": "S2",
       "title": "HR Operations Console",
-      "shortTitle": "S2 HR Ops Console",
+      "shortTitle": "HR Ops Console",
       "persona": "HRBP / Operations"
     },
     {
       "id": "S3",
       "title": "Attendance & Shift Intelligence",
-      "shortTitle": "S3 Attendance & Shifts",
+      "shortTitle": "Attendance & Shifts",
       "persona": "Workforce Ops"
     },
     {
       "id": "S4",
       "title": "Talent Acquisition Command",
-      "shortTitle": "S4 Talent Acquisition",
+      "shortTitle": "Talent Acquisition",
       "persona": "Recruiting / TA Lead"
     },
     {
       "id": "S5",
       "title": "Payroll Control Room",
-      "shortTitle": "S5 Payroll Control",
+      "shortTitle": "Payroll Control",
       "persona": "Payroll & Finance"
     },
     {
       "id": "S6",
       "title": "Performance & Talent Calibration",
-      "shortTitle": "S6 Performance & Talent",
+      "shortTitle": "Performance & Talent",
       "persona": "Talent Admin / 9-Box"
     },
     {
       "id": "S7",
       "title": "Manager Cockpit",
-      "shortTitle": "S7 Manager Cockpit",
+      "shortTitle": "Manager Cockpit",
       "persona": "People Manager / Team Lead"
     },
     {
       "id": "S8",
       "title": "Employee Home",
-      "shortTitle": "S8 Employee Home",
+      "shortTitle": "Employee Home",
       "persona": "Self-Service"
     },
     {
       "id": "S9",
       "title": "Magnetix Capability & L&D",
-      "shortTitle": "S9 Magnetix Capability",
+      "shortTitle": "Magnetix Capability",
       "persona": "Capability & L&D"
     },
     {
       "id": "S10",
       "title": "Workspace Governance",
-      "shortTitle": "S10 Workspace Governance",
+      "shortTitle": "Workspace Governance",
       "persona": "System / Workspace Administrator"
     }
   ],
@@ -161,12 +161,12 @@
   },
   "TopNav_placeholder_13": "Search employees, documents, tasks...",
   "TopNav_aria-label_14": "Global search across all modules",
-  "TopNav_text_15": "\u2318K",
-  "TopNav_title_16": "Open Dual-Pane Navigator (\u2318M)",
+  "TopNav_text_15": "⌘K",
+  "TopNav_title_16": "Open Dual-Pane Navigator (⌘M)",
   "TopNav_aria-label_17": "Open Dual-Pane Navigator",
   "TopNav_text_18": "Modules",
-  "TopNav_text_19": "\u2318M",
-  "TopNav_title_20": "Switch Dashboard Console (S1..S10)",
+  "TopNav_text_19": "⌘M",
+  "TopNav_title_20": "Switch Dashboard Console",
   "TopNav_aria-label_21": "Switch Dashboard Console",
   "TopNav_text_22": "Dashboards:",
   "TopNav_text_23": "Dashboard Consoles (",
@@ -191,8 +191,8 @@
   "TopNav_text_42": " Sign Out of Nucleus",
   "TopNav_aria-label_43": "Toggle navigation panel",
   "defaultValue_1": "S1",
-  "display_2": "\ud83d\udc51 UNIVERSAL ACCESS",
-  "display_3": "Access all S1\u2013S10 operational cockpits and calibration views",
+  "display_2": "👑 UNIVERSAL ACCESS",
+  "display_3": "Access all operational cockpits and calibration views",
   "display_4": "Dark",
   "display_5": "Light",
   "display_6": "Switch to Light Mode",

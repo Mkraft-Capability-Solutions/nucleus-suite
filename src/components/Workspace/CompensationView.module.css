@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 1.25rem;
     animation: fadeIn 0.25s ease-out;
-    font-family: var(--f-ui, 'Archivo', sans-serif);
+    font-family: var(--f-ui);
 }
 
 @keyframes fadeIn {
@@ -11,30 +11,38 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+    .container { animation: none; }
+}
+
 .headerRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
     padding: 1.25rem 1.5rem;
-    background: var(--card, #FFFFFF);
-    border-radius: var(--r-card, 7px);
-    border: 1px solid var(--line, #D8DEDA);
-    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    background: var(--p-glass, var(--card));
+    border-radius: var(--r-card);
+    border: 1px solid var(--p-edge, var(--line));
+    box-shadow: var(--shadow-raise);
 }
 
 .titleBlock h2 {
-    font-size: 1.35rem;
+    font-size: var(--t-h2, 1.35rem);
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text);
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .titleBlock p {
-    color: var(--text-2, #5A6B78);
-    font-size: 0.85rem;
+    color: var(--text-2);
+    font-size: var(--t-small, 0.85rem);
     margin: 0.2rem 0 0;
 }
+
+.actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
 
 .statsGrid {
     display: grid;
@@ -43,56 +51,52 @@
 }
 
 .statCard {
-    background: var(--card, #FFFFFF);
-    border: 1px solid var(--line, #D8DEDA);
-    border-radius: var(--r-card, 7px);
+    background: var(--p-glass, var(--card));
+    border: 1px solid var(--p-edge, var(--line));
+    border-radius: var(--r-card);
     padding: 1.1rem 1.25rem;
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    box-shadow: var(--shadow-raise);
 }
 
-.statLabel {
-    font-size: 0.78rem;
-    color: var(--text-2, #5A6B78);
-    font-weight: 600;
-}
+.statLabel { font-size: 0.78rem; color: var(--text-2); font-weight: 600; }
 
 .statValue {
-    font-family: var(--f-num, 'IBM Plex Mono', monospace);
+    font-family: var(--f-num);
     font-size: 1.45rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text);
     letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
 }
 
-.statSub {
-    font-family: var(--f-num, 'IBM Plex Mono', monospace);
-    font-size: 0.76rem;
-    color: var(--signal, #0F6E5C);
-    font-weight: 600;
-}
+.statValueSmall { font-size: 1.1rem; }
+
+.statSub { font-family: var(--f-num); font-size: 0.76rem; color: var(--signal-ink); font-weight: 600; }
 
 .card {
-    background: var(--card, #FFFFFF);
-    border: 1px solid var(--line, #D8DEDA);
-    border-radius: var(--r-card, 7px);
+    background: var(--p-glass, var(--card));
+    border: 1px solid var(--p-edge, var(--line));
+    border-radius: var(--r-card);
     padding: 1.5rem;
-    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    box-shadow: var(--shadow-raise);
 }
 
 .cardHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
     margin-bottom: 1.25rem;
 }
 
 .cardHeader h3 {
-    font-size: 1.05rem;
+    font-size: var(--t-h3, 1.05rem);
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text);
     letter-spacing: -0.01em;
     margin: 0;
     display: flex;
@@ -100,23 +104,69 @@
     gap: 0.5rem;
 }
 
+.bandLabels { display: flex; justify-content: space-between; gap: 0.75rem; font-size: 0.85rem; color: var(--text-2); margin-bottom: 0.5rem; flex-wrap: wrap; }
+
+.bandTrack {
+    block-size: 14px;
+    background: linear-gradient(90deg, var(--info-wash), var(--info), var(--signal-ink));
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill, 999px);
+    position: relative;
+}
+
+.bandMarker {
+    position: absolute;
+    inset-block: -4px;
+    inline-size: 4px;
+    background: var(--text);
+    border-radius: var(--r-pill, 999px);
+    transform: translateX(-50%);
+}
+
+.placement { display: flex; justify-content: center; margin-top: 0.75rem; }
+
+.chip {
+    background: var(--info-wash);
+    color: var(--info);
+    border: 1px solid var(--line);
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--r-control);
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.zoneOk { color: var(--signal-ink); font-weight: 700; font-size: 0.85rem; }
+.zoneFlag { color: var(--flag); font-weight: 700; font-size: 0.85rem; }
+
 .flexItem {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.75rem;
     padding: 0.85rem 1.1rem;
-    background: var(--card-2, #F6F8F6);
-    border-radius: var(--r-control, 5px);
-    border: 1px solid var(--line, #D8DEDA);
+    background: var(--card-2);
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
     margin-bottom: 0.6rem;
 }
 
+.flexLabel { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
+.flexLabel input { inline-size: 18px; block-size: 18px; }
+.flexName { color: var(--text); font-size: 0.95rem; font-weight: 700; }
+.flexValue { color: var(--info); font-size: 0.95rem; font-weight: 700; font-family: var(--f-num); }
+
+.muted { color: var(--text-2); font-size: 0.85rem; margin: 0 0 1.25rem; }
+.micro { color: var(--text-3); font-size: 0.78rem; }
+
+.stateBox { display: flex; align-items: center; gap: 0.6rem; padding: 1rem; border-radius: var(--r-control); background: var(--card-2); border: 1px dashed var(--line); color: var(--text-2); font-size: 0.85rem; }
+.stateError { border-style: solid; background: var(--flag-wash); color: var(--flag); }
+
 .btnPrimary {
-    background: var(--signal, #0F6E5C);
+    background: var(--signal);
     color: var(--on-signal);
     padding: 0.5rem 1.1rem;
-    border-radius: var(--r-control, 5px);
-    border: 1px solid var(--signal-ink, #0A5546);
+    border-radius: var(--r-control);
+    border: 1px solid var(--signal-ink);
     font-weight: 600;
     font-size: 0.84rem;
     cursor: pointer;
@@ -126,26 +176,28 @@
     transition: background 0.15s ease;
 }
 
-.btnPrimary:hover {
-    background: var(--signal-ink, #0A5546);
-}
+.btnPrimary:hover { background: var(--signal-ink); }
 
 .btnSecondary {
-    background: var(--card, #FFFFFF);
-    color: var(--text, #10222F);
-    border: 1px solid var(--line, #D8DEDA);
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--line);
     padding: 0.5rem 1.1rem;
-    border-radius: var(--r-control, 5px);
+    border-radius: var(--r-control);
     font-weight: 600;
     font-size: 0.84rem;
     cursor: pointer;
-    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-.btnSecondary:hover {
-    background: var(--card-2, #F6F8F6);
-    border-color: var(--slate-2, #8395A1);
-}
+.btnSecondary:hover { background: var(--card-2); border-color: var(--text-3); }
+.btnPrimary:disabled, .btnSecondary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btnPrimary:focus-visible, .btnSecondary:focus-visible, .flexLabel input:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+
+.srOnly { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Reflow within the available workspace width, including an open navigation panel. */
 @container (max-width: 760px){

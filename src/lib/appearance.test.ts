@@ -21,6 +21,9 @@ describe('pre-paint appearance restoration', () => {
             return key === 'nucleus_theme' ? 'dark' : null;
         } };
         expect(() => runInNewContext(appearanceBootstrap, { document: { documentElement: root }, localStorage })).not.toThrow();
-        expect(root.dataset.appearance).toBe(state === 'legacy' ? 'dark' : 'light');
+        expect(root.dataset.appearance).toBe(appearances[0].id);
+    });
+    it('starts first-time visitors on Pulse in dark mode', () => {
+        expect(appearances[0]).toMatchObject({ id: 'pulse', mode: 'dark' });
     });
 });

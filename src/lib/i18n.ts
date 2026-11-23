@@ -47,16 +47,20 @@ export function getMessagesForLocale(localeKey: string): Messages {
 }
 
 // Cache for reverse English string lookups to find namespace & key
-let englishReverseMap: Map<string, { namespace: string; key: string }> | null = null;
+// Every (namespace, key) whose English text matches, so a lookup can prefer one the target locale translates.
+let englishReverseMap: Map<string, Array<{ namespace: string; key: string }>> | null = null;
 
-function getEnglishReverseMap(): Map<string, { namespace: string; key: string }> {
+function getEnglishReverseMap(): Map<string, Array<{ namespace: string; key: string }>> {
   if (englishReverseMap) return englishReverseMap;
-  const map = new Map<string, { namespace: string; key: string }>();
+  const map = new Map<string, Array<{ namespace: string; key: string }>>();
   for (const [namespace, dict] of Object.entries(defaultMessages)) {
     if (dict && typeof dict === 'object' && namespace !== 'meta') {
       for (const [key, value] of Object.entries(dict)) {
         if (typeof value === 'string') {
-          map.set(value.toLowerCase().trim(), { namespace, key });
+          const text = value.toLowerCase().trim();
+          const list = map.get(text);
+          if (list) list.push({ namespace, key });
+          else map.set(text, [{ namespace, key }]);
         }
       }
     }
@@ -219,7 +223,9 @@ export function translate(
 
   // 3d. Reverse lookup from English text
   const reverseMap = getEnglishReverseMap();
-  const found = reverseMap.get(queryLower);
+  const candidates = reverseMap.get(queryLower) ?? [];
+  const translated = (c: { namespace: string; key: string }) => { const v = messages[c.namespace]?.[c.key]; return typeof v === "string" && v !== defaultMessages[c.namespace]?.[c.key]; };
+  const found = [...candidates].reverse().find(translated) ?? candidates[candidates.length - 1];
   if (found) {
     const template = messages[found.namespace]?.[found.key] ?? defaultMessages[found.namespace]?.[found.key];
     if (template) {

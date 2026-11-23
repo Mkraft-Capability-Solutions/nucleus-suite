@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { isAuthorizedCron, runTick } from "@/server/jobs/worker";
+import { isAuthorizedCron, listWorkerTenants, runTick } from "@/server/jobs/worker";
+import { runDailyAlertScans } from "@/server/alerts/engine";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -16,5 +17,12 @@ export async function POST(request: Request) {
   }
   const owner = `cron-${new Date().toISOString().slice(0, 16)}`;
   const summary = await runTick(owner);
-  return NextResponse.json({ data: { type: "cron-tick", ...summary }, meta: { owner } }, { headers: { "cache-control": "no-store" } });
+  // Compliance alerts (visa, work permit, documents, date custom fields): once per tenant per local day.
+  const alertScans = await runDailyAlertScans(await listWorkerTenants());
+  return NextResponse.json({ data: { type: "cron-tick", ...summary, alertScans }, meta: { owner } }, { headers: { "cache-control": "no-store" } });
+}
+
+/** Vercel Cron Jobs call the path with GET and `Authorization: Bearer $CRON_SECRET`. */
+export async function GET(request: Request) {
+  return POST(request);
 }

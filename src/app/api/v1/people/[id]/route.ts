@@ -1,3 +1,4 @@
+import { fromMinorUnits } from "@/lib/currencies";
 import { requireAccess } from "@/server/platform/access";
 import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
 import { getEmployee, updatePerson, updatePersonSchema } from "@/server/organization/service";
@@ -25,8 +26,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         category: item.category,
         status: item.status,
         joiningDate: item.joining_date,
-        basicSalary: item.basic_salary_minor === null ? null : { amount: (item.basic_salary_minor / 100).toFixed(2), currency: item.currency },
+        basicSalary: item.basic_salary_minor === null ? null : { amount: fromMinorUnits(item.basic_salary_minor, item.currency), minor: item.basic_salary_minor, currency: item.currency },
         salaryMasked: item.salaryMasked,
+        currency: item.currency,
         metadata: item.metadata || {},
         details: item.metadata || {},
       },

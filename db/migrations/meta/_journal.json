@@ -183,6 +183,118 @@
       "when": 1789399567550,
       "tag": "0025_employee_self_service_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1789399568550,
+      "tag": "0026_service_table_gaps",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1789399569550,
+      "tag": "0027_tenant_entitlements",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1789399570550,
+      "tag": "0028_role_templates",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1789399571550,
+      "tag": "0029_runtime_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1789399572550,
+      "tag": "0030_membership_policy_helpers",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1789399573550,
+      "tag": "0031_group_structure_and_job_history",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1789399574550,
+      "tag": "0032_employee_profile_columns",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1789399575550,
+      "tag": "0033_user_preferences",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1789485975550,
+      "tag": "0034_employee_flag_rules",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1789572375550,
+      "tag": "0035_document_library",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1789572475550,
+      "tag": "0036_document_library_payroll_admin",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1789572575550,
+      "tag": "0037_employee_master_currency_visa_custom_fields",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1789572675550,
+      "tag": "0038_entity_hierarchy_and_assignments",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1789572775550,
+      "tag": "0039_employment_movement_logs",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1789572875550,
+      "tag": "0040_compliance_alerts",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1789572975550,
+      "tag": "0041_employee_document_vault",
+      "breakpoints": true
     }
   ]
 }

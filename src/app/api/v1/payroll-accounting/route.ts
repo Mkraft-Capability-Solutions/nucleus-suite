@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import { requireAccess } from "@/server/platform/access";
 import { fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
 import { getPayrollAccountingOverview, payrollAccountingQuerySchema } from "@/server/payroll/accounting";
@@ -52,4 +53,27 @@ export async function GET(request: Request) {
   } catch (error) {
     return fail(error, requestId);
   }
+}
+
+/**
+ * POST is refused explicitly instead of with a bare 405: callers that post here (the generic
+ * `debitNote` action) get a problem body naming where the write belongs. A vendor debit note is a
+ * contractor-invoice disposition (`/api/v1/contractors/reconciliation/:id/dispute`), and GL mapping
+ * writes belong to `/api/v1/operations/ledger`; neither is a payroll-accounting read.
+ */
+export async function POST(request: Request) {
+  const requestId = requestIdFrom(request.headers);
+  return NextResponse.json(
+    {
+      error: {
+        code: "METHOD_NOT_ALLOWED",
+        message: "Payroll accounting is read-only. Record a vendor debit note against the contractor invoice reconciliation, and GL mapping changes through the ledger workflow.",
+        status: 405,
+        requestId,
+        retryable: false,
+        details: [],
+      },
+    },
+    { status: 405, headers: { allow: "GET", "cache-control": "no-store", "x-request-id": requestId } },
+  );
 }

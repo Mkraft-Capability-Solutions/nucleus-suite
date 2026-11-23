@@ -33,6 +33,6 @@ export async function logIn(email: string, password: string, locale: string, sig
   if (!response.ok) return failureOf(response);
   const body = (await response.json().catch(() => null)) as LogInBody | null;
   if (typeof body?.user !== 'object' || body.user === null) return { kind: 'http-error', status: response.status };
-  await storeSignedInUser(body.user, email, password);
+  await storeSignedInUser(body.user);
   return { kind: 'success', data: null };
 }

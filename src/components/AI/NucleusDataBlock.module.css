@@ -1,0 +1,22 @@
+.block { margin-top: 12px; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--card-2, var(--card)); padding: 12px; }
+.head { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); margin-block-end: 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+.figure, .figureWide { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 8px 10px; border-radius: var(--r-control); background: var(--card); border: 1px solid var(--line); }
+.figureWide { margin-top: 8px; }
+.unavailable { border-style: dashed; }
+.label { font-size: var(--fs-2xs); color: var(--text-3); }
+.value { font-size: var(--fs-lg); font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+.origin { font-size: var(--fs-2xs); color: var(--text-3); overflow-wrap: anywhere; }
+.note { font-size: var(--fs-xs); color: var(--text-2); margin: 0; }
+.pairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; margin: 4px 0 0; }
+.pairs div { display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-xs); }
+.pairs dt { color: var(--text-2); }
+.pairs dd { margin: 0; color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+.tableWrap { overflow-x: auto; margin-top: 4px; }
+.table { width: 100%; border-collapse: collapse; font-size: var(--fs-xs); }
+.table th { text-align: start; font-weight: 600; color: var(--text-3); padding: 4px 6px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.table td { padding: 4px 6px; color: var(--text); border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.actions { display: flex; flex-wrap: wrap; gap: 6px; margin-block-start: 10px; }
+.actionButton { font: inherit; font-size: var(--fs-xs); padding: 4px 10px; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--card); color: var(--signal); cursor: pointer; }
+.actionButton:hover { background: var(--signal-wash, var(--card)); }
+.actionButton:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }

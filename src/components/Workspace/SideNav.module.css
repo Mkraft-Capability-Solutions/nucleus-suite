@@ -1,7 +1,7 @@
 .sideNav {
     width: 295px;
     height: 100%;
-    background: var(--card, #ffffff);
+    background: var(--rail, var(--card, #ffffff));
     border-right: 1px solid var(--line, #D8DEDA);
     display: flex;
     flex-direction: column;
@@ -47,9 +47,9 @@
 }
 
 .groupTitle {
-    font-size: 0.68rem;
+    font-size: var(--fs-2xs);
     font-weight: 700;
-    color: var(--text-2, #5A6B78);
+    color: var(--rail-text, var(--text-2, var(--slate)));
     text-transform: uppercase;
     letter-spacing: 0.08em;
     padding: 0 0.55rem 0.25rem;
@@ -70,9 +70,9 @@
     border-radius: var(--r-control, 5px);
     border: none;
     background: transparent;
-    color: var(--text-2, #5A6B78);
+    color: var(--rail-text, var(--text-2, var(--slate)));
     font-weight: 600;
-    font-size: 0.82rem;
+    font-size: var(--fs-xs);
     text-align: left;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -82,8 +82,8 @@
 }
 
 .navItem:hover {
-    background: var(--card-2, #F6F8F6);
-    color: var(--text, #10222F);
+    background: var(--rail-hover, var(--card-2, #F6F8F6));
+    color: var(--rail-active, var(--text, var(--ink)));
 }
 
 .navItem:focus-visible {
@@ -109,7 +109,7 @@
 
 .submoduleItem {
     padding-left: 1rem;
-    font-size: 0.77rem;
+    font-size: var(--fs-2xs);
 }
 
 .submoduleItem .iconWrapper {
@@ -139,10 +139,10 @@
 .badge {
     padding: 0.1rem 0.35rem;
     border-radius: var(--r-pill, 100px);
-    font-size: 0.66rem;
+    font-size: var(--fs-2xs);
     font-weight: 700;
     background: var(--card-2, #F6F8F6);
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -153,8 +153,8 @@
 }
 
 .badgeAI {
-    background: var(--agent-wash, #EFEBF9);
-    color: var(--agent, #5B3FA8);
+    background: var(--agent-wash, var(--agent-wash));
+    color: var(--agent, var(--agent));
 }
 
 .collapsed .badge {
@@ -188,7 +188,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.76rem;
+    font-size: var(--fs-2xs);
 }
 
 .punchBtn {
@@ -197,7 +197,7 @@
     border: none;
     padding: 0.45rem;
     border-radius: var(--r-control, 5px);
-    font-size: 0.76rem;
+    font-size: var(--fs-2xs);
     font-weight: 700;
     cursor: pointer;
     display: flex;
@@ -213,7 +213,7 @@
 }
 
 .punchBtn.punchOut {
-    background: var(--flag, #A8341F);
+    background: var(--flag, var(--flag));
 }
 
 .punchBtn.punchOut:hover {
@@ -223,7 +223,7 @@
 .toggleCollapseBtn {
     background: transparent;
     border: none;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     padding: 0.35rem;
     border-radius: var(--r-control, 5px);
     display: flex;
@@ -232,12 +232,29 @@
     cursor: pointer;
     width: 100%;
     margin-top: 0.25rem;
-    font-size: 0.74rem;
+    font-size: var(--fs-2xs);
     gap: 0.35rem;
     font-weight: 600;
 }
 
 .toggleCollapseBtn:hover {
     background: var(--line, #D8DEDA);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
 }
+
+/* ── Pulse: left rail (matches docs/plans/V1.0/DASHBOARD-PULSE-MOCKUP.html) ─────────────────────────────── */
+.sideNav { width: 264px; background: var(--rail); border-right: 1px solid var(--line); }
+.sideNav.collapsed { width: 80px; }
+.scrollArea { padding: 18px 14px 12px; gap: 6px; }
+.groupTitle { font-size: var(--fs-2xs); letter-spacing: 0.12em; padding: 14px 12px 6px; color: var(--text-3); }
+.navItem { min-height: 46px; gap: 12px; padding: 0 12px; border-radius: 14px; font-size: var(--fs-sm); color: var(--rail-text); }
+.navItem:hover { background: var(--rail-hover); color: var(--rail-active); }
+.navItem.active { background: linear-gradient(90deg, var(--rail-selected), transparent); color: var(--rail-active); box-shadow: inset 0 0 0 1px var(--signal-wash); }
+.navItem.active::before { background: var(--signal); box-shadow: 0 0 12px var(--signal); }
+.iconWrapper svg { font-size: 20px !important; width: 20px; height: 20px; }
+.navItem.active .iconWrapper { color: var(--signal); }
+.collapsed .navItem { justify-content: center; padding: 0; }
+.footerArea { padding: 12px 14px; background: transparent; border-top: 1px solid var(--line); display: flex; flex-direction: column; gap: 10px; }
+.toggleCollapseBtn { width: 100%; min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 12px; border: 1px solid var(--line); background: var(--card-2); color: var(--text-2); font-size: var(--fs-sm); font-weight: 600; }
+.toggleCollapseBtn:hover { background: var(--rail-hover); color: var(--rail-active); }
+.toggleCollapseBtn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--signal-wash); }

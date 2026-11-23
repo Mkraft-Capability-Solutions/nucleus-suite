@@ -1,40 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { pool } from "@/lib/db";
+import { requireAccess } from "@/server/platform/access";
+import { fail, HttpError, requestIdFrom } from "@/server/platform/http";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest) {
+/** GET the master picklist catalog stored in system_configuration_values (authenticated). */
+export async function GET(request: Request) {
+  const requestId = requestIdFrom(request.headers);
   try {
-    const { searchParams } = new URL(req.url);
-    const category = searchParams.get("category");
-
-    const res = await pool.query(
-      "SELECT value FROM system_configuration_values WHERE key = $1",
-      ["picklists.catalog"]
-    );
-
+    await requireAccess(request);
+    const category = new URL(request.url).searchParams.get("category");
+    const res = await pool.query("SELECT value FROM system_configuration_values WHERE key = $1", ["picklists.catalog"]);
     if (res.rows.length === 0) {
-      return NextResponse.json({ error: "Picklists catalog not found in database" }, { status: 404 });
+      throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The picklist catalog is not loaded in the database." });
     }
-
-    const catalog = JSON.parse(res.rows[0].value);
-
+    const raw = res.rows[0].value as unknown;
+    const catalog = (typeof raw === "string" ? JSON.parse(raw) : raw) as Record<string, unknown> & { picklists?: unknown };
     if (category) {
-      const filtered = catalog[category] || catalog.picklists?.[category];
-      if (!filtered) {
-        return NextResponse.json({ error: `Picklist category '${category}' not found` }, { status: 404 });
-      }
-      return NextResponse.json({ category, data: filtered });
+      const list = Array.isArray(catalog.picklists) ? (catalog.picklists as Array<{ code?: string }>) : [];
+      const match = list.find((entry) => entry.code === category) ?? catalog[category];
+      if (!match) throw new HttpError({ status: 404, code: "NOT_FOUND", message: "The picklist was not found." });
+      return NextResponse.json({ category, data: match }, { headers: { "cache-control": "no-store", "x-request-id": requestId } });
     }
-
-    return NextResponse.json({
-      success: true,
-      data: catalog,
-    });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: "Failed to fetch picklists", details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: true, data: catalog }, { headers: { "cache-control": "no-store", "x-request-id": requestId } });
+  } catch (error) {
+    return fail(error, requestId);
   }
 }

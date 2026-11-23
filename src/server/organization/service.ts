@@ -4,6 +4,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { z } from "zod";
 import { sqlClient } from "@/lib/db";
 import { picklistValues } from "@/lib/picklists";
+import { SALARY_CURRENCY_CODES } from "@/lib/currencies";
 import { applyPersonProfileRules, personProfileMetadata, personProfileShape } from "@/server/organization/person-profile";
 import { authorize } from "@/server/identity/authorization";
 import { enforce, recordAudit, tenantTx, uuidOrNull, type Access } from "@/server/platform/access";
@@ -315,8 +316,26 @@ export const createPersonSchema = z.object({
   location: z.string().trim().min(1).max(80).default("Head Office"),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+  /** The salary's currency (ISO 4217). Defaults to the organisation's currency. */
+  currency: z.enum(SALARY_CURRENCY_CODES).optional(),
+  /** Reporting manager (an employee of the same organisation). Optional; additive. */
+  managerEmployeeId: z.string().uuid().optional(),
   ...personProfileShape,
 }).passthrough().superRefine(applyPersonProfileRules);
+
+/** A reporting manager must be an employee of the same organisation (and not the employee). */
+async function assertManager(access: Access, managerEmployeeId: string | undefined | null, employeeId: string | null) {
+  if (!managerEmployeeId) return;
+  if (managerEmployeeId === employeeId) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "An employee cannot report to themselves." });
+  }
+  const [rows] = await tenantTx(access, [
+    sqlClient`select 1 from employees where tenant_id = ${access.tenantId} and id = ${managerEmployeeId} limit 1`,
+  ]);
+  if ((rows as unknown[]).length === 0) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "The reporting manager is not an employee of this organisation." });
+  }
+}
 
 /** Single-person creation (the Add Person form). Enforced by employee.write, audited. */
 export async function createPerson(access: Access, input: z.infer<typeof createPersonSchema>, requestId: string) {
@@ -330,8 +349,10 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
   }
   const personId = randomUUID();
   const employeeId = randomUUID();
+  await assertManager(access, input.managerEmployeeId, employeeId);
   const joining = input.joiningDate ?? new Date().toISOString().slice(0, 10);
   const metadata = personProfileMetadata(input as Record<string, unknown>, { firstName: input.firstName, lastName: input.lastName });
+  const currency = input.currency ?? await organisationCurrency(access);
 
   // Map fields to dedicated database columns
   const rawWorkerCategory = String(metadata.workerCategory || (input as Record<string, unknown>).workerCategory || "PERM");
@@ -388,22 +409,22 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
       insert into employees (
         id, tenant_id, person_id, employee_code, first_name, last_name, work_email,
         designation, department, location, category, payroll_owner, joining_date, status,
-        basic_salary_minor, worker_category, has_rest_days, ot_eligibility, salary_location_scope,
+        basic_salary_minor, currency, worker_category, has_rest_days, ot_eligibility, salary_location_scope,
         is_trainee, trainee_type, biometric_enrol_id, access_card_no, locker_no,
         bank_account_no, bank_ifsc, bank_name, pan_number, aadhaar_last4, uan, esic_number,
         date_of_birth, emergency_contact_name, emergency_contact_phone, emergency_contact_relation,
-        metadata
+        manager_employee_id, metadata
       ) values (
         ${employeeId}, ${access.tenantId}, ${personId}, ${code}, ${input.firstName}, ${input.lastName}, ${workEmail},
         ${input.designation}, ${input.department}, ${input.location}, ${mappedCategory}, ${payrollOwner}, ${joining}, ${status},
-        ${input.basicSalaryMinor ?? null}, ${rawWorkerCategory}, ${hasRestDays}, ${otEligibility}, ${salaryLocationScope},
+        ${input.basicSalaryMinor ?? null}, ${currency}, ${rawWorkerCategory}, ${hasRestDays}, ${otEligibility}, ${salaryLocationScope},
         ${isTrainee}, ${traineeType}, ${biometricEnrolId}, ${accessCardNo}, ${lockerNo},
         ${bankAccountNo}, ${bankIfsc}, ${bankName}, ${panNumber}, ${aadhaarLast4}, ${uan}, ${esicNumber},
         ${dateOfBirth ? dateOfBirth : null}, ${emergencyName}, ${emergencyPhone}, ${emergencyRelation},
-        ${JSON.stringify(metadata)}::jsonb
+        ${input.managerEmployeeId ?? null}, ${JSON.stringify(metadata)}::jsonb
       )
     `,
-    sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, ...metadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
+    sqlClient`insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id) values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.create', 'employee', ${employeeId}, 'Employee record created', ${JSON.stringify({ employeeCode: code, ...metadata, salaryCurrency: currency, salarySet: input.basicSalaryMinor !== undefined })}::jsonb, ${uuidOrNull(requestId)}::uuid)`,
   ]);
   return {
     id: employeeId,
@@ -417,9 +438,20 @@ export async function createPerson(access: Access, input: z.infer<typeof createP
     location: input.location,
     status,
     joiningDate: joining,
+    currency,
     metadata,
     details: metadata,
   };
+}
+
+/** The organisation's currency: its settings, then the tenant record, then INR. */
+async function organisationCurrency(access: Access): Promise<string> {
+  const [rows] = await tenantTx(access, [
+    sqlClient`select coalesce((select s.currency from tenant_settings s where s.tenant_id = ${access.tenantId} limit 1),
+      (select t.default_currency from tenants t where t.id = ${access.tenantId}), 'INR') as currency`,
+  ]);
+  const code = String((rows as Array<{ currency: string | null }>)[0]?.currency ?? "INR").toUpperCase();
+  return (SALARY_CURRENCY_CODES as readonly string[]).includes(code) ? code : "INR";
 }
 
 export const updatePersonSchema = z.object({
@@ -432,13 +464,17 @@ export const updatePersonSchema = z.object({
   status: z.string().trim().max(40).optional(),
   joiningDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   basicSalaryMinor: z.number().int().min(0).max(1000000000).optional(),
+  /** The salary's currency (ISO 4217). Changing it needs the salary restated in the new currency. */
+  currency: z.enum(SALARY_CURRENCY_CODES).optional(),
+  /** Reporting manager; null clears it, absent leaves it unchanged. Additive. */
+  managerEmployeeId: z.string().uuid().nullable().optional(),
 }).passthrough();
 
 /** Update existing employee in database. Enforced by employee.write, audited. */
 export async function updatePerson(access: Access, employeeIdOrCode: string, input: z.infer<typeof updatePersonSchema>, requestId: string) {
   enforce(access.context, "employee.write", { tenantId: access.tenantId });
   const [foundRows] = await tenantTx(access, [
-    sqlClient`select id, employee_code, first_name, last_name, work_email, designation, department, location, category, joining_date::text, status, basic_salary_minor, metadata from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
+    sqlClient`select id, employee_code, first_name, last_name, work_email, designation, department, location, category, joining_date::text, status, basic_salary_minor, currency, metadata from employees where tenant_id = ${access.tenantId} and (id::text = ${employeeIdOrCode} or employee_code = ${employeeIdOrCode}) limit 1`,
   ]);
   const current = (foundRows as Array<{
     id: string;
@@ -453,6 +489,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
     joining_date: string;
     status: string;
     basic_salary_minor: number | null;
+    currency: string;
     metadata: Record<string, unknown> | null;
   }>)[0];
   if (!current) {
@@ -468,6 +505,13 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
   const newJoiningDate = input.joiningDate ?? current.joining_date;
   const newStatus = input.status ?? current.status;
   const newSalary = input.basicSalaryMinor !== undefined ? input.basicSalaryMinor : current.basic_salary_minor;
+  const newCurrency = input.currency ?? current.currency;
+  // The amount is stored in the currency's minor units: a new currency without a restated amount
+  // would silently turn ₹1,50,000 into $1,50,000.
+  if (newCurrency !== current.currency && input.basicSalaryMinor === undefined && current.basic_salary_minor !== null) {
+    throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `Enter the salary in ${newCurrency} as well: changing the currency does not convert the amount.` });
+  }
+  await assertManager(access, input.managerEmployeeId, current.id);
   
   const existingMetadata = (typeof current.metadata === "object" && current.metadata) ? current.metadata : {};
   const updatedMetadata = personProfileMetadata(
@@ -519,6 +563,7 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
           joining_date = ${newJoiningDate},
           status = ${newStatus},
           basic_salary_minor = ${newSalary},
+          currency = ${newCurrency},
           worker_category = ${rawWorkerCategory},
           has_rest_days = ${hasRestDays},
           ot_eligibility = ${otEligibility},
@@ -539,13 +584,14 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
           emergency_contact_name = ${emergencyName},
           emergency_contact_phone = ${emergencyPhone},
           emergency_contact_relation = ${emergencyRelation},
+          manager_employee_id = case when ${input.managerEmployeeId === undefined}::boolean then manager_employee_id else ${input.managerEmployeeId ?? null}::uuid end,
           metadata = ${JSON.stringify(updatedMetadata)}::jsonb,
           updated_at = clock_timestamp()
       where tenant_id = ${access.tenantId} and id = ${current.id}
     `,
     sqlClient`
       insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
-      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.update', 'employee', ${current.id}, 'Employee record updated', ${JSON.stringify({ employeeCode: current.employee_code, ...updatedMetadata })}::jsonb, ${uuidOrNull(requestId)}::uuid)
+      values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId}, 'people.update', 'employee', ${current.id}, 'Employee record updated', ${JSON.stringify({ employeeCode: current.employee_code, ...updatedMetadata, salaryCurrency: newCurrency, salaryChanged: newSalary !== current.basic_salary_minor || newCurrency !== current.currency })}::jsonb, ${uuidOrNull(requestId)}::uuid)
     `,
   ]);
 
@@ -560,7 +606,9 @@ export async function updatePerson(access: Access, employeeIdOrCode: string, inp
     location: newLocation,
     status: newStatus,
     joiningDate: newJoiningDate,
-    basicSalaryMinor: newSalary,
+    // The amount goes back only to those who may read pay.
+    basicSalaryMinor: authorize(access.context, { action: "payroll.rate.read", resource: { tenantId: access.tenantId } }).allowed ? newSalary : undefined,
+    currency: newCurrency,
     metadata: updatedMetadata,
     details: updatedMetadata,
   };

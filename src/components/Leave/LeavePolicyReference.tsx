@@ -1,69 +1,86 @@
 "use client";
-import {
-  Alert,
-  Box,
-  Card,
-  CardContent,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { readData } from "@/services/workspace-data.mjs";
-import { useTranslation } from "@/context/I18nContext";
+
+import { ResourceView } from "./LeaveBits";
+import styles from "./Leave.module.css";
+import { formatDays, useLeaveResource, useLeaveT, type LeaveEngine } from "./leave-client";
+
+const NS = "components.Leave.LeavePolicyReference";
+
+/**
+ * The tenant's leave policy: leave-type rules from `leave_types` and the band
+ * accrual rules from `accrual_rules`, both read through GET /api/v1/leave/engine.
+ */
 export default function LeavePolicyReference() {
-  const { t } = useTranslation();
-  const text = (key: string) => t("leave", key);
-  const workbook = readData("workbook");
-  const types = workbook.sheets["14_Leave_Types"].filter(
-    (row: Record<string, string>) => /^[A-Z]{2,6}$/.test(row["Leave type"]),
-  );
-  const policies = workbook.sheets["15_Leave_Accrual_Policy"].filter(
-    (row: Record<string, string>) => /^LP-/.test(row["Policy code"]),
-  );
+  const { t, locale } = useLeaveT();
+  const { state, reload } = useLeaveResource<LeaveEngine>("/api/v1/leave/engine", t(`${NS}.text_load_failed`, "The leave policy could not be loaded."));
+  const notSet = t(`${NS}.text_not_specified`, "Not specified");
   return (
-    <Stack spacing={2}>
-      <Typography variant="h5">{text("policyTitle")}</Typography>
-      <Alert severity="info">{text("policyNotice")}</Alert>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))",
-          gap: 2,
-        }}
-      >
-        {types.map((row: Record<string, string>) => (
-          <Card key={row["Leave type"]} variant="outlined">
-            <CardContent>
-              <Typography variant="h6">{row.Name}</Typography>
-              <Typography variant="body2">
-                {text("policyAccrual")}: {row.Accrual}
-              </Typography>
-              <Typography variant="body2">
-                {text("policyCarry")}: {row["Carry forward"]}
-              </Typography>
-              <Typography variant="body2">
-                {text("policyMonthly")}:{" "}
-                {row["Max per month"] ?? text("notSpecified")}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
-      <Typography variant="h6">{text("policyAccrual")}</Typography>
-      {policies.map((row: Record<string, string>) => (
-        <Card variant="outlined" key={row["Policy code"]}>
-          <CardContent>
-            <Typography variant="subtitle1">
-              {row["Policy code"]} · {row["Leave band"]} · {row["Leave type"]}
-            </Typography>
-            <Typography variant="body2">
-              {text("policyAnnual")}: {row["Annual days"]} ·{" "}
-              {text("policyWait")}: {row["Eligibility wait (months)"]} ·{" "}
-              {text("policyCredit")}:{" "}
-              {row["Credit on completion"] ?? text("notSpecified")}
-            </Typography>
-          </CardContent>
-        </Card>
-      ))}
-    </Stack>
+    <section className={styles.stack} aria-labelledby="leave-policy-title">
+      <div>
+        <h3 id="leave-policy-title" className={styles.itemTitle}>{t(`${NS}.text_title`, "Leave types and accrual policy")}</h3>
+        <p className={styles.sub}>{t(`${NS}.text_notice`, "Configured for your organisation. Changes are made in leave policy administration.")}</p>
+      </div>
+      <ResourceView resource={state} onRetry={reload}>
+        {(data) => (
+          <>
+            {data.leaveTypeRules.length === 0 ? (
+              <div className={styles.state}>{t(`${NS}.text_no_types`, "No leave types are configured yet.")}</div>
+            ) : (
+              <div className={styles.grid}>
+                {data.leaveTypeRules.map((rule) => (
+                  <article key={rule.code} className={styles.card}>
+                    <div className={styles.cardHead}>
+                      <h4>{rule.name}</h4>
+                      <span className={`${styles.badge} ${styles.mono}`}>{rule.code}</span>
+                    </div>
+                    <dl className={styles.list}>
+                      <div><dt className={styles.muted}>{t(`${NS}.label_carry`, "Carry forward")}</dt><dd>{rule.carryForward ?? notSet}</dd></div>
+                      <div><dt className={styles.muted}>{t(`${NS}.label_monthly`, "Maximum per month")}</dt><dd>{rule.maxPerMonth === null ? notSet : formatDays(rule.maxPerMonth, locale)}</dd></div>
+                      <div><dt className={styles.muted}>{t(`${NS}.label_expiry`, "Expiry")}</dt><dd>{rule.expiryRule ?? notSet}</dd></div>
+                      <div><dt className={styles.muted}>{t(`${NS}.label_year_end`, "Year end")}</dt><dd>{rule.yearEndAction ?? notSet}</dd></div>
+                      <div><dt className={styles.muted}>{t(`${NS}.label_cannot_combine`, "Cannot combine with")}</dt><dd>{rule.cannotCombineWith.length ? rule.cannotCombineWith.join(", ") : notSet}</dd></div>
+                    </dl>
+                  </article>
+                ))}
+              </div>
+            )}
+            <div className={styles.card}>
+              <div className={styles.cardHead}><h4>{t(`${NS}.text_accrual_title`, "Accrual rules by band")}</h4></div>
+              {data.bandRules.length === 0 ? (
+                <div className={styles.state}>{t(`${NS}.text_no_rules`, "No accrual rules are configured yet.")}</div>
+              ) : (
+                <div className={styles.tableWrap}>
+                  <table className={styles.table}>
+                    <caption className={styles.muted}>{t(`${NS}.caption_accrual`, "Annual entitlement and credit cycle per policy and band")}</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">{t(`${NS}.col_policy`, "Policy")}</th>
+                        <th scope="col">{t(`${NS}.col_band`, "Band")}</th>
+                        <th scope="col">{t(`${NS}.col_type`, "Leave type")}</th>
+                        <th scope="col">{t(`${NS}.col_annual`, "Annual days")}</th>
+                        <th scope="col">{t(`${NS}.col_frequency`, "Accrual")}</th>
+                        <th scope="col">{t(`${NS}.col_credit`, "Credit date")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.bandRules.map((rule, index) => (
+                        <tr key={`${rule.policyCode}-${rule.leaveBand ?? ""}-${rule.leaveType}-${index}`}>
+                          <td className={styles.mono}>{rule.policyCode}</td>
+                          <td>{rule.leaveBand ?? notSet}</td>
+                          <td>{rule.leaveType || notSet}</td>
+                          <td>{rule.annualDays === null ? notSet : formatDays(rule.annualDays, locale)}</td>
+                          <td>{rule.accrualFrequency ?? notSet}</td>
+                          <td>{rule.creditDate ?? notSet}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </ResourceView>
+    </section>
   );
 }

@@ -169,7 +169,7 @@ export async function getPeopleCoreSummary(access: Access): Promise<PeopleCoreSu
       sqlClient`select count(*)::int as total,
           count(*) filter (where coalesce(attributes->>'verification', attributes->>'scan', '')
             in ('verified', 'available'))::int as verified
-        from documents where tenant_id = ${access.tenantId}`,
+        from documents where tenant_id = ${access.tenantId} and record_status <> 'deleted'`,
     ]);
     const row = (docRows as Array<{ total: number; verified: number }>)[0];
     documentsTotal = row?.total ?? 0;

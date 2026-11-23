@@ -395,7 +395,7 @@ export default function ApiDocsPage() {
               <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>{t("app.api-docs.page.text_nucleus_api_documentation", "Nucleus API Documentation")}</h1>
               <span
                 style={{
-                  fontSize: '0.6875rem',
+                  fontSize: '12.5px',
                   fontWeight: 700,
                   background: 'rgba(99, 102, 241, 0.2)',
                   color: 'var(--signal, #6366f1)',
@@ -716,7 +716,7 @@ export default function ApiDocsPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span
                         style={{
-                          fontSize: '0.6875rem',
+                          fontSize: '12.5px',
                           padding: '0.2rem 0.5rem',
                           borderRadius: '4px',
                           background: 'rgba(255, 255, 255, 0.06)',
@@ -745,7 +745,7 @@ export default function ApiDocsPage() {
                           gap: '0.3rem',
                         }}
                       >
-                        {copiedId === `curl-${idx}` ? <CheckCircleIcon sx={{ fontSize: 14, color: '#10b981' }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
+                        {copiedId === `curl-${idx}` ? <CheckCircleIcon sx={{ fontSize: 14, color: 'var(--status-ok)' }} /> : <ContentCopyIcon sx={{ fontSize: 14 }} />}
                         
                         {t("app.api-docs.page.text_curl", "cURL")}
                       </button>
@@ -814,7 +814,7 @@ export default function ApiDocsPage() {
                               style={{
                                 fontSize: '0.75rem',
                                 fontWeight: 700,
-                                color: testResponse.status < 400 ? '#10b981' : '#ef4444',
+                                color: testResponse.status < 400 ? 'var(--status-ok)' : '#ef4444',
                               }}
                             >
                               

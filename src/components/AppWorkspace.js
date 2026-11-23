@@ -6,12 +6,24 @@ import { readData } from '@/services/workspace-data.mjs';
 import { getNavigationDomains } from '@/lib/workspace-navigation';
 import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
 import React, { useState, useEffect, useRef } from 'react';
-import { Sparkles, MessageSquare } from 'lucide-react';
 import LeftDock from '@/components/Workspace/LeftDock';
 import TopNav from '@/components/Workspace/TopNav';
+import TopBar from '@/modules/shell/TopBar';
+import { SideRail, SidePanel } from '@/modules/shell/SideNav';
+import FlagNotices from '@/modules/shell/FlagNotices';
+import { navTarget } from '@/modules/shell/navigation';
+import { useUiMode } from '@/context/UiModeContext';
+import { redesignedModuleForTab } from '@/lib/ui-mode';
 import RightSubNav from '@/components/Workspace/RightSubNav';
+import Breadcrumb from '@/components/Workspace/Breadcrumb';
+import AlertBanner from '@/components/Workspace/AlertBanner';
+import AttendanceFAB from '@/components/Workspace/AttendanceFAB';
 import MainWorkspace from '@/components/Workspace/MainWorkspace';
+import ModuleNotEnabled from '@/components/Entitlements/ModuleNotEnabled';
+import { entitlementForNavItem, entitlementForTab } from '@/lib/entitlements/routes';
+import { entitlementLabel } from '@/lib/entitlements/tree';
 import QuantumCopilot from '@/components/AI/QuantumCopilot';
+import AssistantDock from '@/modules/assistant/AssistantDock';
 import ChatPanel from '@/components/Workspace/ChatPanel';
 import LoginView from '@/components/Workspace/LoginView';
 import DualPaneNav from '@/components/Navigation/DualPaneNav';
@@ -28,6 +40,9 @@ import toastStyles from '@/components/Workspace/Toast.module.css';
 import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_STATE_KEY = 'nucleus_nav_state';
+
+/** Redesigned modules whose screens fit the viewport (tables scroll inside their panels). */
+const FIT_MODULES = new Set(['core_hr', 'documents']);
 
 // Route-to-Tab dictionary for direct URLs like /people, /leave, /attendance, /payroll
 const ROUTE_MODULE_MAP = {
@@ -58,11 +73,17 @@ const ROUTE_MODULE_MAP = {
   insights: { tab: 'analytics', domain: 'analytics_ai', sub: 'analytics_exec' },
   helpdesk: { tab: 'helpdesk', domain: 'platform', sub: 'core_operations' },
   contract_workforce: { tab: 'contract_workforce', domain: 'core_hr', sub: 'core_workforce' },
+  documents: { tab: 'documents', domain: 'documents', sub: 'documents' },
+  document_vault: { tab: 'documents', domain: 'documents', sub: 'documents' },
 };
 
 const AppContent = () => {
   const { t } = useTranslation();
-  const { user, isLoading, isModuleAllowed } = useAuth();
+  const { user, isLoading, isModuleAllowed, isEntitled, tenantAccess } = useAuth();
+  // Redesigned shell (top bar, navigation, floating buttons): Redesigned mode only.
+  const { isRedesigned } = useUiMode();
+  // Pulse is the only shell; the redesigned shell from v2 stays switched off.
+  const shellRedesigned = false;
   const pathname = usePathname();
   const router = useRouter();
   const workspaceRef = useRef(null);
@@ -93,15 +114,30 @@ const AppContent = () => {
   const [showCatalog, setShowCatalog] = useState(false);
   const [isRightNavOpen, setIsRightNavOpen] = useState(() => window.matchMedia('(min-width: 961px)').matches);
   const [searchQuery, setSearchQuery] = useState('');
+  // Active company chosen in the header switcher (server-validated); passed to the assistant as context.
+  const [activeCompanyId, setActiveCompanyId] = useState(null);
+  useEffect(() => {
+    const onEntity = (event) => {
+      const selection = event?.detail?.selection;
+      setActiveCompanyId(selection && typeof selection === 'object' && selection.companyId ? selection.companyId : null);
+    };
+    window.addEventListener('nucleus:active-entity-changed', onEntity);
+    return () => window.removeEventListener('nucleus:active-entity-changed', onEntity);
+  }, []);
 
   // MultipliersKraft Active Console ('S1' through 'S10')
   const [activeConsole, setActiveConsole] = useState(
     savedNav?.activeConsole ?? (user?.defaultConsole || readData("components.AppWorkspace", "initialState_4"))
   );
 
+  // The path this workspace last wrote to the address bar itself (see below); not a navigation to follow.
+  const ownPathRef = useRef(null);
+
   // Sync state when URL pathname changes (e.g. browser back/forward or router.push)
   useEffect(() => {
     if (!pathname || pathname === '/workspace' || pathname === '/login') return;
+    // Reflecting the open screen in the URL must not reset the area and screen the person chose.
+    if (pathname === ownPathRef.current) { ownPathRef.current = null; return; }
     const segment = pathname.replace(/^\//, '').split('/')[0].toLowerCase();
     const mapped = ROUTE_MODULE_MAP[segment];
     if (mapped) {
@@ -146,10 +182,12 @@ const AppContent = () => {
       analytics: '/analytics',
       helpdesk: '/helpdesk',
       contract_workforce: '/contract_workforce',
+      documents: '/documents',
       dashboard: '/workspace',
     };
     const targetUrl = tabToPath[activeTab];
     if (targetUrl && window.location.pathname !== targetUrl && window.location.pathname !== '/login') {
+      ownPathRef.current = targetUrl;
       window.history.replaceState(null, '', targetUrl);
     }
   }, [activeTab]);
@@ -250,6 +288,12 @@ const AppContent = () => {
       setActiveSubFeature(activeConsole.toLowerCase());
       return;
     }
+    if (domainId === 'documents') {
+      setShowCatalog(false);
+      setActiveTab('documents');
+      setActiveSubFeature('documents');
+      return;
+    }
 
     // Default tab per domain matching 6 Primary Categories
     const domainDefaults = {
@@ -281,6 +325,13 @@ const AppContent = () => {
   const handleSelectSubFeature = (subFeatureId) => {
     setActiveSubFeature(subFeatureId);
     setShowCatalog(false);
+
+    // The document library: one screen of its own
+    if (['documents', 'document_vault', 'my_documents'].includes(subFeatureId)) {
+      setActiveTab('documents');
+      setActiveDomain('documents');
+      return;
+    }
 
     // AI Copilot special action
     if (subFeatureId === 'analytics_copilot') {
@@ -340,7 +391,7 @@ const AppContent = () => {
     // 5. Onboarding & Lifecycle
     const onboardingItems = [
       'onboarding', 'core_onboarding', 'joining_chain', 'clearance_board', 'asset_register',
-      'letters_register', 'document_vault', 'policy_acknowledgements', 'lifecycle'
+      'letters_register', 'policy_acknowledgements', 'lifecycle'
     ];
     if (onboardingItems.includes(subFeatureId) || subFeatureId.startsWith('onboarding')) {
       setActiveTab('onboarding');
@@ -446,22 +497,52 @@ const AppContent = () => {
   };
 
   const isDashboard = activeTab === 'dashboard';
+  // Screens that stand alone: no list of screens beside them.
+  const isSingleScreen = isDashboard || activeTab === 'documents';
+  // Redesigned modules laid out to fit the viewport: their tables scroll, the page does not.
+  const fitModule = redesignedModuleForTab(activeTab);
+  const fitsViewport = Boolean(fitModule && FIT_MODULES.has(fitModule) && isRedesigned(fitModule) && !showCatalog);
 
+  // Opens a navigation item (navigation.catalog.json id) the same way the menus do.
+  const openNavItem = (navId) => {
+    const target = navTarget(navId);
+    handleSelectSubFeature(navId);
+    if (target) setActiveDomain(target.domain);
+    setShowCatalog(false);
+  };
+
+  // The view's module (from the tab) and, when the selected navigation item opens this view, the
+  // sub-module or feature behind that item. Either being outside the organisation's plan blocks it.
+  const navTargetTab = getNavigationDomains().flatMap((domain) => domain.groups.flatMap((group) => group.items))
+    .find((item) => item.id === activeSubFeature)?.targetTab;
+  const blockedKey = [entitlementForTab(activeTab), navTargetTab === activeTab ? entitlementForNavItem(activeSubFeature) : null]
+    .find((key) => key && !isEntitled(key)) ?? null;
+
+  
   return (
     <div ref={workspaceRef} className={styles.mainContainer} data-workspace-module={activeTab} data-workspace-console={activeConsole}>
-      <div className={styles.demoNotice} role="note">{readData("components.AppWorkspace", "demoNotice")}</div>
-      {/* 1. Sleek Left Vertical Icon Dock (Side Nav - Always Present) */}
-      <LeftDock
-        activeDomain={activeDomain}
-        activeTab={activeTab}
-        onSelectDomain={handleSelectDomain}
-        onToggleCatalog={handleToggleCatalog}
-        showCatalog={showCatalog}
-      />
-
-      {/* Main Content Area */}
-      <div className={styles.mainColumn}>
+      {/* Pulse frame: sticky header / (left rail | page | right rail) / sticky footer */}
         {/* 2. Clean Top Header: Global Search, Theme, Quick Actions, Profile, Modules Launcher, Console Switcher & Sub-Nav Toggle */}
+        {shellRedesigned ? (
+          <TopBar
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+            onTabChange={(tab, domain, sub) => {
+              setActiveTab(tab);
+              if (domain) setActiveDomain(domain);
+              else if (tab === 'dashboard') setActiveDomain('dashboard');
+              if (sub) setActiveSubFeature(sub);
+              setShowCatalog(false);
+            }}
+            openNav={openNavItem}
+            onOpenAssistant={canUseAIAssistant ? () => setIsCopilotOpen((prev) => !prev) : undefined}
+            onToggleMessages={canUseTeamMessages ? () => toggleDrawer('chat') : undefined}
+            assistantOpen={isCopilotOpen}
+            messagesOpen={isChatPanelOpen}
+            onOpenModules={() => setIsModulesOpen(true)}
+            onShowScreens={!isSingleScreen && !isRightNavOpen ? () => setIsRightNavOpen(true) : undefined}
+          />
+        ) : (
         <TopNav
           activeTab={activeTab}
           onTabChange={(tab, domain, sub) => {
@@ -479,20 +560,54 @@ const AppContent = () => {
           isModulesOpen={isModulesOpen}
           activeConsole={activeConsole}
           onSelectConsole={handleSelectConsole}
+          onToggleMessages={canUseTeamMessages ? () => toggleDrawer('chat') : undefined}
+          isMessagesOpen={isChatPanelOpen}
         />
+        )}
 
         {/* 3. Center Workspace + Contextual Right Sub-Navigation */}
         <div className={styles.bodyLayout}>
+        {/* 1. Sleek Left Vertical Icon Dock (Side Nav - Always Present) */}
+        <LeftDock
+          activeDomain={activeDomain}
+          activeTab={activeTab}
+          onSelectDomain={handleSelectDomain}
+          onToggleCatalog={handleToggleCatalog}
+          showCatalog={showCatalog}
+        />
           {/* Center Workspace (Feature Catalog Grid OR Interactive Module View) */}
+          {/* Contextual sub-navigation (placed beside the left rail) (Contextual submodules & consoles) */}
+          <RightSubNav
+            key={activeDomain}
+            activeDomain={activeDomain}
+            activeSubFeature={activeSubFeature}
+            onSelectSubFeature={(id) => handleSelectSubFeature(id)}
+            isOpen
+          />
+
           <main
             className={styles.workspaceZone}
             id="main-content"
             role="main"
             aria-label={readData("components.AppWorkspace", "attribute_6")}
-            style={{
-              padding: isDashboard ? 'clamp(1rem, 3vw, 1.25rem) clamp(1rem, 3vw, 2rem) 5rem' : 'clamp(1rem, 3vw, 1.5rem) clamp(1rem, 3vw, 2rem) 5rem'
-            }}
+            data-fit={fitsViewport && !blockedKey ? 'true' : undefined}
           >
+            <AlertBanner />
+            <Breadcrumb
+              activeDomain={activeDomain}
+              activeSubFeature={activeSubFeature}
+              onHome={() => handleSelectDomain('dashboard')}
+              onDomain={(domainId) => handleSelectDomain(domainId)}
+            />
+            {/* Warnings and alerts on the person's own record and their team's, after signing in */}
+            <FlagNotices />
+            {blockedKey ? (
+              <ModuleNotEnabled
+                label={entitlementLabel(blockedKey)}
+                tenantName={tenantAccess?.tenant?.name}
+                onBack={() => { setActiveTab('dashboard'); setActiveDomain('dashboard'); }}
+              />
+            ) : (
             <MainWorkspace
               activeTab={activeTab}
               activeSubFeature={activeSubFeature}
@@ -514,19 +629,17 @@ const AppContent = () => {
               searchQuery={searchQuery}
               activeConsole={activeConsole}
               onSelectConsole={handleSelectConsole}
+              onOpenNav={openNavItem}
             />
+            )}
           </main>
 
-          {/* Contextual Right Sub-Navigation Panel (Contextual submodules & consoles) */}
-          <RightSubNav
-            activeDomain={activeDomain}
-            activeSubFeature={activeSubFeature}
-            onSelectSubFeature={(id) => { handleSelectSubFeature(id); if (window.matchMedia('(max-width: 960px)').matches) setIsRightNavOpen(false); }}
-            isOpen={isRightNavOpen}
-            onClose={() => setIsRightNavOpen(false)}
-          />
         </div>
-      </div>
+
+        <footer className={styles.pulseFooter} role="contentinfo">
+          <span className={styles.pulseFooterStatus}><i aria-hidden="true" />{t("components.AppWorkspace.text_footer_connected", "Connected · live transactions")}</span>
+          <span>{t("components.AppWorkspace.text_footer_engine", "Enterprise production · Neon PostgreSQL DB engine")}</span>
+        </footer>
 
       {/* Dual-Pane Navigation Modal (Modules on Left, Sub-modules on Right) */}
       <DualPaneNav
@@ -543,33 +656,8 @@ const AppContent = () => {
         }}
       />
 
-      {/* Floating Action Buttons Stack (Stacked vertically, never overlapping, only 1 window open at a time) */}
-      {(canUseAIAssistant || canUseTeamMessages) && <div className={styles.fabStack} role="toolbar" aria-label={readData("components.AppWorkspace", "attribute_7")}>
-        {/* 1. Ask AI Assistant */}
-        {canUseAIAssistant && <button
-          className={`${styles.fabBtn} ${styles.aiFab} ${isCopilotOpen ? styles.fabActive : ''}`}
-          onClick={() => setIsCopilotOpen(prev => !prev)}
-          title={t("components.AppWorkspace.title_open_nucleus_neural_intelligence_voice_p", "Open Nucleus Neural Intelligence (Voice & Policy Intelligence)")}
-          aria-label={t("components.AppWorkspace.aria-label_open_nucleus_neural_intelligence", "Open Nucleus Neural Intelligence")}
-          aria-expanded={isCopilotOpen}
-        >
-          <Sparkles size={17} />
-          <span className={styles.fabLabel}>{t("components.AppWorkspace.text_nucleus_assistance", "Nucleus Assistance")}</span>
-        </button>}
-
-        {/* 2. Team Messages */}
-        {canUseTeamMessages && <button
-          className={`${styles.fabBtn} ${styles.messagesFab} ${isChatPanelOpen ? styles.fabActive : ''}`}
-          onClick={() => toggleDrawer('chat')}
-          title={isChatPanelOpen ? readData("components.AppWorkspace", "display_14") : readData("components.AppWorkspace", "display_15")}
-          aria-label={isChatPanelOpen ? readData("components.AppWorkspace", "display_16") : readData("components.AppWorkspace", "display_17")}
-          aria-expanded={isChatPanelOpen}
-        >
-          <MessageSquare size={17} />
-          <span className={styles.fabLabel}>{isChatPanelOpen ? readData("components.AppWorkspace", "display_18") : readData("components.AppWorkspace", "display_19")}</span>
-          <span className={styles.messageBadge}>{readData("components.AppWorkspace", "copy_20")}</span>
-        </button>}
-      </div>}
+      {/* Single punch control (real attendance API) */}
+      <AttendanceFAB />
 
       {/* Floating Overlay Layer for Chat */}
       {isChatPanelOpen && (
@@ -578,10 +666,23 @@ const AppContent = () => {
         </div>
       )}
 
+      {/* Redesigned shell: the assistant pill (bottom centre, movable), floating card or right-docked panel */}
+      {shellRedesigned && canUseAIAssistant && (
+        <AssistantDock
+          open={isCopilotOpen}
+          onOpenChange={setIsCopilotOpen}
+          activeTab={activeTab}
+          onNavigate={(tab) => { setActiveTab(tab); setShowCatalog(false); }}
+        />
+      )}
+
       {/* Revolutionary Multimodal Neural HUD */}
-      <QuantumCopilot
+      {canUseAIAssistant && <QuantumCopilot
         isOpen={isCopilotOpen}
         onClose={() => setIsCopilotOpen(false)}
+        shortcutEnabled={!shellRedesigned}
+        activeCompanyId={activeCompanyId}
+        activeSub={activeSubFeature}
         activeDomain={activeDomain}
         activeTab={activeTab}
         onNavigate={(tab, domain, sub) => {
@@ -590,7 +691,7 @@ const AppContent = () => {
           if (sub) setActiveSubFeature(sub);
           setShowCatalog(false);
         }}
-      />
+      />}
 
       {/* Talent CTC Exception Approval Modal */}
       <CtcExceptionModal

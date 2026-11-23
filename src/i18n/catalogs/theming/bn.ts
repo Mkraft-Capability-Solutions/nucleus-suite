@@ -14,6 +14,7 @@ const messages: ThemingMessages = {
     system: "সিস্টেম",
   },
   themes: {
+    pulse: "Pulse",
     horizon: "দিগন্ত",
     signature: "সিগনেচার",
     sapphireTide: "নীলকান্ত জোয়ার",

@@ -1,23 +1,27 @@
 .overlay{ position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 1.25rem; background: var(--overlay); backdrop-filter: blur(6px); }
-.modal { width: min(720px, 100%); max-height: calc(100vh - 2.5rem); overflow: auto; border: 1px solid var(--line, #263b56); border-radius: 14px; background: var(--card, #0d1b2b); box-shadow: 0 24px 64px rgba(0,0,0,.42); color: var(--text, #e6edf6); }
-.header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding: 1.25rem 1.4rem; border-bottom: 1px solid var(--line, #263b56); }
-.header h2 { margin: .2rem 0 0; font-size: 1.22rem; color: var(--text, #e6edf6); }
-.kicker { font-size: .7rem; font-weight: 800; letter-spacing: .08em; color: var(--signal, #2dd4a8); text-transform: uppercase; }
-.close, .cancel { border: 1px solid var(--line, #263b56); border-radius: 7px; background: transparent; color: var(--text-2, #a8b6c7); cursor: pointer; }
+.modal { width: min(720px, 100%); max-height: calc(100vh - 2.5rem); overflow: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--card); box-shadow: var(--shadow-overlay); color: var(--text); }
+.header { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; padding: 1.25rem 1.4rem; border-bottom: 1px solid var(--line); }
+.header h2 { margin: .2rem 0 0; font-size: 1.22rem; color: var(--text); }
+.kicker { font-size: 12.5px; font-weight: 800; letter-spacing: .08em; color: var(--signal); text-transform: uppercase; }
+.close, .cancel { border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--text-2); cursor: pointer; }
 .close { display: grid; place-items: center; width: 32px; height: 32px; }
 .form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .95rem; padding: 1.3rem 1.4rem; }
-.field { display: grid; gap: .38rem; font-size: .79rem; font-weight: 700; color: var(--text-2, #a8b6c7); }
-.field b { color: #f2647e; }
-.field input, .field select, .field textarea { width: 100%; box-sizing: border-box; padding: .66rem .72rem; border: 1px solid var(--line, #263b56); border-radius: 7px; background: var(--card-2, #081625); color: var(--text, #e6edf6); font: inherit; font-weight: 500; resize: vertical; }
-.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid rgba(45,212,168,.38); border-color: var(--signal, #2dd4a8); }
+.field { display: grid; gap: .38rem; font-size: .79rem; font-weight: 700; color: var(--text-2); }
+.field b { color: var(--flag); }
+.field input, .field select, .field textarea { width: 100%; box-sizing: border-box; padding: .66rem .72rem; border: 1px solid var(--line); border-radius: 7px; background: var(--card-2); color: var(--text); font: inherit; font-weight: 500; resize: vertical; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--signal); border-color: var(--signal); }
 .wide, .footer { grid-column: 1 / -1; }
 .footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-top: .3rem; }
-.footer p { display: flex; align-items: center; gap: .38rem; margin: 0; color: var(--text-2, #a8b6c7); font-size: .75rem; }
+.footer p { display: flex; align-items: center; gap: .38rem; margin: 0; color: var(--text-2); font-size: .75rem; }
 .footer div { display: flex; gap: .6rem; }
 .cancel, .submit { padding: .62rem .85rem; font: inherit; font-size: .8rem; font-weight: 800; }
-.submit { border: 1px solid var(--signal, #2dd4a8); border-radius: 7px; background: var(--signal, #2dd4a8); color: var(--on-signal); cursor: pointer; }
+.submit { border: 1px solid var(--signal); border-radius: 7px; background: var(--signal); color: var(--on-signal); cursor: pointer; }
 @media (max-width: 580px) { .form { grid-template-columns: 1fr; } .footer { align-items: stretch; flex-direction: column; } .footer div { justify-content: flex-end; } }
 
 .form [role="alert"]{grid-column:1/-1;color:var(--text);background:var(--card-2);padding:12px;border-inline-start:3px solid var(--flag);border-radius:var(--r-control)}
 .field:has([aria-invalid="true"]) :is(input,select,textarea){border-color:var(--flag)}
 .submit:disabled{opacity:.6;cursor:wait}
+.unavailable{grid-column:1/-1;display:flex;gap:.45rem;align-items:flex-start;margin:0;padding:12px;border-radius:var(--r-control);background:var(--pending-wash);color:var(--text);border-inline-start:3px solid var(--pending)}
+.fieldNote{font-weight:500;color:var(--text-3)}
+.fieldError{font-weight:600;color:var(--flag)}
+.field :disabled{opacity:.7;cursor:not-allowed}

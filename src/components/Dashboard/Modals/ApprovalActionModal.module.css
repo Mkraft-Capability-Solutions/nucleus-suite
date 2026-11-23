@@ -29,7 +29,7 @@
   border-radius: 16px;
   width: 100%;
   max-width: 540px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--line);
+  box-shadow: var(--shadow-overlay);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -62,20 +62,20 @@
 }
 
 .iconApprove {
-  background: rgba(45, 212, 168, 0.15);
-  border: 1px solid rgba(45, 212, 168, 0.35);
+  background: var(--card-2);
+  border: 1px solid var(--line);
   color: var(--signal-ink);
 }
 
 .iconReject {
-  background: rgba(244, 63, 94, 0.15);
-  border: 1px solid rgba(244, 63, 94, 0.35);
+  background: var(--card-2);
+  border: 1px solid var(--line);
   color: var(--flag);
 }
 
 .iconReroute {
-  background: rgba(155, 140, 255, 0.15);
-  border: 1px solid rgba(155, 140, 255, 0.35);
+  background: var(--card-2);
+  border: 1px solid var(--line);
   color: var(--agent);
 }
 
@@ -88,7 +88,7 @@
 }
 
 .headerSubtitle {
-  font-size: 0.74rem;
+  font-size: 12.5px;
   color: var(--text-2);
   margin-top: 0.15rem;
 }
@@ -153,22 +153,22 @@
 }
 
 .tabActiveApprove {
-  background: rgba(45, 212, 168, 0.15) !important;
-  border-color: rgba(45, 212, 168, 0.35) !important;
+  background: var(--card-2) !important;
+  border-color: var(--line) !important;
   color: var(--signal-ink) !important;
   font-weight: 700;
 }
 
 .tabActiveReject {
-  background: rgba(244, 63, 94, 0.15) !important;
-  border-color: rgba(244, 63, 94, 0.35) !important;
+  background: var(--card-2) !important;
+  border-color: var(--line) !important;
   color: var(--flag) !important;
   font-weight: 700;
 }
 
 .tabActiveReroute {
-  background: rgba(155, 140, 255, 0.15) !important;
-  border-color: rgba(155, 140, 255, 0.35) !important;
+  background: var(--card-2) !important;
+  border-color: var(--line) !important;
   color: var(--agent) !important;
   font-weight: 700;
 }
@@ -221,33 +221,33 @@
 }
 
 .badgeOptional {
-  font-size: 0.68rem;
+  font-size: 12.5px;
   font-weight: 600;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
-  background: rgba(148, 163, 184, 0.12);
+  background: var(--card-2);
   color: var(--text-2);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid var(--line);
 }
 
 .badgeCompulsory {
-  font-size: 0.68rem;
+  font-size: 12.5px;
   font-weight: 700;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
-  background: rgba(244, 63, 94, 0.15);
+  background: var(--card-2);
   color: var(--flag);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  border: 1px solid var(--line);
 }
 
 .badgeCompulsoryReroute {
-  font-size: 0.68rem;
+  font-size: 12.5px;
   font-weight: 700;
   padding: 0.15rem 0.45rem;
   border-radius: 4px;
-  background: rgba(155, 140, 255, 0.15);
+  background: var(--card-2);
   color: var(--agent);
-  border: 1px solid rgba(155, 140, 255, 0.3);
+  border: 1px solid var(--line);
 }
 
 .selectInput,
@@ -267,18 +267,18 @@
 .selectInput:focus,
 .textareaInput:focus {
   outline: none;
-  border-color: rgba(45, 212, 168, 0.5);
-  box-shadow: 0 0 0 3px rgba(45, 212, 168, 0.12);
+  border-color: var(--line);
+  box-shadow: var(--shadow-overlay);
 }
 
 .inputError {
   border-color: var(--flag) !important;
-  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.15) !important;
+  box-shadow: var(--shadow-overlay);
 }
 
 .errorBanner {
-  background: rgba(244, 63, 94, 0.12);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  background: var(--card-2);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.6rem 0.85rem;
   color: var(--flag);
@@ -327,20 +327,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  box-shadow: 0 4px 14px rgba(45, 212, 168, 0.25);
+  box-shadow: var(--shadow-overlay);
   transition: all 0.2s ease;
 }
 
 .submitBtnApprove:hover {
   background: var(--signal);
-  box-shadow: 0 6px 20px rgba(45, 212, 168, 0.4);
+  box-shadow: var(--shadow-overlay);
   transform: translateY(-1px);
 }
 
 .submitBtnReject {
-  background: #b91c1c;
-  color: #FFFFFF;
-  border: 1px solid #F43F5E;
+  background: var(--card-2);
+  color: var(--text);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.55rem 1.25rem;
   font-size: 0.8rem;
@@ -349,20 +349,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  box-shadow: 0 4px 14px rgba(244, 63, 94, 0.25);
+  box-shadow: var(--shadow-overlay);
   transition: all 0.2s ease;
 }
 
 .submitBtnReject:hover {
-  background: #991b1b;
-  box-shadow: 0 6px 20px rgba(244, 63, 94, 0.4);
+  background: var(--card-2);
+  box-shadow: var(--shadow-overlay);
   transform: translateY(-1px);
 }
 
 .submitBtnReroute {
-  background: #9B8CFF;
-  color: #0B101B;
-  border: 1px solid #9B8CFF;
+  background: var(--card-2);
+  color: var(--text);
+  border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.55rem 1.25rem;
   font-size: 0.8rem;
@@ -371,12 +371,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  box-shadow: 0 4px 14px rgba(155, 140, 255, 0.25);
+  box-shadow: var(--shadow-overlay);
   transition: all 0.2s ease;
 }
 
 .submitBtnReroute:hover {
-  background: #8b79ff;
-  box-shadow: 0 6px 20px rgba(155, 140, 255, 0.4);
+  background: var(--card-2);
+  box-shadow: var(--shadow-overlay);
   transform: translateY(-1px);
 }

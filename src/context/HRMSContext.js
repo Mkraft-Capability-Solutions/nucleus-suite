@@ -1413,7 +1413,7 @@ const HRMS_SYNC_TTL_MS = 30000;
 
         try {
             fetch(`/api/v1/fnf-settlements/${settlementId}/clear-department`, {
-                method: 'POST',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     department: deptKey.toLowerCase(),

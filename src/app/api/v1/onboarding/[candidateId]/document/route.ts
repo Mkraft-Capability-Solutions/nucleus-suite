@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OnboardingService } from '@/server/onboarding/application/onboardingService';
-import { auth } from '@/lib/auth';
+import { enforce, requireAccess } from '@/server/platform/access';
+import { fail, requestIdFrom } from '@/server/platform/http';
 
 export async function POST(
   req: NextRequest,
@@ -8,11 +9,9 @@ export async function POST(
 ) {
   try {
     const { candidateId } = await params;
-    const session = await auth.api.getSession({
-      headers: req.headers
-    });
-    
-    const tenantId = (session?.user as any)?.tenantId || 'tenant_default_123';
+    const access = await requireAccess(req);
+    enforce(access.context, 'employee.write', { tenantId: access.tenantId });
+    const tenantId = access.tenantId;
     const { documentType, isVerified } = await req.json();
     
     const candidate = await OnboardingService.verifyDocument(tenantId, candidateId, documentType, isVerified);
@@ -23,7 +22,8 @@ export async function POST(
     
     return NextResponse.json({ candidate });
   } catch (error) {
-    console.error('[Onboarding Document POST Error]:', error);
+    if ((error as { status?: number })?.status) return fail(error, requestIdFrom(req.headers));
+    console.error('[Onboarding Document POST Error]:', (error as { code?: string })?.code ?? 'UNKNOWN');
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }

@@ -25,13 +25,13 @@
 .titleBlock h2 {
     font-size: 1.35rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     letter-spacing: -0.02em;
     margin: 0;
 }
 
 .titleBlock p {
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     font-size: 0.85rem;
     margin: 0.2rem 0 0;
 }
@@ -110,7 +110,7 @@
 .cardHeader h3 {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     letter-spacing: -0.01em;
     margin: 0;
     display: flex;
@@ -143,14 +143,14 @@
 }
 
 .nineBoxTop {
-    background: var(--agent-wash, #EFEBF9);
+    background: var(--agent-wash, var(--agent-wash));
     border-color: rgba(91, 63, 168, 0.25);
 }
 
 .cellTitle {
     font-size: 0.78rem;
     font-weight: 700;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
@@ -169,7 +169,7 @@
     padding: 0.25rem 0.5rem;
     font-size: 0.76rem;
     font-weight: 600;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -218,7 +218,7 @@
 
 .btnSecondary {
     background: var(--card, #FFFFFF);
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     border: 1px solid var(--line, #D8DEDA);
     padding: 0.5rem 1.1rem;
     border-radius: var(--r-control, 5px);
@@ -239,3 +239,15 @@
 .cardHeader, .headerRow{flex-wrap:wrap;gap:12px;min-width:0}
 .cardHeader > *, .headerRow > *{min-width:0;max-width:100%}
 }
+
+.muted { font-size: 0.85rem; color: var(--text-2); margin: 0.35rem 0 0; }
+.actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+.btnAccent { composes: btnSecondary; display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid var(--agent); background: var(--agent-wash); color: var(--agent); font-weight: 700; }
+.okrHead { display: flex; justify-content: space-between; gap: 1rem; margin-block-end: 0.5rem; color: var(--text); }
+.okrScore { text-align: end; }
+.okrPct { font-size: 1.25rem; font-weight: 800; color: var(--info); }
+.krRow { display: flex; align-items: center; gap: 1rem; font-size: 0.88rem; margin-block-start: 0.6rem; }
+.krLabel { flex: 2; color: var(--text); }
+.krPct { inline-size: 4rem; text-align: end; font-size: 0.82rem; color: var(--text); }
+.notice { background: var(--agent-wash); border: 1px solid var(--line); border-radius: var(--r-card); padding: 1.25rem; color: var(--text); }
+.flagNotice { background: var(--flag-wash); border: 1px solid var(--line); border-radius: var(--r-card); padding: 1.25rem; color: var(--text); }

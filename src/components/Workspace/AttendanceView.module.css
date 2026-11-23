@@ -193,7 +193,7 @@
 
 .dayCell:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 34, 47, 0.08);
+    box-shadow: var(--shadow-raise);
     border-color: var(--signal);
 }
 
@@ -203,7 +203,7 @@
     font-family: var(--f-num);
     color: var(--text);
     align-self: flex-start;
-    padding-left: 0.2rem;
+    padding-inline-start: 0.2rem;
 }
 
 .dayStatus {
@@ -304,7 +304,7 @@
     justify-content: center;
     gap: 0.45rem;
     transition: all 0.15s ease;
-    box-shadow: 0 2px 6px rgba(15, 110, 92, 0.25);
+    box-shadow: var(--shadow-raise);
 }
 
 .btnPrimary:hover {
@@ -345,7 +345,7 @@
     background: var(--card-2);
     border: 1px solid var(--line-soft);
     border-radius: var(--r-control);
-    border-left: 3px solid var(--signal);
+    border-inline-start: 3px solid var(--signal);
 }
 
 .histDate {
@@ -417,8 +417,8 @@
 }
 
 .engineBanner {
-    background: linear-gradient(135deg, rgba(30, 41, 59, 0.06), rgba(37, 99, 235, 0.08));
-    border: 1px solid rgba(37, 99, 235, 0.25);
+    background: var(--p-glass, var(--card));
+    border: 1px solid var(--p-edge, var(--line));
     border-radius: var(--r-card);
     padding: 1rem 1.25rem;
     display: flex;
@@ -489,7 +489,7 @@
 }
 
 .table th {
-    text-align: left;
+    text-align: start;
     padding: 0.75rem 1rem;
     background: var(--card-2);
     color: var(--text-2);
@@ -515,7 +515,7 @@
     gap: 0.3rem;
     padding: 0.2rem 0.55rem;
     border-radius: 9999px;
-    font-size: 0.72rem;
+    font-size: 12.5px;
     font-weight: 600;
 }
 
@@ -551,10 +551,7 @@
 
 .modalOverlay{
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
@@ -588,7 +585,7 @@
 
 .actionMenuPopover {
     position: absolute;
-    right: 0;
+    inset-inline-end: 0;
     top: calc(100% + 4px);
     background: var(--card);
     border: 1px solid var(--line);
@@ -613,7 +610,7 @@
     font-size: var(--t-micro);
     font-weight: 500;
     cursor: pointer;
-    text-align: left;
+    text-align: start;
     width: 100%;
     transition: background 0.12s ease;
 }
@@ -628,14 +625,14 @@
     flex-direction: column;
     gap: 0.85rem;
     position: relative;
-    padding-left: 1.5rem;
+    padding-inline-start: 1.5rem;
     margin: 0.5rem 0;
 }
 
 .timelineWrapper::before {
     content: '';
     position: absolute;
-    left: 7px;
+    inset-inline-start: 7px;
     top: 6px;
     bottom: 6px;
     width: 2px;
@@ -651,7 +648,7 @@
 
 .timelineDot {
     position: absolute;
-    left: -1.5rem;
+    inset-inline-start: -1.5rem;
     top: 4px;
     width: 12px;
     height: 12px;
@@ -710,4 +707,429 @@
 
 .fieldRow input:focus, .fieldRow select:focus, .fieldRow textarea:focus {
     border-color: var(--signal);
+}
+
+/* --- API-backed view: shared layout, states and dialogs --- */
+.headerActions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.signalBtn {
+    border: 1px solid var(--line-glow, var(--line));
+    background: var(--signal-wash);
+    color: var(--signal);
+    font-weight: 700;
+}
+
+.outlineSignal {
+    border: 1px solid var(--line-glow, var(--line));
+    color: var(--signal);
+    font-weight: 600;
+}
+
+.punchOut {
+    background: var(--flag);
+    color: var(--on-signal);
+}
+
+.punchIn {
+    background: var(--status-ok);
+    color: var(--on-signal);
+}
+
+.inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.bannerTitle {
+    color: var(--text);
+    font-size: 0.92rem;
+}
+
+.muted {
+    font-size: 0.8rem;
+    color: var(--text-2);
+    margin: 0.2rem 0 0;
+}
+
+.tiny {
+    font-size: 12.5px;
+    color: var(--text-2);
+}
+
+.note {
+    padding: 1rem;
+    border-radius: var(--r-control);
+    background: var(--card-2);
+    color: var(--text-2);
+    font-size: var(--t-small);
+    text-align: center;
+}
+
+.errorNote {
+    padding: 0.85rem 1rem;
+    border-radius: var(--r-control);
+    background: var(--flag-wash);
+    color: var(--flag);
+    font-size: var(--t-small);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.smallBtn {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.dangerText {
+    color: var(--flag);
+}
+
+.okText {
+    color: var(--status-ok);
+    font-weight: 600;
+}
+
+.signalText {
+    color: var(--signal);
+    font-weight: 600;
+}
+
+.statValueSmall {
+    font-size: 1.2rem;
+    margin-block-start: 0.2rem;
+}
+
+.quotaValue {
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: var(--f-num);
+}
+
+.quotaUnit {
+    font-size: 0.85rem;
+    color: var(--text-2);
+    font-weight: 500;
+}
+
+.fillOk { background: var(--status-ok); }
+.fillWarn { background: var(--pending); }
+.fillFlag { background: var(--flag); }
+.fillSignal { background: var(--signal); }
+
+.centerCard {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.fullWidth {
+    width: 100%;
+}
+
+.dayNotRecorded {
+    background: var(--card);
+    border-style: dashed;
+    border-color: var(--line-soft);
+}
+
+.dayNotRecorded .dayStatus {
+    color: var(--text-3);
+}
+
+.dayLeave .dayStatus {
+    background: var(--info-wash);
+    color: var(--info);
+}
+
+.dayFiller {
+    min-height: 68px;
+}
+
+.chips {
+    display: flex;
+    gap: 0.5rem;
+    margin-block-end: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.chip {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.78rem;
+    border-radius: var(--r-pill);
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    color: var(--text-2);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.chipOn {
+    border-color: var(--signal);
+    background: var(--signal-wash);
+    color: var(--signal-ink);
+    font-weight: 600;
+}
+
+.mono {
+    font-family: var(--f-num, monospace);
+    font-size: 0.78rem;
+}
+
+.alignEnd {
+    text-align: end;
+}
+
+.relative {
+    position: relative;
+}
+
+.reasonCell {
+    max-inline-size: 220px;
+    font-size: 0.8rem;
+    color: var(--text-2);
+}
+
+.inspector {
+    border-inline-start: 4px solid var(--signal);
+}
+
+.segmentGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 1rem;
+    margin-block-start: 0.5rem;
+}
+
+.segment {
+    background: var(--card-2);
+    padding: 0.85rem;
+    border-radius: var(--r-control);
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.segmentSummary {
+    background: var(--signal-wash);
+    border: 1px solid var(--signal);
+    color: var(--signal-ink);
+}
+
+.segmentLabel {
+    font-size: 12.5px;
+    color: var(--text-2);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.segmentValue {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.plantBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: var(--card);
+    padding: 1rem;
+    border-radius: var(--r-card);
+    border: 1px solid var(--line);
+}
+
+.rulesList {
+    margin: 0.5rem 0 0;
+    padding-inline-start: 1.1rem;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.categoryFacts {
+    font-size: 0.78rem;
+    color: var(--text-2);
+    line-height: 1.5;
+    margin: 0;
+}
+
+.categoryFacts dt {
+    display: inline;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.categoryFacts dd {
+    display: inline;
+    margin: 0;
+    margin-inline-start: 0.3rem;
+}
+
+.modalWide {
+    max-width: 640px;
+    width: 95%;
+}
+
+.modalHead {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.modalHead h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modalClose {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-2);
+    min-inline-size: 24px;
+    min-block-size: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contextBox {
+    background: var(--card-2);
+    padding: 0.75rem 1rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line-soft);
+    font-size: 0.8rem;
+    color: var(--text-2);
+}
+
+.contextBox strong {
+    color: var(--text);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.twoCol {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+    gap: 0.75rem;
+}
+
+.fieldError {
+    color: var(--flag);
+    font-size: 0.75rem;
+}
+
+.required {
+    color: var(--flag);
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-block-start: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.scrollList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    max-block-size: 420px;
+    overflow-y: auto;
+    padding-inline-end: 4px;
+}
+
+.anomalyItem {
+    background: var(--card-2);
+    border: 1px solid var(--line);
+    border-radius: var(--r-control);
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.anomalyKind {
+    font-size: 0.8rem;
+    color: var(--pending);
+    font-weight: 600;
+}
+
+.anomalyDetail {
+    font-size: 0.8rem;
+    color: var(--text-2);
+    background: var(--surface, var(--card));
+    padding: 0.5rem 0.65rem;
+    border-radius: var(--r-control);
+    border-inline-start: 3px solid var(--pending);
+}
+
+.spaceBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.footerBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-block-start: 1px solid var(--line);
+    padding-block-start: 0.75rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.summaryGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    background: var(--card-2);
+    padding: 0.75rem;
+    border-radius: var(--r-control);
+    text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .attendanceContainer, .modalOverlay { animation: none; }
+    .dayCell, .progressFill, .tabBtn, .btnPrimary, .btnSecondary { transition: none; }
+    .dayCell:hover { transform: none; }
+}
+
+ol.timelineWrapper {
+    list-style: none;
+    margin: 0;
 }

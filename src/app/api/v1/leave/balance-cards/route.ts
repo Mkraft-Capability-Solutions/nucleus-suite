@@ -1,6 +1,7 @@
 import { requireAccess } from "@/server/platform/access";
 import { HttpError, collection, fail, requestIdFrom } from "@/server/platform/http";
 import { listBalanceCards } from "@/server/leave/engine-console";
+import { assertMayActFor } from "@/server/leave/workspace";
 
 export const dynamic = "force-dynamic";
 
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
         details: [{ field: "employeeId", issue: "must be a uuid" }],
       });
     }
+    assertMayActFor(access, employeeId);
     const rows = await listBalanceCards(access, employeeId);
     return collection({
       type: "leave-balance-card",

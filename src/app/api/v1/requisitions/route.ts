@@ -42,17 +42,23 @@ export async function POST(request: Request) {
     const key = requireIdempotencyKey(request.headers);
     const rawJson = await request.json().catch(() => null);
     const body = (rawJson && typeof rawJson === "object") ? { ...rawJson } : {};
-    body.departmentName = body.departmentName || body.dept || body.department || "Operations";
-    body.title = body.title || "Specialist";
-    if (!body.positionCode) {
-      body.positionCode = body.vacatedPositionCode || `POS-${String(body.departmentName).slice(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`;
-    }
-    if (!body.hiringManagerEmployeeId || typeof body.hiringManagerEmployeeId !== "string" || !body.hiringManagerEmployeeId.includes("-") || body.hiringManagerEmployeeId.length !== 36) {
+    // Aliases are accepted, but nothing is invented: a missing title, department or hiring manager is a 400,
+    // and a hiring manager given as an employee code must resolve to exactly that employee.
+    body.departmentName = body.departmentName || body.dept || body.department;
+    if (!body.positionCode && body.vacatedPositionCode) body.positionCode = body.vacatedPositionCode;
+    const manager = typeof body.hiringManagerEmployeeId === "string" ? body.hiringManagerEmployeeId.trim() : "";
+    if (manager && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(manager)) {
       const [empRows] = await tenantTx(access, [
-        sqlClient`select id from employees where tenant_id = ${access.tenantId} and (employee_code = ${String(body.hiringManagerEmployeeId || '')} or status = 'active') order by (case when employee_code = ${String(body.hiringManagerEmployeeId || '')} then 0 else 1 end) asc, employee_code asc limit 1`,
+        sqlClient`select id from employees where tenant_id = ${access.tenantId} and employee_code = ${manager} limit 1`,
       ]);
       const foundId = (empRows as Array<{ id: string }>)[0]?.id;
-      if (foundId) body.hiringManagerEmployeeId = foundId;
+      if (!foundId) {
+        throw new HttpError({ status: 422, code: "VALIDATION_FAILED", message: `No employee has the code ${manager}.`, details: [{ field: "hiringManagerEmployeeId", issue: "unknown" }] });
+      }
+      body.hiringManagerEmployeeId = foundId;
+    }
+    if (!body.title || !body.departmentName) {
+      throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "A job title and department are required.", details: [{ field: body.title ? "departmentName" : "title", issue: "required" }] });
     }
     const parsed = createRequisitionSchema.safeParse(body);
     if (!parsed.success) {
@@ -62,6 +68,9 @@ export async function POST(request: Request) {
     const prior = await checkIdempotency(access, "talent.requisition_create", key, fingerprint);
     if (prior.outcome === "conflict") {
       throw new HttpError({ status: 409, code: "IDEMPOTENCY_KEY_REUSED", message: "This Idempotency-Key was already used with a different payload." });
+    }
+    if (prior.outcome === "replay" && prior.responseLocator) {
+      return ok({ type: "requisition", id: prior.responseLocator, version: 1, attributes: { id: prior.responseLocator, replayed: true }, requestId, self: `/api/v1/requisitions/${prior.responseLocator}` });
     }
     const result = await createRequisition(access, parsed.data, requestId);
     await storeIdempotency(access, "talent.requisition_create", key, fingerprint, 201, result.id);

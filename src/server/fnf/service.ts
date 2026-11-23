@@ -143,7 +143,7 @@ export async function listFnfSettlements(access: Access, args: { employeeId?: st
     sqlClient`
       select f.id, f.employee_id, f.exit_date::text, f.status, f.attributes, f.department_clearances,
              f.payment_ref, f.disbursed_at, f.created_at,
-             e.first_name, e.last_name, e.employee_code
+             e.first_name, e.last_name, e.employee_code, e.currency
       from fnf_settlements f
       join employees e on e.id = f.employee_id and e.tenant_id = f.tenant_id
       where f.tenant_id = ${access.tenantId}

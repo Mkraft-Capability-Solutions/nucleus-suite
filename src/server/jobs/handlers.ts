@@ -4,6 +4,7 @@ import { z } from "zod";
 import { sqlClient } from "@/lib/db";
 import { annualLeaveCredit, coffExpiryDate } from "@/lib/hr-rules";
 import { ensureLeaveType, getBalances } from "@/server/leave/service";
+import { applyScheduledMovement } from "@/server/organization/employment-movements";
 import { calculateRun } from "@/server/payroll/service";
 import { tenantTx, type Access } from "@/server/platform/access";
 import { HttpError } from "@/server/platform/http";
@@ -14,6 +15,7 @@ export const TASK_TYPES = [
   "leave.year_close",
   "documents.expire",
   "payroll.calculate_batch",
+  "people.apply_movement",
 ] as const;
 
 export function isKnownTaskType(type: string): type is (typeof TASK_TYPES)[number] {
@@ -165,5 +167,7 @@ export async function dispatchTask(access: Access, taskType: string, payload: Re
       return documentsExpire(access, payload);
     case "payroll.calculate_batch":
       return calculateBatch(access, payload);
+    case "people.apply_movement":
+      return applyScheduledMovement(access, payload);
   }
 }

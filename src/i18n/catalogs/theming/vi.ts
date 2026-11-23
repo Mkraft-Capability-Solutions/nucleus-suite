@@ -14,6 +14,7 @@ const messages: ThemingMessages = {
     system: "Hệ thống",
   },
   themes: {
+    pulse: "Pulse",
     horizon: "Chân trời",
     signature: "Đặc trưng",
     sapphireTide: "Thủy triều Sapphire",

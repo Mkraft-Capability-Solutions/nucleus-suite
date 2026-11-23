@@ -311,7 +311,7 @@
 .cascadeTable th {
     background: var(--card-2);
     padding: 0.75rem 1rem;
-    text-align: left;
+    text-align: start;
     font-weight: 600;
     color: var(--text-2);
     border-bottom: 1px solid var(--line);
@@ -469,7 +469,7 @@
 .dataTable th {
     background: var(--card-2);
     padding: 0.75rem 1rem;
-    text-align: left;
+    text-align: start;
     font-weight: 600;
     color: var(--text-2);
     border-bottom: 1px solid var(--line);
@@ -558,10 +558,7 @@
 /* Modal */
 .modalOverlay{
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
@@ -707,14 +704,14 @@
     color: var(--hero-text);
     border-radius: var(--r-card);
     padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--line);
 }
 
 .packHeader {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--line);
     padding-bottom: 1rem;
     margin-bottom: 1rem;
 }
@@ -759,7 +756,7 @@
 
 .codePreview pre {
     margin: 0;
-    color: #38bdf8;
+    color: var(--info);
     font-family: var(--f-num);
     font-size: var(--t-small);
     line-height: 1.6;
@@ -806,7 +803,7 @@
     background: var(--signal-wash);
     color: var(--signal-ink);
     font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-raise);
 }
 
 .statGrid4 {
@@ -897,7 +894,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: var(--t-small);
-    text-align: left;
+    text-align: start;
 }
 
 .musterTable th {
@@ -932,7 +929,7 @@
     justify-content: center;
     width: 20px;
     height: 22px;
-    font-size: 10px;
+    font-size: 12.5px;
     font-weight: 700;
     border-radius: 3px;
     flex-shrink: 0;
@@ -955,7 +952,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
-    border-left: 4px solid #ea580c;
+    border-inline-start: 4px solid var(--pending);
 }
 
 .incidentHeader {
@@ -999,24 +996,24 @@
     border-radius: var(--r-card);
     padding: 1.25rem 1.5rem;
     margin-bottom: 1rem;
-    border-left: 4px solid #0284c7;
+    border-inline-start: 4px solid var(--info);
 }
 
 /* Form F Certificate Styling */
 .formFCertificate {
-    background: #fff;
-    color: #0f172a;
-    border: 2px solid #0f172a;
+    background: var(--card);
+    color: var(--text);
+    border: 2px solid var(--text);
     border-radius: 4px;
     padding: 2.5rem;
     font-family: 'Times New Roman', Times, serif;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-raise);
     margin-top: 1rem;
 }
 
 .formFHeader {
     text-align: center;
-    border-bottom: 2px solid #0f172a;
+    border-bottom: 2px solid var(--text);
     padding-bottom: 1.25rem;
     margin-bottom: 1.5rem;
 }
@@ -1026,27 +1023,27 @@
     font-size: 1.35rem;
     font-weight: 700;
     letter-spacing: 0.05em;
-    color: #0f172a;
+    color: var(--text);
 }
 
 .formFHeader h4 {
     margin: 0 0 0.35rem 0;
     font-size: 0.95rem;
     font-weight: 500;
-    color: #334155;
+    color: var(--text-2);
     font-style: italic;
 }
 
 .formFHeader p {
     margin: 0;
     font-size: 0.85rem;
-    color: #475569;
+    color: var(--text-2);
 }
 
 .formFBody {
     font-size: 0.95rem;
     line-height: 1.7;
-    color: #1e293b;
+    color: var(--text);
 }
 
 .formFTable {
@@ -1057,13 +1054,13 @@
 }
 
 .formFTable th, .formFTable td {
-    border: 1px solid #334155;
+    border: 1px solid var(--line);
     padding: 0.5rem 0.75rem;
-    text-align: left;
+    text-align: start;
 }
 
 .formFTable th {
-    background: #f1f5f9;
+    background: var(--card-2);
     font-weight: 700;
 }
 
@@ -1080,7 +1077,7 @@
 }
 
 .sigLine {
-    border-top: 1px dashed #0f172a;
+    border-top: 1px dashed var(--text);
     margin-top: 2.5rem;
     padding-top: 0.35rem;
     font-size: 0.85rem;
@@ -1089,9 +1086,9 @@
 
 .formFEmployerSeal {
     margin-top: 2rem;
-    border: 1.5px solid #0f172a;
+    border: 1.5px solid var(--text);
     padding: 1.25rem;
-    background: #f8fafc;
+    background: var(--card-2);
     border-radius: 4px;
 }
 
@@ -1100,9 +1097,9 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.35rem 0.85rem;
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #86efac;
+    background: var(--status-ok-wash);
+    color: var(--status-ok-ink);
+    border: 1px solid var(--status-ok);
     border-radius: var(--r-pill);
     font-size: var(--t-micro);
     font-weight: 600;
@@ -1113,9 +1110,9 @@
     align-items: center;
     gap: 0.4rem;
     padding: 0.35rem 0.85rem;
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fca5a5;
+    background: var(--flag-wash);
+    color: var(--flag);
+    border: 1px solid var(--flag);
     border-radius: var(--r-pill);
     font-size: var(--t-micro);
     font-weight: 600;
@@ -1155,20 +1152,17 @@
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    color: #16a34a;
+    color: var(--status-ok-ink);
     font-size: var(--t-micro);
     font-weight: 600;
-    background: #dcfce7;
+    background: var(--status-ok-wash);
     padding: 0.25rem 0.65rem;
     border-radius: var(--r-pill);
 }
 
 .modalOverlay{
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
@@ -1187,7 +1181,7 @@
     max-height: 90vh;
     overflow-y: auto;
     padding: 2rem;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-overlay);
 }
 
 .modalTitle {
@@ -1237,3 +1231,181 @@
     font-weight: 600;
 }
 
+
+/* --- API-backed states, forms and shared controls --- */
+.stateNote {
+    padding: 1rem 1.25rem;
+    border-radius: var(--r-card);
+    border: 1px dashed var(--p-edge, var(--line));
+    background: var(--p-glass, var(--card));
+    color: var(--text-2);
+    font-size: var(--t-small);
+    line-height: 1.5;
+}
+
+.errorNote {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--r-card);
+    border: 1px solid var(--flag);
+    background: var(--flag-wash);
+    color: var(--flag);
+    font-size: var(--t-small);
+}
+
+.okNote {
+    padding: 0.7rem 1rem;
+    border-radius: var(--r-control);
+    background: var(--status-ok-wash);
+    color: var(--status-ok-ink);
+    font-size: var(--t-small);
+}
+
+.unavailable {
+    color: var(--text-3);
+    font-style: italic;
+    font-size: var(--t-small);
+}
+
+.mono {
+    font-family: var(--f-num);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 0.9rem 1rem;
+    margin-block-end: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: var(--t-small);
+    color: var(--text-2);
+}
+
+.fieldWide {
+    grid-column: 1 / -1;
+}
+
+.fieldLabel {
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.required::after {
+    content: " *";
+    color: var(--flag);
+}
+
+.input {
+    inline-size: 100%;
+    min-block-size: 2.25rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--p-edge, var(--line));
+    background: var(--card);
+    color: var(--text);
+    font: inherit;
+}
+
+.input:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 1px;
+}
+
+.input[aria-invalid="true"] {
+    border-color: var(--flag);
+}
+
+.fieldError {
+    color: var(--flag);
+    font-size: var(--t-micro);
+}
+
+.actionsRow {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-block-start: 1rem;
+}
+
+.toolbar {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-block-end: 1rem;
+}
+
+.smallBtn {
+    padding: 0.3rem 0.65rem;
+    font-size: var(--t-micro);
+    min-block-size: 24px;
+}
+
+.dialogBody {
+    padding: 1.5rem;
+    background: var(--p-glass, var(--card));
+    color: var(--text);
+}
+
+.nomineeEditor {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 140px), 1fr));
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: var(--r-control);
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    margin-block-end: 0.5rem;
+}
+
+.codeBlock {
+    margin: 0;
+    padding: 1rem;
+    max-block-size: 280px;
+    overflow: auto;
+    border-radius: var(--r-control);
+    background: var(--card-2);
+    color: var(--text);
+    font-family: var(--f-num);
+    font-size: var(--t-micro);
+    white-space: pre-wrap;
+}
+
+.scrollTable {
+    max-block-size: 360px;
+    overflow-y: auto;
+}
+
+.metaLine {
+    font-size: var(--t-micro);
+    color: var(--text-3);
+}
+
+.inspectionBody {
+    background: var(--card-2);
+    padding: 0.85rem;
+    border-radius: var(--r-control);
+    font-size: var(--t-small);
+    line-height: 1.6;
+    margin-block-end: 0.5rem;
+}
+
+.rowBetween {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.textOk { color: var(--status-ok-ink); font-weight: 600; }
+.textWarn { color: var(--pending); font-weight: 600; }

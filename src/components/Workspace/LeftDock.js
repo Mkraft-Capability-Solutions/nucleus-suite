@@ -3,7 +3,6 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import BrandLogo from '@/components/BrandLogo';
 import React, { useState } from 'react';
 import LayoutGrid from '@mui/icons-material/DashboardOutlined';
 import Users from '@mui/icons-material/GroupsOutlined';
@@ -13,25 +12,37 @@ import BarChart3 from '@mui/icons-material/AssessmentOutlined';
 import Settings from '@mui/icons-material/SettingsOutlined';
 import Layers from '@mui/icons-material/LayersOutlined';
 import Briefcase from '@mui/icons-material/WorkOutline';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import styles from './LeftDock.module.css';
 import { useAuth } from '@/context/AuthContext';
 import { canViewNavigationDomain } from '@/lib/navigation-access';
 
+const PIN_KEY = 'nucleus_left_rail';
+const SHOW_FEATURE_CATALOG = true;
+
 const LeftDock = ({ activeDomain, activeTab = readData("components.Workspace.LeftDock", "defaultValue_1"), onSelectDomain, onToggleCatalog, showCatalog }) => {
     const {t: translateText}=useTranslation();
 
-    const [isHovered, setIsHovered] = useState(false);
+    const [isPinned, setIsPinned] = useState(() => {
+        try { return localStorage.getItem(PIN_KEY) !== 'collapsed'; } catch { return true; }
+    });
+    const isHovered = isPinned;
+    const togglePinned = () => setIsPinned((prev) => {
+        const next = !prev;
+        try { localStorage.setItem(PIN_KEY, next ? 'expanded' : 'collapsed'); } catch { /* per-viewer preference only */ }
+        return next;
+    });
     const { user, isModuleAllowed } = useAuth();
 
     // 6 Primary Categories matching exact user specification
     const dockItems = [
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_1"), icon: LayoutGrid, ...readData("components.Workspace.LeftDock", "dockItems_fields_2") },
-        { ...readData("components.Workspace.LeftDock", "dockItems_fields_3"), icon: Layers, ...readData("components.Workspace.LeftDock", "dockItems_fields_4") },
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_5"), icon: Users, ...readData("components.Workspace.LeftDock", "dockItems_fields_6") },
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_8"), icon: UserPlus, ...readData("components.Workspace.LeftDock", "dockItems_fields_9") },
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_10"), icon: CreditCard, ...readData("components.Workspace.LeftDock", "dockItems_fields_11") },
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_13"), icon: Briefcase, ...readData("components.Workspace.LeftDock", "dockItems_fields_14") },
         { ...readData("components.Workspace.LeftDock", "dockItems_fields_15"), icon: BarChart3, ...readData("components.Workspace.LeftDock", "dockItems_fields_16") },
+        { ...readData("components.Workspace.LeftDock", "dockItems_fields_3"), icon: Layers, ...readData("components.Workspace.LeftDock", "dockItems_fields_4") },
     ];
 
     const isItemActive = (item) => {
@@ -43,32 +54,18 @@ const LeftDock = ({ activeDomain, activeTab = readData("components.Workspace.Lef
         return false;
     };
 
-    const visibleDockItems = dockItems.filter((item) => item.isCatalogToggle || canViewNavigationDomain(item.id, isModuleAllowed, user));
+    // The Feature Catalog entry is hidden: it repeated the module navigation (UI feedback, item 4).
+    // Set SHOW_FEATURE_CATALOG to true to bring it back; search results still use the catalog view.
+    const visibleDockItems = dockItems.filter((item) => item.isCatalogToggle ? SHOW_FEATURE_CATALOG : canViewNavigationDomain(item.id, isModuleAllowed, user));
     const canViewPlatform = canViewNavigationDomain('platform', isModuleAllowed, user);
     const isPlatformActive = !showCatalog && (activeDomain === 'platform' || activeDomain === 'settings' || activeTab === 'settings');
 
     return (
         <aside
             className={`${styles.dockContainer} ${isHovered ? styles.dockExpanded : ''}`}
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+            data-left-rail={isPinned ? 'open' : 'collapsed'}
             aria-label={readData("components.Workspace.LeftDock", "LeftDock_aria-label_18")}
         >
-            {/* Top: Logo Mark & Brand Title */}
-            <button type="button" aria-label={translateText("components.Workspace.LeftDock","text_0ab6910b45")}
-                className={styles.logoWrapper}
-                onClick={() => onSelectDomain('dashboard')}
-                title={readData("components.Workspace.LeftDock", "LeftDock_title_19")}
-            >
-                <div className={styles.logoMark}>
-                    <BrandLogo size={48} />
-                </div>
-                <div className={styles.brandText}>
-                    <span className={styles.brandTitle}>{readData("components.Workspace.LeftDock", "LeftDock_text_21")}</span>
-                    <span className={styles.brandSubtitle}>{readData("components.Workspace.LeftDock", "LeftDock_text_22")}</span>
-                </div>
-            </button>
-
             {/* Middle: Domain Stack */}
             <nav className={styles.dockNav} role="navigation">
                 {visibleDockItems.map((item) => {
@@ -118,6 +115,18 @@ const LeftDock = ({ activeDomain, activeTab = readData("components.Workspace.Lef
                     {isPlatformActive && <div className={styles.activeIndicator} />}
                 </button>
             </div>}
+
+            {/* Collapse sits at the bottom of the rail, matching the right rail */}
+            <button
+                type="button"
+                className={styles.collapseBtn}
+                onClick={togglePinned}
+                aria-expanded={isPinned}
+                title={isPinned ? translateText("components.Workspace.LeftDock.title_collapse_left_sidebar", "Collapse sidebar") : translateText("components.Workspace.LeftDock.title_expand_left_sidebar", "Expand sidebar")}
+                aria-label={isPinned ? translateText("components.Workspace.LeftDock.title_collapse_left_sidebar", "Collapse sidebar") : translateText("components.Workspace.LeftDock.title_expand_left_sidebar", "Expand sidebar")}
+            >
+                {isPinned ? <PanelLeftClose size={20} aria-hidden="true" /> : <PanelLeftOpen size={20} aria-hidden="true" />}
+            </button>
         </aside>
     );
 };

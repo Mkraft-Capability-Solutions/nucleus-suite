@@ -14,6 +14,7 @@ const messages: ThemingMessages = {
     system: "跟随系统",
   },
   themes: {
+    pulse: "Pulse",
     horizon: "地平线",
     signature: "招牌",
     sapphireTide: "蓝宝石潮",

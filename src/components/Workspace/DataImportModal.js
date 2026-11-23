@@ -3,7 +3,7 @@ import {useTranslation} from '@/context/I18nContext';
 
 import { readData } from '../../services/workspace-data.mjs';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     X, UploadCloud, ArrowRight, ArrowLeft, CheckCircle2,
     AlertTriangle, RefreshCw, FileSpreadsheet, Check, Sparkles,
@@ -54,19 +54,26 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
 
     const { ingestMappedData, showToast } = useHRMS();
 
-    const [step, setStep] = useState(readData("components.Workspace.DataImportModal", "initialState_1")); // 1: Upload, 2: Mapping, 3: Validation, 4: Complete
+    const [step, setStep] = useState(readData("components.Workspace.DataImportModal", "initialState_1"));
+    const [importResult, setImportResult] = useState(null); // 1: Upload, 2: Mapping, 3: Validation, 4: Complete
     const [selectedPreset, setSelectedPreset] = useState(() => initialPreset || readData("components.Workspace.DataImportModal", "initialState_2"));
     const [currentFile, setCurrentFile] = useState(() => (initialPreset && PRESET_DATASETS[initialPreset]) ? PRESET_DATASETS[initialPreset] : PRESET_DATASETS.biometric);
     const [mappings, setMappings] = useState(() => inferMappings((initialPreset && PRESET_DATASETS[initialPreset]) ? PRESET_DATASETS[initialPreset] : PRESET_DATASETS.biometric));
     const fileInputRef = useRef(null);
+    const [preview, setPreview] = useState(null);
+    const [previewError, setPreviewError] = useState('');
 
-    useEffect(() => {
-        if (isOpen && initialPreset && PRESET_DATASETS[initialPreset]) {
-            setSelectedPreset(initialPreset);
-            setCurrentFile(PRESET_DATASETS[initialPreset]);
-            setMappings(inferMappings(PRESET_DATASETS[initialPreset]));
+    // Re-opening with a different preset resets the selection (state adjusted during render, no effect).
+    const presetKey = isOpen ? initialPreset || '' : '';
+    const [appliedPreset, setAppliedPreset] = useState(presetKey);
+    if (presetKey !== appliedPreset) {
+        setAppliedPreset(presetKey);
+        if (presetKey && PRESET_DATASETS[presetKey]) {
+            setSelectedPreset(presetKey);
+            setCurrentFile(PRESET_DATASETS[presetKey]);
+            setMappings(inferMappings(PRESET_DATASETS[presetKey]));
         }
-    }, [isOpen, initialPreset]);
+    }
 
     if (!isOpen) return null;
 
@@ -94,7 +101,8 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
         });
     };
 
-    const handleIngestCommit = () => {
+    const handleIngestCommit = async () => {
+        if (!isUploadedFile || !preview || preview.accepted === 0) return;
         const mappedRows = getMappedRows();
         const isCandidateImport = selectedPreset === 'candidates' || selectedPreset === 'ats';
         const hasValidRows = isCandidateImport
@@ -110,24 +118,48 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
             return;
         }
 
-        try {
-            fetch('/api/v1/bulk-import', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    importType: selectedPreset,
-                    records: mappedRows,
-                    fileName: currentFile?.fileName || 'dataset.csv'
-                })
-            }).catch(e => console.warn('Bulk import server sync notice:', e));
-        } catch {}
-
-        ingestMappedData(selectedPreset, mappedRows, currentFile.fileName);
+        const response = await fetch('/api/v1/bulk-import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Idempotency-Key': crypto.randomUUID() },
+            body: JSON.stringify({ importType: selectedPreset, records: mappedRows, fileName: currentFile?.fileName })
+        }).catch(() => null);
+        const payload = response ? await response.json().catch(() => null) : null;
+        if (!response || !response.ok || !payload?.data) {
+            showToast(t("components.Workspace.DataImportModal.text_import_failed_title", "Import failed"), payload?.error?.message || t("components.Workspace.DataImportModal.text_import_failed", "Nothing was imported. Check the file and try again."), 'error');
+            return;
+        }
+        const result = payload.data;
+        const acceptedRows = new Set(result.details.filter((d) => d.outcome === 'created').map((d) => d.row));
+        ingestMappedData(selectedPreset, mappedRows.filter((_, index) => acceptedRows.has(index + 1)), currentFile.fileName);
+        setImportResult(result);
+        showToast(
+            t("components.Workspace.DataImportModal.text_import_done_title", "Import finished"),
+            t("components.Workspace.DataImportModal.text_import_done", "{accepted} imported, {rejected} rejected.", { accepted: result.accepted, rejected: result.rejected }),
+            result.rejected > 0 ? 'warning' : 'success'
+        );
         setStep(4);
     };
 
+    // Server-side validation preview: the same bulk-import route with dryRun, nothing is written.
+    const isUploadedFile = currentFile?.id === 'custom_upload';
+    const runPreview = async () => {
+        setPreview(null); setPreviewError('');
+        if (!isUploadedFile) { setStep(3); return; }
+        const response = await fetch('/api/v1/bulk-import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ importType: selectedPreset, records: getMappedRows(), fileName: currentFile?.fileName, dryRun: true })
+        }).catch(() => null);
+        const payload = response ? await response.json().catch(() => null) : null;
+        if (!response || !response.ok || !payload?.data) setPreviewError(payload?.error?.message || t("components.Workspace.DataImportModal.text_preview_failed", "The file could not be validated. Check it and try again."));
+        else setPreview(payload.data);
+        setStep(3);
+    };
+    const rowOutcome = (index) => preview?.details?.find((d) => d.row === index + 1);
+
     const resetAndClose = () => {
         setStep(1);
+        setImportResult(null);
         onClose();
     };
 
@@ -212,7 +244,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
 
     return (
         <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modal} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.headerTitle}>
@@ -259,8 +291,8 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                         <>
                             {/* Download Sample Template Bar */}
                             <div style={{
-                                background: 'var(--card-2, #f8fafc)',
-                                border: '1px solid var(--line, #e2e8f0)',
+                                background: 'var(--card-2)',
+                                border: '1px solid var(--line)',
                                 borderRadius: '12px',
                                 padding: '0.85rem 1rem',
                                 marginBottom: '1.25rem',
@@ -271,11 +303,11 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                 gap: '0.75rem'
                             }}>
                                 <div>
-                                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text, #0f172a)' }}>
+                                    <div style={{ fontWeight: 700, fontSize: '0.84rem', color: 'var(--text)' }}>
                                         
                                         {t("components.Workspace.DataImportModal.text_need_a_starting_format_download_excelcsv", "📥 Need a starting format? Download Excel/CSV Sample Template")}
                                     </div>
-                                    <div style={{ fontSize: '0.74rem', color: 'var(--text-2, #64748b)' }}>
+                                    <div style={{ fontSize: '12.5px', color: 'var(--text-2)' }}>
                                         
                                         {t("components.Workspace.DataImportModal.text_pre-formatted_with_validated_column_stru", "Pre-formatted with validated column structures for instant ingestion.")}
                                     </div>
@@ -283,7 +315,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                 <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                                     <button
                                         type="button"
-                                        style={{ background: 'var(--signal)', color: 'var(--on-signal, #ffffff)', border: 'none', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        style={{ background: 'var(--signal)', color: 'var(--color-text-on-accent)', border: 'none', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('employee')}
                                     >
                                         
@@ -291,7 +323,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('biometric')}
                                     >
                                         
@@ -299,7 +331,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('leave')}
                                     >
                                         
@@ -307,7 +339,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                     </button>
                                     <button
                                         type="button"
-                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '0.74rem', fontWeight: 600, cursor: 'pointer' }}
+                                        style={{ background: 'var(--card-2)', color: 'var(--text)', border: '1px solid var(--line)', padding: '0.35rem 0.65rem', borderRadius: 'var(--r-control, 6px)', fontSize: '12.5px', fontWeight: 600, cursor: 'pointer' }}
                                         onClick={() => downloadSampleTemplate('payroll')}
                                     >
                                         
@@ -329,10 +361,10 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                 onClick={() => fileInputRef.current?.click()}
                                 style={{ cursor: 'pointer' }}
                             >
-                                <UploadCloud size={40} color="#2563eb" />
+                                <UploadCloud size={40} color="var(--info)" />
                                 <div>
                                     <h4>{readData("components.Workspace.DataImportModal", "DataImportModal_text_10")}</h4>
-                                    <p>{t("components.Workspace.DataImportModal.text_click_to_browse_csv_excel_file_or_drag_d", "Click to browse CSV / Excel file or drag & drop. Currently loaded:")} <strong style={{ color: '#2563eb' }}>{currentFile.fileName}</strong> ({currentFile.sampleRows.length}  {t("components.Workspace.DataImportModal.text_rows", "rows,")} {currentFile.columns.length}  {t("components.Workspace.DataImportModal.text_cols", "cols)")}</p>
+                                    <p>{t("components.Workspace.DataImportModal.text_click_to_browse_csv_excel_file_or_drag_d", "Click to browse CSV / Excel file or drag & drop. Currently loaded:")} <strong style={{ color: 'var(--signal)' }}>{currentFile.fileName}</strong> ({currentFile.sampleRows.length}  {t("components.Workspace.DataImportModal.text_rows", "rows,")} {currentFile.columns.length}  {t("components.Workspace.DataImportModal.text_cols", "cols)")}</p>
                                 </div>
                             </div>
 
@@ -417,14 +449,14 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                         <div>
                             <div className={styles.validationSummary}>
                                 <div className={styles.valCard}>
-                                    <CheckCircle2 size={24} color="#16a34a" />
+                                    <CheckCircle2 size={24} color="var(--status-ok)" />
                                     <div>
-                                        <strong>{currentFile.sampleRows.length}{readData("components.Workspace.DataImportModal", "DataImportModal_text_25")}</strong>
+                                        <strong>{preview ? t("components.Workspace.DataImportModal.text_preview_counts", "{accepted} valid, {rejected} rejected", { accepted: preview.accepted, rejected: preview.rejected }) : (previewError || t("components.Workspace.DataImportModal.text_sample_only", "Sample layouts show the expected columns only. Upload your own file to import."))}</strong>
                                         <span>{readData("components.Workspace.DataImportModal", "DataImportModal_text_26")}</span>
                                     </div>
                                 </div>
                                 <div className={styles.valCard}>
-                                    <Sparkles size={24} color="#2563eb" />
+                                    <Sparkles size={24} color="var(--info)" />
                                     <div>
                                         <strong>{readData("components.Workspace.DataImportModal", "DataImportModal_text_27")}</strong>
                                         <span>{readData("components.Workspace.DataImportModal", "DataImportModal_text_28")}</span>
@@ -432,7 +464,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                 </div>
                             </div>
 
-                            <div style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.84rem', fontWeight: 600, color: '#334155' }}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_29")}</div>
+                            <div style={{ margin: '1rem 0 0.5rem 0', fontSize: '0.84rem', fontWeight: 600, color: 'var(--text-2)' }}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_29")}</div>
 
                             <div className={styles.previewTableWrap}>
                                 <table className={styles.previewTable}>
@@ -451,7 +483,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                                         {getMappedRows().slice(0, 5).map((row, idx) => (
                                             <tr key={idx}>
                                                 <td>
-                                                    <span style={{ color: '#16a34a', fontWeight: 700, fontSize: '0.75rem', background: 'var(--status-ok-wash)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_31")}</span>
+                                                    <span title={rowOutcome(idx)?.reason || undefined} style={{ color: rowOutcome(idx)?.outcome === 'rejected' ? 'var(--flag)' : 'var(--status-ok)', fontWeight: 700, fontSize: '0.75rem', background: rowOutcome(idx)?.outcome === 'rejected' ? 'var(--flag-wash)' : 'var(--status-ok-wash)', padding: '0.15rem 0.4rem', borderRadius: '4px' }}>{!rowOutcome(idx) ? t("components.Workspace.DataImportModal.text_not_validated", "Not validated") : rowOutcome(idx).outcome === 'rejected' ? rowOutcome(idx).reason : readData("components.Workspace.DataImportModal", "DataImportModal_text_31")}</span>
                                                 </td>
                                                 {Object.entries(mappings)
                                                     .filter(([_, key]) => key && key !== '__ignore__')
@@ -469,13 +501,25 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                     {/* STEP 4: COMPLETED */}
                     {step === 4 && (
                         <div style={{ textAlign: 'center', padding: '2rem 1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--status-ok-wash)', color: '#16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--status-ok-wash)', color: 'var(--status-ok)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Check size={36} />
                             </div>
                             <div>
-                                <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.25rem', color: '#0f172a' }}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_32")}</h3>
+                                <h3 style={{ margin: '0 0 0.4rem 0', fontSize: '1.25rem', color: 'var(--text)' }}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_32")}</h3>
                                 <p style={{ margin: 0, fontSize: '0.88rem', color: 'var(--text-3)', maxWidth: '500px' }}>
-                                    <strong>{currentFile.sampleRows.length}{readData("components.Workspace.DataImportModal", "DataImportModal_text_33")}</strong>{readData("components.Workspace.DataImportModal", "DataImportModal_text_34")}<code>{currentFile.fileName}</code>{readData("components.Workspace.DataImportModal", "DataImportModal_text_35")}</p>
+                                    <strong>{importResult ? importResult.accepted : 0}{readData("components.Workspace.DataImportModal", "DataImportModal_text_33")}</strong>{readData("components.Workspace.DataImportModal", "DataImportModal_text_34")}<code>{currentFile.fileName}</code>{readData("components.Workspace.DataImportModal", "DataImportModal_text_35")}</p>
+                                {importResult && (
+                                    <div className={styles.importReport} role="status">
+                                        <p>{t("components.Workspace.DataImportModal.text_import_done", "{accepted} imported, {rejected} rejected.", { accepted: importResult.accepted, rejected: importResult.rejected })}</p>
+                                        {importResult.rejected > 0 && (
+                                            <ul>
+                                                {importResult.details.filter((d) => d.outcome === 'rejected').slice(0, 50).map((d) => (
+                                                    <li key={d.row}>{t("components.Workspace.DataImportModal.text_row_rejected", "Row {row}: {reason}", { row: d.row, reason: d.reason })}</li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -495,7 +539,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                         <>
                             <button className={styles.btnSecondary} onClick={() => setStep(1)}>
                                 <ArrowLeft size={16} />{readData("components.Workspace.DataImportModal", "DataImportModal_text_38")}</button>
-                            <button className={styles.btnPrimary} onClick={() => setStep(3)}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_39")}<ArrowRight size={16} />
+                            <button className={styles.btnPrimary} onClick={runPreview}>{readData("components.Workspace.DataImportModal", "DataImportModal_text_39")}<ArrowRight size={16} />
                             </button>
                         </>
                     )}
@@ -504,7 +548,7 @@ const DataImportModal = ({ isOpen, onClose, initialPreset }) => {
                         <>
                             <button className={styles.btnSecondary} onClick={() => setStep(2)}>
                                 <ArrowLeft size={16} />{readData("components.Workspace.DataImportModal", "DataImportModal_text_40")}</button>
-                            <button className={styles.btnPrimary} onClick={handleIngestCommit}>
+                            <button className={styles.btnPrimary} onClick={handleIngestCommit} disabled={!isUploadedFile || !preview || preview.accepted === 0} title={!isUploadedFile ? t("components.Workspace.DataImportModal.text_sample_only", "Sample layouts show the expected columns only. Upload your own file to import.") : undefined}>
                                 <Database size={16} />{readData("components.Workspace.DataImportModal", "DataImportModal_text_41")}</button>
                         </>
                     )}

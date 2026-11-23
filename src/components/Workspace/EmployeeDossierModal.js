@@ -5,14 +5,23 @@ import React, { useState } from 'react';
 import {
     User, Mail, Phone, MapPin, Building2, Briefcase, Calendar,
     ShieldCheck, CreditCard, Clock, FileText, CheckCircle2,
-    X, Printer, Award, Lock, ExternalLink, Download, AlertCircle
+    X, Printer, Award, Lock, ExternalLink, Download, AlertCircle, GitBranch
 } from 'lucide-react';
 import styles from './EmployeeDossierModal.module.css';
 import { downloadCSV, downloadPrintableDocument } from '@/utils/exportUtils';
+import CareerHistory, { fetchCareer, formatDay } from '@/components/People/CareerHistory';
+import { durationLabel, MOVEMENT_LABELS } from '@/lib/career';
+import { useAuth } from '@/context/AuthContext';
+
+function escapeHtml(text) {
+    return String(text ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
+}
 
 export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
     const { t } = useTranslation();
-    const [activeTab, setActiveTab] = useState('overview'); // overview, contact, placement, bank, leaves, docs
+    const [activeTab, setActiveTab] = useState('overview'); // overview, contact, placement, career, bank, leaves, docs
+    const { isEntitled, tenantAccess } = useAuth();
+    const showCareer = isEntitled ? isEntitled('people.records.career_history') : true;
 
     if (!employee) return null;
 
@@ -23,31 +32,56 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
         .join('')
         .toUpperCase();
 
-    const handlePrint = () => {
-        downloadPrintableDocument(`Employee_Dossier_${employee.id || 'EMP'}`, {
-            'Employee ID': employee.id || employee.employeeCode || 'EMP-101',
-            'Full Name': employee.name,
-            'Designation': employee.role || employee.designation || 'Staff',
-            'Department': employee.dept || employee.department || 'Operations',
-            'Location': employee.location || 'Bengaluru Facility',
-            'Status': employee.status || 'Active',
-            'Email': employee.email || employee.workEmail || 'user@nucleus.com',
-            'Phone': employee.phone || employee.mobile || '+91 98765 43210'
-        }, ['Category', 'Profile Detail', 'Verification Status'], [
-            ['Employment Band', employee.band || 'L3 / Specialist', 'Verified'],
-            ['Joining Date', employee.joiningDate || '2024-01-15', 'HR Confirmed'],
-            ['Reporting Manager', employee.manager || 'Executive Leadership', 'Assigned'],
-            ['PAN / Tax ID', employee.panNumber || '••••3421', 'KYC Verified'],
-            ['Bank Account', employee.accountNumber ? `••••${String(employee.accountNumber).slice(-4)}` : '••••5678', 'Direct Deposit Active'],
-            ['PF / UAN Number', employee.uanNumber || '100904567890', 'EPFO Linked'],
-            ['Emergency Contact', employee.emergencyContactName || 'Family Member', 'Recorded'],
-            ['Compliance Clearance', '100% Verified', 'Audit Passed']
-        ]);
+    // Database id when the employee is saved in the organisation's records; the employee code otherwise.
+    const employeeRef = employee.details?.id || employee.dbId || employee.employeeCode || employee.id || null;
+    const notRecorded = t("components.Workspace.EmployeeDossierModal.text_not_recorded", "Not recorded");
+    const value = (...candidates) => {
+        const found = candidates.find((candidate) => candidate !== undefined && candidate !== null && String(candidate).trim() !== '');
+        return found === undefined ? notRecorded : String(found);
+    };
+
+    const handlePrint = async () => {
+        const details = employee.details || {};
+        const meta = employee.metadata || details.metadata || {};
+        const profile = Object.fromEntries(Object.entries({
+            'Employee code': value(employee.employeeCode, details.employeeCode, employee.id),
+            'Full name': value(employee.name),
+            'Designation': value(employee.role, employee.designation, details.designation),
+            'Department': value(employee.dept, employee.department, details.department),
+            'Location': value(employee.location, details.location),
+            'Status': value(employee.status, details.status),
+            'Work email': value(employee.email, employee.workEmail, details.workEmail),
+            'Joining date': value(employee.joiningDate, details.joiningDate, meta.joiningDate),
+            'Reporting manager': value(employee.manager),
+            'Worker class': value(employee.band, details.category),
+        }).map(([key, text]) => [key, escapeHtml(text)]));
+        const career = employeeRef && showCareer ? await fetchCareer(employeeRef) : null;
+        const stints = career && career.ok ? [...career.data.view.stints].reverse() : [];
+        const rows = stints.length
+            ? stints.map((stint) => [
+                formatDay(stint.effectiveFrom),
+                stint.current ? 'Present' : formatDay(stint.endsOn),
+                (stint.companyPath.length ? stint.companyPath : [notRecorded]).join(' › '),
+                [stint.designation, stint.grade].filter(Boolean).join(' · ') || notRecorded,
+                [stint.department, stint.location].filter(Boolean).join(' · ') || notRecorded,
+                MOVEMENT_LABELS[stint.movementType] || stint.movementType,
+            ].map(escapeHtml))
+            : [[escapeHtml(career && !career.ok ? career.message : 'No job history recorded'), '', '', '', '', '']];
+        if (career && career.ok) {
+            const currentPosition = career.data.view.stints[career.data.view.stints.length - 1];
+            if (currentPosition?.managerName) profile['Reporting manager'] = escapeHtml(currentPosition.managerName);
+            if (currentPosition?.companyPath?.length) profile['Company'] = escapeHtml(currentPosition.companyPath.join(' › '));
+            profile['Time in the group'] = escapeHtml(durationLabel(career.data.view.totals.months));
+            if (career.data.employee.exitedOn) profile['Left the group'] = escapeHtml(formatDay(career.data.employee.exitedOn));
+        }
+        downloadPrintableDocument(escapeHtml(`Employee dossier: ${employee.name || ''} (${employee.employeeCode || employee.id || ''})`), profile,
+            ['From', 'To', 'Company', 'Designation / grade', 'Department · location', 'Move'], rows,
+            { organisation: tenantAccess?.tenant?.name });
     };
 
     return (
         <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modal} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.employeeProfile}>
@@ -110,6 +144,14 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
                     >
                         <Briefcase size={15} />  {t("components.Workspace.EmployeeDossierModal.text_job_hierarchy", "Job & Hierarchy")}
                     </button>
+                    {showCareer && (
+                        <button
+                            className={`${styles.tabBtn} ${activeTab === 'career' ? styles.activeTabBtn : ''}`}
+                            onClick={() => setActiveTab('career')}
+                        >
+                            <GitBranch size={15} />  {t("components.Workspace.EmployeeDossierModal.text_career_history", "Career history")}
+                        </button>
+                    )}
                     <button
                         className={`${styles.tabBtn} ${activeTab === 'bank' ? styles.activeTabBtn : ''}`}
                         onClick={() => setActiveTab('bank')}
@@ -132,6 +174,8 @@ export default function EmployeeDossierModal({ employee, onClose, onEdit }) {
 
                 {/* Tab Content */}
                 <div className={styles.contentBody}>
+                    {showCareer && activeTab === 'career' && <CareerHistory employeeRef={employeeRef} />}
+
                     {activeTab === 'overview' && (
                         <div className={styles.sectionGrid}>
                             <div className={styles.infoItem}>

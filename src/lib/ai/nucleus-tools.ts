@@ -1,4 +1,4 @@
-import { NUCLEUS_ACTIONS, type NucleusAction } from "@/lib/ai/nucleus-catalog";
+import { NUCLEUS_ACTIONS, nucleusActionsFor, type NucleusAction } from "@/lib/ai/nucleus-catalog";
 
 /**
  * The non-action half of the Nucleus AI tool surface: reads that the server
@@ -27,6 +27,10 @@ export const SERVER_TOOLS = [
   "focus_areas",
   "find_employee",
   "list_employees",
+  "employee_lookup",
+  "expiring_visas",
+  "movement_history",
+  "document_status",
 ] as const;
 
 export type ServerTool = (typeof SERVER_TOOLS)[number];
@@ -112,6 +116,27 @@ export const ANALYSIS_DECLARATIONS: FunctionDeclaration[] = [
       },
     },
   },
+  {
+    name: "employee_lookup",
+    description:
+      "Look up an employee by name or employee code within the caller's scope (and active company). Returns a profile summary: company, designation, department, manager, status, and visa / work-permit details (numbers masked unless the caller may see them). Ask when several match.",
+    parameters: { type: "OBJECT", properties: { query: { type: "STRING", description: "Name or employee code." } }, required: ["query"] },
+  },
+  {
+    name: "expiring_visas",
+    description: `Employees whose visa or work permit expires within the next N days, nearest first. ${UNAVAILABLE_NOTE}`,
+    parameters: { type: "OBJECT", properties: { days: { type: "INTEGER", description: "Window in days from today, 1 to 365. Default 30." } } },
+  },
+  {
+    name: "movement_history",
+    description: "An employee's intra-group movements (transfers between group companies, secondments) with dates and reasons.",
+    parameters: { type: "OBJECT", properties: { employee: { type: "STRING", description: "Employee identifier, code or name." } }, required: ["employee"] },
+  },
+  {
+    name: "document_status",
+    description: "An employee's documents with verification state, and the nearest upcoming expiry.",
+    parameters: { type: "OBJECT", properties: { employee: { type: "STRING", description: "Employee identifier, code or name." } }, required: ["employee"] },
+  },
 ];
 
 export const OPEN_SCREEN_DECLARATION: FunctionDeclaration = {
@@ -148,10 +173,11 @@ export function actionDeclaration(action: NucleusAction): FunctionDeclaration {
   };
 }
 
-export function declarationsFor(): FunctionDeclaration[] {
+export function declarationsFor(permissions?: readonly string[]): FunctionDeclaration[] {
+  const actions = permissions ? nucleusActionsFor(permissions) : NUCLEUS_ACTIONS;
   return [
     ...ANALYSIS_DECLARATIONS,
     OPEN_SCREEN_DECLARATION,
-    ...NUCLEUS_ACTIONS.map(actionDeclaration),
+    ...actions.map(actionDeclaration),
   ];
 }

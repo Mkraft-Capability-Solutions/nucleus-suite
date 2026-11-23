@@ -1,15 +1,15 @@
 ﻿.floatingChatContainer {
     position: fixed;
     bottom: 7.25rem;
-    right: 2rem;
+    inset-inline-end: 2rem;
     width: 420px;
     max-width: calc(100vw - 3rem);
     height: 600px;
     max-height: calc(100vh - 9rem);
-    background: var(--card, #FFFFFF);
+    background: var(--card);
     border-radius: var(--r-overlay, 12px);
-    border: 1px solid var(--line, #D8DEDA);
-    box-shadow: var(--shadow-overlay, 0 12px 32px -8px rgba(16,34,47,.22));
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-overlay);
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -31,8 +31,8 @@
 
 .header {
     padding: 0.85rem 1.15rem;
-    background: var(--card, #FFFFFF);
-    border-bottom: 1px solid var(--line, #D8DEDA);
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -49,25 +49,25 @@
     width: 34px;
     height: 34px;
     border-radius: var(--r-control, 6px);
-    background: var(--signal, #0F6E5C);
+    background: var(--signal);
     color: var(--on-signal);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 8px rgba(15, 110, 92, 0.25);
+    box-shadow: var(--shadow-raise);
 }
 
 .titleBlock strong {
     display: block;
     font-size: 0.88rem;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     font-weight: 700;
     letter-spacing: -0.01em;
 }
 
 .titleBlock span {
-    font-size: 0.72rem;
-    color: var(--signal-ink, #0A5546);
+    font-size: 12.5px;
+    color: var(--signal-ink);
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -79,16 +79,16 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--signal, #0F6E5C);
+    background: var(--signal);
 }
 
 .closeBtn {
     width: 28px;
     height: 28px;
     border-radius: var(--r-control, 6px);
-    border: 1px solid var(--line, #D8DEDA);
-    background: var(--card-2, #F6F8F6);
-    color: var(--text-2, #5A6B78);
+    border: 1px solid var(--line);
+    background: var(--card-2);
+    color: var(--text-2, var(--slate));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -97,9 +97,9 @@
 }
 
 .closeBtn:hover {
-    background: var(--flag-wash, #F8E9E5);
-    color: var(--flag, #A8341F);
-    border-color: rgba(168, 52, 31, 0.3);
+    background: var(--flag-wash, var(--flag-wash));
+    color: var(--flag, var(--flag));
+    border-color: var(--flag);
 }
 
 /* Channels Horizontal Scroll Tab Strip */
@@ -107,8 +107,8 @@
     display: flex;
     gap: 0.35rem;
     padding: 0.5rem 0.85rem;
-    background: var(--card-2, #F6F8F6);
-    border-bottom: 1px solid var(--line, #D8DEDA);
+    background: var(--card-2);
+    border-bottom: 1px solid var(--line);
     overflow-x: auto;
     flex-shrink: 0;
 }
@@ -118,7 +118,7 @@
 }
 
 .channelStrip::-webkit-scrollbar-thumb {
-    background: var(--line, #D8DEDA);
+    background: var(--line);
     border-radius: 3px;
 }
 
@@ -127,9 +127,9 @@
     border-radius: var(--r-control, 5px);
     border: 1px solid transparent;
     background: transparent;
-    font-size: 0.74rem;
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     cursor: pointer;
     white-space: nowrap;
     display: flex;
@@ -139,21 +139,21 @@
 }
 
 .channelTab:hover {
-    background: var(--card, #FFFFFF);
-    color: var(--text, #10222F);
+    background: var(--card);
+    color: var(--text, var(--ink));
 }
 
 .channelTab.channelActive {
-    background: var(--card, #FFFFFF);
-    color: var(--signal-ink, #0A5546);
-    border-color: var(--line, #D8DEDA);
-    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    background: var(--card);
+    color: var(--signal-ink);
+    border-color: var(--line);
+    box-shadow: var(--shadow-raise);
 }
 
 .tabBadge {
-    background: var(--flag, #A8341F);
-    color: #ffffff;
-    font-size: 0.65rem;
+    background: var(--flag, var(--flag));
+    color: var(--card);
+    font-size: 12.5px;
     font-family: var(--f-num, monospace);
     font-weight: 700;
     padding: 0.05rem 0.35rem;
@@ -168,7 +168,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.85rem;
-    background: var(--paper, #EDF0EE);
+    background: var(--paper);
 }
 
 .chatHistory::-webkit-scrollbar {
@@ -176,7 +176,7 @@
 }
 
 .chatHistory::-webkit-scrollbar-thumb {
-    background: var(--line, #D8DEDA);
+    background: var(--line);
     border-radius: 4px;
 }
 
@@ -196,7 +196,7 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    border: 1px solid var(--line, #D8DEDA);
+    border: 1px solid var(--line);
     flex-shrink: 0;
 }
 
@@ -207,9 +207,9 @@
 }
 
 .messageSender {
-    font-size: 0.7rem;
+    font-size: 12.5px;
     font-weight: 700;
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -220,36 +220,36 @@
 }
 
 .messageTime {
-    font-size: 0.68rem;
+    font-size: 12.5px;
     font-family: var(--f-num, monospace);
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
     font-weight: 400;
 }
 
 .messageContent {
-    background: var(--card, #FFFFFF);
-    color: var(--text, #10222F);
+    background: var(--card);
+    color: var(--text, var(--ink));
     padding: 0.65rem 0.85rem;
     border-radius: var(--r-card, 7px);
     font-size: 0.82rem;
     line-height: 1.45;
-    border: 1px solid var(--line, #D8DEDA);
-    box-shadow: var(--shadow-raise, 0 1px 2px rgba(16,34,47,.06));
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-raise);
     word-break: break-word;
 }
 
 .messageRow.isOwn .messageContent {
-    background: var(--signal, #0F6E5C);
+    background: var(--signal);
     color: var(--on-signal);
-    border-color: var(--signal-ink, #0A5546);
-    box-shadow: 0 2px 6px rgba(15, 110, 92, 0.2);
+    border-color: var(--signal-ink);
+    box-shadow: var(--shadow-raise);
 }
 
 /* Input Area */
 .inputArea {
     padding: 0.65rem 1rem;
-    background: var(--card, #FFFFFF);
-    border-top: 1px solid var(--line, #D8DEDA);
+    background: var(--card);
+    border-top: 1px solid var(--line);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -257,29 +257,29 @@
 
 .chatInput {
     flex: 1;
-    border: 1px solid var(--line, #D8DEDA);
+    border: 1px solid var(--line);
     border-radius: var(--r-control, 6px);
-    background: var(--card-2, #F6F8F6);
+    background: var(--card-2);
     padding: 0.5rem 0.75rem;
     font-size: 0.84rem;
-    color: var(--text, #10222F);
+    color: var(--text, var(--ink));
     font-family: inherit;
     outline: none;
     transition: border-color 0.15s ease, background 0.15s ease;
 }
 
 .chatInput:focus {
-    border-color: var(--signal, #0F6E5C);
-    background: var(--card, #FFFFFF);
-    box-shadow: 0 0 0 2px var(--signal-wash, #E4F0EC);
+    border-color: var(--signal);
+    background: var(--card);
+    box-shadow: 0 0 0 2px var(--signal-wash);
 }
 
 .chatInput::placeholder {
-    color: var(--text-2, #5A6B78);
+    color: var(--text-2, var(--slate));
 }
 
 .sendBtn {
-    background: var(--signal, #0F6E5C);
+    background: var(--signal);
     color: var(--on-signal);
     border: none;
     width: 34px;
@@ -294,7 +294,7 @@
 }
 
 .sendBtn:hover:not(:disabled) {
-    background: var(--signal-ink, #0A5546);
+    background: var(--signal-ink);
 }
 
 .sendBtn:disabled {
@@ -303,3 +303,51 @@
 }
 
 @media(max-width:640px){.floatingChatContainer{inset:8px 8px auto;width:auto;max-width:none;height:calc(100dvh - 100px - env(safe-area-inset-bottom));max-height:none}}
+
+/* Opened from the header Messages button: drops down under the header, above rails and content. */
+.floatingChatContainer { top: calc(68px + 8px); bottom: auto; inset-inline-end: 24px; inset-inline-end: 24px; max-height: calc(100vh - 68px - 44px - 24px); z-index: 1050; }
+
+/* Honest unavailable state: no messaging store exists. */
+.channelDisabled {
+    cursor: default;
+    opacity: 0.7;
+}
+
+.unavailable {
+    margin: auto;
+    max-width: 18rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    color: var(--text-2);
+    font-size: 0.86rem;
+}
+
+.unavailable strong {
+    color: var(--text);
+    font-size: 0.95rem;
+}
+
+.unavailable p {
+    margin: 0;
+    line-height: 1.45;
+}
+
+.unavailableHint {
+    color: var(--text-3);
+    font-size: 0.8rem;
+}
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

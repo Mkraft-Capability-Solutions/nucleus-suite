@@ -76,11 +76,11 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
         </div>
 
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ margin: 0, fontSize: '12px', fontWeight: 700, color: 'var(--text, #10222F)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p style={{ margin: 0, fontSize: '12px', fontWeight: 700, color: 'var(--text, var(--ink))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             
             {t("components.Workspace.NucleusDock.text_nucleus_talk", "Nucleus Talk")}
           </p>
-          <p style={{ margin: 0, fontSize: '11px', color: 'var(--text-2, #5A6B78)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+          <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-2, var(--slate))', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {status === 'connecting' ? 'Opening session…' : draft ? 'Awaiting confirmation' : 'Listening…'}
           </p>
         </div>
@@ -88,12 +88,12 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
         {/* Status pill */}
         <span
           style={{
-            fontSize: '10px',
+            fontSize: '12.5px',
             fontWeight: 700,
             padding: '2px 8px',
             borderRadius: '999px',
             background: draft ? 'rgba(147, 51, 234, 0.12)' : listening ? 'var(--status-ok-wash, rgba(16, 185, 129, 0.1))' : 'var(--pending-wash, rgba(234, 179, 8, 0.1))',
-            color: draft ? '#7c3aed' : listening ? 'var(--status-ok, #10b981)' : 'var(--pending, #eab308)',
+            color: draft ? '#7c3aed' : listening ? 'var(--status-ok, var(--status-ok))' : 'var(--pending, #eab308)',
           }}
         >
           {draft ? 'Draft' : listening ? 'Live' : '…'}
@@ -107,7 +107,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
           style={{
             background: 'transparent',
             border: 'none',
-            color: 'var(--text-2, #5A6B78)',
+            color: 'var(--text-2, var(--slate))',
             cursor: 'pointer',
             padding: '4px',
             borderRadius: '6px',
@@ -136,22 +136,22 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
           >
             {lastUser && (
               <div style={{ alignSelf: 'flex-end', textAlign: 'right', maxWidth: '85%' }}>
-                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_you", "You")}</span>
-                <p style={{ margin: '2px 0 0', fontSize: '12px', fontWeight: 500, color: 'var(--text, #10222F)', background: 'var(--signal-wash, rgba(37, 99, 235, 0.08))', padding: '6px 10px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_you", "You")}</span>
+                <p style={{ margin: '2px 0 0', fontSize: '12px', fontWeight: 500, color: 'var(--text, var(--ink))', background: 'var(--signal-wash, rgba(37, 99, 235, 0.08))', padding: '6px 10px', borderRadius: '8px' }}>
                   {lastUser.text}
                 </p>
               </div>
             )}
             {lastAssistant && (
               <div style={{ alignSelf: 'flex-start', textAlign: 'left', maxWidth: '85%' }}>
-                <span style={{ fontSize: '9px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_nucleus", "Nucleus")}</span>
-                <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text, #10222F)', background: 'var(--card-2, rgba(0, 0, 0, 0.04))', padding: '6px 10px', borderRadius: '8px' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-3, #888)' }}>{t("components.Workspace.NucleusDock.text_nucleus", "Nucleus")}</span>
+                <p style={{ margin: '2px 0 0', fontSize: '12px', color: 'var(--text, var(--ink))', background: 'var(--card-2, rgba(0, 0, 0, 0.04))', padding: '6px 10px', borderRadius: '8px' }}>
                   {lastAssistant.text}
                 </p>
               </div>
             )}
             {!lastUser && !lastAssistant && (
-              <p style={{ margin: 0, textAlign: 'center', fontSize: '11px', color: 'var(--text-2, #5A6B78)' }}>
+              <p style={{ margin: 0, textAlign: 'center', fontSize: '12.5px', color: 'var(--text-2, var(--slate))' }}>
                 
                 {t("components.Workspace.NucleusDock.text_listening_say_a_command_or_ask_a_questio", "Listening… Say a command or ask a question.")}
               </p>
@@ -167,21 +167,21 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                 padding: '12px 14px',
               }}
             >
-              <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 700, color: 'var(--text, #10222F)' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 700, color: 'var(--text, var(--ink))' }}>
                 
                 {t("components.Workspace.NucleusDock.text_confirm_before_this_is_written", "Confirm before this is written")}
               </p>
-              <p style={{ margin: '0 0 8px', fontSize: '11px', color: 'var(--text-2, #5A6B78)' }}>
+              <p style={{ margin: '0 0 8px', fontSize: '12.5px', color: 'var(--text-2, var(--slate))' }}>
                 {draft.action.summary}
               </p>
               <div style={{ display: 'grid', gap: '4px', maxHeight: '120px', overflowY: 'auto', marginBottom: '10px' }}>
                 {draft.fields.map((field) => (
-                  <div key={field.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', borderBottom: '1px solid var(--line, rgba(0,0,0,0.05))', paddingBottom: '3px' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--text-2, #5A6B78)' }}>
+                  <div key={field.name} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', borderBottom: '1px solid var(--line, rgba(0,0,0,0.05))', paddingBottom: '3px' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text-2, var(--slate))' }}>
                       {field.label}:
                       {field.origin === 'default' && <span style={{ fontWeight: 400, marginLeft: '4px', opacity: 0.8 }}>{t("components.Workspace.NucleusDock.text_not_supplied_form_default", "(not supplied — form default)")}</span>}
                     </span>
-                    <span style={{ fontWeight: 600, color: 'var(--text, #10222F)' }}>
+                    <span style={{ fontWeight: 600, color: 'var(--text, var(--ink))' }}>
                       {typeof field.value === 'object' ? JSON.stringify(field.value) : String(field.value)}
                     </span>
                   </div>
@@ -198,9 +198,9 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                     justifyContent: 'center',
                     gap: '4px',
                     padding: '6px 12px',
-                    fontSize: '11px',
+                    fontSize: '12.5px',
                     fontWeight: 700,
-                    background: 'var(--status-ok, #10b981)',
+                    background: 'var(--status-ok, var(--status-ok))',
                     color: '#ffffff',
                     border: 'none',
                     borderRadius: '6px',
@@ -218,10 +218,10 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                     justifyContent: 'center',
                     gap: '4px',
                     padding: '6px 12px',
-                    fontSize: '11px',
+                    fontSize: '12.5px',
                     fontWeight: 600,
                     background: 'var(--card-2, rgba(0, 0, 0, 0.05))',
-                    color: 'var(--text, #10222F)',
+                    color: 'var(--text, var(--ink))',
                     border: '1px solid var(--line, rgba(0, 0, 0, 0.1))',
                     borderRadius: '6px',
                     cursor: 'pointer',
@@ -234,7 +234,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
           )}
 
           {draftResult && (
-            <div style={{ padding: '8px 14px', fontSize: '11px', background: 'var(--card-2, rgba(0,0,0,0.03))', borderTop: '1px solid var(--line, rgba(0,0,0,0.08))', color: 'var(--text, #10222F)' }}>
+            <div style={{ padding: '8px 14px', fontSize: '12.5px', background: 'var(--card-2, rgba(0,0,0,0.03))', borderTop: '1px solid var(--line, rgba(0,0,0,0.08))', color: 'var(--text, var(--ink))' }}>
               {draftResult}
             </div>
           )}
@@ -257,8 +257,8 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: 'var(--signal, #2563eb)',
-                  fontSize: '11px',
+                  color: 'var(--signal, var(--signal))',
+                  fontSize: '12.5px',
                   fontWeight: 700,
                   cursor: 'pointer',
                   display: 'flex',
@@ -277,7 +277,7 @@ export function NucleusDock({ onOpenVoiceModal }: { onOpenVoiceModal?: () => voi
                 background: 'transparent',
                 border: 'none',
                 color: 'var(--flag, #ef4444)',
-                fontSize: '11px',
+                fontSize: '12.5px',
                 fontWeight: 700,
                 cursor: 'pointer',
                 display: 'flex',

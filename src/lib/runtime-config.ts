@@ -12,9 +12,25 @@ function value(environment: Environment, key: string) {
   return candidate || undefined;
 }
 
+/**
+ * Public origin of this deployment. BETTER_AUTH_URL wins; on Vercel without it, the production
+ * domain is used for production deployments and the branch/deployment URL for previews, so
+ * preview deployments sign in on their own origin.
+ */
+function appOrigin(environment: Environment) {
+  const explicit = value(environment, "BETTER_AUTH_URL");
+  if (explicit) return explicit;
+  if (environment.VERCEL !== "1") return undefined;
+  const host =
+    environment.VERCEL_ENV === "production"
+      ? value(environment, "VERCEL_PROJECT_PRODUCTION_URL")
+      : value(environment, "VERCEL_BRANCH_URL") ?? value(environment, "VERCEL_URL");
+  return host ? `https://${host}` : undefined;
+}
+
 export function readRuntimeConfiguration(environment: Environment = process.env): RuntimeConfiguration {
   return {
-    appUrl: value(environment, "BETTER_AUTH_URL"),
+    appUrl: appOrigin(environment),
     databaseUrl: value(environment, "DATABASE_URL"),
     authSecret: value(environment, "BETTER_AUTH_SECRET"),
     migrationDatabaseUrl: value(environment, "MIGRATION_DATABASE_URL"),

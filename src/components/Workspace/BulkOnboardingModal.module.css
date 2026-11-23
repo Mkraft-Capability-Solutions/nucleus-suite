@@ -93,7 +93,7 @@
 }
 
 .stepItem.completed {
-  color: #10b981;
+  color: var(--status-ok);
 }
 
 .stepNumber {
@@ -113,7 +113,7 @@
 }
 
 .stepItem.completed .stepNumber {
-  background: #10b981;
+  background: var(--status-ok);
   color: #0f172a;
 }
 
@@ -206,7 +206,7 @@
 }
 
 .btnPrimary {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  background: linear-gradient(135deg, var(--signal) 0%, var(--signal-ink) 100%);
   border: none;
   color: #ffffff;
   padding: 0.55rem 1.3rem;
@@ -215,3 +215,6 @@
   font-weight: 700;
   cursor: pointer;
 }
+.resultTitle { margin: 0 0 0.5rem; color: var(--text); font-size: 18px; font-weight: 600; }
+.resultBody { font-size: 14px; color: var(--text-2); text-align: start; }
+.resultBody ul { margin: 8px 0 0; padding-inline-start: 18px; max-height: 180px; overflow-y: auto; }

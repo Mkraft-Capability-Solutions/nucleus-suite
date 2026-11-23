@@ -195,7 +195,7 @@ export function deriveCompOffStatus(
 type CompOffQueryRow = Omit<CompOffClockEntry, "status"> & { storedStatus: string | null };
 
 /** Comp-off grants with the days left on each, soonest expiry first. */
-export async function listCompOffClock(access: Access): Promise<CompOffClockEntry[]> {
+export async function listCompOffClock(access: Access, employeeId: string | null = null): Promise<CompOffClockEntry[]> {
   enforce(access.context, "leave.read", { tenantId: access.tenantId });
   const [rows] = await tenantTx(access, [
     sqlClient.query(
@@ -205,18 +205,18 @@ export async function listCompOffClock(access: Access): Promise<CompOffClockEntr
           ${EMPLOYEE_NAME} as "employeeName",
           g.attributes->>'earned_on' as "earnedOn",
           g.attributes->>'expires_on' as "expiresOn",
-          case when coalesce(g.attributes->>'days_remaining', '') ${NUMERIC}
-               then (g.attributes->>'days_remaining')::float else 0 end as "daysRemaining",
+          case when coalesce(g.attributes->>'days_remaining', g.attributes->>'days', '') ${NUMERIC}
+               then (coalesce(g.attributes->>'days_remaining', g.attributes->>'days'))::float else 0 end as "daysRemaining",
           g.attributes->>'status' as "storedStatus",
           case when coalesce(g.attributes->>'expires_on', '') ${ISO_DATE}
                then ((g.attributes->>'expires_on')::date - current_date) end as "daysToExpiry"
         from comp_off_grants g
         left join employees emp on emp.tenant_id = g.tenant_id and emp.id = g.employee_id
-        where g.tenant_id = $1
+        where g.tenant_id = $1 and ($2::text is null or g.employee_id::text = $2)
         order by coalesce(nullif(g.attributes->>'expires_on', ''), '9999-12-31') asc,
           coalesce(g.attributes->>'credit_id', '') asc, g.created_at asc
         limit 200`,
-      [access.tenantId],
+      [access.tenantId, employeeId],
     ),
   ]);
   return (rows as CompOffQueryRow[]).map(({ storedStatus, ...row }) => ({
@@ -249,7 +249,7 @@ export type EarlyReturnEntry = {
  * from the dates, because only the ledger knows what was really returned. A
  * request with no such credit reports null rather than a guess.
  */
-export async function listEarlyReturns(access: Access): Promise<EarlyReturnEntry[]> {
+export async function listEarlyReturns(access: Access, employeeId: string | null = null): Promise<EarlyReturnEntry[]> {
   enforce(access.context, "leave.read", { tenantId: access.tenantId });
   const [rows] = await tenantTx(access, [
     sqlClient.query(
@@ -270,9 +270,10 @@ export async function listEarlyReturns(access: Access): Promise<EarlyReturnEntry
         from leave_requests r
         left join employees emp on emp.tenant_id = r.tenant_id and emp.id = r.employee_id
         where r.tenant_id = $1 and r.actual_return_date is not null
+          and ($2::text is null or r.employee_id::text = $2)
         order by r.actual_return_date desc, r.created_at desc
         limit 200`,
-      [access.tenantId],
+      [access.tenantId, employeeId],
     ),
   ]);
   return (rows as EarlyReturnEntry[]).map((row) => ({

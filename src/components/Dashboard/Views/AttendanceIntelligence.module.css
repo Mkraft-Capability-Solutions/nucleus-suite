@@ -1,0 +1,109 @@
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.period {
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--text-2);
+}
+
+.toolbarActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.coverageStrip {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  text-align: center;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-data, 6px);
+}
+
+.slotBand {
+  font-family: var(--f-mono, monospace);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.slotValue {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.slotMeta,
+.slotRequired {
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+
+.note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--text-3);
+}
+
+.empty {
+  margin: 0;
+  padding: 24px 8px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-2);
+}
+
+.disabledAction,
+.linkAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--r-control, 8px);
+  font: 600 0.74rem var(--f-ui);
+}
+
+.disabledAction {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.linkAction {
+  border: none;
+  background: transparent;
+  color: var(--signal);
+  cursor: pointer;
+}
+
+.linkAction:hover {
+  text-decoration: underline;
+}
+
+.linkAction:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 2px;
+}

@@ -1,0 +1,18 @@
+.wrap { position: relative; flex-shrink: 0; }
+.pill { display: inline-flex; align-items: center; gap: 0.5rem; height: 36px; padding-inline: 0.85rem; max-width: 260px; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-pill, 6px); color: var(--text); cursor: pointer; font: inherit; font-size: 14px; }
+.pill:hover, .pill[aria-expanded="true"] { border-color: var(--signal); background: var(--card-2); }
+.pill:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kicker { color: var(--text-3); font-size: var(--t-micro, 12px); }
+.menu { position: absolute; top: calc(100% + 8px); inset-inline-start: 0; width: 340px; max-height: min(70dvh, 480px); display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card, 10px); box-shadow: var(--shadow-overlay); z-index: 10000; overflow: hidden; }
+.search { margin: 0.6rem; padding: 0.45rem 0.6rem; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--r-control, 6px); color: var(--text); font: inherit; }
+.search:focus-visible { outline: 2px solid var(--signal); outline-offset: 1px; }
+.list { list-style: none; margin: 0; padding: 0 0.35rem 0.5rem; overflow-y: auto; }
+.item { display: flex; align-items: center; gap: 0.4rem; width: 100%; padding-block: 0.4rem; padding-inline-end: 0.5rem; background: transparent; border: 0; border-radius: var(--r-data, 4px); color: var(--text); font: inherit; font-size: 14px; text-align: start; cursor: pointer; }
+.item:hover:not(:disabled), .item:focus-visible { background: var(--signal-wash); outline: none; }
+.item:disabled { color: var(--text-3); cursor: default; }
+.itemActive { color: var(--signal); font-weight: 600; }
+.meta { margin-inline-start: auto; color: var(--text-3); font-size: var(--t-micro, 12px); }
+.state { padding: 0.75rem; color: var(--text-2); font-size: 14px; }
+.error { color: var(--flag); }
+@media (max-width: 900px) { .label { display: none; } .menu { position: fixed; top: 60px; inset-inline: 8px; width: auto; } }

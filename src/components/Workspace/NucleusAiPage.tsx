@@ -51,12 +51,12 @@ export function StatusPill({
 }) {
     const { t } = useTranslation();
   const stylesByTone: Record<string, { bg: string; border: string; color: string }> = {
-    success: { bg: "var(--status-ok-wash, rgba(16, 185, 129, 0.1))", border: "rgba(16, 185, 129, 0.3)", color: "var(--status-ok, #10b981)" },
+    success: { bg: "var(--status-ok-wash, rgba(16, 185, 129, 0.1))", border: "rgba(16, 185, 129, 0.3)", color: "var(--status-ok, var(--status-ok))" },
     warning: { bg: "var(--pending-wash, rgba(245, 158, 11, 0.1))", border: "rgba(245, 158, 11, 0.3)", color: "var(--pending, #f59e0b)" },
     danger: { bg: "var(--flag-wash, rgba(239, 68, 68, 0.1))", border: "rgba(239, 68, 68, 0.3)", color: "var(--flag, #ef4444)" },
     info: { bg: "var(--info-wash, rgba(59, 130, 246, 0.1))", border: "rgba(59, 130, 246, 0.3)", color: "var(--info, #3b82f6)" },
     violet: { bg: "var(--signal-wash, rgba(147, 51, 234, 0.1))", border: "rgba(147, 51, 234, 0.3)", color: "var(--signal, #9333ea)" },
-    neutral: { bg: "var(--card-2, rgba(0, 0, 0, 0.05))", border: "var(--line, rgba(0, 0, 0, 0.1))", color: "var(--text-2, #5A6B78)" },
+    neutral: { bg: "var(--card-2, rgba(0, 0, 0, 0.05))", border: "var(--line, rgba(0, 0, 0, 0.1))", color: "var(--text-2, var(--slate))" },
   };
   const currentStyle = stylesByTone[tone] || stylesByTone.neutral;
 
@@ -71,7 +71,7 @@ export function StatusPill({
         background: currentStyle.bg,
         color: currentStyle.color,
         padding: "3px 8px",
-        fontSize: "11px",
+        fontSize: "12.5px",
         fontWeight: 600,
         letterSpacing: "0.02em",
       }}
@@ -132,7 +132,7 @@ function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
           padding: "12px",
         }}
       >
-        <p style={{ margin: 0, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-3, #888)" }}>
+        <p style={{ margin: 0, fontSize: "12.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-3, #888)" }}>
           {label}
         </p>
         <p style={{ margin: "4px 0 0", fontSize: "12px", fontWeight: 600, color: "var(--pending, #f59e0b)" }}>
@@ -140,7 +140,7 @@ function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
           {t("components.Workspace.NucleusAiPage.text_not_recorded", "Not recorded")}
         </p>
         {entry.message && (
-          <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+          <p style={{ margin: "4px 0 0", fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
             {entry.message}
           </p>
         )}
@@ -156,14 +156,14 @@ function FigureCard({ label, entry }: { label: string; entry: SourceLike }) {
         padding: "12px",
       }}
     >
-      <p style={{ margin: 0, fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-3, #888)" }}>
+      <p style={{ margin: 0, fontSize: "12.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-3, #888)" }}>
         {label}
       </p>
-      <p style={{ margin: "4px 0 0", fontSize: "18px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+      <p style={{ margin: "4px 0 0", fontSize: "18px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
         {scalar ? String(entry.value) : Array.isArray(entry.value) ? `${entry.value.length} row(s)` : "Recorded"}
       </p>
       {entry.origin && (
-        <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+        <p style={{ margin: "4px 0 0", fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
           {entry.origin}
         </p>
       )}
@@ -254,11 +254,11 @@ export function NucleusAiPage() {
             <Sparkles size={20} />
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+            <h1 style={{ margin: 0, fontSize: "18px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
               
               {t("components.Workspace.NucleusAiPage.text_nucleus_ai", "Nucleus AI")}
             </h1>
-            <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
+            <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, var(--slate))" }}>
               {session
                 ? `${session.model} · ${session.actions.length} action(s) available to you`
                 : "Ask for an analysis and hear it back with its source. Nothing is written until you confirm it."}
@@ -314,7 +314,7 @@ export function NucleusAiPage() {
                 flexShrink: 0,
                 borderBottom: "1px solid var(--line, rgba(0, 0, 0, 0.08))",
                 padding: "8px 16px",
-                fontSize: "11px",
+                fontSize: "12.5px",
                 color: "var(--text-3, #888)",
               }}
             >
@@ -342,10 +342,10 @@ export function NucleusAiPage() {
             {turns.length === 0 && (
               <div style={{ margin: "auto", textAlign: "center", padding: "32px 16px" }}>
                 <Mic style={{ margin: "0 auto 12px", color: "var(--text-3, #888)", width: "32px", height: "32px" }} />
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
                   {listening ? "Go ahead, ask." : "Tap the sphere to talk"}
                 </h3>
-                <p style={{ margin: "6px auto 0", maxWidth: "380px", fontSize: "13px", color: "var(--text-2, #5A6B78)" }}>
+                <p style={{ margin: "6px auto 0", maxWidth: "380px", fontSize: "13px", color: "var(--text-2, var(--slate))" }}>
                   {listening
                     ? "Try: give me the six month workforce analysis, or apply leave for me next week."
                     : "Nucleus AI reads only what your role may read, and writes nothing until you confirm it."}
@@ -365,7 +365,7 @@ export function NucleusAiPage() {
               >
                 <span
                   style={{
-                    fontSize: "10px",
+                    fontSize: "12.5px",
                     fontWeight: 700,
                     textTransform: "uppercase",
                     letterSpacing: "0.1em",
@@ -382,7 +382,7 @@ export function NucleusAiPage() {
                     fontSize: "14px",
                     lineHeight: "1.5",
                     fontWeight: turn.role === "user" ? 600 : 400,
-                    color: "var(--text, #10222F)",
+                    color: "var(--text, var(--ink))",
                     background: turn.role === "user" ? "var(--signal-wash, rgba(147, 51, 234, 0.08))" : "var(--card-2, rgba(0, 0, 0, 0.03))",
                     padding: "8px 14px",
                     borderRadius: "10px",
@@ -406,11 +406,11 @@ export function NucleusAiPage() {
             >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px" }}>
                 <div>
-                  <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+                  <p style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
                     
                     {t("components.Workspace.NucleusAiPage.text_confirm_before_this_is_written", "Confirm before this is written")}
                   </p>
-                  <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
+                  <p style={{ margin: "2px 0 0", fontSize: "12px", color: "var(--text-2, var(--slate))" }}>
                     {draft.action.summary}
                   </p>
                 </div>
@@ -429,7 +429,7 @@ export function NucleusAiPage() {
                       paddingBottom: "4px",
                     }}
                   >
-                    <dt style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", color: "var(--text-3, #888)" }}>
+                    <dt style={{ fontSize: "12.5px", fontWeight: 700, textTransform: "uppercase", color: "var(--text-3, #888)" }}>
                       {field.label}
                       {field.origin === "default" && (
                         <span style={{ marginLeft: "6px", fontWeight: 400, textTransform: "none" }}>
@@ -438,7 +438,7 @@ export function NucleusAiPage() {
                         </span>
                       )}
                     </dt>
-                    <dd style={{ margin: 0, fontFamily: "monospace", fontSize: "12px", fontWeight: 600, color: "var(--text, #10222F)" }}>
+                    <dd style={{ margin: 0, fontFamily: "monospace", fontSize: "12px", fontWeight: 600, color: "var(--text, var(--ink))" }}>
                       {typeof field.value === "object" ? JSON.stringify(field.value) : String(field.value)}
                     </dd>
                   </div>
@@ -455,7 +455,7 @@ export function NucleusAiPage() {
                     gap: "6px",
                     padding: "8px 14px",
                     borderRadius: "8px",
-                    background: "var(--status-ok, #10b981)",
+                    background: "var(--status-ok, var(--status-ok))",
                     color: "#ffffff",
                     fontWeight: 700,
                     fontSize: "12px",
@@ -475,7 +475,7 @@ export function NucleusAiPage() {
                     padding: "8px 14px",
                     borderRadius: "8px",
                     background: "var(--card-2, rgba(0, 0, 0, 0.05))",
-                    color: "var(--text, #10222F)",
+                    color: "var(--text, var(--ink))",
                     border: "1px solid var(--line, rgba(0, 0, 0, 0.1))",
                     fontWeight: 600,
                     fontSize: "12px",
@@ -485,9 +485,9 @@ export function NucleusAiPage() {
                   <X size={16} />  {t("components.Workspace.NucleusAiPage.text_cancel", "Cancel")}
                 </button>
                 {listening && (
-                  <p style={{ margin: 0, fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+                  <p style={{ margin: 0, fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
                     
-                    {t("components.Workspace.NucleusAiPage.text_or_say", "Or say")} <span style={{ fontWeight: 700, color: "var(--text, #10222F)" }}>{t("components.Workspace.NucleusAiPage.text_confirm", "“confirm”")}</span>  {t("components.Workspace.NucleusAiPage.text_on_its_own_so_it_cannot_be_mistaken_for_", "— on its own, so it cannot be mistaken for part of a sentence.")}
+                    {t("components.Workspace.NucleusAiPage.text_or_say", "Or say")} <span style={{ fontWeight: 700, color: "var(--text, var(--ink))" }}>{t("components.Workspace.NucleusAiPage.text_confirm", "“confirm”")}</span>  {t("components.Workspace.NucleusAiPage.text_on_its_own_so_it_cannot_be_mistaken_for_", "— on its own, so it cannot be mistaken for part of a sentence.")}
                   </p>
                 )}
               </div>
@@ -504,7 +504,7 @@ export function NucleusAiPage() {
                 background: "var(--card-2, rgba(0, 0, 0, 0.03))",
                 padding: "10px 16px",
                 fontSize: "12px",
-                color: "var(--text, #10222F)",
+                color: "var(--text, var(--ink))",
               }}
             >
               {draftResult}
@@ -546,7 +546,7 @@ export function NucleusAiPage() {
               </button>
 
               <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "6px" }}>
-                <p style={{ margin: 0, fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+                <p style={{ margin: 0, fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
                   {status === "connecting"
                     ? "Opening a session…"
                     : listening
@@ -574,7 +574,7 @@ export function NucleusAiPage() {
                       background: "var(--card-2, rgba(0, 0, 0, 0.03))",
                       padding: "0 14px",
                       fontSize: "12px",
-                      color: "var(--text, #10222F)",
+                      color: "var(--text, var(--ink))",
                       outline: "none",
                     }}
                   />
@@ -608,11 +608,11 @@ export function NucleusAiPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: "14px", overflowY: "auto", minHeight: 0 }}>
           {screens.length > 0 && (
             <Surface>
-              <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+              <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
                 
                 {t("components.Workspace.NucleusAiPage.text_screens_the_assistant_opened", "Screens the assistant opened")}
               </p>
-              <p style={{ margin: "2px 0 10px", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+              <p style={{ margin: "2px 0 10px", fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
                 
                 {t("components.Workspace.NucleusAiPage.text_opening_one_navigates_the_workspace_behi", "Opening one navigates the workspace behind this conversation. The session stays live, so you can keep talking.")}
               </p>
@@ -630,7 +630,7 @@ export function NucleusAiPage() {
                         border: "1px solid rgba(147, 51, 234, 0.3)",
                         background: "var(--signal-wash, rgba(147, 51, 234, 0.05))",
                         textDecoration: "none",
-                        color: "var(--text, #10222F)",
+                        color: "var(--text, var(--ink))",
                         fontSize: "12px",
                         fontWeight: 600,
                       }}
@@ -645,19 +645,19 @@ export function NucleusAiPage() {
           )}
 
           <Surface>
-            <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+            <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
               
               {t("components.Workspace.NucleusAiPage.text_latest_analysis", "Latest analysis")}
             </p>
             {!analysis && (
-              <p style={{ margin: "6px 0 0", fontSize: "12px", color: "var(--text-2, #5A6B78)" }}>
+              <p style={{ margin: "6px 0 0", fontSize: "12px", color: "var(--text-2, var(--slate))" }}>
                 
                 {t("components.Workspace.NucleusAiPage.text_figures_appear_here_as_they_are_read_eac", "Figures appear here as they are read, each labelled with the record it came from.")}
               </p>
             )}
             {analysis && (
               <>
-                <p style={{ margin: "4px 0 8px", fontFamily: "monospace", fontSize: "11px", color: "var(--text-3, #888)" }}>
+                <p style={{ margin: "4px 0 8px", fontFamily: "monospace", fontSize: "12.5px", color: "var(--text-3, #888)" }}>
                   {analysis.tool}
                 </p>
                 <div style={{ display: "grid", gap: "8px" }}>
@@ -670,11 +670,11 @@ export function NucleusAiPage() {
           </Surface>
 
           <Surface>
-            <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, #10222F)" }}>
+            <p style={{ margin: 0, fontSize: "13px", fontWeight: 700, color: "var(--text, var(--ink))" }}>
               
               {t("components.Workspace.NucleusAiPage.text_tool_trace", "Tool trace")}
             </p>
-            <p style={{ margin: "2px 0 10px", fontSize: "11px", color: "var(--text-2, #5A6B78)" }}>
+            <p style={{ margin: "2px 0 10px", fontSize: "12.5px", color: "var(--text-2, var(--slate))" }}>
               
               {t("components.Workspace.NucleusAiPage.text_every_tool_the_assistant_called_in_order", "Every tool the assistant called, in order. A figure with no entry here was not measured.")}
             </p>
@@ -696,7 +696,7 @@ export function NucleusAiPage() {
                     background: "var(--card-2, rgba(0, 0, 0, 0.02))",
                   }}
                 >
-                  <span style={{ fontFamily: "monospace", fontSize: "11px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ fontFamily: "monospace", fontSize: "12.5px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {entry.tool}
                   </span>
                   <StatusPill tone={entry.outcome === "error" ? "danger" : entry.outcome === "draft" ? "violet" : entry.outcome === "needs_more_info" ? "warning" : "success"}>
@@ -710,7 +710,7 @@ export function NucleusAiPage() {
           <Surface style={{ border: "1px solid rgba(245, 158, 11, 0.3)" }}>
             <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
               <AlertTriangle size={16} style={{ color: "var(--pending, #f59e0b)", flexShrink: 0, marginTop: "2px" }} />
-              <p style={{ margin: 0, fontSize: "11px", lineHeight: "1.4", color: "var(--text-2, #5A6B78)" }}>
+              <p style={{ margin: 0, fontSize: "12.5px", lineHeight: "1.4", color: "var(--text-2, var(--slate))" }}>
                 
                 {t("components.Workspace.NucleusAiPage.text_nucleus_ai_reads_only_what_your_role_may", "Nucleus AI reads only what your role may read and writes nothing on its own. A drafted action is submitted by you,\n                through the same checks and audit trail as the form it stands in for.")}
               </p>

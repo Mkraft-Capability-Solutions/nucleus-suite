@@ -1,4 +1,5 @@
 import './globals.css';
+import { Inter } from 'next/font/google';
 import {t} from '@/lib/i18n';
 import {loadInterfaceMessages} from '@/services/localization';
 import { appearanceBootstrap, appearances } from '@/lib/appearance';
@@ -18,10 +19,12 @@ export const metadata = {
 
 import { Providers } from '@/components/Providers';
 
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+
 export default async function RootLayout({ children }) {
   const {locale,messages}=await loadInterfaceMessages();
   return (
-    <html lang={locale} data-theme="light" data-appearance="light" style={appearances[0].tokens} suppressHydrationWarning>
+    <html lang={locale} className={inter.variable} data-theme={appearances[0].mode} data-appearance={appearances[0].id} style={appearances[0].tokens} suppressHydrationWarning>
       <head><script id="nucleus-appearance" dangerouslySetInnerHTML={{ __html: appearanceBootstrap }} /></head>
       <body suppressHydrationWarning={true}>
         <Providers locale={locale} messages={messages}>{children}</Providers>

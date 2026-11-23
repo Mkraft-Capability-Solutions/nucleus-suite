@@ -1,6 +1,6 @@
 "use client";
 import { useState } from 'react';
-import { readData } from '@/services/workspace-data.mjs';
+import { useT } from '@/hooks/useT';
 import { getNavigationDomains } from '@/lib/workspace-navigation';
 import { canViewNavigationItem } from '@/lib/navigation-access';
 import { useAuth } from '@/context/AuthContext';
@@ -12,11 +12,12 @@ type CatalogGridViewProps = {
 };
 
 const CatalogGridView = ({ onSelectFeature, searchQuery = '' }: CatalogGridViewProps) => {
-    const [filterCategory, setFilterCategory] = useState(readData("components.Workspace.CatalogGridView", "initialState_1"));
+    const { t, locale } = useT();
+    const [filterCategory, setFilterCategory] = useState('ALL');
 
-    const { user, isModuleAllowed, isConsoleAllowed } = useAuth();
+    const { user, isModuleAllowed, isConsoleAllowed, isNavItemEnabled } = useAuth();
     const catalogCards = getNavigationDomains().flatMap(domain => domain.groups.flatMap(group => group.items
-        .filter(item => canViewNavigationItem(item, isModuleAllowed, user) && (!/^s(10|[1-9])$/i.test(item.id) || isConsoleAllowed(item.id.toUpperCase(), user?.role)))
+        .filter(item => canViewNavigationItem(item, isModuleAllowed, user, isNavItemEnabled) && (!/^s(10|[1-9])$/i.test(item.id) || isConsoleAllowed(item.id.toUpperCase(), user?.role)))
         .map(item => ({ ...item, title: item.label, desc: item.desc || group.heading, domain: domain.id, tag: domain.label, iconColor: 'var(--signal)' }))));
     const categories = ['ALL', ...getNavigationDomains().map(domain => domain.label)];
 
@@ -38,13 +39,14 @@ const CatalogGridView = ({ onSelectFeature, searchQuery = '' }: CatalogGridViewP
                         <button
                             key={cat}
                             className={`${styles.filterPill} ${filterCategory === cat ? styles.filterPillActive : ''}`}
+                            aria-pressed={filterCategory === cat}
                             onClick={() => setFilterCategory(cat)}
                         >
-                            {cat}
+                            {cat === 'ALL' ? t('components.Workspace.CatalogGridView.text_all', 'All') : cat}
                         </button>
                     ))}
                 </div>
-                <div className={styles.countText}>{readData("components.Workspace.CatalogGridView", "CatalogGridView_text_88")}{filteredCards.length}{readData("components.Workspace.CatalogGridView", "CatalogGridView_text_89")}</div>
+                <div className={styles.countText} role="status">{t('components.Workspace.CatalogGridView.text_count', 'Showing {count} features', { count: new Intl.NumberFormat(locale).format(filteredCards.length) })}</div>
             </div>
 
             {/* Feature Cards Grid (Exact match to screenshot) */}

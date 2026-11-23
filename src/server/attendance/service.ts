@@ -12,6 +12,7 @@ import { picklistLabel, picklistValues } from "@/lib/picklists";
 import { RECOMPUTE_QUEUE_ACTION } from "@/server/attendance/recompute-monitor";
 import { enforce, recordAudit, tenantTx, uuidOrNull, type Access } from "@/server/platform/access";
 import { HttpError } from "@/server/platform/http";
+import { entitlementConfig, isEntitled } from "@/server/entitlements/service";
 
 export const SHIFT_DEFINITIONS = {
   A: { code: "A", name: "General / A shift", startsAt: "08:00", endsAt: "20:00", durationMinutes: 720 },
@@ -222,8 +223,33 @@ export const ingestPunchesSchema = z.object({
   punches: z.array(punchSchema).min(2).max(32),
 });
 
+/**
+ * Organisation settings for punch capture (Settings → Modules → Time & attendance › Check-in & punches):
+ * accepted sources, rejecting outside-the-fence punches, and requiring a selfie on mobile punches.
+ */
+async function assertPunchCapturePolicy(access: Access, punches: ReadonlyArray<z.infer<typeof punchSchema>>) {
+  const config = await entitlementConfig(access, "attendance.punches");
+  const allowedSources = config.allowedSources as string[];
+  const [enforceGeofence, requireSelfie] = await Promise.all([
+    isEntitled(access, "attendance.punches.geofence_enforcement"),
+    isEntitled(access, "attendance.punches.selfie_required"),
+  ]);
+  for (const punch of punches) {
+    if (!allowedSources.includes(punch.source)) {
+      throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: `Punches from ${picklistLabel("PL_PUNCH_SOURCE", punch.source)} are not accepted by this organisation.` });
+    }
+    if (enforceGeofence && punch.geofenceResult === "outside") {
+      throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "Punches from outside the geofence are not accepted." });
+    }
+    if (requireSelfie && punch.source === "mobile_app" && !punch.selfieRef) {
+      throw new HttpError({ status: 422, code: "POLICY_VIOLATION", message: "A mobile punch must include a selfie." });
+    }
+  }
+}
+
 export async function ingestPunches(access: Access, input: z.infer<typeof ingestPunchesSchema>, requestId: string) {
   enforce(access.context, "attendance.write", { tenantId: access.tenantId });
+  await assertPunchCapturePolicy(access, input.punches);
   await assertAttendanceEmployeeVisible(access, input.employeeId);
   for (let index = 1; index < input.punches.length; index += 1) {
     if (input.punches[index]?.type === input.punches[index - 1]?.type) {

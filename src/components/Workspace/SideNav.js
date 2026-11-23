@@ -165,7 +165,7 @@ const SideNav = ({ activeTab, onTabChange, isCollapsed, onToggleCollapse, select
                     ) : (
                         <button
                             className={styles.punchBtn}
-                            style={{ padding: '0.5rem', background: attendance.status === 'present' ? '#16a34a' : '#2563eb' }}
+                            style={{ padding: '0.5rem', background: attendance.status === 'present' ? '#16a34a' : 'var(--signal)' }}
                             onClick={attendance.status === 'present' ? punchOut : punchIn}
                             title={attendance.status === 'present' ? readData("components.Workspace.SideNav", "display_6") : readData("components.Workspace.SideNav", "display_7")}
                         >

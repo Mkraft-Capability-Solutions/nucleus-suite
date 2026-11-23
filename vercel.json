@@ -3,6 +3,7 @@
   "framework": "nextjs",
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
+  "regions": ["bom1"],
   "env": {
     "APP_DATA_MODE": "database"
   },
@@ -11,6 +12,12 @@
       "APP_DATA_MODE": "database"
     }
   },
+  "functions": {
+    "src/app/api/**/*": { "maxDuration": 60 }
+  },
+  "crons": [
+    { "path": "/api/cron/tick", "schedule": "0 0 * * *" }
+  ],
   "git": {
     "deploymentEnabled": {
       "main": true

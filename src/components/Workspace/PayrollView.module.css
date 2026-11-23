@@ -102,7 +102,7 @@
 }
 
 .card {
-    background: var(--card);
+    background: var(--p-glass, var(--card));
     border-radius: var(--r-card);
     padding: 1.5rem;
     border: 1px solid var(--line);
@@ -151,7 +151,7 @@
     color: var(--hero-text);
     border-radius: var(--r-card);
     padding: 1.5rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--p-edge, var(--line));
 }
 
 .ewaInputGroup {
@@ -162,7 +162,7 @@
 
 .ewaInput {
     background: var(--hero-surface);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--p-edge, var(--line));
     color: var(--hero-text);
     padding: 0.5rem 0.85rem;
     border-radius: var(--r-control);
@@ -303,9 +303,9 @@
 }
 
 .badgeInfo {
-    background: rgba(59, 130, 246, 0.12);
-    color: #3b82f6;
-    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: var(--info-wash);
+    color: var(--info);
+    border: 1px solid color-mix(in srgb, var(--info) 30%, transparent);
 }
 
 .badgePurple {
@@ -331,7 +331,7 @@
 .dataTable th {
     background: var(--card-2);
     padding: 0.75rem 1rem;
-    text-align: left;
+    text-align: start;
     font-weight: 700;
     color: var(--text-2);
     border-bottom: 2px solid var(--line);
@@ -372,12 +372,12 @@
 }
 
 .guarantorLockBox {
-    background: rgba(239, 68, 68, 0.06);
-    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: var(--flag-wash);
+    border: 1px solid color-mix(in srgb, var(--flag) 25%, transparent);
     border-radius: var(--r-control, 6px);
     padding: 0.75rem 1rem;
     font-size: 0.82rem;
-    color: #b91c1c;
+    color: var(--flag);
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -402,10 +402,7 @@
 
 .modalOverlay{
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: var(--overlay);
     backdrop-filter: blur(4px);
     display: flex;
@@ -476,3 +473,56 @@
 }
 
 .modalContent{max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);overflow:auto}
+
+/* --- Shared layout helpers (no inline styles in the TSX) --- */
+.stack { display: flex; flex-direction: column; gap: 1.5rem; }
+.stackTight { display: flex; flex-direction: column; gap: 0.6rem; }
+.row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.rowBetween { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
+.muted { color: var(--text-2); font-size: var(--t-small); margin: 0; }
+.micro { color: var(--text-3); font-size: var(--t-micro); }
+.numeric { font-family: var(--f-num); font-weight: 600; font-variant-numeric: tabular-nums; }
+.deduction { color: var(--flag); }
+.positive { color: var(--signal-ink); }
+.strongText { color: var(--text); font-weight: 600; }
+.sectionTitle { margin: 0; font-size: var(--t-h3); color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+.intro { margin: 0.35rem 0 0; font-size: var(--t-small); color: var(--text-2); max-inline-size: 780px; }
+.accentCard { border-inline-start: 4px solid var(--signal); }
+.accentFlag { border-inline-start: 4px solid var(--flag); }
+.accentInfo { border-inline-start: 4px solid var(--info); }
+.totalRow { border-top: 2px solid var(--line); margin-top: 0.5rem; padding-top: 0.75rem; }
+.tableHeader { padding: 1rem 1.25rem; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+.legendGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: 1rem; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid var(--line-soft); }
+.legendItem { padding: 0.85rem; background: var(--card-2); border-radius: var(--r-control); border: 1px solid var(--line); }
+.legendItem p { margin: 0.35rem 0 0; font-size: var(--t-micro); color: var(--text-2); }
+.complianceItem { display: flex; justify-content: space-between; gap: 0.75rem; font-size: var(--t-small); padding: 0.5rem; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--r-control); color: var(--text); }
+.stateBox { display: flex; align-items: center; gap: 0.6rem; padding: 1rem; border-radius: var(--r-control); background: var(--card-2); border: 1px dashed var(--line); color: var(--text-2); font-size: var(--t-small); }
+.stateError { border-style: solid; border-color: color-mix(in srgb, var(--flag) 35%, transparent); background: var(--flag-wash); color: var(--flag); }
+.notice { padding: 0.65rem 0.85rem; border-radius: var(--r-control); font-size: var(--t-small); background: var(--info-wash); color: var(--info); border: 1px solid color-mix(in srgb, var(--info) 30%, transparent); }
+.noticeError { background: var(--flag-wash); color: var(--flag); border-color: color-mix(in srgb, var(--flag) 30%, transparent); }
+.noticeOk { background: var(--status-ok-wash); color: var(--status-ok-ink); border-color: color-mix(in srgb, var(--status-ok-ink) 30%, transparent); }
+.fieldError { color: var(--flag); font-size: var(--t-micro); margin: 0; }
+.select { padding: 0.55rem 0.9rem; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--card); color: var(--text); font-weight: 600; font-size: var(--t-small); }
+.btnSmall { padding: 0.35rem 0.7rem; font-size: var(--t-micro); display: inline-flex; align-items: center; gap: 0.35rem; }
+.btnPrimary:disabled, .btnSecondary:disabled { opacity: 0.55; cursor: not-allowed; }
+.btnPrimary:focus-visible, .btnSecondary:focus-visible, .subTabBtn:focus-visible, .formInput:focus-visible, .select:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.code { font-family: var(--f-num); font-size: var(--t-micro); background: var(--card-2); padding: 0.2rem 0.4rem; border-radius: var(--r-data, 4px); border: 1px solid var(--line); }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 1rem; }
+.panel { background: var(--card-2); padding: 1rem; border-radius: var(--r-control); border: 1px solid var(--line); }
+.checkLabel { display: flex; align-items: center; gap: 0.5rem; font-size: var(--t-small); font-weight: 600; color: var(--text); }
+.closeBtn { background: transparent; border: none; cursor: pointer; color: var(--text-2); min-inline-size: 24px; min-block-size: 24px; display: inline-flex; align-items: center; justify-content: center; }
+.modalWide { width: 860px; }
+.netCard { background: var(--card-2); }
+.netReady { background: var(--signal-wash); border-color: var(--signal); }
+.bigNumber { font-size: 1.8rem; font-weight: 800; font-family: var(--f-num); color: var(--text); margin: 0.2rem 0; }
+.clearanceRemarks { font-size: var(--t-small); color: var(--text); background: var(--card); padding: 0.5rem; border-radius: var(--r-data, 4px); border: 1px solid var(--line-soft); min-block-size: 48px; }
+.clearedTop { border-top: 3px solid var(--status-ok-ink); }
+.pendingTop { border-top: 3px solid var(--pending); }
+.ewaHistory { margin-top: 1.25rem; border-top: 1px solid var(--p-edge, var(--line)); padding-top: 0.75rem; display: flex; flex-direction: column; gap: 0.35rem; font-size: var(--t-small); }
+.ewaHistory > div { display: flex; justify-content: space-between; gap: 0.75rem; }
+.onHero { color: var(--hero-text); opacity: 0.9; font-size: var(--t-small); margin: 0.75rem 0; }
+.srOnly { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tableWrap { overflow-x: auto; }
+.pager { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; }
+@media (prefers-reduced-motion: reduce) { .payrollContainer { animation: none; } }

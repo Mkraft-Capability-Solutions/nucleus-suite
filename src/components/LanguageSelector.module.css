@@ -11,9 +11,9 @@
   padding: 0.35rem 0.55rem;
   height: 32px;
   border-radius: var(--r-control, 8px);
-  background: var(--card-2, #f8fafa);
+  background: var(--card-2, var(--surface-2));
   border: 1px solid var(--line, rgba(16, 34, 47, 0.09));
-  color: var(--text, #10222f);
+  color: var(--text, var(--ink));
   cursor: pointer;
   font-family: inherit;
   font-size: 0.75rem;
@@ -22,7 +22,7 @@
 }
 
 .triggerButton:hover {
-  background: var(--signal-wash, #eff6ff);
+  background: var(--signal-wash, var(--signal-wash));
   border-color: var(--line-glow, rgba(37, 99, 235, 0.25));
 }
 
@@ -31,15 +31,15 @@
 }
 
 .icon {
-  color: var(--text-2, #5a6b78);
+  color: var(--text-2, var(--slate));
   font-size: 15px;
 }
 
 .langBadge {
-  font-size: 0.7rem;
+  font-size: 12.5px;
   letter-spacing: 0.04em;
   font-weight: 700;
-  color: var(--signal, #2563eb);
+  color: var(--signal, var(--signal));
 }
 
 .dropdown {
@@ -59,7 +59,7 @@
   display: flex;
   flex-direction: column;
   animation: fadeInDown 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  color: var(--text, #10222f);
+  color: var(--text, var(--ink));
 }
 
 @keyframes fadeInDown {
@@ -80,11 +80,11 @@
 }
 
 .headerTitle {
-  font-size: 0.7rem;
+  font-size: 12.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--text-2, #5a6b78);
+  color: var(--text-2, var(--slate));
 }
 
 .section {
@@ -94,10 +94,10 @@
 }
 
 .sectionHeader {
-  font-size: 0.65rem;
+  font-size: 12.5px;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--text-3, #637582);
+  color: var(--text-3, var(--slate-2));
   padding: 0.35rem 0.5rem 0.2rem;
   letter-spacing: 0.05em;
 }
@@ -117,7 +117,7 @@
   border-radius: var(--r-control, 8px);
   border: none;
   background: transparent;
-  color: var(--text, #10222f);
+  color: var(--text, var(--ink));
   cursor: pointer;
   text-align: left;
   font-family: inherit;
@@ -125,28 +125,28 @@
 }
 
 .menuItem:hover {
-  background: var(--card-2, #f8fafa);
+  background: var(--card-2, var(--surface-2));
 }
 
 .menuItemActive {
-  background: var(--signal-wash, #eff6ff);
-  color: var(--signal, #2563eb);
+  background: var(--signal-wash, var(--signal-wash));
+  color: var(--signal, var(--signal));
 }
 
 .codeTag {
-  font-size: 0.65rem;
+  font-size: 12.5px;
   font-weight: 800;
   padding: 0.15rem 0.35rem;
   border-radius: 4px;
-  background: var(--card-2, #f8fafa);
-  color: var(--text-2, #5a6b78);
+  background: var(--card-2, var(--surface-2));
+  color: var(--text-2, var(--slate));
   letter-spacing: 0.04em;
   min-width: 24px;
   text-align: center;
 }
 
 .menuItemActive .codeTag {
-  background: var(--signal, #2563eb);
+  background: var(--signal, var(--signal));
   color: var(--on-signal, #ffffff);
 }
 
@@ -163,12 +163,12 @@
 }
 
 .englishLabel {
-  font-size: 0.68rem;
-  color: var(--text-2, #5a6b78);
+  font-size: 12.5px;
+  color: var(--text-2, var(--slate));
   line-height: 1.1;
 }
 
 .checkIcon {
-  color: var(--signal, #2563eb);
+  color: var(--signal, var(--signal));
   margin-left: auto;
 }

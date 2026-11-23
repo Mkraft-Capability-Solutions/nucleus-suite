@@ -1,0 +1,52 @@
+/* Warnings and alerts (Core HR). Lives inside .scope (src/design/redesign/theme.module.css). */
+
+.stack { display: flex; flex-direction: column; gap: var(--hr-space-4); min-width: 0; }
+
+.metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); background: var(--hr-surface); overflow: hidden; }
+.metric { display: flex; flex-direction: column; gap: 2px; padding: var(--hr-space-4); border-right: 1px solid var(--hr-border); min-width: 0; }
+.metric:last-child { border-right: 0; }
+.metricLabel { display: inline-flex; align-items: center; gap: 6px; font-size: var(--hr-text-sm); color: var(--hr-text-2); font-weight: var(--hr-weight-medium); }
+.metricValue { font-size: 24px; line-height: 32px; font-weight: var(--hr-weight-semibold); color: var(--hr-text); font-variant-numeric: tabular-nums; }
+.metricDetail { font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dotAlert { background: var(--hr-danger); }
+.dotWarning { background: var(--hr-warning); }
+
+.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--hr-space-3); flex-wrap: wrap; }
+.filters { display: flex; gap: var(--hr-space-2); flex-wrap: wrap; }
+.filters > * { width: 190px; }
+
+.table td { vertical-align: top; padding-top: var(--hr-space-3); padding-bottom: var(--hr-space-3); }
+.person { display: flex; flex-direction: column; align-items: flex-start; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.person:hover .strong { color: var(--hr-accent-text); text-decoration: underline; text-underline-offset: 2px; }
+.strong { display: block; font-weight: var(--hr-weight-medium); color: var(--hr-text); }
+.sub { display: block; font-size: var(--hr-text-xs); line-height: var(--hr-lh-xs); color: var(--hr-text-3); margin-top: 2px; }
+.nowrap { white-space: nowrap; }
+
+/* Rules drawer */
+.rules { padding: var(--hr-space-4) var(--hr-space-5); display: flex; flex-direction: column; gap: var(--hr-space-3); }
+.rule { border: 1px solid var(--hr-border); border-radius: var(--hr-radius-lg); padding: var(--hr-space-4); background: var(--hr-surface); display: flex; flex-direction: column; gap: var(--hr-space-3); }
+.ruleOff { background: var(--hr-surface-2); }
+.ruleOff .ruleFields { opacity: 0.55; }
+.ruleHead { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--hr-space-4); }
+.ruleTitle { font-size: var(--hr-text-md); font-weight: var(--hr-weight-semibold); }
+.ruleText { font-size: var(--hr-text-sm); color: var(--hr-text-2); margin-top: 2px !important; }
+.ruleSource { font-size: var(--hr-text-xs); color: var(--hr-text-3); margin-top: 4px !important; }
+.switch { display: inline-flex; align-items: center; gap: var(--hr-space-2); flex-shrink: 0; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); cursor: pointer; }
+.switch input { width: 34px; height: 20px; accent-color: var(--hr-accent-strong); cursor: pointer; }
+.ruleFields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--hr-space-3); }
+.ruleField { display: flex; flex-direction: column; gap: 6px; font-size: var(--hr-text-sm); font-weight: var(--hr-weight-medium); color: var(--hr-text); min-width: 0; }
+.ruleField > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.inputUnit { display: flex; align-items: center; gap: var(--hr-space-2); font-weight: var(--hr-weight-regular); color: var(--hr-text-2); font-size: var(--hr-text-sm); white-space: nowrap; }
+.inputUnit input { width: 84px; }
+.ruleError { display: flex; align-items: center; gap: 6px; font-size: var(--hr-text-sm); color: var(--hr-danger); }
+.ruleError svg { width: 14px; height: 14px; }
+.ruleNote { font-size: var(--hr-text-xs); color: var(--hr-text-3); }
+
+@media (max-width: 767px) {
+  .metrics { grid-template-columns: minmax(0, 1fr); }
+  .metric { border-right: 0; border-bottom: 1px solid var(--hr-border); }
+  .metric:last-child { border-bottom: 0; }
+  .filters, .filters > * { width: 100%; }
+  .ruleFields { grid-template-columns: minmax(0, 1fr); }
+}

@@ -241,13 +241,19 @@ export async function GET(request: Request) {
     };
 
     // 1. Matched Forms (§ FRM-xxx) from Operational Registry
+    // Rank: form id / title / owning module beat a match on one field label (e.g. "payroll group" on Assignment).
+    const formScore = (mod: (typeof registryModules)[number]): number => {
+      if (mod.formId && (mod.formId.toLowerCase().includes(lowerQuery) || matchesAllTokens(mod.formId))) return 4;
+      if (mod.title && (mod.title.toLowerCase().includes(lowerQuery) || matchesAllTokens(mod.title))) return 3;
+      if (matchesAllTokens(mod.primary)) return 2;
+      if (mod.fields?.some((f) => matchesAllTokens(f.label) || matchesAllTokens(f.key))) return 1;
+      return 0;
+    };
     const matchedForms = registryModules
-      .filter((mod) => {
-        const formIdMatch = mod.formId && (mod.formId.toLowerCase().includes(lowerQuery) || matchesAllTokens(mod.formId));
-        const titleMatch = mod.title && (mod.title.toLowerCase().includes(lowerQuery) || matchesAllTokens(mod.title));
-        const fieldMatch = mod.fields?.some((f) => matchesAllTokens(f.label) || matchesAllTokens(f.key));
-        return formIdMatch || titleMatch || fieldMatch;
-      })
+      .map((mod) => ({ mod, score: formScore(mod) }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map((entry) => entry.mod)
       .slice(0, 6)
       .map((mod) => ({
         id: mod.formId || mod.id,
@@ -339,9 +345,9 @@ export async function GET(request: Request) {
     // Deduplicate results by targetTab/id while preserving distinct types
     const seen = new Set<string>();
     const combinedResults = [
+      ...matchedSubmenus,
       ...matchedForms,
       ...matchedScreens,
-      ...matchedSubmenus,
       ...matchedDocuments,
       ...matchedEmployees,
     ].filter((item) => {

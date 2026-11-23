@@ -10,7 +10,8 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https://ui-avatars.com",
   "font-src 'self' data:",
   "connect-src 'self' https: wss://generativelanguage.googleapis.com",
-  "frame-src https://www.youtube-nocookie.com https://www.youtube.com",
+  // 'self': the document library shows a stored PDF or image in a frame on the same site.
+  "frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -34,6 +35,14 @@ const nextConfig = {
         { key: 'X-Content-Type-Options', value: 'nosniff' },
         { key: 'X-Frame-Options', value: 'DENY' },
         { key: 'Permissions-Policy', value: 'camera=(), microphone=(self), geolocation=(), payment=()' },
+      ],
+    }, {
+      // A stored document may be framed by this site's own pages (the document viewer), nowhere else.
+      // Only checked file types are served (PDF, images without SVG, plain text); others download.
+      source: '/api/v1/documents/library/:id/file',
+      headers: [
+        { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+        { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
       ],
     }];
   },

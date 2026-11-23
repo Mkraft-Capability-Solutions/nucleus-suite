@@ -14,7 +14,7 @@
  */
 import { fromHex, oklch, toGamut, type Oklch } from './color.ts';
 
-export const THEME_IDS = ['horizon', 'signature', 'sapphire-tide', 'emerald-grove', 'saffron-ember', 'rose-quartz', 'platinum'] as const;
+export const THEME_IDS = ['pulse', 'horizon', 'signature', 'sapphire-tide', 'emerald-grove', 'saffron-ember', 'rose-quartz', 'platinum'] as const;
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
@@ -25,8 +25,8 @@ export type ThemeMode = (typeof THEME_MODES)[number];
 export const MODE_PREFERENCES = ['light', 'dark', 'system'] as const;
 export type ModePreference = (typeof MODE_PREFERENCES)[number];
 
-/** First-time visitors get Signature in dark mode (owner decision 2026-10-19); a viewer's own choice persists. */
-export const DEFAULT_THEME_ID: ThemeId = 'signature';
+/** First-time visitors get Pulse in dark mode (owner decision 2026-11-23); a viewer's own choice persists. */
+export const DEFAULT_THEME_ID: ThemeId = 'pulse';
 export const DEFAULT_MODE_PREFERENCE: ModePreference = 'dark';
 
 /** Themes viewers may pick (all seven are approved), in switcher order. */
@@ -206,6 +206,47 @@ const NAVY: Readonly<Record<ThemeMode, Palette>> = {
   },
 };
 
+/**
+ * Pulse's base: a midnight command deck (dark) and a cool paper (light). Text values are chosen for eye comfort:
+ * dark primary is soft white (15.9:1 on the deck), not pure white; muted text stays above 4.5:1.
+ */
+const MIDNIGHT: Readonly<Record<ThemeMode, Palette>> = {
+  dark: {
+    bg: '#050913',
+    surface: '#0e1a30',
+    'surface-raised': '#16243e',
+    'surface-sunken': '#03060e',
+    overlay: '#050913b3',
+    'text-primary': '#e6edf7',
+    'text-secondary': '#97a6be',
+    'text-muted': '#7f8fa9',
+    'text-inverse': '#0a1222',
+    'border-subtle': '#94a3b824',
+    'border-default': '#94a3b842',
+    'border-strong': '#6b7a94',
+    shadow: '#00000099',
+    glass: '#101a2e9e',
+    'contact-shadow': '#00000099',
+  },
+  light: {
+    bg: '#eef3fa',
+    surface: '#ffffff',
+    'surface-raised': '#ffffff',
+    'surface-sunken': '#e4ebf5',
+    overlay: '#0f172a7a',
+    'text-primary': '#0f172a',
+    'text-secondary': '#475569',
+    'text-muted': '#5b6b80',
+    'text-inverse': '#eef3fa',
+    'border-subtle': '#0f172a14',
+    'border-default': '#0f172a2b',
+    'border-strong': '#7a879b',
+    shadow: '#0f172a24',
+    glass: '#ffffffd1',
+    'contact-shadow': '#0f172a40',
+  },
+};
+
 /** Media stage, process signals and the sphere's specular highlight: identical in every theme. */
 const SHARED: Readonly<Record<ThemeMode, Palette>> = {
   dark: {
@@ -297,6 +338,32 @@ function theme(id: ThemeId, displayName: string, description: string, base: Read
 }
 
 export const THEME_SPECS: Readonly<Record<ThemeId, ThemeSpec>> = {
+  pulse: theme('pulse', 'Pulse', 'A midnight command deck with cyan to violet light; glass panels and glowing data.', MIDNIGHT, {
+    dark: {
+      brand: ['#38bdf8', '#818cf8', '#a78bfa'],
+      primary: ['#38bdf8', '#7dd3fc', '#0ea5e9'],
+      onPrimary: '#06101f',
+      subtle: '#0f2a44',
+      text: '#38bdf8',
+      tag: '#38bdf8',
+      glow: '#6366f1',
+      gold: '#fbbf24',
+      sphere: ['#e0e7ff', '#a5b4fc', '#6366f1', '#312e81'],
+      nodes: ['#38bdf8', '#a78bfa', '#34d399', '#fbbf24', '#fb7185', '#818cf8', '#22d3ee'],
+    },
+    light: {
+      brand: ['#0284c7', '#4f46e5', '#7c3aed'],
+      primary: ['#0369a1', '#075985', '#0c4a6e'],
+      onPrimary: '#ffffff',
+      subtle: '#e0f2fe',
+      text: '#0369a1',
+      tag: '#0369a1',
+      glow: '#4f46e5',
+      gold: '#b45309',
+      sphere: ['#e0e7ff', '#a5b4fc', '#6366f1', '#312e81'],
+      nodes: ['#0284c7', '#7c3aed', '#059669', '#d97706', '#e11d48', '#4f46e5', '#0891b2'],
+    },
+  }),
   horizon: theme('horizon', 'Horizon', 'Sky to indigo to violet on the neutral base; indigo primary actions.', NEUTRAL, {
     dark: {
       brand: ['#38bdf8', '#818cf8', '#c084fc'],

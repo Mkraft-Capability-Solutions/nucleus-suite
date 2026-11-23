@@ -1,12 +1,15 @@
 "use client";
 
 import { useTranslation } from '@/context/I18nContext';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { X, MapPin, CheckCircle2, Lock, AlertCircle } from 'lucide-react';
 import styles from './LocationMasterModal.module.css';
 import { useHRMS } from '@/context/HRMSContext';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import { useDuplicateCheck, generateLocationCode } from '@/hooks/useDuplicateCheck';
+import { useApiResource } from '@/hooks/useApiResource';
+
+const selectEntities = (payload) => (Array.isArray(payload?.data?.items) ? payload.data.items : []);
 
 const LOCATION_RULES = [
     { key: 'locationName', label: 'Location Name', required: true, minLength: 3 },
@@ -21,21 +24,23 @@ const LOCATION_RULES = [
 
 export default function LocationMasterModal({ isOpen, onClose, onSave, existingLocations = [] }) {
     const { t } = useTranslation();
+    const idempotencyKey = useRef(crypto.randomUUID());
     const { showToast } = useHRMS();
+    const { state: entities } = useApiResource(isOpen ? '/api/v1/organization/legal-entities' : null, selectEntities);
     const { isDuplicate } = useDuplicateCheck(existingLocations);
     const { getFieldError, setFieldTouched, handleSubmitGuard, resetValidation } = useFormValidation(LOCATION_RULES);
 
-    const [formData, setFormData] = useState({
+    const [rawForm, setFormData] = useState({
         locationCode: '',
         locationName: '',
-        entityCode: 'ENT-NUC',
+        entityCode: '',
         locationType: 'Plant',
         parentLocation: '',
         address: '',
         stateCode: 'KA',
         district: '',
-        calendarId: 'CAL-KA-2026',
-        shiftGroup: 'SG-PLANT-MAIN',
+        calendarId: '',
+        shiftGroup: '',
         weekStartDay: 'Monday',
         geofencePoint: '',
         geofenceRadiusM: 200,
@@ -47,13 +52,8 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
         status: 'Active',
         effectiveFrom: new Date().toISOString().split('T')[0]
     });
-
-    // Auto-generate location code from stateCode
-    useEffect(() => {
-        const existingCodes = existingLocations.map(l => l.locationCode);
-        const code = generateLocationCode(formData.stateCode, existingCodes);
-        setFormData(prev => ({ ...prev, locationCode: code }));
-    }, [formData.stateCode, existingLocations]);
+    // Code is derived from the form values (no state sync effect).
+    const formData = { ...rawForm, locationCode: generateLocationCode(rawForm.stateCode, existingLocations.map(l => l.locationCode)) };
 
     if (!isOpen) return null;
 
@@ -62,7 +62,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        handleSubmitGuard(formData, () => {
+        handleSubmitGuard(formData, async () => {
             if (isDuplicate('locationCode', formData.locationCode)) {
                 showToast('Duplicate Entry', `Location code "${formData.locationCode}" already exists.`, 'error');
                 return;
@@ -71,26 +71,25 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                 showToast('Duplicate Entry', `A location named "${formData.locationName}" already exists.`, 'error');
                 return;
             }
-            // Live persistence to Neon DB via Next.js API
-            try {
-                fetch('/api/v1/operations/locations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Idempotency-Key': crypto.randomUUID()
-                    },
-                    body: JSON.stringify(formData)
-                }).catch(() => null);
-            } catch {}
-
-            if (onSave) onSave(formData);
-            showToast('Location Master Saved', `Location ${formData.locationName} (${formData.locationCode}) saved.`, 'success');
+            const response = await fetch('/api/v1/organization/locations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Idempotency-Key': idempotencyKey.current },
+                body: JSON.stringify(formData)
+            }).catch(() => null);
+            const payload = response ? await response.json().catch(() => null) : null;
+            if (!response || !response.ok) {
+                showToast(t("components.Workspace.LocationMasterModal.text_save_failed_title", "Not saved"), payload?.error?.message || t("components.Workspace.LocationMasterModal.text_save_failed", "The record could not be saved. Try again."), 'error');
+                return;
+            }
+            idempotencyKey.current = crypto.randomUUID();
+            if (onSave) onSave({ ...formData, id: payload?.data?.id });
+            showToast(t("components.Workspace.LocationMasterModal.text_saved_title", "Saved"), t("components.Workspace.LocationMasterModal.text_saved", "The record was saved."), 'success');
             resetValidation();
             onClose();
         });
     };
 
-    const FieldError = ({ fieldKey }) => {
+    const renderFieldError = (fieldKey) => {
         const err = getFieldError(fieldKey);
         if (!err) return null;
         return (
@@ -105,7 +104,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
 
     return (
         <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+            <div className={styles.modal} role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
                     <div className={styles.titleGroup}>
                         <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -142,7 +141,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 placeholder={t("components.Workspace.LocationMasterModal.placeholder_eg_bangalore_electronic_city_plant_1", "e.g. Bangalore Electronic City Plant 1")}
                                 required
                             />
-                            <FieldError fieldKey="locationName" />
+                            {renderFieldError("locationName")}
                         </label>
 
                         <label className={styles.field}>
@@ -154,10 +153,12 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 onBlur={() => handleBlur('entityCode')}
                             >
                                 <option value="">{t("components.Workspace.LocationMasterModal.text_select_entity", "— Select Entity —")}</option>
-                                <option value="ENT-NUC">{t("components.Workspace.LocationMasterModal.text_ent-nuc_nucleus_hr_solutions_india_pvt_l", "ENT-NUC (Nucleus HR Solutions India Pvt Ltd)")}</option>
-                                <option value="ENT-GLB">{t("components.Workspace.LocationMasterModal.text_ent-glb_nucleus_global_holdings_inc", "ENT-GLB (Nucleus Global Holdings Inc)")}</option>
+                                {entities.status === 'loading' && <option value="" disabled>{t("components.Workspace.LocationMasterModal.text_entities_loading", "Loading legal entities…")}</option>}
+                                {entities.status === 'error' && <option value="" disabled>{entities.message || t("components.Workspace.LocationMasterModal.text_entities_failed", "Legal entities could not be loaded.")}</option>}
+                                {entities.status === 'ready' && entities.data.length === 0 && <option value="" disabled>{t("components.Workspace.LocationMasterModal.text_entities_empty", "No legal entity exists yet. Create one first.")}</option>}
+                                {entities.status === 'ready' && entities.data.map(entity => <option key={entity.id} value={entity.code}>{entity.code} ({entity.legal_name})</option>)}
                             </select>
-                            <FieldError fieldKey="entityCode" />
+                            {renderFieldError("entityCode")}
                         </label>
 
                         <label className={styles.field}>
@@ -172,7 +173,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 <option>{t("components.Workspace.LocationMasterModal.text_plant", "Plant")}</option><option>{t("components.Workspace.LocationMasterModal.text_corporate_office", "Corporate Office")}</option>
                                 <option>{t("components.Workspace.LocationMasterModal.text_branch_office", "Branch Office")}</option><option>{t("components.Workspace.LocationMasterModal.text_warehouse", "Warehouse")}</option><option>{t("components.Workspace.LocationMasterModal.text_rampd_centre", "R&amp;D Centre")}</option>
                             </select>
-                            <FieldError fieldKey="locationType" />
+                            {renderFieldError("locationType")}
                         </label>
                     </div>
 
@@ -188,7 +189,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 placeholder={t("components.Workspace.LocationMasterModal.placeholder_full_address_of_the_work_site", "Full address of the work site")}
                                 required
                             />
-                            <FieldError fieldKey="address" />
+                            {renderFieldError("address")}
                         </label>
 
                         <label className={styles.field}>
@@ -206,7 +207,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 <option value="RJ">{t("components.Workspace.LocationMasterModal.text_rajasthan", "Rajasthan")}</option><option value="AP">{t("components.Workspace.LocationMasterModal.text_andhra_pradesh", "Andhra Pradesh")}</option>
                                 <option value="TS">{t("components.Workspace.LocationMasterModal.text_telangana", "Telangana")}</option><option value="WB">{t("components.Workspace.LocationMasterModal.text_west_bengal", "West Bengal")}</option>
                             </select>
-                            <FieldError fieldKey="stateCode" />
+                            {renderFieldError("stateCode")}
                         </label>
 
                         <label className={styles.field}>
@@ -219,7 +220,7 @@ export default function LocationMasterModal({ isOpen, onClose, onSave, existingL
                                 placeholder={t("components.Workspace.LocationMasterModal.placeholder_eg_bangalore_urban", "e.g. Bangalore Urban")}
                                 required
                             />
-                            <FieldError fieldKey="district" />
+                            {renderFieldError("district")}
                         </label>
 
                         <label className={styles.field}>

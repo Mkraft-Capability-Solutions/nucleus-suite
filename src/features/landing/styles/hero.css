@@ -404,7 +404,7 @@
     inset 0 0 0 1px color-mix(in oklch, var(--color-signal-pending) 45%, transparent),
     0 6px 16px -10px color-mix(in oklch, var(--color-signal-pending) 60%, transparent);
   color: var(--color-warning-text);
-  font-size: 0.6875rem;
+  font-size: 12.5px;
   font-weight: var(--font-weight-medium);
   line-height: 1.4;
   white-space: nowrap;
@@ -474,7 +474,7 @@
   border-radius: var(--radius-full);
   box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--color-module-emerald) 60%, transparent);
   color: var(--color-module-emerald);
-  font-size: 0.6875rem;
+  font-size: 12.5px;
 }
 
 .lp-card-dot svg {
@@ -566,7 +566,7 @@
 .lp-trust-label {
   flex: none;
   color: var(--color-text-muted);
-  font-size: 0.6875rem;
+  font-size: 12.5px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   white-space: nowrap;

@@ -24,6 +24,7 @@ type ThemingKey = MessageKey<ThemingMessages>;
 
 /** Translation key of every theme's display name. */
 export const THEME_NAME_KEYS: Readonly<Record<ThemeId, ThemingKey>> = {
+  pulse: 'themes.pulse',
   horizon: 'themes.horizon',
   signature: 'themes.signature',
   'sapphire-tide': 'themes.sapphireTide',

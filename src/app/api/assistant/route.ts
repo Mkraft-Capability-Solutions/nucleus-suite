@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { askMira } from "@/lib/ai/policy-graph";
-import { auth } from "@/lib/auth";
+import { denyWithoutAccess } from "@/server/platform/route-guard";
 import { databaseConfigured } from "@/lib/db";
 
 const requestSchema = z.object({ message: z.string().trim().min(2).max(1_000) });
@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Cross-origin request rejected" }, { status: 403 });
   }
   if (databaseConfigured) {
-    const session = await auth.api.getSession({ headers: request.headers });
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const denied = await denyWithoutAccess(request);
+    if (denied) return denied;
   } else if (process.env.NODE_ENV === "production") {
     return NextResponse.json({ error: "Database configuration required" }, { status: 503 });
   }

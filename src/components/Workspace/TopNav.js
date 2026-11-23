@@ -1,4 +1,11 @@
 "use client";
+import NotificationsMenu from '@/components/Workspace/NotificationsMenu';
+import ChatBubbleOutline from '@mui/icons-material/ChatBubbleOutline';
+import SettingsOutlined from '@mui/icons-material/SettingsOutlined';
+import Hub from '@mui/icons-material/HubOutlined';
+import Tune from '@mui/icons-material/TuneOutlined';
+import BrandLogo from '@/components/BrandLogo';
+import Link from 'next/link';
 import { useTranslation } from '@/context/I18nContext';
 
 import NextImage from 'next/image';
@@ -6,7 +13,6 @@ import NextImage from 'next/image';
 import { readData } from '../../services/workspace-data.mjs';
 
 import React, { useState, useRef, useEffect } from 'react';
-import Bell from '@mui/icons-material/NotificationsOutlined';
 import Plus from '@mui/icons-material/Add';
 import Mic from '@mui/icons-material/Mic';
 import Search from '@mui/icons-material/Search';
@@ -19,17 +25,18 @@ import ChevronDown from '@mui/icons-material/ExpandMore';
 import Check from '@mui/icons-material/Check';
 import Users from '@mui/icons-material/GroupsOutlined';
 import LogOut from '@mui/icons-material/Logout';
-import PanelRight from '@mui/icons-material/VerticalSplitOutlined';
 import LayoutGrid from '@mui/icons-material/DashboardOutlined';
-import LayoutDashboard from '@mui/icons-material/SpaceDashboardOutlined';
 import ShieldCheck from '@mui/icons-material/VerifiedUserOutlined';
 import Api from '@mui/icons-material/Api';
 import { useAuth } from '@/context/AuthContext';
 import { useHRMS } from '@/context/HRMSContext';
 import styles from './TopNav.module.css';
 import AppearanceToggle from '@/components/AppearanceToggle';
+import UiModeSwitch from '@/components/UiModeSwitch';
 import LanguageSelector from '@/components/LanguageSelector';
+import EntitySwitcher from '@/components/Workspace/EntitySwitcher';
 import { NeuralSonicBeacon } from '@/components/AI/NeuralSonicBeacon';
+import { avatarDataUri } from "@/lib/avatar";
 
 const ROLE_TO_DEFAULT_CONSOLE = readData("components.Workspace.TopNav", "ROLE_TO_DEFAULT_CONSOLE_1");
 
@@ -47,12 +54,14 @@ const TopNav = ({
     onToggleModules,
     isModulesOpen = false,
     activeConsole = readData("components.Workspace.TopNav", "defaultValue_1"),
-    onSelectConsole
+    onSelectConsole,
+    onToggleMessages,
+    isMessagesOpen = false
 }) => {
   const { t } = useTranslation();
     const { t: translateText } = useTranslation();
 
-    const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed } = useAuth();
+    const { user, logout, openAccessControl, isConsoleAllowed, isModuleAllowed, tenantAccess, switchTenant } = useAuth();
     const { showToast } = useHRMS();
     const userRole = user?.role || readData("components.Workspace.TopNav", "fallback_1");
 
@@ -64,17 +73,17 @@ const TopNav = ({
     const currentConsoleConfig = ALL_CONSOLES.find(c => c.id === effectiveConsoleId) || ALL_CONSOLES[0];
 
     const [showQuickActions, setShowQuickActions] = useState(false);
-    const [showNotifications, setShowNotifications] = useState(false);
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const [showConsoleMenu, setShowConsoleMenu] = useState(false);
+    const [showSettingsMenu, setShowSettingsMenu] = useState(false);
     const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchDropdown, setShowSearchDropdown] = useState(false);
 
     const quickActionsRef = useRef(null);
-    const notifRef = useRef(null);
     const profileRef = useRef(null);
     const consoleRef = useRef(null);
+    const settingsRef = useRef(null);
     const searchDropdownRef = useRef(null);
 
     // Real-time debounced search across modules and employees
@@ -111,11 +120,11 @@ const TopNav = ({
             if (quickActionsRef.current && !quickActionsRef.current.contains(e.target)) {
                 setShowQuickActions(false);
             }
-            if (notifRef.current && !notifRef.current.contains(e.target)) {
-                setShowNotifications(false);
-            }
             if (consoleRef.current && !consoleRef.current.contains(e.target)) {
                 setShowConsoleMenu(false);
+            }
+            if (settingsRef.current && !settingsRef.current.contains(e.target)) {
+                setShowSettingsMenu(false);
             }
             if (searchDropdownRef.current && !searchDropdownRef.current.contains(e.target)) {
                 setShowSearchDropdown(false);
@@ -132,6 +141,14 @@ const TopNav = ({
         { ...readData("components.Workspace.TopNav", "quickActions_fields_11"), icon: Sparkles, ...readData("components.Workspace.TopNav", "quickActions_fields_12") },
     ].filter((action) => isModuleAllowed(action.id, userRole, user?.id || user?.email));
 
+    const actorKey = user?.id || user?.email;
+    const isAdmin = ['SUPER_ADMIN', 'ADMIN'].includes(userRole);
+    const settingsItems = [
+        isAdmin && isModuleAllowed('settings', userRole, actorKey) && { id: 'access', tab: 'access_control', domain: 'platform', icon: ShieldCheck, tone: 'toneCyan', label: t("components.Workspace.TopNav.text_access_control", "Access control"), hint: t("components.Workspace.TopNav.text_access_control_hint", "Roles, scopes and approvals") },
+        isAdmin && isModuleAllowed('integrations', userRole, actorKey) && { id: 'integrations', tab: 'integrations', domain: 'platform', icon: Hub, tone: 'toneMint', label: t("components.Workspace.TopNav.text_integrations", "Integrations"), hint: t("components.Workspace.TopNav.text_integrations_hint", "Payroll, ERP and calendars") },
+        isModuleAllowed('settings', userRole, actorKey) && { id: 'preferences', tab: 'settings', domain: 'platform', icon: Tune, tone: 'toneAmber', label: t("components.Workspace.TopNav.text_preferences", "Preferences"), hint: t("components.Workspace.TopNav.text_preferences_hint", "Language, theme and defaults") },
+    ].filter(Boolean);
+
     const handleQuickAction = (tab) => {
         onTabChange(tab);
         setShowQuickActions(false);
@@ -145,9 +162,14 @@ const TopNav = ({
 
     return (
         <header className={styles.headerNav} role="banner">
+            {/* Brand: logo + product name, returns to the dashboard */}
+            <button type="button" className={styles.pulseBrand} onClick={() => onTabChange && onTabChange('dashboard')} aria-label={t("components.Workspace.TopNav.text_brand_home", "Nucleus Suite home")}>
+                <span className={styles.pulseLogo}><BrandLogo size={40} /></span>
+                <span className={styles.pulseBrandName}>{t("components.Workspace.TopNav.text_brand", "Nucleus Suite")}</span>
+            </button>
             {/* Left: Global Search Bar + Dual-Pane Modules Launcher */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flex: 1, minWidth: 0, maxWidth: '460px' }}>
-                <div className={styles.searchBarWrapper} style={{ flex: 1, position: 'relative' }}>
+            <div className={styles.pulseSearchGroup}>
+                <div className={styles.searchBarWrapper}>
                     <Search sx={{ fontSize: 16 }} className={styles.searchIcon} />
                     <input
                         type="text"
@@ -232,7 +254,7 @@ const TopNav = ({
                                             </div>
                                             <div
                                                 style={{
-                                                    fontSize: '0.7rem',
+                                                    fontSize: '12.5px',
                                                     color: 'var(--text-2)',
                                                     marginTop: '2px',
                                                     whiteSpace: 'nowrap',
@@ -245,7 +267,7 @@ const TopNav = ({
                                         </div>
                                         <span
                                             style={{
-                                                fontSize: '0.62rem',
+                                                fontSize: '12.5px',
                                                 padding: '0.15rem 0.45rem',
                                                 borderRadius: '4px',
                                                 fontWeight: 700,
@@ -279,16 +301,15 @@ const TopNav = ({
 
             {/* Center: Dedicated Dashboards & MultipliersKraft Consoles Selector */}
             {onSelectConsole && (
-                <div ref={consoleRef} style={{ position: 'relative' }}>
+                <div ref={consoleRef} className={styles.pulseScope}>
                     <button
                         className={`${styles.consoleSelectorBtn} ${activeTab === 'dashboard' ? styles.consoleSelectorBtnActive : ''}`}
                         onClick={() => setShowConsoleMenu(!showConsoleMenu)}
                         title={readData("components.Workspace.TopNav", "TopNav_title_20")}
                         aria-label={readData("components.Workspace.TopNav", "TopNav_aria-label_21")}
                     >
-                        <LayoutDashboard sx={{ fontSize: 15 }} color="var(--signal)" />
-                        <span style={{ fontSize: 'var(--t-small)', color: 'var(--text-2)', fontWeight: 600 }}>{readData("components.Workspace.TopNav", "TopNav_text_22")}</span>
-                        <span className={styles.consoleBadge}>{currentConsoleConfig.id}</span>
+                        <span className={styles.pulseDot} aria-hidden="true" />
+                        <span className={styles.visuallyHidden}>{readData("components.Workspace.TopNav", "TopNav_text_22")}</span>
                         <span className={styles.consoleTitle}>{currentConsoleConfig.title}</span>
                         <ChevronDown sx={{ fontSize: 14 }} className={`${styles.chevronIcon} ${showConsoleMenu ? styles.chevronRotated : ''}`} />
                     </button>
@@ -299,7 +320,7 @@ const TopNav = ({
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <span style={{ fontWeight: 700, fontSize: 'var(--t-small)', color: 'var(--text)' }}>{readData("components.Workspace.TopNav", "TopNav_text_23")}{permittedConsoles.length}{readData("components.Workspace.TopNav", "TopNav_text_24")}</span>
                                     <span style={{
-                                        fontSize: '0.66rem',
+                                        fontSize: '12.5px',
                                         background: userRole === 'SUPER_ADMIN' ? 'var(--signal-wash)' : 'rgba(56, 189, 248, 0.15)',
                                         color: userRole === 'SUPER_ADMIN' ? 'var(--signal)' : 'var(--info)',
                                         padding: '0.15rem 0.45rem',
@@ -330,7 +351,6 @@ const TopNav = ({
                                                 showToast(translateText("components.Workspace.TopNav", "text_8290d65752"), translateText("components.Workspace.TopNav", "text_a00b1786e3", { value1: String(c.title), value2: String(c.id) }), 'info');
                                             }}
                                         >
-                                            <span className={styles.consoleItemBadge}>{c.id}</span>
                                             <div className={styles.consoleItemText}>
                                                 <div className={styles.consoleItemTitle}>{c.title}</div>
                                                 <div className={styles.consoleItemSub}>{c.persona}</div>
@@ -345,31 +365,13 @@ const TopNav = ({
                 </div>
             )}
 
-            {/* Right: Theme Toggle, Notifications, User Profile & Sub-Nav Toggle */}
-            <div className={styles.rightActions}>
-                {/* Super Admin Access Control Trigger */}
-                {['SUPER_ADMIN', 'ADMIN'].includes(userRole) && isModuleAllowed('settings', userRole, user?.id || user?.email) && (
-                    <button
-                        className={styles.iconBtn}
-                        onClick={() => onTabChange ? onTabChange('access_control') : openAccessControl()}
-                        style={{
-                            width: 'auto',
-                            padding: '0 0.75rem',
-                            gap: '0.4rem',
-                            borderRadius: '8px',
-                            background: 'var(--signal-wash)',
-                            border: '1px solid var(--line-glow)',
-                            color: 'var(--signal)',
-                            fontSize: '0.76rem',
-                            fontWeight: 700
-                        }}
-                        title={readData("components.Workspace.TopNav", "TopNav_title_25")}
-                    >
-                        <ShieldCheck sx={{ fontSize: 15 }} color="var(--signal)" />
-                        <span>{readData("components.Workspace.TopNav", "TopNav_text_26")}</span>
-                    </button>
-                )}
+            {/* Active company of the group (multi-entity scope) */}
+            <div className={styles.pulseScope}><EntitySwitcher /></div>
 
+            {/* Right: Theme Toggle, Notifications, User Profile & Sub-Nav Toggle */}
+            {userRole && <span className={styles.pulseCrumb}>{translateText(userRole.replace(/_/g, ' '))}</span>}
+
+            <div className={styles.rightActions}>
                 {/* Neural Sonic Beacon (Voice & Policy Intelligence) */}
                 <NeuralSonicBeacon />
 
@@ -399,31 +401,53 @@ const TopNav = ({
                     )}
                 </div>}
 
-                {/* Notifications */}
-                <div ref={notifRef} style={{ position: 'relative' }}>
+                {/* Notifications: live from /api/v1/notifications */}
+                <NotificationsMenu buttonClassName={styles.iconBtn} />
+
+                {/* Messages (header only) */}
+                {onToggleMessages && (
                     <button
-                        className={styles.iconBtn}
-                        onClick={() => setShowNotifications(!showNotifications)}
-                        title={readData("components.Workspace.TopNav", "TopNav_title_30")}
-                        aria-label={readData("components.Workspace.TopNav", "TopNav_aria-label_31")}
+                        type="button"
+                        className={`${styles.iconBtn} ${isMessagesOpen ? styles.iconBtnActive : ''}`}
+                        onClick={onToggleMessages}
+                        aria-expanded={isMessagesOpen}
+                        title={t("components.Workspace.TopNav.text_messages", "Messages")}
+                        aria-label={t("components.Workspace.TopNav.text_messages", "Messages")}
                     >
-                        <Bell sx={{ fontSize: 18 }} />
-                        <span className={styles.badge} />
+                        <ChatBubbleOutline sx={{ fontSize: 18 }} />
                     </button>
-                    {showNotifications && (
-                        <div className={styles.dropdownMenu} style={{ width: '280px' }}>
-                            <div style={{ padding: '0.5rem', fontWeight: '700', fontSize: 'var(--t-small)', color: 'var(--text)', borderBottom: '1px solid var(--line)' }}>{readData("components.Workspace.TopNav", "TopNav_text_32")}</div>
-                            <div style={{ padding: '0.75rem', fontSize: 'var(--t-small)', borderBottom: '1px solid var(--line-soft)' }}>
-                                <strong>{readData("components.Workspace.TopNav", "TopNav_text_33")}</strong>
-                                <p style={{ color: 'var(--text-2)', margin: '0.2rem 0 0' }}>{readData("components.Workspace.TopNav", "TopNav_text_34")}</p>
+                )}
+
+                {/* Settings: administration lives here (mockup gear menu) */}
+                {settingsItems.length > 0 && (
+                    <div ref={settingsRef} style={{ position: 'relative' }}>
+                        <button
+                            type="button"
+                            className={`${styles.iconBtn} ${showSettingsMenu ? styles.iconBtnActive : ''}`}
+                            onClick={() => setShowSettingsMenu((open) => !open)}
+                            aria-haspopup="menu"
+                            aria-expanded={showSettingsMenu}
+                            title={t("components.Workspace.TopNav.text_settings", "Settings")}
+                            aria-label={t("components.Workspace.TopNav.text_settings", "Settings")}
+                        >
+                            <SettingsOutlined sx={{ fontSize: 19 }} />
+                        </button>
+                        {showSettingsMenu && (
+                            <div className={`${styles.dropdownMenu} ${styles.settingsMenu}`} role="menu" aria-label={t("components.Workspace.TopNav.text_settings", "Settings")}>
+                                <div className={styles.menuHeading}>{t("components.Workspace.TopNav.text_administration", "Administration")}</div>
+                                {settingsItems.map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <button key={item.id} type="button" role="menuitem" className={styles.settingsItem} onClick={() => { setShowSettingsMenu(false); onTabChange(item.tab, item.domain); }}>
+                                            <span className={`${styles.settingsTile} ${styles[item.tone]}`}><Icon sx={{ fontSize: 18 }} /></span>
+                                            <span className={styles.settingsText}>{item.label}<small>{item.hint}</small></span>
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            <div style={{ padding: '0.75rem', fontSize: 'var(--t-small)' }}>
-                                <strong>{readData("components.Workspace.TopNav", "TopNav_text_35")}</strong>
-                                <p style={{ color: 'var(--text-2)', margin: '0.2rem 0 0' }}>{readData("components.Workspace.TopNav", "TopNav_text_36")}</p>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                        )}
+                    </div>
+                )}
 
                 {/* User profile and account links */}
                 <div ref={profileRef} className={styles.profileWrapper}>
@@ -435,13 +459,13 @@ const TopNav = ({
                         title={readData("components.Workspace.TopNav", "TopNav_title_37")}
                     >
                         <NextImage unoptimized width={48} height={48}
-                            src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || readData("components.Workspace.TopNav", "fallback_3"))}&background=2563ea&color=fff`}
+                            src={user?.avatar || `${avatarDataUri(user?.name || readData("components.Workspace.TopNav", "fallback_3"))}`}
                             alt={user?.name || readData("components.Workspace.TopNav", "fallback_4")}
                             className={styles.avatar}
                             style={{ objectFit: 'cover' }}
                             onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || readData("components.Workspace.TopNav", "fallback_5"))}&background=2563ea&color=fff`;
+                                e.target.src = `${avatarDataUri(user?.name || readData("components.Workspace.TopNav", "fallback_5"))}`;
                             }}
                         />
                         <div className={styles.userTextCol}>
@@ -456,13 +480,13 @@ const TopNav = ({
                             {/* Profile Header */}
                             <div className={styles.profileHeader}>
                                 <NextImage unoptimized width={48} height={48}
-                                    src={user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || readData("components.Workspace.TopNav", "fallback_7"))}&background=2563ea&color=fff`}
+                                    src={user?.avatar || `${avatarDataUri(user?.name || readData("components.Workspace.TopNav", "fallback_7"))}`}
                                     alt={readData("components.Workspace.TopNav", "TopNav_alt_38")}
                                     className={styles.dropdownAvatar}
                                     style={{ objectFit: 'cover' }}
                                     onError={(e) => {
                                         e.target.onerror = null;
-                                        e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || readData("components.Workspace.TopNav", "fallback_8"))}&background=2563ea&color=fff`;
+                                        e.target.src = `${avatarDataUri(user?.name || readData("components.Workspace.TopNav", "fallback_8"))}`;
                                     }}
                                 />
                                 <div className={styles.profileInfo}>
@@ -472,6 +496,39 @@ const TopNav = ({
                                         {userRole.replace('_', ' ')}
                                     </span>
                                 </div>
+                            </div>
+
+                            {/* Organisation: the active tenant, a switcher when the user belongs to several, and the platform console for operators */}
+                            {(tenantAccess?.memberships?.length > 1 || tenantAccess?.platformAdmin || tenantAccess?.tenant?.name) && (
+                                <div className={styles.menuLinks}>
+                                    {tenantAccess?.memberships?.length > 1 ? (
+                                        <label className={styles.menuLinkItem} style={{ flexDirection: 'column', alignItems: 'stretch', gap: 4 }}>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--text-2)' }}>Organisation</span>
+                                            <select
+                                                value={tenantAccess.tenant?.id ?? ''}
+                                                onChange={(event) => { void switchTenant(event.target.value); }}
+                                                style={{ font: 'inherit', padding: '4px 6px', borderRadius: 6, border: '1px solid var(--line)', background: 'var(--card)', color: 'inherit' }}
+                                            >
+                                                {tenantAccess.memberships.map((membership) => (
+                                                    <option key={membership.id} value={membership.id}>{membership.name}</option>
+                                                ))}
+                                            </select>
+                                        </label>
+                                    ) : tenantAccess?.tenant?.name ? (
+                                        <span className={styles.menuLinkItem} style={{ cursor: 'default' }}>{tenantAccess.tenant.name}</span>
+                                    ) : null}
+                                    {tenantAccess?.platformAdmin && (
+                                        <Link href="/platform" className={styles.menuLinkItem} style={{ textDecoration: 'none' }} onClick={() => setShowProfileMenu(false)}>
+                                            <Settings sx={{ fontSize: 15 }} color="var(--signal)" />
+                                            <span>Platform console</span>
+                                        </Link>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Interface mode: Classic or Redesigned (redesigned modules only) */}
+                            <div className={styles.menuLinks}>
+                                <UiModeSwitch />
                             </div>
 
                             {/* Quick Links */}
@@ -528,17 +585,6 @@ const TopNav = ({
                     )}
                 </div>
 
-                {/* Right Panel Toggle Button */}
-                {onToggleRightNav && (
-                    <button
-                        className={`${styles.iconBtn} ${isRightNavOpen ? styles.iconBtnActive : ''}`}
-                        onClick={onToggleRightNav}
-                        title={isRightNavOpen ? readData("components.Workspace.TopNav", "display_8") : readData("components.Workspace.TopNav", "display_9")}
-                        aria-label={readData("components.Workspace.TopNav", "TopNav_aria-label_43")}
-                    >
-                        <PanelRight sx={{ fontSize: 18 }} />
-                    </button>
-                )}
             </div>
         </header>
     );

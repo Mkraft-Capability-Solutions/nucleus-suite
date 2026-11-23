@@ -28,7 +28,7 @@
     border: 1px solid var(--line, #1C3450);
     border-radius: var(--r-control, 6px);
     color: var(--text, #E6EDF6);
-    font-size: 0.8rem;
+    font-size: var(--fs-xs);
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s ease;
@@ -49,7 +49,7 @@
 }
 
 .modulesShortcut {
-    font-size: 0.65rem;
+    font-size: var(--fs-2xs);
     color: var(--text-3, #5C7896);
     background: rgba(0,0,0,0.3);
     border: 1px solid var(--line, #1C3450);
@@ -86,7 +86,7 @@
 }
 
 .consoleBadge {
-    font-size: 0.68rem;
+    font-size: var(--fs-2xs);
     font-weight: 700;
     color: var(--signal);
     background: var(--signal-wash);
@@ -97,7 +97,7 @@
 }
 
 .consoleTitle {
-    font-size: 0.78rem;
+    font-size: var(--fs-2xs);
     font-weight: 600;
     color: var(--text);
     max-width: 240px;
@@ -130,7 +130,7 @@
     padding: 0.75rem 1rem;
     background: var(--card-2);
     border-bottom: 1px solid var(--line);
-    font-size: 0.78rem;
+    font-size: var(--fs-2xs);
     color: var(--text);
 }
 
@@ -177,7 +177,7 @@
 }
 
 .consoleItemBadge {
-    font-size: 0.68rem;
+    font-size: var(--fs-2xs);
     font-weight: 700;
     color: #9B8CFF;
     background: rgba(155, 140, 255, 0.12);
@@ -201,7 +201,7 @@
 }
 
 .consoleItemTitle {
-    font-size: 0.76rem;
+    font-size: var(--fs-2xs);
     font-weight: 600;
     color: var(--text);
     white-space: nowrap;
@@ -210,7 +210,7 @@
 }
 
 .consoleItemSub {
-    font-size: 0.66rem;
+    font-size: var(--fs-2xs);
     color: var(--text-3);
     margin-top: 0.1rem;
 }
@@ -260,11 +260,11 @@
 .logoInner {
     color: #ffffff;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: var(--fs-lg);
 }
 
 .brandName {
-    font-size: 1.1rem;
+    font-size: var(--fs-lg);
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.01em;
@@ -332,7 +332,7 @@
     position: absolute;
     left: 0.75rem;
     color: var(--text-3);
-    font-size: 0.85rem;
+    font-size: var(--fs-sm);
 }
 
 .searchInput {
@@ -815,3 +815,120 @@
  .consoleDropdownMenu{left:8px;right:8px;top:56px}
  .profileDropdown{position:fixed;left:8px;right:8px;width:auto;max-width:none;max-height:calc(100dvh - 120px);overflow-y:auto}
 }
+
+/* ── Pulse: header (sticky glass command bar) ─────────────────────────────────────────────────────────────── */
+.headerNav { height: 76px; padding: 0 24px; position: sticky; top: 0; background: color-mix(in srgb, var(--rail) 82%, transparent); -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); border-bottom: 1px solid var(--line); }
+.headerNav::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: linear-gradient(90deg, transparent, var(--signal), var(--agent), transparent); opacity: 0.7; pointer-events: none; }
+.searchInput { height: 40px; border-radius: 12px; font-size: var(--fs-sm); }
+
+/* ===== Pulse header: values from docs/plans/V1.0/DASHBOARD-PULSE-MOCKUP.html (.top and its children) ===== */
+.headerNav {
+  height: auto; min-height: 68px; display: flex; align-items: center; gap: 12px; padding: 14px 24px;
+  position: sticky; top: 0; z-index: 60;
+  background: var(--p-header, var(--card)); backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  border-bottom: 1px solid var(--p-edge, var(--line)); font-family: var(--f-ui); font-size: 14px;
+}
+.headerNav::after { content: ""; position: absolute; inset-inline: 0; bottom: -1px; height: 1px; background: var(--p-grad-line, var(--line)); opacity: .7; pointer-events: none; }
+.pulseScope { position: relative; order: 1; flex-shrink: 0; }
+.pulseCrumb { order: 2; color: var(--text-3); font-size: 14px; white-space: nowrap; text-transform: capitalize; }
+.pulseSearchGroup { order: 3; margin-inline-start: auto; display: flex; align-items: center; gap: 12px; flex: 0 1 520px; min-width: 150px; }
+.rightActions { order: 4; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+
+/* Scope pill = console switcher */
+.consoleSelectorBtn {
+  height: 40px; display: inline-flex; align-items: center; gap: 10px; padding: 0 14px 0 10px; border-radius: 999px;
+  background: var(--p-glass-2, var(--card)); border: 1px solid var(--p-edge-2, var(--line)); color: var(--text);
+  font: 600 14px/1 var(--f-ui); white-space: nowrap; cursor: pointer; box-shadow: none;
+}
+.consoleSelectorBtnActive { border-color: var(--p-edge-2, var(--line)); box-shadow: none; }
+.consoleTitle { font-size: 14px; font-weight: 600; color: var(--text); }
+.pulseDot { width: 22px; height: 22px; border-radius: 50%; background: conic-gradient(var(--p-cyan, var(--signal)), var(--p-violet, var(--agent)), var(--p-cyan, var(--signal))); display: grid; place-items: center; flex-shrink: 0; }
+.pulseDot::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--p-void, var(--bg)); }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Search */
+.searchBarWrapper {
+  position: relative; flex: 1; min-width: 0; height: 40px; display: flex; align-items: center; gap: 10px; padding: 0 12px;
+  border-radius: 12px; background: var(--p-chip, var(--card-2)); border: 1px solid var(--p-edge, var(--line)); color: var(--text-2);
+}
+.searchIcon { position: static !important; color: var(--text-2); font-size: 18px !important; }
+.searchInput { flex: 1; min-width: 0; height: 100%; padding: 0 !important; border: 0 !important; background: transparent !important; color: var(--text); font: 400 14px var(--f-ui); outline: none; box-shadow: none !important; }
+.searchInput::placeholder { color: var(--text-2); }
+.searchBarWrapper:focus-within { border-color: var(--p-edge-2, var(--signal)); }
+.cmdShortcut { position: static !important; transform: none !important; margin-inline-start: auto; font-size: 12.5px; color: var(--text-3); border: 1px solid var(--p-edge-2, var(--line)); border-radius: 6px; padding: 1px 6px; background: none; }
+
+/* Modules (kept in the header by request), styled as a Pulse header button */
+.modulesBtn {
+  height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 12px; flex-shrink: 0;
+  background: var(--p-chip, var(--card-2)); border: 1px solid var(--p-edge, var(--line)); color: var(--text); font: 600 14px var(--f-ui); cursor: pointer;
+}
+.modulesBtn:hover, .modulesBtnActive { border-color: var(--p-edge-2, var(--line)); background: var(--p-hover, var(--card-2)); }
+.modulesShortcut { font-size: 12.5px; color: var(--text-3); border: 1px solid var(--p-edge-2, var(--line)); border-radius: 6px; padding: 1px 6px; }
+
+/* Icon buttons, quick action, language */
+.iconBtn, .quickActionBtn {
+  width: 40px; height: 40px; border-radius: 12px; border: 1px solid var(--p-edge, var(--line)); background: var(--p-chip, var(--card-2));
+  color: var(--text-2); display: grid; place-items: center; cursor: pointer; position: relative; flex-shrink: 0; box-shadow: none;
+}
+.iconBtn:hover, .quickActionBtn:hover { color: var(--text); border-color: var(--p-edge-2, var(--line)); }
+.iconBtnActive { color: var(--text); border-color: var(--p-nav-on-ring, var(--signal)); background: var(--p-nav-on, var(--signal-wash)); }
+.badge { position: absolute; top: -4px; inset-inline-end: -4px; width: 10px; height: 10px; border-radius: 999px; background: var(--p-rose, var(--flag)); box-shadow: 0 0 12px var(--p-rose, var(--flag)); }
+
+/* Me chip */
+.profileBtn {
+  display: flex; align-items: center; gap: 10px; padding: 4px 14px 4px 4px; height: auto; border-radius: 999px;
+  background: var(--p-chip, var(--card-2)); border: 1px solid var(--p-edge, var(--line)); color: var(--text); cursor: pointer;
+}
+.avatar { width: 34px !important; height: 34px !important; border-radius: 50% !important; }
+.userNameText { display: block; font: 600 14px/1.2 var(--f-ui); color: var(--text); }
+.userRoleSub { font-size: 12.5px; color: var(--text-3); letter-spacing: .06em; text-transform: uppercase; }
+
+/* Menus */
+.consoleDropdownMenu, .dropdownMenu, .profileDropdown {
+  border-radius: 18px !important; background: var(--p-menu, var(--card)) !important; border: 1px solid var(--p-edge-2, var(--line)) !important;
+  box-shadow: var(--p-menu-shadow, var(--shadow-overlay)) !important; padding: 8px; z-index: 1200;
+}
+.consoleItem, .dropdownItem, .menuLinkItem { border-radius: 12px; font-size: 14px; font-weight: 600; }
+.consoleItem:hover, .dropdownItem:hover, .menuLinkItem:hover { background: var(--p-hover, var(--card-2)); }
+.consoleItemSub { font-size: 12.5px; color: var(--text-3); font-weight: 500; }
+
+@media (max-width: 1100px) { .pulseCrumb, .modulesShortcut, .cmdShortcut { display: none; } }
+@media (max-width: 760px) { .headerNav { padding: 10px 16px; gap: 8px; } .userTextCol { display: none; } .pulseSearchGroup { flex-basis: 200px; } }
+
+/* Brand lives in the header (mockup .logo + .logo-name), first in the row */
+.pulseBrand { order: 0; display: inline-flex; align-items: center; gap: 10px; padding: 0; margin-inline-end: 4px; border: 0; background: none; color: var(--text); cursor: pointer; flex-shrink: 0; }
+.pulseLogo { width: 40px; height: 40px; border-radius: 13px; overflow: hidden; display: grid; place-items: center; background: var(--p-grad, var(--signal)); box-shadow: 0 0 24px var(--p-cyan, transparent); }
+.pulseLogo img { width: 100%; height: 100%; object-fit: contain; }
+.pulseBrandName { font: 700 18px/1 var(--f-ui); letter-spacing: -.01em; white-space: nowrap; }
+.pulseBrand:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; border-radius: 13px; }
+
+/* Header and its dropdowns always stack above the rails, cards and charts below them. */
+.headerNav { z-index: 1000; }
+.consoleDropdownMenu, .dropdownMenu, .profileDropdown { z-index: 1100 !important; }
+@media (max-width: 760px) { .pulseBrandName { display: none; } }
+/* Keep search usable at laptop widths: secondary labels give way first. */
+.pulseSearchGroup { flex: 1 1 360px; max-width: 520px; }
+.searchBarWrapper { display: flex !important; min-width: 160px !important; max-width: none !important; }
+@media (max-width: 1600px) { .pulseCrumb, .modulesShortcut { display: none; } }
+@media (max-width: 1360px) { .shortcutKey { display: none; } .modulesBtn > span:not(.modulesShortcut) { display: none; } .modulesBtn { width: 40px; padding: 0; justify-content: center; } }
+@media (max-width: 900px) { .searchBarWrapper { display: none !important; } }
+@media (max-width: 1600px) { .userTextCol { display: none !important; } .profileBtn { padding: 4px !important; } .shortcutKey { display: none; } }
+.modulesBtn { width: auto; min-width: 0; overflow: hidden; }
+.rightActions > * { flex-shrink: 0; }
+
+/* Settings menu (mockup .menu / .mi / .tile) */
+.settingsMenu { position: absolute; inset-inline-end: 0; top: 50px; width: 300px; display: flex; flex-direction: column; gap: 2px; }
+.menuHeading { font-size: 12.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); font-weight: 700; padding: 8px 10px; }
+.settingsItem { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border: 0; border-radius: 12px; background: none; color: var(--text); font: 600 14px var(--f-ui); text-align: start; cursor: pointer; }
+.settingsItem:hover, .settingsItem:focus-visible { background: var(--p-hover, var(--card-2)); outline: none; }
+.settingsTile { width: 36px; height: 36px; border-radius: 11px; display: grid; place-items: center; flex-shrink: 0; }
+.settingsText { display: flex; flex-direction: column; min-width: 0; }
+.settingsText small { font-size: 12.5px; color: var(--text-3); font-weight: 500; }
+.toneCyan { background: var(--signal-wash); color: var(--p-cyan, var(--signal)); }
+.toneMint { background: var(--status-ok-wash, var(--card-2)); color: var(--p-mint, var(--status-ok)); }
+.toneAmber { background: var(--pending-wash, var(--card-2)); color: var(--p-amber, var(--pending)); }
+
+/* All header dropdowns use the menu's type size (14px items, 12.5px secondary). */
+.consoleDropdownMenu, .dropdownMenu, .profileDropdown, .settingsMenu { font-size: 14px; }
+.consoleItemTitle, .dropdownItem, .menuLinkItem, .settingsItem, .logoutBtn, .profileName { font-size: 14px !important; }
+.consoleItemSub, .profileEmail, .profileRolePill, .consoleDropdownHeader span { font-size: 12.5px !important; }

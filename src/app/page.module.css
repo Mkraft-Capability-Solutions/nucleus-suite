@@ -5,7 +5,8 @@
   flex-direction: row;
   overflow: hidden;
   background: var(--bg);
-  position: relative;
+  position: fixed;
+  inset: 0;
 }
 
 .mainColumn {
@@ -196,7 +197,7 @@
   }
 }
 
-.demoNotice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--card-2); color: var(--text-2); border-top: 1px solid var(--line); text-align: center; font-size: 11px; line-height: 20px; pointer-events: none; }
+.demoNotice { position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: var(--card-2); color: var(--text-2); border-top: 1px solid var(--line); text-align: center; font-size: var(--fs-2xs); line-height: 20px; pointer-events: none; }
 .mainContainer { padding-bottom: 20px; }
 
 /* Keep the layout editor clear of floating operational shortcuts. */
@@ -211,6 +212,65 @@
  .fabStack{left:auto;right:12px;bottom:calc(32px + env(safe-area-inset-bottom));flex-direction:row;gap:8px}
  .fabBtn{width:44px;height:44px;padding:0;justify-content:center}
  .fabLabel{display:none}
- .demoNotice{padding-bottom:env(safe-area-inset-bottom);font-size:10px;line-height:16px}
+ .demoNotice{padding-bottom:env(safe-area-inset-bottom);font-size: var(--fs-2xs);line-height:16px}
  .mainContainer{padding-bottom:calc(32px + env(safe-area-inset-bottom))}
+}
+
+/* Floating launchers sit left of the right rail, never on top of it (rail widths from RightSubNav.module.css). */
+.mainContainer:has([data-right-rail="open"]) .fabStack { right: calc(320px + 1.25rem); }
+.mainContainer:has([data-right-rail="collapsed"]) .fabStack { right: calc(80px + 1.25rem); }
+
+/* ===== Pulse frame (mockup .app / .mid / .main / .foot) ===== */
+.mainContainer {
+  flex-direction: column; padding-bottom: 0; isolation: isolate;
+  background: var(--p-void, var(--bg)); color: var(--text); font-family: var(--f-ui); font-size: 14px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased; font-optical-sizing: auto;
+}
+.mainContainer::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: var(--p-glow-opacity, 0);
+  background:
+    radial-gradient(310px 310px at 0% 0%, var(--p-glow-a, transparent), transparent 70%),
+    radial-gradient(260px 260px at 100% 20%, var(--p-glow-b, transparent), transparent 70%),
+    radial-gradient(230px 230px at 45% 100%, var(--p-glow-c, transparent), transparent 70%);
+  filter: blur(60px);
+}
+.bodyLayout { flex: 1 1 auto; min-height: 0; }
+.workspaceZone { padding: 20px 24px 28px; }
+.pulseFooter {
+  flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px;
+  border-top: 1px solid var(--p-edge, var(--line)); background: var(--p-foot, var(--card-2)); color: var(--text-3); font-size: 12.5px; z-index: 30;
+}
+.pulseFooterStatus { display: inline-flex; align-items: center; gap: 8px; color: var(--text-2); }
+.pulseFooterStatus i { width: 7px; height: 7px; border-radius: 50%; background: var(--p-mint, var(--status-ok)); box-shadow: 0 0 10px var(--p-mint, var(--status-ok)); }
+.fabStack { bottom: calc(44px + 1rem); }
+@media (max-width: 640px) { .pulseFooter { padding: 10px 16px; flex-direction: column; align-items: flex-start; gap: 2px; } }
+/* Redesigned shell: no environment banner or floating buttons, so no space is kept for them. */
+.mainContainer[data-shell="redesigned"] { padding-bottom: 0; }
+/*
+ * Redesigned shell: a frame (side rail + top bar, one tinted surface, no dividing lines) around a
+ * content card with a rounded inner corner at the top left. The frame follows the accent colour
+ * (html[data-accent], src/lib/accent.ts); the rail and top bar read --shell-frame.
+ */
+.mainContainer[data-shell="redesigned"] {
+  --shell-frame: #eceef8; --shell-content: #f7f8fc; --shell-line: #dfe2ee;
+  background: var(--shell-frame);
+}
+:global(html[data-accent="red"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #f6eeef; --shell-line: #ecdcde; }
+:global(html[data-accent="sky"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #e7f0fa; --shell-line: #d6e3f3; }
+:global(html[data-theme="dark"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #0a0e1c; --shell-content: #0e1422; --shell-line: #222b3d; }
+:global(html[data-theme="dark"][data-accent="red"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #130b0d; }
+:global(html[data-theme="dark"][data-accent="sky"]) .mainContainer[data-shell="redesigned"] { --shell-frame: #08111c; }
+.mainContainer[data-shell="redesigned"] .bodyLayout {
+  background: var(--shell-content);
+  border-top: 1px solid var(--shell-line); border-left: 1px solid var(--shell-line);
+  border-top-left-radius: 16px;
+}
+@media (max-width: 640px) {
+  .mainContainer[data-shell="redesigned"] .bodyLayout { border-left: 0; border-top-left-radius: 0; }
+}
+/* A module that fits the viewport (data-fit): <main> passes its height down instead of scrolling. */
+@media (min-width: 768px) and (min-height: 560px) {
+  .workspaceZone[data-fit="true"] { display: flex; flex-direction: column; }
+  .workspaceZone[data-fit="true"] > * { flex-shrink: 0; }
+  .workspaceZone[data-fit="true"] > :last-child { flex: 1 1 auto; min-height: 0; height: auto; display: flex; flex-direction: column; }
 }

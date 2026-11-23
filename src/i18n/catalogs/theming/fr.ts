@@ -14,6 +14,7 @@ const messages: ThemingMessages = {
     system: "Système",
   },
   themes: {
+    pulse: "Pulse",
     horizon: "Horizon",
     signature: "Signature",
     sapphireTide: "Marée saphir",

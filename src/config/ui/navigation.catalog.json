@@ -4,14 +4,14 @@
       "id": "dashboard",
       "label": "Dashboard Consoles",
       "icon": "LayoutGrid",
-      "badge": "S1\u2013S10",
+      "badge": "",
       "groups": [
         {
           "heading": "Executive & Operational Consoles",
           "items": [
             {
               "id": "s1",
-              "label": "S1: People Command Centre",
+              "label": "People Command Centre",
               "targetTab": "dashboard",
               "icon": "LayoutGrid",
               "desc": "Executive leadership KPIs, headcount forecast & org health radar",
@@ -19,7 +19,7 @@
             },
             {
               "id": "s2",
-              "label": "S2: HR Operations Console",
+              "label": "HR Operations Console",
               "targetTab": "dashboard",
               "icon": "Users",
               "desc": "SLA approval queue, onboarding pipeline & absence heatmap",
@@ -27,7 +27,7 @@
             },
             {
               "id": "s3",
-              "label": "S3: Attendance & Shifts",
+              "label": "Attendance & Shifts",
               "targetTab": "dashboard",
               "icon": "Clock",
               "desc": "Punches, shift roster strip with gaps & paired-punch AI",
@@ -35,7 +35,7 @@
             },
             {
               "id": "s4",
-              "label": "S4: Talent Acquisition",
+              "label": "Talent Acquisition",
               "targetTab": "dashboard",
               "icon": "UserPlus",
               "desc": "Hiring funnel, aged reqs with blockers & candidate AI match",
@@ -43,7 +43,7 @@
             },
             {
               "id": "s5",
-              "label": "S5: Payroll Control Room",
+              "label": "Payroll Control Room",
               "targetTab": "dashboard",
               "icon": "CreditCard",
               "desc": "8-stage cycle stepper, cost bridge & blocking exceptions",
@@ -51,7 +51,7 @@
             },
             {
               "id": "s6",
-              "label": "S6: Performance & Talent",
+              "label": "Performance & Talent",
               "targetTab": "dashboard",
               "icon": "TrendingUp",
               "desc": "9-Box talent grid, calibration bias flags & succession",
@@ -59,7 +59,7 @@
             },
             {
               "id": "s7",
-              "label": "S7: Manager Cockpit",
+              "label": "Manager Cockpit",
               "targetTab": "dashboard",
               "icon": "CheckCircle2",
               "desc": "3-item weekly brief, 1-click approvals & team signals",
@@ -67,7 +67,7 @@
             },
             {
               "id": "s8",
-              "label": "S8: Employee Home",
+              "label": "Employee Home",
               "targetTab": "dashboard",
               "icon": "Award",
               "desc": "Shift clock ring, leave balances, net pay preview & AI policy",
@@ -75,7 +75,7 @@
             },
             {
               "id": "s9",
-              "label": "S9: Magnetix Capability",
+              "label": "Magnetix Capability",
               "targetTab": "dashboard",
               "icon": "BookOpen",
               "desc": "NCI index, skill coverage matrix & business signal proof",
@@ -83,7 +83,7 @@
             },
             {
               "id": "s10",
-              "label": "S10: Workspace Governance",
+              "label": "Workspace Governance",
               "targetTab": "dashboard",
               "icon": "AdminPanelSettingsOutlined",
               "desc": "Workspace settings, role access and integration previews",
@@ -203,6 +203,14 @@
               "tag": "Core"
             },
             {
+              "id": "employee_flags",
+              "label": "Warnings & Alerts",
+              "targetTab": "people_core",
+              "icon": "WarningAmberOutlined",
+              "desc": "Passport and visa expiry, medical examinations due and retirement across the group's companies.",
+              "tag": "Core"
+            },
+            {
               "id": "assignment_admin",
               "label": "Assignment And Policy Attributes",
               "targetTab": "assignment_admin",
@@ -225,14 +233,6 @@
               "icon": "GroupsOutlined",
               "desc": "Manage sanctioned strength board with a scoped work queue, record history and controlled actions.",
               "tag": "Hierarchy"
-            },
-            {
-              "id": "document_vault",
-              "label": "Document Vault",
-              "targetTab": "document_vault",
-              "icon": "FolderSharedOutlined",
-              "desc": "Manage document vault with a scoped work queue, record history and controlled actions.",
-              "tag": "Organization"
             },
             {
               "id": "joining_chain",
@@ -427,6 +427,27 @@
               "tag": "Governance",
               "desc": "Resignation submission, notice period calculation, and exit approvals",
               "icon": "ExitToAppOutlined"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "documents",
+      "label": "Documents",
+      "icon": "FolderSharedOutlined",
+      "badge": "Library",
+      "groups": [
+        {
+          "heading": "Document library",
+          "items": [
+            {
+              "id": "document_vault",
+              "label": "Documents",
+              "targetTab": "documents",
+              "icon": "FolderSharedOutlined",
+              "desc": "Every employee document, filed by company, department and person: folders or one list; upload, open and delete.",
+              "tag": "Organization"
             }
           ]
         }

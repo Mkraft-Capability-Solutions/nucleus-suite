@@ -1,3 +1,4 @@
+import { permitted, workflowOperations, type WorkflowOperation } from '@/lib/workflow-catalog';
 /**
  * Nucleus AI action catalog.
  * Lists every HRMS action the AI may draft, mapped to real /api/v1/ routes.
@@ -241,4 +242,23 @@ export async function submitDraft(draft: ActionDraft): Promise<{ ok: boolean; me
     return { ok: false, message: payload?.error?.message ?? `The request was refused (${response.status}).` };
   }
   return { ok: true, message: payload?.data?.id ? `Recorded as ${payload.data.id}.` : 'Recorded.' };
+}
+
+/* -------------------------------------------------------------------------- */
+/* Permission filtering: the model is only told about actions the caller may run. */
+/* -------------------------------------------------------------------------- */
+
+const operationIndex = new Map<string, WorkflowOperation>(
+  workflowOperations.map((operation) => [`${operation.method} ${operation.path}`, operation]),
+);
+
+export type ResolvedAction = NucleusAction & { operation: WorkflowOperation };
+
+/** Actions whose backing API operation exists and whose permissions the caller holds. Unknown operations are excluded. */
+export function nucleusActionsFor(permissions: readonly string[]): ResolvedAction[] {
+  const held = [...permissions];
+  return NUCLEUS_ACTIONS.flatMap((action) => {
+    const operation = operationIndex.get(`${action.method} ${action.path}`);
+    return operation && permitted(operation, held) ? [{ ...action, operation }] : [];
+  });
 }

@@ -5,10 +5,12 @@ import React from 'react';
 import { getNavigationDomains } from '@/lib/workspace-navigation';
 import X from '@mui/icons-material/Close';
 import ChevronRight from '@mui/icons-material/ChevronRight';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import TrendingUp from '@mui/icons-material/TrendingUp';
 import { useAuth } from '@/context/AuthContext';
 import { useTranslation } from '@/context/I18nContext';
 import { canViewNavigationItem } from '@/lib/navigation-access';
+import { stripConsoleCode } from '@/lib/display-codes';
 import styles from './RightSubNav.module.css';
 
 const ROLE_PERMITTED_CONSOLES = readData("components.Workspace.RightSubNav", "ROLE_PERMITTED_CONSOLES_1");
@@ -22,9 +24,15 @@ const RightSubNav = ({
 }) => {
   const { t } = useTranslation();
     const { t: translateText } = useTranslation();
-    const { user, isConsoleAllowed, isModuleAllowed } = useAuth();
+    const { user, isConsoleAllowed, isModuleAllowed, isNavItemEnabled } = useAuth();
     const [collapsedGroups, setCollapsedGroups] = React.useState({});
-    const [isPanelCollapsed, setIsPanelCollapsed] = React.useState(false);
+    const [isPanelCollapsed, setPanelCollapsedState] = React.useState(() => {
+        try { return localStorage.getItem('nucleus_right_rail') === 'collapsed'; } catch { return false; }
+    });
+    const setIsPanelCollapsed = (value) => {
+        setPanelCollapsedState(value);
+        try { localStorage.setItem('nucleus_right_rail', value ? 'collapsed' : 'expanded'); } catch { /* per-viewer preference only */ }
+    };
 
     if (!isOpen) return null;
 
@@ -47,10 +55,14 @@ const RightSubNav = ({
     const rawConfig = domainConfigs[resolvedDomain] || domainConfigs.core_hr;
     const domainConfig = resolvedDomain === 'dashboard' ? {
         ...rawConfig,
-        subtitle: `${userRole === 'SUPER_ADMIN' ? 'Universal Access' : userRole.replace('_', ' ')} • ${permittedConsoleIds.length} Consoles Available`,
+        title: t("components.Workspace.RightSubNav.text_consoles", "Consoles"),
+        subtitle: userRole === 'SUPER_ADMIN'
+            ? t("components.Workspace.RightSubNav.text_universal_access", "Universal access · {count}", { count: permittedConsoleIds.length })
+            : t("components.Workspace.RightSubNav.text_role_access", "{role} · {count}", { role: userRole.replace(/_/g, ' ').toLowerCase(), count: permittedConsoleIds.length }),
         groups: rawConfig.groups
-            .map(g => ({
+            .map((g, index) => ({
                 ...g,
+                heading: index === 0 ? t("components.Workspace.RightSubNav.text_exec_ops", "Executive & operational") : g.heading,
                 items: g.items.filter(item => permittedConsoleIds.includes(item.id.toUpperCase()))
             }))
             .filter(g => g.items.length > 0)
@@ -58,21 +70,28 @@ const RightSubNav = ({
     const currentConfig = {
         ...domainConfig,
         groups: domainConfig.groups
-            .map((group) => ({ ...group, items: group.items.filter((item) => canViewNavigationItem(item, isModuleAllowed, user)) }))
+            .map((group) => ({ ...group, items: group.items.filter((item) => canViewNavigationItem(item, isModuleAllowed, user, isNavItemEnabled)) }))
             .filter((group) => group.items.length > 0),
     };
 
+    // Default: only the first group (and the group holding the open page) is expanded; explicit toggles override.
+    const isGroupCollapsed = (group, index) => {
+        if (Object.hasOwn(collapsedGroups, group.heading)) return collapsedGroups[group.heading];
+        if (group.items.some((item) => item.id === activeSubFeature)) return false;
+        return index !== 0;
+    };
     const toggleGroup = (heading) => {
-        setCollapsedGroups(prev => ({
-            ...prev,
-            [heading]: !prev[heading]
-        }));
+        const index = currentConfig.groups.findIndex((g) => g.heading === heading);
+        const current = index >= 0 && isGroupCollapsed(currentConfig.groups[index], index);
+        setCollapsedGroups(prev => ({ ...prev, [heading]: !current }));
     };
 
-    const allCollapsed = currentConfig.groups.length > 0 && currentConfig.groups.every(g => Boolean(collapsedGroups[g.heading]));
+    const allCollapsed = currentConfig.groups.length > 0 && currentConfig.groups.every((g, i) => isGroupCollapsed(g, i));
     const toggleAllGroups = () => {
         if (allCollapsed) {
-            setCollapsedGroups({});
+            const next = {};
+            currentConfig.groups.forEach(g => { next[g.heading] = false; });
+            setCollapsedGroups(next);
         } else {
             const next = {};
             currentConfig.groups.forEach(g => { next[g.heading] = true; });
@@ -82,24 +101,27 @@ const RightSubNav = ({
 
     if (isPanelCollapsed) {
         return (
-            <aside className={styles.rightNavCollapsed} aria-label={t("components.Workspace.RightSubNav.aria-label_right_navigation_collapsed", "Right navigation collapsed")}>
-                <button
-                    className={styles.expandRailBtn}
-                    onClick={() => setIsPanelCollapsed(false)}
-                    title={t("components.Workspace.RightSubNav.title_expand_right_sidebar", "Expand right sidebar")}
-                    aria-label={t("components.Workspace.RightSubNav.aria-label_expand_right_sidebar", "Expand right sidebar")}
-                >
-                    <ChevronRight sx={{ fontSize: 18, transform: 'rotate(180deg)' }} />
-                </button>
+            <aside className={styles.rightNavCollapsed} data-right-rail="collapsed" aria-label={t("components.Workspace.RightSubNav.aria-label_right_navigation_collapsed", "Right navigation collapsed")}>
                 <div className={styles.collapsedRailLabel}>
                     <span>{currentConfig.title}</span>
+                </div>
+                <div className={styles.railFooter}>
+                    <button
+                        type="button"
+                        className={styles.expandRailBtn}
+                        onClick={() => setIsPanelCollapsed(false)}
+                        title={t("components.Workspace.RightSubNav.text_expand_panel", "Expand panel")}
+                        aria-label={t("components.Workspace.RightSubNav.text_expand_panel", "Expand panel")}
+                    >
+                        <PanelLeftOpen size={20} aria-hidden="true" />
+                    </button>
                 </div>
             </aside>
         );
     }
 
     return (
-        <aside className={styles.rightNavContainer} aria-label={readData("components.Workspace.RightSubNav", "RightSubNav_aria-label_130")}>
+        <aside className={styles.rightNavContainer} data-right-rail="open" aria-label={readData("components.Workspace.RightSubNav", "RightSubNav_aria-label_130")}>
             {/* Header */}
             <div className={styles.header}>
                 <div className={styles.headerTitleWrap}>
@@ -117,14 +139,6 @@ const RightSubNav = ({
                             <ChevronRight sx={{ fontSize: 16, transform: allCollapsed ? 'rotate(0deg)' : 'rotate(90deg)', transition: 'transform 0.15s ease' }} />
                         </button>
                     )}
-                    <button
-                        className={styles.iconBtn}
-                        onClick={() => setIsPanelCollapsed(true)}
-                        title={t("components.Workspace.RightSubNav.title_collapse_right_sidebar", "Collapse right sidebar")}
-                        aria-label={t("components.Workspace.RightSubNav.aria-label_collapse_right_sidebar", "Collapse right sidebar")}
-                    >
-                        <ChevronRight sx={{ fontSize: 16 }} />
-                    </button>
                     {onClose && (
                         <button
                             className={styles.closeBtn}
@@ -141,7 +155,7 @@ const RightSubNav = ({
             {/* Scrollable Groups */}
             <div className={styles.scrollArea}>
                 {currentConfig.groups.map((group, gIdx) => {
-                    const isCollapsed = Boolean(collapsedGroups[group.heading]);
+                    const isCollapsed = isGroupCollapsed(group, gIdx);
                     return (
                         <div key={gIdx} className={styles.navGroup}>
                             <button
@@ -185,22 +199,9 @@ const RightSubNav = ({
                                                 <div className={styles.itemIcon}>
                                                     <Icon sx={{ fontSize: 16 }} strokeWidth={isSelected ? readData("components.Workspace.RightSubNav", "display_1") : readData("components.Workspace.RightSubNav", "display_2")} />
                                                 </div>
-                                                <span className={styles.itemLabel} title={translateText(item.label)}>{translateText(item.label)}</span>
+                                                <span className={styles.itemLabel} title={stripConsoleCode(translateText(item.label))}>{stripConsoleCode(translateText(item.label))}</span>
                                                 {item.tag && (
-                                                    <span
-                                                        style={{
-                                                            fontSize: '0.62rem',
-                                                            padding: '0.1rem 0.35rem',
-                                                            borderRadius: 'var(--r-pill, 4px)',
-                                                            fontWeight: 600,
-                                                            background: isSelected ? 'var(--signal-ink)' : 'var(--card-2)',
-                                                            color: isSelected ? 'var(--on-signal, #fff)' : 'var(--text-3)',
-                                                            flexShrink: 0,
-                                                            marginLeft: 'auto',
-                                                        }}
-                                                    >
-                                                        {item.tag}
-                                                    </span>
+                                                    <span className={styles.itemTag}>{item.tag}</span>
                                                 )}
                                             </button>
                                         );
@@ -210,6 +211,19 @@ const RightSubNav = ({
                         </div>
                     );
                 })}
+            </div>
+
+            {/* Footer: collapse sits at the bottom, matching the left rail */}
+            <div className={styles.railFooter}>
+                <button
+                    type="button"
+                    className={styles.footerToggle}
+                    onClick={() => setIsPanelCollapsed(true)}
+                    title={t("components.Workspace.RightSubNav.text_collapse_panel", "Collapse panel")}
+                    aria-label={t("components.Workspace.RightSubNav.text_collapse_panel", "Collapse panel")}
+                >
+                    <PanelLeftClose size={20} aria-hidden="true" />
+                </button>
             </div>
         </aside>
     );

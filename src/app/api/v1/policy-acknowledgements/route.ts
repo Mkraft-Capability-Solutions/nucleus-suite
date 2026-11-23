@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const rows = await listPolicyAcknowledgements(access, new URL(request.url).searchParams.get("search") ?? "");
     return collection({
       type: "policy-acknowledgement",
-      items: rows.map((row) => ({ ...row, version: 1 })),
+      items: rows.map((row) => ({ ...row, policy_version: row.version, version: 1 })),
       requestId,
       self: "/api/v1/policy-acknowledgements",
       nextCursor: null,

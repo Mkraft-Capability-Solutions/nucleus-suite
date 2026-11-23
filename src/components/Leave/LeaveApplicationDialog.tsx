@@ -1,386 +1,250 @@
 "use client";
-import React from "react";
-import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
-import {
-  getLeaveEmployees,
-  leaveCalendarPolicy,
-} from "@/app/actions/leaveActions";
-import { useMemo, useRef, useState } from "react";
-import {
-  Alert,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  Stack,
-  TextField,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
-import Add from "@mui/icons-material/Add";
-import Remove from "@mui/icons-material/Remove";
-import { useHRMS } from "@/context/HRMSContext";
-import { useAuth } from "@/context/AuthContext";
-import { useTranslation } from "@/context/I18nContext";
-import { readData } from "@/services/workspace-data.mjs";
-import { inclusiveDays } from "@/lib/form-validation";
-import { LEAVE_TYPES, calculateLeaveSpan } from "@/app/actions/leaveActions";
-import { getPicklistOptions } from "@/lib/picklist-catalog";
 
-export default function LeaveApplicationDialog({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+import { useMemo, useRef, useState } from "react";
+import type { FormEvent } from "react";
+import Dialog from "@mui/material/Dialog";
+import { useHRMS } from "@/context/HRMSContext";
+import LeaveEmployeeSelect from "./LeaveEmployeeSelect";
+import { FormError } from "./LeaveBits";
+import styles from "./Leave.module.css";
+import {
+  announceLeaveChanged,
+  formatDays,
+  postLeave,
+  todayIso,
+  useLeaveResource,
+  useLeaveT,
+  useSubmitKey,
+  type BalanceCard,
+  type LeaveContext,
+  type LeaveEmployee,
+  type LeaveEngine,
+} from "./leave-client";
+import { validateLeaveApplication, REQUESTABLE_TYPES, type LeaveDraft, type LeaveField } from "./leave-validation";
+
+const NS = "components.Leave.LeaveApplicationDialog";
+
+/**
+ * The one leave application form (SCR apply leave). Applicant, leave types and
+ * balances come from the leave APIs; the request is submitted to
+ * POST /api/v1/leave-requests, which re-checks scope, overlap and balance.
+ */
+export default function LeaveApplicationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [busy, setBusy] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const { t } = useLeaveT();
+  const close = () => {
+    if (busy) return;
+    if (dirty && !window.confirm(t(`${NS}.text_discard_changes`, "Discard this leave application?"))) return;
+    setDirty(false);
+    onClose();
+  };
   return (
-    <Dialog
-      open={open}
-      onClose={() => {
-        if (!busy) onClose();
-      }}
-      fullWidth
-      maxWidth="sm"
-      aria-labelledby="leave-application-title"
-    >
-      <LeaveApplicationForm
-        key={String(open)}
-        onClose={onClose}
-        busy={busy}
-        setBusy={setBusy}
-      />
+    <Dialog open={open} onClose={close} fullWidth maxWidth="md" aria-labelledby="leave-application-title">
+      {open && (
+        <LeaveApplicationForm
+          onCancel={close}
+          onDone={() => {
+            setDirty(false);
+            onClose();
+          }}
+          busy={busy}
+          setBusy={setBusy}
+          setDirty={setDirty}
+        />
+      )}
     </Dialog>
   );
 }
+
+type ShowToast = (title: string, message: string, tone: string) => void;
+
 function LeaveApplicationForm({
-  onClose,
+  onCancel,
+  onDone,
   busy,
   setBusy,
+  setDirty,
 }: {
-  onClose: () => void;
+  onCancel: () => void;
+  onDone: () => void;
   busy: boolean;
   setBusy: (value: boolean) => void;
+  setDirty: (value: boolean) => void;
 }) {
-  const { user: authUser } = useAuth() || {};
-  const { applyLeaveWithWorkflow, showToast } = (useHRMS() as any) || {};
-  const user = authUser || {
-    id: "usr-admin",
-    employeeId: "MK-102",
-    role: "HR_MANAGER",
-    name: "Dhanraj Dadhich",
-  };
-  const { t } = useTranslation();
-  const text = (key: string) => t("leave", key);
-  const defaults = readData("leave.workflow", "defaults");
-  const profiles = useMemo(() => getLeaveEmployees(), []);
-  const employees = profiles.filter(
-    (profile) =>
-      profile.employeeId &&
-      (["HR_MANAGER", "SUPER_ADMIN"].includes(user.role || "") ||
-        profile.employeeId === user.employeeId),
+  const { t, locale } = useLeaveT();
+  const hrms = useHRMS() as { showToast?: ShowToast } | null;
+  const failed = t(`${NS}.text_failure`, "The leave application could not be submitted.");
+  const contextResource = useLeaveResource<LeaveContext>("/api/v1/leave/context", t(`${NS}.text_context_failed`, "Your leave profile could not be loaded."));
+  const engine = useLeaveResource<LeaveEngine>("/api/v1/leave/engine", t(`${NS}.text_types_failed`, "Leave types could not be loaded."));
+  const context = contextResource.state.status === "ready" ? contextResource.state.data : null;
+  const [picked, setPicked] = useState<LeaveEmployee | null>(null);
+  const employee = picked ?? context?.employee ?? null;
+  const today = todayIso();
+  const [draft, setDraft] = useState<LeaveDraft>({ leaveType: "", startsOn: today, endsOn: today, duration: "full", days: "1", reason: "", contact: "" });
+  const [touched, setTouched] = useState<Partial<Record<LeaveField, boolean>>>({});
+  const [serverErrors, setServerErrors] = useState<Partial<Record<LeaveField, string>>>({});
+  const [message, setMessage] = useState("");
+  const lock = useRef(false);
+  const { keyFor, settle } = useSubmitKey();
+  const balances = useLeaveResource<BalanceCard[]>(
+    employee ? `/api/v1/leave/balance-cards?employeeId=${encodeURIComponent(employee.id)}` : null,
+    t(`${NS}.text_balance_failed`, "Balances could not be loaded."),
   );
-  const [employee, setEmployee] = useState(user.employeeId ?? "");
-  const [type, setType] = useState("");
-  const [from, setFrom] = useState(defaults.fromDate);
-  const [to, setTo] = useState(defaults.toDate);
-  const [days, setDays] = useState<string | number>(
-    inclusiveDays(defaults.fromDate, defaults.toDate) ?? "",
-  );
-  const [durationMode, setDurationMode] = useState("Full Day");
-  const [reason, setReason] = useState("");
-  const [contact, setContact] = useState("");
-  const [error, setError] = useState("");
-  const submitting = useRef(false);
-  const updateDates = (key: string, value: string) => {
-    const nextFrom = key === "from" ? value : from;
-    const nextTo = key === "to" ? value : to;
-    if (key === "from") setFrom(value);
-    else setTo(value);
-    if (nextFrom === nextTo && (durationMode === "First Half" || durationMode === "Second Half")) {
-      setDays(0.5);
-    } else {
-      setDays(inclusiveDays(nextFrom, nextTo) ?? "");
-    }
-    setError("");
+  const available = useMemo(() => {
+    if (balances.state.status !== "ready" || !draft.leaveType) return null;
+    const card = balances.state.data.find((row) => row.leaveType === draft.leaveType);
+    return card ? card.available : 0;
+  }, [balances.state, draft.leaveType]);
+
+  const types = engine.state.status === "ready" ? engine.state.data.leaveTypeRules : [];
+  const errors = { ...validateLeaveApplication(draft, { available, hasEmployee: Boolean(employee) }, t), ...serverErrors };
+
+  const update = (patch: Partial<LeaveDraft>) => {
+    setDraft((current) => {
+      const next = { ...current, ...patch };
+      if (next.startsOn !== next.endsOn && next.duration !== "full") next.duration = "full";
+      if (patch.startsOn !== undefined || patch.endsOn !== undefined || patch.duration !== undefined) {
+        const span = Math.round((Date.parse(next.endsOn) - Date.parse(next.startsOn)) / 86_400_000) + 1;
+        next.days = next.duration === "full" ? (Number.isFinite(span) && span > 0 ? String(span) : "") : "0.5";
+      }
+      return next;
+    });
+    setServerErrors({});
+    setMessage("");
+    setDirty(true);
   };
-  const policy = useMemo(() => leaveCalendarPolicy(employee), [employee]);
-  let debit: number | null = null;
-  if (type && inclusiveDays(from, to) !== null && Number(days) > 0) {
-    try {
-      debit =
-        Number(days) === inclusiveDays(from, to)
-          ? calculateLeaveSpan({
-              startDateStr: from,
-              endDateStr: to,
-              leaveTypeCode: type,
-              sandwichRuleEnabled: policy.sandwichEnabled,
-              holidays: policy.holidays,
-              weekendDays: policy.weekendDays,
-            }).chargeable_days
-          : Number(days);
-    } catch {
-      debit = null;
-    }
-  }
-  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (submitting.current || !event.currentTarget.reportValidity()) return;
-    const selected = employees.find(
-      (profile) => profile.employeeId === employee,
-    );
-    if (!selected) {
-      setError(text("employeeRequired"));
+    if (lock.current) return;
+    const allTouched = { employee: true, leaveType: true, startsOn: true, endsOn: true, days: true, reason: true, contact: true };
+    setTouched(allTouched);
+    const firstInvalid = (Object.keys(allTouched) as LeaveField[]).find((field) => errors[field]);
+    if (firstInvalid || !employee) {
+      document.getElementById(`leave-apply-${firstInvalid ?? "employee"}`)?.focus();
       return;
     }
-    submitting.current = true;
+    const body = {
+      employeeId: employee.id,
+      leaveType: draft.leaveType,
+      startsOn: draft.startsOn,
+      endsOn: draft.endsOn,
+      days: Number(draft.days),
+      ...(draft.reason.trim() ? { reason: draft.reason.trim() } : {}),
+      ...(draft.contact.trim() ? { contact: draft.contact.trim() } : {}),
+      ...(draft.duration !== "full" ? { halfDaySession: draft.duration } : {}),
+    };
+    lock.current = true;
     setBusy(true);
-    setError("");
-    try {
-      if (typeof applyLeaveWithWorkflow === "function") {
-        const result = await applyLeaveWithWorkflow({
-          employee: { id: employee, name: selected.name },
-          leaveTypeCode: type,
-          startDateStr: from,
-          endDateStr: to,
-          numberOfDays: Number(days),
-          reason,
-          contact,
-        });
-        if (result?.success) {
-          if (showToast) showToast("Leave Submitted", "Leave application submitted successfully.", "success");
-          onClose();
-          return;
-        } else {
-          setError(result?.reason || text("failure"));
-          return;
-        }
+    setMessage("");
+    const result = await postLeave<{ id: string; status?: string }>("/api/v1/leave-requests", body, keyFor(body), failed);
+    lock.current = false;
+    setBusy(false);
+    if (!result.ok) {
+      setMessage(result.message);
+      const mapped: Partial<Record<LeaveField, string>> = {};
+      for (const detail of result.details) {
+        const field = detail.field as LeaveField;
+        if (field in allTouched) mapped[field] = result.message;
       }
-
-      // Live /api/v1/leave-requests endpoint submit
-      const codeMap: Record<string, string> = {
-        PRIVILEGE: "EL",
-        CASUAL: "CL",
-        SICK: "SL",
-        COMP_OFF: "COFF",
-        BIRTHDAY: "BIRTHDAY",
-        EL: "EL",
-        CL: "CL",
-        SL: "SL",
-        COFF: "COFF",
-      };
-      const apiType = codeMap[type] || "CL";
-      const res = await fetch("/api/v1/leave-requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Idempotency-Key": crypto.randomUUID(),
-        },
-        body: JSON.stringify({
-          employeeId: employee,
-          leaveType: apiType,
-          startsOn: from,
-          endsOn: to,
-          days: Number(days),
-          reason: reason || undefined,
-        }),
-      });
-
-      if (res.ok) {
-        if (showToast) showToast("Leave Submitted", "Leave request logged in database successfully.", "success");
-        onClose();
-      } else {
-        const data = await res.json().catch(() => ({}));
-        if (data?.error?.message) {
-          setError(data.error.message);
-        } else {
-          if (showToast) showToast("Leave Submitted", "Leave application submitted.", "success");
-          onClose();
-        }
-      }
-    } catch (err: any) {
-      setError(err?.message || text("failure"));
-    } finally {
-      submitting.current = false;
-      setBusy(false);
+      setServerErrors(mapped);
+      return;
     }
+    settle();
+    hrms?.showToast?.(t(`${NS}.toast_submitted_title`, "Leave submitted"), t(`${NS}.toast_submitted_body`, "Your request is waiting for approval."), "success");
+    announceLeaveChanged();
+    onDone();
   };
+
+  const show = (field: LeaveField) => (touched[field] || serverErrors[field] ? errors[field] : undefined);
+  const fieldClass = (field: LeaveField) => `${styles.f} ${show(field) ? styles.bad : ""}`;
+  const reqMark = <span className={styles.req} aria-hidden="true">*</span>;
+
   return (
-    <form onSubmit={submit}>
-      <DialogTitle id="leave-application-title">
-        {text("applyTitle")}
-      </DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} sx={{ pt: 1 }}>
-          <Alert severity="info">{text("preview")}</Alert>
-          {error && <Alert severity="error">{error}</Alert>}
-          <LeaveEmployeeSelect
-            required
-            label={text("employee")}
-            options={employees}
-            value={employee}
-            onChange={setEmployee}
-          />
-          <TextField
-            select
-            required
-            fullWidth
-            label={text("type")}
-            value={type}
-            onChange={(event) => setType(event.target.value)}
-          >
-            <MenuItem value="" disabled>
-              <em>{t("components.Leave.LeaveApplicationDialog.text_select_leave_type", "Select Leave Type")}</em>
-            </MenuItem>
-            {(
-              Object.values(LEAVE_TYPES) as unknown as Array<{
-                code: string;
-                label: string;
-                requestable?: boolean;
-              }>
-            ).map((item) => (
-              <MenuItem
-                key={item.code}
-                value={item.code}
-                disabled={
-                  item.requestable === false ||
-                  (item.code === "BIRTHDAY" &&
-                    !employees.find(
-                      (profile) => profile.employeeId === employee,
-                    )?.birthDate)
-                }
-              >
-                {item.label}
-                {item.requestable === false
-                  ? ` — ${text("eligibilityPending")}`
-                  : ""}
-              </MenuItem>
-            ))}
-          </TextField>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-            <TextField
-              fullWidth
-              type="date"
-              required
-              label={text("from")}
-              value={from}
-              onChange={(event) => updateDates("from", event.target.value)}
-              slotProps={{ inputLabel: { shrink: true } }}
-            />
-            <TextField
-              fullWidth
-              type="date"
-              required
-              label={text("to")}
-              value={to}
-              onChange={(event) => updateDates("to", event.target.value)}
-              slotProps={{
-                inputLabel: { shrink: true },
-                htmlInput: { min: from },
-              }}
-            />
-          </Stack>
-          {from === to && (
-            <TextField
-              select
-              fullWidth
-              label={text("duration") || "Duration"}
-              value={durationMode}
-              onChange={(event) => {
-                const mode = event.target.value;
-                setDurationMode(mode);
-                if (mode === "First Half" || mode === "Second Half") {
-                  setDays(0.5);
-                } else {
-                  setDays(1);
-                }
-              }}
-            >
-              {(getPicklistOptions("PL_LEAVE_DURATION").length > 0
-                ? getPicklistOptions("PL_LEAVE_DURATION")
-                : [
-                    { value: "Full Day", label: "Full Day" },
-                    { value: "First Half", label: "First Half" },
-                    { value: "Second Half", label: "Second Half" },
-                  ]
-              ).map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </TextField>
+    <form className={styles.form} onSubmit={submit} noValidate>
+      <div className={styles.formHead}>
+        <h2 id="leave-application-title">{t(`${NS}.text_title`, "Apply for leave")}</h2>
+        <p>{t(`${NS}.text_subtitle`, "Days are reserved on submit and debited on final approval.")}</p>
+      </div>
+      <div className={styles.formBody}>
+        <FormError message={message} />
+        {contextResource.state.status === "error" && <FormError message={contextResource.state.message} />}
+        {engine.state.status === "error" && <FormError message={engine.state.message} />}
+        <div className={`${fieldClass("employee")} ${styles.wide}`}>
+          {context?.actsForOthers ? (
+            <LeaveEmployeeSelect id="leave-apply-employee" required label={t(`${NS}.label_employee`, "Employee")} value={employee} onChange={(next) => { setPicked(next); setDirty(true); }} error={show("employee")} />
+          ) : (
+            <>
+              <label htmlFor="leave-apply-employee">{t(`${NS}.label_employee`, "Employee")} {reqMark}</label>
+              <input id="leave-apply-employee" readOnly value={employee ? `${employee.name} · ${employee.employeeCode}` : ""} placeholder={contextResource.state.status === "loading" ? t(`${NS}.text_loading`, "Loading…") : t(`${NS}.text_no_employee`, "Your login is not linked to an employee record")} aria-invalid={Boolean(show("employee"))} aria-describedby="leave-apply-employee-msg" />
+              <span id="leave-apply-employee-msg" className={styles.msg}>{show("employee")}</span>
+            </>
           )}
-          <TextField
-            type="number"
-            required
-            fullWidth
-            label={text("days")}
-            value={days}
-            onChange={(event) => setDays(event.target.value)}
-            helperText={text("daysHelp")}
-            slotProps={{
-              htmlInput: { min: 0.5, max: 366, step: 0.5 },
-              input: {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={text("decrease")}
-                      disabled={Number(days) <= 0.5}
-                      onClick={() => setDays(Math.max(0.5, Number(days) - 0.5))}
-                    >
-                      <Remove />
-                    </IconButton>
-                    <IconButton
-                      aria-label={text("increase")}
-                      disabled={Number(days) >= 366}
-                      onClick={() => setDays(Math.min(366, Number(days) + 0.5))}
-                    >
-                      <Add />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              },
-            }}
-          />
-          {debit !== null && (
-            <Alert severity={debit > 0 ? "info" : "warning"}>
-              {t("leave", "debitPreview", { days: debit })}
-            </Alert>
-          )}
-          <TextField
-            fullWidth
-            multiline
-            minRows={3}
-            label={text("reason")}
-            value={reason}
-            onChange={(event) => setReason(event.target.value)}
-            slotProps={{ htmlInput: { maxLength: 2000 } }}
-          />
-          <TextField
-            fullWidth
-            label={text("contact")}
-            value={contact}
-            onChange={(event) => setContact(event.target.value)}
-            slotProps={{ htmlInput: { maxLength: 200 } }}
-          />
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ p: 3 }}>
-        <Button onClick={onClose} disabled={busy}>
-          {text("cancel")}
-        </Button>
-        <Button
-          type="submit"
-          variant="contained"
-          disabled={busy}
-          aria-busy={busy}
-        >
-          {busy ? text("saving") : text("create")}
-        </Button>
-      </DialogActions>
+        </div>
+        <div className={fieldClass("leaveType")}>
+          <label htmlFor="leave-apply-leaveType">{t(`${NS}.label_type`, "Leave type")} {reqMark}</label>
+          <select id="leave-apply-leaveType" value={draft.leaveType} aria-required="true" aria-invalid={Boolean(show("leaveType"))} aria-describedby="leave-apply-leaveType-msg" onChange={(event) => update({ leaveType: event.target.value })} onBlur={() => setTouched((v) => ({ ...v, leaveType: true }))}>
+            <option value="">{engine.state.status === "loading" ? t(`${NS}.text_loading`, "Loading…") : t(`${NS}.text_select_leave_type`, "Select leave type")}</option>
+            {types.map((type) => {
+              const requestable = REQUESTABLE_TYPES.has(type.code) && (type.code !== "BIRTHDAY" || Boolean(employee?.hasBirthDate));
+              return (
+                <option key={type.code} value={type.code} disabled={!requestable}>
+                  {type.name}{requestable ? "" : ` — ${type.code === "BIRTHDAY" ? t(`${NS}.text_birthday_unavailable`, "date of birth not on record") : t(`${NS}.text_not_requestable`, "apply through HR")}`}
+                </option>
+              );
+            })}
+          </select>
+          <span id="leave-apply-leaveType-msg" className={styles.msg}>
+            {show("leaveType") ?? (available !== null ? t(`${NS}.text_available`, "{days} day(s) available", { days: formatDays(available, locale) }) : "")}
+          </span>
+        </div>
+        <div className={fieldClass("days")}>
+          <label htmlFor="leave-apply-days">{t(`${NS}.label_days`, "Days to debit")} {reqMark}</label>
+          <div className={styles.stepper}>
+            <button type="button" aria-label={t(`${NS}.aria_decrease`, "Decrease by half a day")} disabled={Number(draft.days) <= 0.5} onClick={() => update({ days: String(Math.max(0.5, Number(draft.days) - 0.5)) })}>−</button>
+            <input id="leave-apply-days" type="number" inputMode="decimal" min={0.5} max={60} step={0.5} value={draft.days} aria-required="true" aria-invalid={Boolean(show("days"))} aria-describedby="leave-apply-days-msg" onChange={(event) => update({ days: event.target.value })} onBlur={() => setTouched((v) => ({ ...v, days: true }))} />
+            <button type="button" aria-label={t(`${NS}.aria_increase`, "Increase by half a day")} disabled={Number(draft.days) >= 60} onClick={() => update({ days: String(Math.min(60, Number(draft.days) + 0.5)) })}>+</button>
+          </div>
+          <span id="leave-apply-days-msg" className={styles.msg}>{show("days") ?? t(`${NS}.text_days_help`, "Exclude weekly offs and holidays that do not count against leave.")}</span>
+        </div>
+        <div className={fieldClass("startsOn")}>
+          <label htmlFor="leave-apply-startsOn">{t(`${NS}.label_from`, "From")} {reqMark}</label>
+          <input id="leave-apply-startsOn" type="date" value={draft.startsOn} aria-required="true" aria-invalid={Boolean(show("startsOn"))} aria-describedby="leave-apply-startsOn-msg" onChange={(event) => update({ startsOn: event.target.value })} onBlur={() => setTouched((v) => ({ ...v, startsOn: true }))} />
+          <span id="leave-apply-startsOn-msg" className={styles.msg}>{show("startsOn")}</span>
+        </div>
+        <div className={fieldClass("endsOn")}>
+          <label htmlFor="leave-apply-endsOn">{t(`${NS}.label_to`, "To")} {reqMark}</label>
+          <input id="leave-apply-endsOn" type="date" min={draft.startsOn} value={draft.endsOn} aria-required="true" aria-invalid={Boolean(show("endsOn"))} aria-describedby="leave-apply-endsOn-msg" onChange={(event) => update({ endsOn: event.target.value })} onBlur={() => setTouched((v) => ({ ...v, endsOn: true }))} />
+          <span id="leave-apply-endsOn-msg" className={styles.msg}>{show("endsOn")}</span>
+        </div>
+        {draft.startsOn === draft.endsOn && (
+          <div className={styles.f}>
+            <label htmlFor="leave-apply-duration">{t(`${NS}.label_duration`, "Duration")}</label>
+            <select id="leave-apply-duration" value={draft.duration} onChange={(event) => update({ duration: event.target.value as LeaveDraft["duration"] })}>
+              <option value="full">{t(`${NS}.option_full_day`, "Full day")}</option>
+              <option value="first_half">{t(`${NS}.option_first_half`, "First half")}</option>
+              <option value="second_half">{t(`${NS}.option_second_half`, "Second half")}</option>
+            </select>
+          </div>
+        )}
+        <div className={fieldClass("contact")}>
+          <label htmlFor="leave-apply-contact">{t(`${NS}.label_contact`, "Contact while away")} <span className={styles.opt}>{t(`${NS}.text_optional`, "(optional)")}</span></label>
+          <input id="leave-apply-contact" maxLength={200} value={draft.contact} aria-describedby="leave-apply-contact-msg" onChange={(event) => update({ contact: event.target.value })} />
+          <span id="leave-apply-contact-msg" className={styles.msg}>{show("contact")}</span>
+        </div>
+        <div className={`${fieldClass("reason")} ${styles.wide}`}>
+          <label htmlFor="leave-apply-reason">{t(`${NS}.label_reason`, "Reason")} <span className={styles.opt}>{t(`${NS}.text_optional`, "(optional)")}</span></label>
+          <textarea id="leave-apply-reason" maxLength={500} value={draft.reason} aria-describedby="leave-apply-reason-msg" onChange={(event) => update({ reason: event.target.value })} />
+          <span id="leave-apply-reason-msg" className={styles.msg}>{show("reason") ?? t(`${NS}.text_reason_count`, "{count}/500", { count: draft.reason.length })}</span>
+        </div>
+      </div>
+      <div className={styles.formFoot}>
+        <button type="button" className={styles.secondary} onClick={onCancel} disabled={busy}>{t(`${NS}.button_cancel`, "Cancel")}</button>
+        <button type="submit" className={styles.primary} disabled={busy || !employee} aria-busy={busy}>
+          {busy ? t(`${NS}.button_submitting`, "Submitting…") : t(`${NS}.button_submit`, "Submit for approval")}
+        </button>
+      </div>
     </form>
   );
 }

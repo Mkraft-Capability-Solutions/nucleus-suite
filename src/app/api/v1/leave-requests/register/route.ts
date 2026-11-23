@@ -1,6 +1,7 @@
 import { requireAccess } from "@/server/platform/access";
 import { collection, fail, requestIdFrom } from "@/server/platform/http";
 import { listLeaveRequestQueue } from "@/server/leave/request-register";
+import { ownScope } from "@/server/leave/workspace";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +13,7 @@ export async function GET(request: Request) {
     const rows = await listLeaveRequestQueue(access, {
       search: params.get("search") ?? "",
       status: params.get("status"),
+      employeeId: ownScope(access),
     });
     return collection({
       type: "leave-request",

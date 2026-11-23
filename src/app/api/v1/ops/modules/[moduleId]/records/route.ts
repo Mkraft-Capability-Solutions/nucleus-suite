@@ -1,88 +1,49 @@
-import { requireAccess, tenantTx } from "@/server/platform/access";
-import * as schema from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
-import { buildZodSchemaForModule } from "@/lib/validations/universal";
-import { db } from "@/lib/db";
+import { requireAccess } from "@/server/platform/access";
+import { collection, fail, ok, parsePagination, rejectCrossOrigin, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { createRecord, getRecord, listRecords } from "@/server/ops-modules/records";
+import { idempotent, parseModulePayload } from "@/server/ops-modules/payload";
 
-import { OPERATIONAL_MODULES, listModuleRecords, createModuleRecord } from "@/server/ops/modules-service";
+export const dynamic = "force-dynamic";
 
-// Helper to resolve moduleId to the corresponding Drizzle table
-function resolveTable(moduleId: string) {
-  const camelCase = moduleId.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
-  if (camelCase === 'reconciliation') return schema.reconciliationTable;
-  if (camelCase === 'assistantHelpdesk' || camelCase === 'helpdeskTicket') return schema.helpdeskTickets;
-  if (camelCase === 'requisitions') return schema.jobRequisitions;
-  if (camelCase === 'leaveRequests') return schema.leaveRequestsTable;
-  const table = (schema as any)[camelCase];
-  return table || null;
+type Params = { params: Promise<{ moduleId: string }> };
+
+/** GET lists a module's records (paginated, optional ?search=); POST creates one (Idempotency-Key required). */
+export async function GET(request: Request, { params }: Params) {
+  const requestId = requestIdFrom(request.headers);
+  try {
+    const { moduleId } = await params;
+    const access = await requireAccess(request);
+    const searchParams = new URL(request.url).searchParams;
+    const { page, pageSize } = parsePagination(searchParams);
+    const { items, total } = await listRecords(access, moduleId, { page, pageSize, search: searchParams.get("search") });
+    return collection({
+      type: "module-record",
+      items: items.map((item) => ({ ...item, version: 1 })),
+      requestId,
+      self: `/api/v1/ops/modules/${moduleId}/records`,
+      nextCursor: page * pageSize < total ? Buffer.from(JSON.stringify({ page: page + 1 }), "utf8").toString("base64url") : null,
+      total,
+    });
+  } catch (error) {
+    return fail(error, requestId);
+  }
 }
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ moduleId: string }> }) {
-  const { moduleId } = await params;
-  const access = await requireAccess(req);
-  const table = resolveTable(moduleId);
-  
-  if (table && 'tenantId' in table && 'attributes' in table) {
-    try {
-      const query = db.select().from(table).where(eq(table.tenantId, access.tenantId)).toSQL();
-      const [rows] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
-      return NextResponse.json({ data: rows || [] });
-    } catch {
-      // Fallback below
-    }
+export async function POST(request: Request, { params }: Params) {
+  const requestId = requestIdFrom(request.headers);
+  try {
+    rejectCrossOrigin(request);
+    const { moduleId } = await params;
+    const access = await requireAccess(request);
+    const key = requireIdempotencyKey(request.headers);
+    const payload = parseModulePayload(moduleId, await request.json().catch(() => null), false);
+    const { result, replayed } = await idempotent(
+      access, `ops.module_record_create.${moduleId}`, key, payload,
+      () => createRecord(access, moduleId, payload, requestId),
+      (id) => getRecord(access, moduleId, id),
+    );
+    return ok({ type: "module-record", id: result.id, version: 1, attributes: { ...result, replayed }, requestId, self: `/api/v1/ops/modules/${moduleId}/records/${result.id}` });
+  } catch (error) {
+    return fail(error, requestId);
   }
-
-  // Check if handled by operational modules service
-  if (OPERATIONAL_MODULES[moduleId]) {
-    try {
-      const { items } = await listModuleRecords(access, moduleId, { page: 1, pageSize: 50 });
-      return NextResponse.json({ data: items || [] });
-    } catch {
-      return NextResponse.json({ data: [] });
-    }
-  }
-
-  return NextResponse.json({ data: [] });
-}
-
-export async function POST(req: NextRequest, { params }: { params: Promise<{ moduleId: string }> }) {
-  const { moduleId } = await params;
-  const access = await requireAccess(req);
-  const table = resolveTable(moduleId);
-  const body = await req.json().catch(() => ({}));
-  
-  const zodSchema = buildZodSchemaForModule(moduleId);
-  const parseResult = zodSchema.safeParse(body);
-  if (!parseResult.success) {
-    return NextResponse.json({ error: `Validation Failed: ${parseResult.error.issues.map(e => e.message).join(", ")}` }, { status: 400 });
-  }
-
-  if (table && 'tenantId' in table && 'attributes' in table) {
-    const insertValues: any = {
-      tenantId: access.tenantId,
-      employeeId: body.employeeId || null,
-      attributes: parseResult.data,
-      status: "active"
-    };
-    if (moduleId === "roster_schedule") {
-      if (parseResult.data?.startTime) insertValues.startTime = String(parseResult.data.startTime);
-      if (parseResult.data?.endTime) insertValues.endTime = String(parseResult.data.endTime);
-    }
-
-    const query = db.insert(table).values(insertValues).returning().toSQL();
-    const [inserted] = await tenantTx(access, [ { text: query.sql, values: query.params } ]);
-    return NextResponse.json({ data: inserted });
-  }
-
-  if (OPERATIONAL_MODULES[moduleId]) {
-    try {
-      const created = await createModuleRecord(access, moduleId, parseResult.data, crypto.randomUUID());
-      return NextResponse.json({ data: created }, { status: 201 });
-    } catch (err: any) {
-      return NextResponse.json({ error: err?.message || 'Failed to create record' }, { status: 500 });
-    }
-  }
-
-  return NextResponse.json({ data: { id: `${moduleId}-${crypto.randomUUID()}`, attributes: parseResult.data, status: 'active', createdAt: new Date().toISOString() } }, { status: 201 });
 }

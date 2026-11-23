@@ -1,122 +1,68 @@
+import { createHash } from "node:crypto";
 import { z } from "zod";
-import { requireAccess, tenantTx, uuidOrNull } from "@/server/platform/access";
-import { collection, fail, HttpError, ok, requestIdFrom } from "@/server/platform/http";
-import { sqlClient } from "@/lib/db";
+import { checkIdempotency, requireAccess, storeIdempotency } from "@/server/platform/access";
+import { collection, fail, HttpError, ok, rejectCrossOrigin, requestIdFrom, requireIdempotencyKey } from "@/server/platform/http";
+import { createShiftAssignment, createShiftAssignmentSchema, listShiftAssignments } from "@/server/attendance/shift-assignment";
 
 export const dynamic = "force-dynamic";
 
-export const createShiftAssignmentSchema = z.object({
-  employeeId: z.string().uuid().optional(),
-  shiftCode: z.string().trim().min(1).max(20),
-  effectiveDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-  reason: z.string().trim().max(500).optional(),
-});
+const OPERATION = "attendance.shift_assignment_create";
 
+/** GET lists shift assignments in the caller's attendance scope (attendance.read), optionally for one employee. */
 export async function GET(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
     const access = await requireAccess(request);
-    const url = new URL(request.url);
-    const employeeId = url.searchParams.get("employeeId");
-
-    const [rows] = await tenantTx(access, [
-      sqlClient`
-        select id, employee_id, shift_id, attributes, record_status, created_at
-        from shift_assignments
-        where tenant_id = ${access.tenantId}
-          and (${employeeId ? sqlClient`employee_id = ${employeeId}::uuid` : sqlClient`1=1`})
-        order by created_at desc
-        limit 50
-      `,
-    ]);
-
-    const items = (rows as Array<Record<string, unknown>>).map((r) => ({
-      id: r.id as string,
-      version: 1,
-      employeeId: r.employee_id,
-      shiftId: r.shift_id,
-      shiftCode: (r.attributes as any)?.shift_code ?? (r.attributes as any)?.shiftCode,
-      effectiveDate: (r.attributes as any)?.effective_date ?? (r.attributes as any)?.effectiveDate,
-      reason: (r.attributes as any)?.reason,
-      status: r.record_status,
-      createdAt: r.created_at,
-    }));
-
+    const employeeId = new URL(request.url).searchParams.get("employeeId");
+    if (employeeId && !z.string().uuid().safeParse(employeeId).success) {
+      throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "Invalid employee reference.", details: [{ field: "employeeId", issue: "must be a uuid" }] });
+    }
+    const rows = await listShiftAssignments(access, employeeId || null);
     return collection({
-      type: "shift-assignments",
-      items,
+      type: "shift-assignment",
+      items: rows.map((row) => ({
+        id: row.id,
+        version: 1,
+        employeeId: row.employee_id,
+        shiftId: row.shift_id,
+        shiftCode: row.shift_code,
+        effectiveDate: row.effective_date,
+        reason: row.reason,
+        status: row.record_status,
+        createdAt: row.created_at,
+      })),
       requestId,
       self: "/api/v1/shifts/assignments",
       nextCursor: null,
+      total: rows.length,
     });
   } catch (error) {
     return fail(error, requestId);
   }
 }
 
+/** POST assigns a master shift to an employee from a date (attendance.write, Idempotency-Key required). */
 export async function POST(request: Request) {
   const requestId = requestIdFrom(request.headers);
   try {
+    rejectCrossOrigin(request);
     const access = await requireAccess(request);
-    const body = await request.json().catch(() => null);
-    const parsed = createShiftAssignmentSchema.safeParse(body);
+    const key = requireIdempotencyKey(request.headers);
+    const parsed = createShiftAssignmentSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success) {
-      throw new HttpError({
-        status: 400,
-        code: "BAD_REQUEST",
-        message: "Invalid shift assignment payload.",
-        details: parsed.error.issues.map((i) => ({ field: i.path.join("."), issue: i.message })),
-      });
+      throw new HttpError({ status: 400, code: "VALIDATION_FAILED", message: parsed.error.issues[0]?.message ?? "Invalid shift assignment payload.", details: parsed.error.issues.map((issue) => ({ field: issue.path.join("."), issue: issue.message })) });
     }
-
-    let employeeId = parsed.data.employeeId ?? access.context.employeeId;
-    if (!employeeId) {
-      const [empRows] = await tenantTx(access, [
-        sqlClient`select id from employees where tenant_id = ${access.tenantId} and status = 'active' order by created_at asc limit 1`,
-      ]);
-      employeeId = (empRows as Array<{ id: string }>)[0]?.id;
+    const fingerprint = createHash("sha256").update(JSON.stringify(parsed.data)).digest("hex");
+    const prior = await checkIdempotency(access, OPERATION, key, fingerprint);
+    if (prior.outcome === "conflict") {
+      throw new HttpError({ status: 409, code: "IDEMPOTENCY_KEY_REUSED", message: "This Idempotency-Key was already used with a different payload." });
     }
-
-    if (!employeeId) {
-      throw new HttpError({ status: 400, code: "BAD_REQUEST", message: "No active employee profile associated." });
+    if (prior.outcome === "replay" && prior.responseLocator) {
+      return ok({ type: "shift-assignment", id: prior.responseLocator, version: 1, attributes: { id: prior.responseLocator, replayed: true }, requestId, self: "/api/v1/shifts/assignments" });
     }
-
-    const assignmentId = crypto.randomUUID();
-    const effectiveDate = parsed.data.effectiveDate ?? new Date().toISOString().slice(0, 10);
-    const attributes = {
-      shift_code: parsed.data.shiftCode,
-      effective_date: effectiveDate,
-      reason: parsed.data.reason ?? "Manual shift assignment/override",
-      assigned_by: access.context.actorUserId,
-    };
-
-    await tenantTx(access, [
-      sqlClient`
-        insert into shift_assignments (id, tenant_id, employee_id, record_status, attributes, version)
-        values (${assignmentId}, ${access.tenantId}, ${employeeId}::uuid, 'active', ${JSON.stringify(attributes)}::jsonb, 1)
-      `,
-      sqlClient`
-        insert into audit_events (tenant_id, actor_user_id, membership_id, action, entity_type, entity_id, reason, after, request_id)
-        values (${access.tenantId}, ${access.context.actorUserId}, ${access.context.membershipId},
-          'attendance.shift_override', 'shift_assignment', ${assignmentId}, 'Shift assignment override created',
-          ${JSON.stringify(attributes)}::jsonb, ${uuidOrNull(requestId)}::uuid)
-      `,
-    ]);
-
-    return ok({
-      type: "shift-assignment",
-      id: assignmentId,
-      version: 1,
-      attributes: {
-        id: assignmentId,
-        employeeId,
-        shiftCode: parsed.data.shiftCode,
-        effectiveDate,
-        reason: attributes.reason,
-      },
-      requestId,
-      self: `/api/v1/shifts/assignments/${assignmentId}`,
-    });
+    const result = await createShiftAssignment(access, parsed.data, requestId);
+    await storeIdempotency(access, OPERATION, key, fingerprint, 201, result.id);
+    return ok({ type: "shift-assignment", id: result.id, version: 1, attributes: result, requestId, self: "/api/v1/shifts/assignments" });
   } catch (error) {
     return fail(error, requestId);
   }

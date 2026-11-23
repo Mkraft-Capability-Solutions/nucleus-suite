@@ -1,5 +1,7 @@
 import { requireAccess } from "@/server/platform/access";
-import { HttpError, fail, ok, requestIdFrom } from "@/server/platform/http";
+import { HttpError, fail, ok, rejectCrossOrigin, requestIdFrom } from "@/server/platform/http";
+import { raiseRequisition, raiseRequisitionSchema } from "@/server/talent/requisition-raise";
+import { idempotentWrite, parseBody } from "@/server/workflows/idempotent-write";
 import {
   loadRequisitionRegisterScreen,
   previewRequisition,
@@ -22,7 +24,7 @@ export const dynamic = "force-dynamic";
  * carry the Idempotency-Key and the real RL-462 gate; this route never
  * duplicates those writes, and the rule itself is never sent to the browser.
  */
-export { requisitionRegisterQuerySchema };
+export { requisitionRegisterQuerySchema, raiseRequisitionSchema };
 
 function queryObject(params: URLSearchParams): Record<string, string> {
   const entries: Record<string, string> = {};
@@ -80,6 +82,24 @@ export async function GET(request: Request) {
       requestId,
       self: "/api/v1/requisition-register",
     });
+  } catch (error) {
+    return fail(error, requestId);
+  }
+}
+
+/**
+ * POST /api/v1/requisition-register - raise a requisition with its TAL-01 terms (type, designation,
+ * positions, vacated code, incumbent, CTC budget, override request). employee.write, Idempotency-Key
+ * required. The establishment gate runs at approval, as on POST /api/v1/requisitions/:id/approve.
+ */
+export async function POST(request: Request) {
+  const requestId = requestIdFrom(request.headers);
+  try {
+    rejectCrossOrigin(request);
+    const access = await requireAccess(request);
+    const input = parseBody(raiseRequisitionSchema, await request.json().catch(() => null));
+    const result = await idempotentWrite(access, request.headers, "talent.requisition_raise", input, () => raiseRequisition(access, input, requestId));
+    return ok({ type: "requisition", id: result.id, version: 1, attributes: result, requestId, self: `/api/v1/requisitions/${result.id}` });
   } catch (error) {
     return fail(error, requestId);
   }

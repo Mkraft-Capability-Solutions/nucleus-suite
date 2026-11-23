@@ -4,6 +4,20 @@ import { readData } from '../../services/workspace-data.mjs';
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 import { nucleusDarkTheme, nucleusLightTheme } from './theme';
+
+/**
+ * Tooltips float above the chart (rendered on <body>) instead of over the plotted data, so the series under the
+ * cursor stays visible. Horizontally they follow the cursor, clamped to the chart's width.
+ */
+const TOOLTIP_OUTSIDE_PLOT = {
+    confine: false,
+    appendToBody: true,
+    position: (point, _params, _dom, _rect, size) => {
+        const [width, height] = size.contentSize;
+        const x = Math.min(Math.max(point[0] - width / 2, 0), Math.max(size.viewSize[0] - width, 0));
+        return [x, -height - 10];
+    },
+};
 import { useHRMS } from '@/context/HRMSContext';
 
 // Register themes once
@@ -81,9 +95,9 @@ export default function NucleusChart({
         let resolvedTooltip = readData("components.Charts.NucleusChart", "resolvedTooltip_1");
         if (option.tooltip) {
             if (Array.isArray(option.tooltip)) {
-                resolvedTooltip = option.tooltip.map(t => ({ ...readData("components.Charts.NucleusChart", "content_fields_2"), ...t }));
+                resolvedTooltip = option.tooltip.map(t => ({ ...readData("components.Charts.NucleusChart", "content_fields_2"), ...TOOLTIP_OUTSIDE_PLOT, ...t }));
             } else {
-                resolvedTooltip = { ...readData("components.Charts.NucleusChart", "content_fields_3"), ...option.tooltip };
+                resolvedTooltip = { ...readData("components.Charts.NucleusChart", "content_fields_3"), ...TOOLTIP_OUTSIDE_PLOT, ...option.tooltip };
             }
         }
 

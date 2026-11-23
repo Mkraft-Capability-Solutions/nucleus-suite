@@ -61,14 +61,14 @@
     "label": "Dashboard Consoles"
   },
   "MODULES_TAXONOMY_fields_3": {
-    "badge": "S1\u2013S10"
+    "badge": ""
   },
   "groups_fields_4": {
     "heading": "EXECUTIVE & OPERATIONAL CONSOLES"
   },
   "items_fields_5": {
     "id": "s1",
-    "label": "S1: People Command Centre",
+    "label": "People Command Centre",
     "targetTab": "dashboard"
   },
   "items_fields_6": {
@@ -77,7 +77,7 @@
   },
   "items_fields_7": {
     "id": "s2",
-    "label": "S2: HR Operations Console",
+    "label": "HR Operations Console",
     "targetTab": "dashboard"
   },
   "items_fields_8": {
@@ -86,7 +86,7 @@
   },
   "items_fields_9": {
     "id": "s3",
-    "label": "S3: Attendance & Shifts",
+    "label": "Attendance & Shifts",
     "targetTab": "dashboard"
   },
   "items_fields_10": {
@@ -95,7 +95,7 @@
   },
   "items_fields_11": {
     "id": "s4",
-    "label": "S4: Talent Acquisition",
+    "label": "Talent Acquisition",
     "targetTab": "dashboard"
   },
   "items_fields_12": {
@@ -104,7 +104,7 @@
   },
   "items_fields_13": {
     "id": "s5",
-    "label": "S5: Payroll Control Room",
+    "label": "Payroll Control Room",
     "targetTab": "dashboard"
   },
   "items_fields_14": {
@@ -113,7 +113,7 @@
   },
   "items_fields_15": {
     "id": "s6",
-    "label": "S6: Performance & Talent",
+    "label": "Performance & Talent",
     "targetTab": "dashboard"
   },
   "items_fields_16": {
@@ -122,7 +122,7 @@
   },
   "items_fields_17": {
     "id": "s7",
-    "label": "S7: Manager Cockpit",
+    "label": "Manager Cockpit",
     "targetTab": "dashboard"
   },
   "items_fields_18": {
@@ -131,7 +131,7 @@
   },
   "items_fields_19": {
     "id": "s8",
-    "label": "S8: Employee Home",
+    "label": "Employee Home",
     "targetTab": "dashboard"
   },
   "items_fields_20": {
@@ -140,7 +140,7 @@
   },
   "items_fields_21": {
     "id": "s9",
-    "label": "S9: Magnetix Capability",
+    "label": "Magnetix Capability",
     "targetTab": "dashboard"
   },
   "items_fields_22": {
@@ -149,7 +149,7 @@
   },
   "items_fields_23": {
     "id": "s10",
-    "label": "S10: Workspace Governance",
+    "label": "Workspace Governance",
     "targetTab": "dashboard"
   },
   "items_fields_24": {
@@ -592,7 +592,7 @@
     "S8"
   ],
   "content_text_136": "Nucleus Navigation Navigator",
-  "content_text_137": "Modules on left, sub-modules on right \u2022 ",
+  "content_text_137": "Modules on left, sub-modules on right • ",
   "content_placeholder_138": "Filter modules & capabilities (Press /)...",
   "content_title_139": "Close Navigator (ESC)",
   "content_text_140": "Primary Modules",
@@ -601,9 +601,9 @@
   "content_text_143": "\":",
   "content_text_144": "No capabilities match \"",
   "content_text_145": "\"",
-  "content_text_146": "\u203a",
+  "content_text_146": "›",
   "content_text_147": "Sub-Modules & Capabilities",
-  "content_text_148": "\u2318M",
+  "content_text_148": "⌘M",
   "content_text_149": " Toggle Navigator",
   "content_text_150": "ESC",
   "content_text_151": " Close",
@@ -612,6 +612,6 @@
   "content_text_154": "Nucleus Enterprise Workforce OS v1.0",
   "defaultValue_1": "S1",
   "initialState_2": "dashboard",
-  "display_3": "\ud83d\udc51 Universal Access",
+  "display_3": "👑 Universal Access",
   "fallback_1": "SUPER_ADMIN"
 }

@@ -1,0 +1,88 @@
+/* Employee Home (S8). Token-only styles; layout primitives come from DashboardShared.module.css. */
+
+.hub { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; padding: 0.85rem 1.15rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--shadow-raise); }
+.hubLabel { display: inline-flex; align-items: center; gap: 0.35rem; margin-inline-end: 0.25rem; font-size: 12.5px; font-weight: 700; color: var(--status-ok); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.chip { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 28px; padding: 0.38rem 0.75rem; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--card-2); color: var(--text); font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+.chip:focus-visible, .action:focus-visible, .primary:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+.chip:disabled, .action:disabled, .primary:disabled { opacity: 0.55; cursor: not-allowed; }
+.chipOk { background: var(--status-ok-wash); border-color: color-mix(in srgb, var(--status-ok) 35%, transparent); color: var(--status-ok); font-weight: 700; }
+.chipInfo { background: var(--info-wash); border-color: color-mix(in srgb, var(--info) 35%, transparent); color: var(--info); font-weight: 700; }
+.chipAgent { background: var(--agent-wash); border-color: color-mix(in srgb, var(--agent) 35%, transparent); color: var(--agent); font-weight: 700; }
+.chipPending { background: var(--pending-wash); border-color: color-mix(in srgb, var(--pending) 35%, transparent); color: var(--pending); font-weight: 700; }
+
+.centre { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 0.25rem; height: 100%; }
+.gauge { --pct: 0; width: 130px; height: 130px; margin: 0.75rem 0; border-radius: 50%; display: grid; place-items: center; background: conic-gradient(var(--status-ok) calc(var(--pct) * 1%), var(--line) 0); }
+.gaugeInner { width: 116px; height: 116px; border-radius: 50%; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.gaugeValue { font-size: 1.45rem; font-weight: 800; color: var(--text); }
+.gaugeSub { font-size: 12.5px; font-weight: 600; color: var(--status-ok); }
+.meta { font-size: 12.5px; color: var(--text-2); }
+.metaMuted { font-size: 12.5px; color: var(--text-3); }
+
+.rows { display: flex; flex-direction: column; gap: 0.65rem; }
+.row { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.8rem; }
+.rowLabel { color: var(--text-2); }
+.deduction { color: var(--flag); }
+.net { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 800; color: var(--text); }
+.netValue { color: var(--status-ok); }
+.divider { height: 1px; background: var(--line); margin: 0.25rem 0; }
+.noteBox { margin-top: 0.5rem; padding: 0.55rem 0.75rem; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--r-data); font-size: 12.5px; color: var(--text-2); line-height: 1.4; }
+.noteTitle { display: flex; align-items: center; gap: 0.45rem; font-size: 0.75rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+.empty { margin: auto; text-align: center; font-size: 0.8rem; color: var(--text-2); max-width: 360px; }
+
+.days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.5rem; padding: 0.65rem; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--r-data); }
+.day { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; padding: 0.45rem 0.25rem; border-radius: var(--r-data); border: 1px solid var(--line); text-align: center; }
+.dayToday { background: var(--status-ok-wash); border-color: color-mix(in srgb, var(--status-ok) 35%, transparent); }
+.dayName { font-size: 12.5px; font-weight: 700; color: var(--text-3); text-transform: uppercase; }
+.dayToday .dayName, .dayToday .dayState { color: var(--status-ok); }
+.dayHours { font-size: 1rem; font-weight: 800; color: var(--text); }
+.dayState { font-size: 12.5px; font-weight: 600; color: var(--info); }
+
+.footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding-top: 0.65rem; border-top: 1px solid var(--line); }
+.totals { display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap; font-size: 12.5px; color: var(--text-2); }
+.totalValue { font-size: 0.9rem; color: var(--status-ok); }
+.actions { display: flex; align-items: center; gap: 0.5rem; }
+.action { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 28px; padding: 0.4rem 0.8rem; border-radius: var(--r-control); border: 1px solid var(--line); background: var(--card-2); color: var(--text); font-size: 0.76rem; font-weight: 600; cursor: pointer; }
+.primary { display: inline-flex; align-items: center; gap: 0.35rem; min-height: 28px; padding: 0.4rem 0.9rem; border-radius: var(--r-control); border: 1px solid var(--status-ok); background: var(--status-ok); color: var(--card); font-size: 0.76rem; font-weight: 700; cursor: pointer; }
+
+.bar { display: flex; flex-direction: column; gap: 0.3rem; }
+.barHead { display: flex; justify-content: space-between; gap: 0.5rem; font-size: 0.76rem; color: var(--text); }
+.barHead span { font-weight: 600; }
+.track { height: 7px; background: var(--card-2); border-radius: var(--r-pill); overflow: hidden; }
+.fill { --pct: 0; height: 100%; width: calc(var(--pct) * 1%); border-radius: inherit; background: var(--status-ok); }
+.fillInfo { background: var(--info); }
+.fillAgent { background: var(--agent); }
+.fillPending { background: var(--pending); }
+.fillFlag { background: var(--flag); }
+.barMeta { font-size: 12.5px; color: var(--text-2); }
+
+.subtle { font-size: 12.5px; color: var(--text-2); }
+.right { text-align: end; }
+
+.panes { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; width: 100%; }
+.pane { display: flex; flex-direction: column; gap: 0.85rem; padding: 1rem; background: var(--card-2); border: 1px solid var(--line); border-radius: var(--r-data); }
+.paneTitle { font-size: 12.5px; font-weight: 700; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.04em; }
+.person { display: flex; align-items: center; gap: 0.85rem; }
+.avatar { width: 44px; height: 44px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 2px solid var(--status-ok); background: var(--status-ok-wash); color: var(--status-ok); font-weight: 800; }
+.personText { display: flex; flex-direction: column; gap: 0.15rem; }
+.personName { display: flex; align-items: center; gap: 0.45rem; color: var(--text); font-size: 0.9rem; font-weight: 700; }
+.tag { font-size: 12.5px; padding: 0.1rem 0.4rem; border-radius: var(--r-pill); background: var(--status-ok-wash); color: var(--status-ok); font-weight: 700; }
+.facts { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; font-size: 0.76rem; color: var(--text-2); }
+.facts strong { color: var(--text); }
+.pod { display: flex; flex-direction: column; gap: 0.55rem; margin: 0; padding: 0; list-style: none; max-height: 320px; overflow-y: auto; }
+.podRow { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.78rem; }
+.podWho { display: flex; align-items: center; gap: 0.45rem; min-width: 0; }
+.podName { color: var(--text); font-weight: 600; }
+.podRole { color: var(--text-3); font-size: 12.5px; }
+.dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--text-3); }
+.dotOn { background: var(--status-ok); }
+.dotOff { background: var(--flag); }
+.presence { font-size: 12.5px; color: var(--text-3); white-space: nowrap; }
+.presenceOn { color: var(--status-ok); }
+
+.unlinked { margin: 0; padding: 0.85rem 1.15rem; border-radius: var(--r-card); border: 1px dashed var(--line); background: var(--card); color: var(--text-2); font-size: 0.85rem; }
+.error { margin: 0; font-size: 12.5px; color: var(--flag); }
+
+@media (max-width: 700px) {
+  .days { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
