@@ -1,0 +1,2830 @@
+{
+ "domain": "CMB",
+ "use_cases": [
+  {
+   "id": "CMB-UC-001",
+   "name": "Evaluate loan eligibility through the single service method",
+   "process": "CMB-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Return one authoritative eligibility decision, ceiling amount and list of reasons for a person, identical for every caller.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Employee / worker",
+    "Payroll manager",
+    "Agent (governed)",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Learns before applying whether a loan is possible, how much, and exactly why not."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Payroll deduction node relies on the same answer the employee saw."
+    },
+    {
+     "who": "Finance",
+     "interest": "Loan book exposure stays within the policy ceilings."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can show that one rule set, not three diverging copies, decided every case."
+    }
+   ],
+   "trigger": "Any caller asks an eligibility question: the loans screen, the guarantor lock, the payroll deduction node or the agent tool.",
+   "preconditions": [
+    "The person has an active assignment and a salary structure holding monthly basic.",
+    "Loan policy configuration holds multiple_base, multiple_long and the service_years threshold.",
+    "Loan and guarantor ledgers are current up to the last posted payroll recovery."
+   ],
+   "postconditions_success": [
+    "Caller receives eligible flag, ceiling_amount and a complete reasons list.",
+    "No loan, guarantor or salary record is modified by the evaluation."
+   ],
+   "postconditions_failure": [
+    "Caller receives an explicit error with a reason; no partial decision is returned.",
+    "A decision with an empty reasons list is never shown to an applicant; a support ticket is raised instead."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receives the eligibility request for a person through GET /loans/eligibility/{personId}, the only eligibility method any caller may use.",
+     "ref": "CMB-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the loan ledger for any outstanding loan or salary advance held by the person and records a reason if one exists.",
+     "ref": "CMB-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks the guarantor ledger for any guarantee by the person with no release date and records the guaranteed loan as a reason.",
+     "ref": "CMB-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Computes the ceiling as configured multiple of monthly basic: 4x by default, 6x once service passes the five-year threshold.",
+     "ref": "CMB-01.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Returns eligible, ceiling_amount and the reasons list; the loans screen shows each reason to the applicant word for word.",
+     "ref": "CMB-01.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Person holds an outstanding loan or salary advance.",
+     "steps": [
+      "Platform marks the person ineligible for both a new loan and a salary advance.",
+      "Platform continues to steps 3 and 4 so the caller receives every applicable reason, not only the first."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Person stands guarantor on an unreleased loan.",
+     "steps": [
+      "Platform marks the person ineligible for an own loan and for standing guarantor again.",
+      "Reason names the guaranteed loan number."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A3",
+     "at_step": 4,
+     "condition": "Service exceeds the configured service_years threshold.",
+     "steps": [
+      "Platform applies multiple_long (6x) instead of multiple_base (4x).",
+      "Reasons list carries an informational line stating the multiple applied."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Person has no active assignment or the person ID is unknown.",
+     "handling": "Platform returns ineligible with a reason stating no active assignment; no ceiling is computed.",
+     "rule": "RL-430"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "Salary structure has no monthly basic for the evaluation date.",
+     "handling": "Platform returns ineligible with reason salary structure unavailable and alerts the payroll manager queue.",
+     "rule": "RL-433"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "Decision is ineligible but the reasons list is empty.",
+     "handling": "Response is withheld from the applicant, a support ticket is raised with the request trace, and the applicant sees a holding message.",
+     "rule": "RL-434"
+    }
+   ],
+   "business_rules": [
+    "RL-430",
+    "RL-431",
+    "RL-432",
+    "RL-433",
+    "RL-434",
+    "BS:RL-21",
+    "BS:RL-22"
+   ],
+   "screens": [
+    "SCR-080"
+   ],
+   "data_objects": [
+    "loan (R)",
+    "loan_guarantor (R)",
+    "assignment (R)",
+    "salary_structure (R)",
+    "employment (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Eligibility response within 300 ms at p95 per tenant under 50 concurrent callers.",
+    "Identical inputs return byte-identical decision, ceiling and reasons for all four callers, verified by a shared contract test.",
+    "Multiples and service threshold are read from configuration; changing them requires no code release."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-10"
+   ],
+   "acceptance_tests": [
+    "TC-M430",
+    "TC-M431",
+    "TC-M432",
+    "TC-M433",
+    "TC-M434",
+    "T-19",
+    "T-20",
+    "T-21"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-001",
+     "persona": "Employee / worker",
+     "want": "to check my loan eligibility and ceiling before I fill in an application",
+     "so_that": "I only apply for an amount the policy allows",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee with monthly basic of 40,000, four years of service and no loans or guarantees",
+       "when": "the employee opens eligibility on the loans screen",
+       "then": "the result shows eligible with a ceiling of 160,000"
+      },
+      {
+       "given": "the same employee profile with six years of service",
+       "when": "eligibility is evaluated",
+       "then": "the result shows eligible with a ceiling of 240,000 and states that the 6x multiple was applied"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-002",
+     "persona": "Employee / worker",
+     "want": "to see every reason I am ineligible in plain words",
+     "so_that": "I know what has to change before I can borrow",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employee E1041 stands guarantor on loan LN-2026-0041, which has no release date",
+       "when": "E1041 checks eligibility",
+       "then": "the result is ineligible and the reason names LN-2026-0041 as an unreleased guarantee"
+      },
+      {
+       "given": "an employee with an outstanding loan balance",
+       "when": "the employee checks eligibility for a salary advance",
+       "then": "the advance is refused with the same outstanding-loan reason shown for a new loan"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-003",
+     "persona": "Payroll manager",
+     "want": "the payroll deduction node and the agent tool to call the same eligibility method as the screen",
+     "so_that": "no caller can reach a different answer for the same person",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employees E1044, E1041, E1056, E1050 and E1022 from the demo dataset",
+       "when": "eligibility is requested for each via the screen, the guarantor lock, the payroll node and the agent tool",
+       "then": "all four callers return the same decision, ceiling and reasons for every employee"
+      },
+      {
+       "given": "the implementation consultant changes multiple_base from 4 to 5 in loan policy configuration",
+       "when": "eligibility is next evaluated for an employee with four years of service",
+       "then": "every caller reflects the 5x ceiling without a code deployment"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-049",
+    "SYS-059",
+    "SYS-071",
+    "SYS-089"
+   ]
+  },
+  {
+   "id": "CMB-UC-002",
+   "name": "Apply for a loan and secure guarantor acceptance",
+   "process": "CMB-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Capture a loan application with its proposed guarantors, confirm eligibility for all of them and lock the guarantors once they accept.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Guarantor (Employee / worker)",
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a fast, reasoned answer and a clear guarantor status."
+    },
+    {
+     "who": "Guarantor (Employee / worker)",
+     "interest": "Understands that accepting blocks their own borrowing until release."
+    },
+    {
+     "who": "Finance",
+     "interest": "Only applications with two valid, locked guarantors reach sanction."
+    }
+   ],
+   "trigger": "An employee submits a loan application on the loans screen.",
+   "preconditions": [
+    "The applicant is signed in with self scope.",
+    "The loan policy defines mandatory_count (2) and third_threshold.",
+    "Proposed guarantors are active employees of the same tenant."
+   ],
+   "postconditions_success": [
+    "Loan application exists in state GUARANTORS_PENDING, moving to SANCTION_PENDING once two mandatory acceptances are recorded.",
+    "Each accepting guarantor carries currently_blocked = true."
+   ],
+   "postconditions_failure": [
+    "Application is in state REJECTED with every reason stored and shown verbatim.",
+    "No guarantor is locked for a rejected application."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits purpose, principal, tenure in months and the proposed guarantors on the loans screen.",
+     "ref": "CMB-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Runs the single eligibility method for the applicant and for each proposed guarantor and rejects with reasons if any check fails.",
+     "ref": "CMB-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Guarantor (Employee / worker)",
+     "action": "Each mandatory guarantor reviews the request in the approvals inbox and explicitly accepts the guarantee.",
+     "ref": "CMB-02.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Locks every accepting guarantor so they are ineligible to borrow or guarantee again until a release row is written.",
+     "ref": "CMB-02.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Applicant fails eligibility but asks for director special terms.",
+     "steps": [
+      "Platform records the override request with the failing reasons attached.",
+      "Application proceeds to guarantor acceptance flagged for director review in sanction."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Principal exceeds the configured third-guarantor threshold.",
+     "steps": [
+      "Platform invites the third proposed guarantor after eligibility is confirmed for that person.",
+      "Third acceptance is recorded with mandatory = false."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Application names fewer guarantors than mandatory_count.",
+     "handling": "Submission is refused at the form with a message stating two guarantors are required.",
+     "rule": "RL-440"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Applicant or any proposed guarantor is ineligible.",
+     "handling": "Application moves to REJECTED, loan.application.rejected is emitted and each reason is shown; demo case E1041 is rejected because he guarantees LN-2026-0041.",
+     "rule": "RL-430"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A guarantor declines or does not respond.",
+     "handling": "Application stays in GUARANTORS_PENDING; the applicant may substitute a guarantor, which re-runs eligibility for the substitute only.",
+     "rule": "RL-441"
+    },
+    {
+     "id": "E4",
+     "at_step": 4,
+     "condition": "Guarantor accepted another guarantee between proposal and acceptance.",
+     "handling": "Second acceptance is refused because the guarantor is already locked; applicant is asked to substitute.",
+     "rule": "RL-442"
+    }
+   ],
+   "business_rules": [
+    "RL-430",
+    "RL-440",
+    "RL-441",
+    "RL-442",
+    "BS:RL-21"
+   ],
+   "screens": [
+    "SCR-080",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "loan_application (C)",
+    "loan_guarantor (C, U)",
+    "loan (R)"
+   ],
+   "events": [
+    "loan.application.created",
+    "loan.application.rejected",
+    "loan.guarantor.accepted",
+    "loan.guarantor.locked"
+   ],
+   "nfrs": [
+    "Eligibility result for applicant plus three guarantors shown within 2 s at p95 of submission.",
+    "Guarantor lock and acceptance commit atomically; no window exists in which a guarantor has accepted but is not locked."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [
+    "R-10"
+   ],
+   "acceptance_tests": [
+    "TC-M430",
+    "TC-M432",
+    "TC-M440",
+    "TC-M441",
+    "TC-M442",
+    "T-20"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-004",
+     "persona": "Employee / worker",
+     "want": "to apply for a loan naming my guarantors in one form",
+     "so_that": "I do not have to chase paperwork separately",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an eligible employee requests 150,000 over 24 months naming two eligible colleagues",
+       "when": "the employee submits the application",
+       "then": "the application is created in GUARANTORS_PENDING and both colleagues receive an acceptance request"
+      },
+      {
+       "given": "the same form with only one guarantor named",
+       "when": "the employee tries to submit",
+       "then": "submission is refused with the message that two guarantors are mandatory"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-005",
+     "persona": "Guarantor (Employee / worker)",
+     "want": "to accept a guarantee explicitly and see what it blocks for me",
+     "so_that": "I make an informed commitment",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a colleague has named me as mandatory guarantor",
+       "when": "I accept the request in my approvals inbox",
+       "then": "my acceptance is timestamped and my status shows blocked from borrowing or guaranteeing until release"
+      },
+      {
+       "given": "I am already locked as guarantor on another active loan",
+       "when": "a new application names me",
+       "then": "the application fails eligibility with a reason naming my existing guarantee"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-006",
+     "persona": "Employee / worker",
+     "want": "to know immediately when my application is rejected and why",
+     "so_that": "I can resolve the blocker or choose different guarantors",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "application LN-APP-2026-0014 is submitted by E1041, who guarantees LN-2026-0041",
+       "when": "eligibility runs",
+       "then": "the application is REJECTED and the reason names the unreleased guarantee"
+      },
+      {
+       "given": "one proposed guarantor is ineligible but the applicant is eligible",
+       "when": "eligibility runs",
+       "then": "the reason identifies which guarantor failed and why, without exposing that guarantor's salary"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-040",
+    "SYS-049",
+    "SYS-051",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "CMB-UC-003",
+   "name": "Sanction a loan, including director special-terms override",
+   "process": "CMB-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Route an accepted application through the amount-based sanction chain and create an active loan with its schedule and payroll deduction.",
+   "level": "User goal",
+   "primary_actor": "Director / approver",
+   "secondary_actors": [
+    "Finance",
+    "Nucleus platform",
+    "Payroll manager",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Can grant special terms with an evidential record rather than a silent edit."
+    },
+    {
+     "who": "Finance",
+     "interest": "Sanctioned loans arrive with schedule and recovery already wired into payroll."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every override names the approver, the reason and the rules waived."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Receives a sanction decision and a clear instalment plan."
+    }
+   ],
+   "trigger": "Loan application reaches SANCTION_PENDING after mandatory guarantor acceptance.",
+   "preconditions": [
+    "Approval chain for loan sanction is configured by amount band.",
+    "override_role is configured as Director.",
+    "At least two mandatory guarantors have accepted and are locked."
+   ],
+   "postconditions_success": [
+    "Loan is ACTIVE with principal, instalment, tenure and first_recovery_run recorded.",
+    "A payroll deduction input exists for the first recovery run.",
+    "Any override is stored as an approval with approver, reason and the rules_waived list."
+   ],
+   "postconditions_failure": [
+    "Loan is REJECTED with approver comment; guarantors receive explicit release rows.",
+    "No payroll input is created."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Director / approver",
+     "action": "Receives the application routed by principal band to the configured sanction chain and records a decision on the approvals inbox.",
+     "ref": "CMB-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Director / approver",
+     "action": "Where policy is exceeded, sanctions on special terms on the loans screen, stating the reason and each rule being waived.",
+     "ref": "CMB-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Creates the loan, generates the instalment schedule and registers the deduction input for the first recovery run.",
+     "ref": "CMB-03.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Application is within eligibility and ceiling.",
+     "steps": [
+      "No special terms are needed; the chain approval alone sanctions the loan."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "Principal falls in a higher amount band.",
+     "steps": [
+      "Platform appends the additional approver levels defined for that band.",
+      "Each level decides in sequence before sanction."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "An approver in the chain rejects.",
+     "handling": "Loan moves to REJECTED, applicant sees the comment, and explicit release rows are written for every locked guarantor.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A user without the configured override role attempts special terms.",
+     "handling": "Action is refused and logged; the request stays in SANCTION_PENDING.",
+     "rule": "RL-443"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "Override is attempted without a reason or without naming the rules waived.",
+     "handling": "Save is blocked until reason and the rules_waived list are completed.",
+     "rule": "RL-443"
+    },
+    {
+     "id": "E4",
+     "at_step": 3,
+     "condition": "Schedule or deduction input cannot be created.",
+     "handling": "Sanction is rolled back as one unit; loan remains SANCTION_PENDING and finance is alerted.",
+     "rule": "RL-444"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-443",
+    "RL-444",
+    "BS:RL-21",
+    "BS:RL-22"
+   ],
+   "screens": [
+    "SCR-040",
+    "SCR-080"
+   ],
+   "data_objects": [
+    "approval_instance (C)",
+    "loan (C, U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "loan.override.recorded",
+    "loan.sanctioned"
+   ],
+   "nfrs": [
+    "loan.sanctioned is delivered exactly once per loan_id to the payroll deduction node.",
+    "Override records are immutable once saved and retained for the long retention class."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [
+    "R-10"
+   ],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-M443",
+    "TC-M444",
+    "T-21"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-007",
+     "persona": "Director / approver",
+     "want": "to sanction a loan above the ceiling on special terms with the waived rules recorded",
+     "so_that": "the exception is defensible at audit",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "loan LN-2026-0012 for E1022 requests more than the computed ceiling",
+       "when": "the director sanctions on special terms citing the ceiling rule as waived and gives a reason",
+       "then": "the loan becomes ACTIVE and the override record shows approver, reason and the ceiling rule in rules_waived"
+      },
+      {
+       "given": "an HR operations user without the override role",
+       "when": "the user attempts the same special-terms sanction",
+       "then": "the action is refused and an audit entry records the attempt"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-008",
+     "persona": "Finance",
+     "want": "applications routed automatically by amount band",
+     "so_that": "higher-value loans receive the extra scrutiny policy demands",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a chain where amounts above 200,000 need a second approver",
+       "when": "an application for 240,000 is accepted by its guarantors",
+       "then": "it routes to both approvers before sanction"
+      },
+      {
+       "given": "an application for 120,000",
+       "when": "guarantors accept",
+       "then": "it routes to the single first-band approver only"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-009",
+     "persona": "Payroll manager",
+     "want": "every sanctioned loan to register its payroll deduction automatically",
+     "so_that": "no recovery is missed because someone forgot a manual input",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a loan of 120,000 over 12 months sanctioned on 10 March",
+       "when": "sanction completes",
+       "then": "a deduction input of 10,000 exists for the March run and the schedule lists 12 instalments"
+      },
+      {
+       "given": "the deduction input cannot be written",
+       "when": "sanction is attempted",
+       "then": "the loan remains SANCTION_PENDING and no partial loan record exists"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-036",
+    "SYS-038",
+    "SYS-053",
+    "SYS-055"
+   ]
+  },
+  {
+   "id": "CMB-UC-004",
+   "name": "Recover loan instalments, close the loan and release guarantors",
+   "process": "CMB-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Post every payroll recovery against the loan, close it at zero outstanding and write explicit guarantor release rows.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "Employee / worker",
+    "Guarantor (Employee / worker)",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Guarantor (Employee / worker)",
+     "interest": "Regains eligibility the moment the guaranteed loan closes."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Sees an accurate outstanding balance after every payroll."
+    },
+    {
+     "who": "Finance",
+     "interest": "Loan book reconciles to payroll recoveries."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Release is evidenced by a dated row, not inferred."
+    }
+   ],
+   "trigger": "A payroll run that includes a loan recovery is finalised.",
+   "preconditions": [
+    "Loan is ACTIVE with a deduction input in the run.",
+    "Payroll run has passed finalisation."
+   ],
+   "postconditions_success": [
+    "Repayment row exists for the run and outstanding is reduced.",
+    "At zero outstanding the loan is CLOSED and every guarantor has released_on set and currently_blocked = false."
+   ],
+   "postconditions_failure": [
+    "No repayment is posted for an unfinalised or reversed run.",
+    "Loan stays ACTIVE and guarantors remain locked until a valid closure."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Posts the recovery from the finalised run as a repayment row and reduces outstanding by the recovered amount.",
+     "ref": "CMB-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks whether outstanding is now zero and, if so, closes the loan and emits loan.closed.",
+     "ref": "CMB-04.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Writes a dated release row for every guarantor of the closed loan and emits loan.guarantor.released for each.",
+     "ref": "CMB-04.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Outstanding is still above zero.",
+     "steps": [
+      "Loan stays ACTIVE; the next instalment remains scheduled for the following run.",
+      "Use case ends for this run."
+     ],
+     "rejoin": "Ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "Employee separates before full repayment.",
+     "steps": [
+      "Remaining balance is recovered in the full and final settlement or written off with approval.",
+      "Loan moves to FORECLOSED and guarantor release rows are written as on closure."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Recovery would take net pay below the configured net-pay floor for the run.",
+     "handling": "Recovery is reduced to protect the floor, the shortfall is rescheduled and the payroll manager is notified.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "Finalised run is later reversed.",
+     "handling": "Linked repayment row is reversed with the run_id reference and outstanding is restored.",
+     "rule": "RL-450"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "Release row write fails.",
+     "handling": "Closure is retried idempotently on loan_id plus guarantor until every release row exists; the loan is not reported CLOSED until then.",
+     "rule": "RL-452"
+    }
+   ],
+   "business_rules": [
+    "RL-450",
+    "RL-451",
+    "RL-452",
+    "BS:RL-21"
+   ],
+   "screens": [
+    "SCR-080"
+   ],
+   "data_objects": [
+    "loan_repayment (C)",
+    "loan (U)",
+    "loan_guarantor (U)"
+   ],
+   "events": [
+    "loan.repayment.posted",
+    "loan.closed",
+    "loan.guarantor.released"
+   ],
+   "nfrs": [
+    "Repayment posting completes within 5 minutes of run finalisation for 10,000 active loans.",
+    "Release events are idempotent on loan_id plus guarantor and retained for the long retention class."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [
+    "R-10"
+   ],
+   "acceptance_tests": [
+    "TC-M450",
+    "TC-M451",
+    "TC-M452",
+    "T-19",
+    "T-20"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-010",
+     "persona": "Guarantor (Employee / worker)",
+     "want": "my guarantor block lifted automatically when the loan I guaranteed is repaid",
+     "so_that": "I can borrow again without raising a ticket",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employee E1050 guarantees loan LN-2025-0112 with one instalment left",
+       "when": "the run carrying the final recovery is finalised",
+       "then": "the loan is CLOSED and E1050 has a release row dated that day"
+      },
+      {
+       "given": "E1050 has been released",
+       "when": "E1050 checks loan eligibility",
+       "then": "no guarantee reason is returned"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-011",
+     "persona": "Employee / worker",
+     "want": "my outstanding balance to drop after every payroll recovery",
+     "so_that": "my loans screen always matches my payslip",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an ACTIVE loan with 60,000 outstanding and a 10,000 instalment",
+       "when": "the March run is finalised",
+       "then": "a repayment row of 10,000 is posted and outstanding shows 50,000"
+      },
+      {
+       "given": "the March run is reversed after posting",
+       "when": "reversal completes",
+       "then": "the repayment is reversed and outstanding returns to 60,000"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-012",
+     "persona": "Auditor",
+     "want": "guarantor release recorded as a dated event",
+     "so_that": "I can prove when each block was lifted",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a loan closed on 31 May with two guarantors",
+       "when": "I open the action history for the loan",
+       "then": "two release rows dated 31 May are listed with loan.guarantor.released references"
+      },
+      {
+       "given": "a loan with outstanding above zero",
+       "when": "I inspect its guarantors",
+       "then": "no release rows exist and both remain blocked"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-049",
+    "SYS-050",
+    "SYS-051",
+    "SYS-053",
+    "SYS-055"
+   ]
+  },
+  {
+   "id": "CMB-UC-005",
+   "name": "Request a salary advance or earned wage access",
+   "process": "CMB-05",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Let an eligible employee draw up to half of net pay already accrued in the open period, recovered automatically in the same payroll.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Access to earned money between paydays without informal borrowing."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Every drawn amount is recovered through the run, with no manual adjustment."
+    },
+    {
+     "who": "Finance",
+     "interest": "Exposure never exceeds 50% of accrued net per person."
+    }
+   ],
+   "trigger": "Employee requests an advance against the current pay period.",
+   "preconditions": [
+    "The payroll period is open and not locked.",
+    "Attendance for elapsed days of the period is processed.",
+    "The employee has no outstanding loan or advance."
+   ],
+   "postconditions_success": [
+    "Advance is recorded in the loan ledger with a single recovery input in the current run.",
+    "Available amount for the period is reduced by the drawn amount."
+   ],
+   "postconditions_failure": [
+    "No advance is recorded and the reason is shown to the employee."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens loans and advances and requests an earned-wage advance for the current pay period.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Calls the single eligibility method and stops if any loan or advance is outstanding.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes accrued net pay to date from processed attendance, posted inputs and statutory deductions for elapsed days.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the available amount as 50% of accrued net minus amounts already drawn this period, with the calculation lines.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Enters an amount within the available limit and confirms the request.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records the advance in the loan ledger and raises a recovery input in the current named payroll run.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Finance",
+     "action": "Releases the disbursement batch; disbursement always needs a named human release.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "On run finalisation posts the recovery, clears the advance and restores eligibility.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Employee enters more than the available amount.",
+     "steps": [
+      "Platform caps the entry at the available amount and explains the cap."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Employee has an outstanding loan or advance.",
+     "handling": "Request is refused with the same reason a new loan would receive.",
+     "rule": "RL-431"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Payroll period is locked for processing.",
+     "handling": "Request is refused with the date the next period opens.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "Accrued net to date is zero, for example all elapsed days are loss of pay.",
+     "handling": "Available amount is shown as zero and the request cannot proceed.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-430",
+    "RL-431",
+    "BS:RL-21"
+   ],
+   "screens": [
+    "SCR-080"
+   ],
+   "data_objects": [
+    "loan (C, U)",
+    "payroll_input (C)",
+    "attendance_day (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Available amount shown within 2 s at p95.",
+    "Accrued-net computation reuses the payroll engine so the advance limit matches the payslip basis."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [
+    "R-10"
+   ],
+   "acceptance_tests": [
+    "TC-M431",
+    "T-19"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-013",
+     "persona": "Employee / worker",
+     "want": "to see how much of my earned pay I can draw today",
+     "so_that": "I can cover an urgent expense before payday",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee with accrued net of 18,000 on the 15th and nothing drawn",
+       "when": "the employee opens the advance request",
+       "then": "the available amount shows 9,000 with the calculation lines"
+      },
+      {
+       "given": "the same employee has already drawn 4,000 this period",
+       "when": "the employee opens the advance request",
+       "then": "the available amount shows 5,000"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-014",
+     "persona": "Employee / worker",
+     "want": "a clear refusal when I hold an outstanding loan",
+     "so_that": "I understand the policy rather than guess",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee repaying an active loan",
+       "when": "the employee requests an advance",
+       "then": "the request is refused with the outstanding-loan reason"
+      },
+      {
+       "given": "the loan closes in the May run",
+       "when": "the employee requests an advance in June",
+       "then": "the request proceeds to the available-amount step"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-015",
+     "persona": "Payroll manager",
+     "want": "every advance recovered as an input in the same run",
+     "so_that": "net pay is correct without manual adjustments",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an advance of 6,000 drawn on 12 June",
+       "when": "the June run is computed",
+       "then": "the payslip shows a 6,000 advance recovery linked to the advance"
+      },
+      {
+       "given": "the June run is finalised",
+       "when": "recovery posts",
+       "then": "the advance is cleared and the employee is eligible again"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-047",
+    "SYS-049",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "CMB-UC-006",
+   "name": "Run the annual compensation revision cycle",
+   "process": "CMB-06",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Cascade a revision budget, collect manager proposals, simulate cost, approve, issue revision letters and hand revised pay to payroll.",
+   "level": "Summary",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Finance",
+    "Manager / supervisor",
+    "Director / approver",
+    "Payroll manager",
+    "Employee / worker",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Total revision cost stays within the approved budget."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Can differentiate increases for their team within a fair guideline."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Receives an accurate, timely revision letter."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives effective-dated revisions and arrears as payroll inputs."
+    }
+   ],
+   "trigger": "HR opens the annual revision cycle.",
+   "preconditions": [
+    "Salary structures and grade ranges are current.",
+    "Revision letter templates are published with versions.",
+    "Approval chain for compensation revision is configured."
+   ],
+   "postconditions_success": [
+    "Revised salary structures are effective-dated for every approved proposal.",
+    "Revision letters are issued with their template version retained.",
+    "Payroll inputs exist for revisions and any arrears."
+   ],
+   "postconditions_failure": [
+    "Unapproved proposals leave salary structures unchanged.",
+    "Cycle remains open with a list of blocking items."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens the cycle with effective date, eligibility cut-off and budget pool per legal entity.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Finance",
+     "action": "Approves the total budget and cascades it by org unit as a percentage of eligible fixed pay.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Proposes an increase for each eligible direct report on the manager worksheet within the allocated budget.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Simulates revised CTC, employer statutory cost and budget utilisation, and flags proposals over budget or outside grade range.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves proposals through the configured chain, with over-budget items listed separately.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Locks the cycle; the platform writes effective-dated revised salary structures.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Drafts revision letters from versioned templates for human review before issue.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Issues the reviewed letters; each issue record keeps the template version that produced it.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Payroll manager",
+     "action": "Receives revisions and computed arrears as inputs to the named payroll run.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "A proposal exceeds the manager's budget allocation.",
+     "steps": [
+      "Manager either reduces it or submits it as a budget exception with a reason.",
+      "Exception routes to an additional approver level."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Effective date falls in a payroll period already finalised.",
+     "handling": "Platform computes arrears for the closed periods and raises them as a separate input.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "A letter template references a merge field that does not exist.",
+     "handling": "Template fails validation on save; no draft is produced from it.",
+     "rule": "RL-500"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "Approver rejects a proposal.",
+     "handling": "Proposal returns to the manager with the comment; salary structure is unchanged.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-500",
+    "RL-502"
+   ],
+   "screens": [
+    "SCR-040",
+    "SCR-067"
+   ],
+   "data_objects": [
+    "salary_structure (U)",
+    "payroll_input (C)",
+    "letter_issued (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Worksheet simulation refreshes within 1 s for a team of 50.",
+    "Cycle supports 10,000 eligible employees per tenant without manual batching."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-E500",
+    "TC-E502"
+   ],
+   "user_stories": [
+    {
+     "id": "CMB-US-016",
+     "persona": "Manager / supervisor",
+     "want": "to allocate increases across my team on one worksheet with budget remaining shown live",
+     "so_that": "I stay within budget while rewarding my strongest people",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a team budget of 3,00,000 and proposals totalling 2,80,000",
+       "when": "I add an 8% increase for one employee costing 30,000",
+       "then": "the worksheet shows budget remaining of -10,000 and flags the overrun"
+      },
+      {
+       "given": "the overrun is flagged",
+       "when": "I submit without a reason",
+       "then": "submission is blocked until I reduce the proposal or add a budget exception reason"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-017",
+     "persona": "HR operations",
+     "want": "revision letters drafted from the approved figures and reviewed before issue",
+     "so_that": "every employee receives a correct letter",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an approved revision for employee E1066 effective 1 April",
+       "when": "I generate letters",
+       "then": "a draft shows the new fixed pay and effective date and cannot be issued until reviewed"
+      },
+      {
+       "given": "a letter was issued last year from template version 2",
+       "when": "I reprint it after version 3 is published",
+       "then": "the reprint reproduces version 2 exactly"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-018",
+     "persona": "Payroll manager",
+     "want": "revisions with past effective dates to arrive with arrears computed",
+     "so_that": "payroll does not hand-calculate back pay",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a revision effective 1 April approved on 20 May after April payroll is finalised",
+       "when": "the cycle is locked",
+       "then": "the May run receives the revision and an April arrears input"
+      },
+      {
+       "given": "a revision effective in the open period",
+       "when": "the cycle is locked",
+       "then": "no arrears input is created"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-018",
+    "SYS-022",
+    "SYS-028",
+    "SYS-037",
+    "SYS-048",
+    "SYS-051"
+   ]
+  },
+  {
+   "id": "CMB-UC-007",
+   "name": "Maintain salary structures and grade pay ranges",
+   "process": null,
+   "capability_gap": "CMB-CG-001",
+   "source": "Authored",
+   "goal": "Hold minimum, midpoint and maximum pay per grade and location, and compute compa-ratio and range penetration for every assignment.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Implementation consultant",
+    "HR operations",
+    "Manager / supervisor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Can spot under- and over-paid employees against their range."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees where team members sit in range when proposing pay."
+    },
+    {
+     "who": "Finance",
+     "interest": "Pay ranges reflect approved market positioning."
+    }
+   ],
+   "trigger": "A new pay range table is prepared for a grade and location, or a range is revised.",
+   "preconditions": [
+    "Grades and locations exist in the organisation master.",
+    "Payroll manager has entity scope with salary-structure rights."
+   ],
+   "postconditions_success": [
+    "An effective-dated range exists per grade and location.",
+    "Every assignment carries current compa-ratio and range penetration."
+   ],
+   "postconditions_failure": [
+    "Invalid ranges are not published; existing ranges remain in force."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Opens grade ranges and selects grade and location for the new effective date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Payroll manager",
+     "action": "Enters annual minimum, midpoint and maximum fixed pay for each grade-location pair.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates minimum below midpoint below maximum and that the effective date does not overlap a published range.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Previews employees falling below minimum or above maximum under the proposed range.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Payroll manager",
+     "action": "Publishes the range; prior range is end-dated the day before.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Recomputes compa-ratio as fixed pay divided by midpoint and penetration as position between minimum and maximum.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Reviews the out-of-range list and opens remediation items where needed.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Payroll manager imports ranges for many grades from a file.",
+     "steps": [
+      "Platform validates each row and lists rejects with reasons.",
+      "Valid rows are staged for preview."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Minimum exceeds midpoint or midpoint exceeds maximum.",
+     "handling": "Row is rejected with the failing comparison named.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Effective date overlaps an existing published range.",
+     "handling": "Publication is blocked until the earlier range is end-dated.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "salary_structure (R)",
+    "pay_range (C, U)",
+    "assignment (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Compa-ratio recomputation completes within 10 minutes for 25,000 assignments.",
+    "Range history is retained for seven years."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-019",
+     "persona": "Payroll manager",
+     "want": "to publish pay ranges per grade and location with effective dates",
+     "so_that": "pay decisions reference a controlled range",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "grade M3 at Pune with minimum 9,00,000, midpoint 12,00,000 and maximum 15,00,000",
+       "when": "I publish effective 1 April",
+       "then": "the range is active from 1 April and the previous range ends 31 March"
+      },
+      {
+       "given": "a row with minimum 12,00,000 and midpoint 11,00,000",
+       "when": "I validate",
+       "then": "the row is rejected naming minimum above midpoint"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-020",
+     "persona": "HR operations",
+     "want": "to see compa-ratio and range penetration for every employee",
+     "so_that": "I can target pay corrections fairly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee in grade M3 at Pune earning 10,80,000",
+       "when": "the range above is published",
+       "then": "compa-ratio shows 0.90 and penetration shows 30%"
+      },
+      {
+       "given": "an employee earning 8,50,000 in the same range",
+       "when": "the out-of-range list is opened",
+       "then": "the employee appears as below minimum by 50,000"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-021",
+     "persona": "Manager / supervisor",
+     "want": "to see each team member's position in range on their profile card",
+     "so_that": "my pay recommendations are grounded",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I manage four employees in grade M3",
+       "when": "I open the team view",
+       "then": "each card shows compa-ratio without showing employees outside my subtree"
+      },
+      {
+       "given": "an employee moves to grade M4",
+       "when": "the change is effective",
+       "then": "compa-ratio is recomputed against the M4 midpoint"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-018",
+    "SYS-022",
+    "SYS-026",
+    "SYS-028",
+    "SYS-048"
+   ]
+  },
+  {
+   "id": "CMB-UC-008",
+   "name": "Run merit, bonus and variable pay cycles",
+   "process": null,
+   "capability_gap": "CMB-CG-002",
+   "source": "Authored",
+   "goal": "Distribute a budgeted merit or bonus pool using eligibility rules and a performance-by-compa-ratio guideline matrix, then hand approved amounts to payroll.",
+   "level": "Summary",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Finance",
+    "Director / approver",
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Gets clear guidance on what each rating and position in range justifies."
+    },
+    {
+     "who": "Finance",
+     "interest": "Pool spend stays within the approved budget."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Rewards are consistent with performance and paid on time."
+    }
+   ],
+   "trigger": "HR opens a merit or bonus cycle after performance ratings are final.",
+   "preconditions": [
+    "Final performance ratings exist for the cycle.",
+    "Pay ranges and compa-ratios are current.",
+    "Pool budget is approved by finance."
+   ],
+   "postconditions_success": [
+    "Approved awards exist per employee and are raised as payroll inputs in the named run."
+   ],
+   "postconditions_failure": [
+    "Unapproved awards create no payroll input."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Defines the cycle: type (merit or bonus), eligibility rules, pool size and payout run.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Loads the guideline matrix of increase or payout percentage ranges by rating and compa-ratio band.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Applies eligibility rules such as minimum service and excludes employees on notice.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Pre-fills each manager worksheet with the guideline midpoint for every eligible employee.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Adjusts recommendations within guideline and enters a justification for any out-of-guideline amount.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves worksheets through the configured chain with out-of-guideline items highlighted.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Finance",
+     "action": "Confirms total spend against the pool.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Raises approved awards as payroll inputs in the named run and updates salary structures for merit increases.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Manager's total exceeds the allocated pool share.",
+     "steps": [
+      "Platform shows the excess and blocks submission until it is resolved or flagged as a budget exception."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "An employee lacks a final rating.",
+     "handling": "Employee is listed as pending rating and excluded until the rating is final.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "Named payroll run is already finalised.",
+     "handling": "Inputs move to the next open run with a notice to the payroll manager.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "performance_rating (R)",
+    "salary_structure (U)",
+    "payroll_input (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Worksheet guideline recalculates within 1 s per change.",
+    "Every out-of-guideline award retains its justification for audit."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-022",
+     "persona": "Manager / supervisor",
+     "want": "guideline ranges pre-filled for each person based on rating and compa-ratio",
+     "so_that": "my recommendations are consistent across the team",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a guideline of 8 to 10% for rating 4 with compa-ratio below 0.90",
+       "when": "an employee rated 4 with compa-ratio 0.85 appears on my worksheet",
+       "then": "the recommendation pre-fills at 9% with the range 8 to 10% shown"
+      },
+      {
+       "given": "I enter 12% for that employee",
+       "when": "I try to submit",
+       "then": "submission requires a justification for exceeding the guideline"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-023",
+     "persona": "Finance",
+     "want": "pool utilisation visible across all worksheets",
+     "so_that": "the cycle never overspends the approved pool",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a bonus pool of 50,00,000",
+       "when": "approved worksheets total 49,20,000",
+       "then": "utilisation shows 98.4% and the cycle can close"
+      },
+      {
+       "given": "worksheets total 51,00,000",
+       "when": "closure is attempted",
+       "then": "closure is blocked pending a recorded budget exception"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-024",
+     "persona": "Payroll manager",
+     "want": "approved bonuses delivered as inputs to the named run",
+     "so_that": "no spreadsheet upload is needed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "approved bonuses for 320 employees targeting the March run",
+       "when": "the cycle is closed",
+       "then": "320 bonus inputs appear in the March run"
+      },
+      {
+       "given": "the March run is already finalised",
+       "when": "the cycle closes",
+       "then": "inputs move to the April run and I am notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-028",
+    "SYS-036",
+    "SYS-037",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "CMB-UC-009",
+   "name": "Administer equity and ESOP grants",
+   "process": null,
+   "capability_gap": "CMB-CG-003",
+   "source": "Authored",
+   "goal": "Track grants, vesting, exercises and the perquisite value that payroll must tax on exercise.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Payroll manager",
+    "Finance",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Sees vested and unvested options and tax impact before exercising."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives exercise perquisite values for withholding."
+    },
+    {
+     "who": "Finance",
+     "interest": "Equity records reconcile to the grant register."
+    }
+   ],
+   "trigger": "A grant is approved or an employee exercises vested options.",
+   "preconditions": [
+    "ESOP scheme with vesting rules is configured.",
+    "Fair market value per valuation date is recorded by finance."
+   ],
+   "postconditions_success": [
+    "Grant, vesting tranches and exercises are recorded per employee.",
+    "Perquisite value is raised as a payroll input in the exercise month."
+   ],
+   "postconditions_failure": [
+    "Exercise is not recorded and no payroll input is raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Records a grant with scheme, number of options, exercise price and grant date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Generates vesting tranches from the scheme schedule, for example 25% per year over four years.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Views vested, unvested and exercised options on the self-service equity page.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Submits an exercise request for vested options.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Computes perquisite value as fair market value on exercise date minus exercise price, multiplied by options exercised (to be validated by Legal).",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "Confirms the exercise and the fair market value used.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Raises the perquisite value as a taxable payroll input in the exercise month.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Employee separates before vesting completes.",
+     "steps": [
+      "Unvested tranches lapse per scheme rules on the last working day.",
+      "Vested options remain exercisable for the scheme's post-exit window."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Requested options exceed vested balance.",
+     "handling": "Request is refused with the vested balance shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "No fair market value is recorded for the exercise date.",
+     "handling": "Exercise is held until finance records a value.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "esop_grant (C)",
+    "vesting_tranche (C)",
+    "esop_exercise (C)",
+    "payroll_input (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Vesting schedule generation is deterministic for the same scheme and grant date."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-025",
+     "persona": "Employee / worker",
+     "want": "to see my vested and unvested options at any time",
+     "so_that": "I can plan an exercise",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a grant of 1,000 options on 1 April 2025 vesting 25% yearly",
+       "when": "I view my equity on 2 April 2026",
+       "then": "250 options show vested and 750 unvested"
+      },
+      {
+       "given": "I exercised 100 options",
+       "when": "I view my equity",
+       "then": "150 vested, 100 exercised and 750 unvested are shown"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-026",
+     "persona": "Payroll manager",
+     "want": "the perquisite value of an exercise raised as a payroll input",
+     "so_that": "tax is withheld in the correct month",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "100 options exercised at price 50 with fair market value 210",
+       "when": "finance confirms the exercise",
+       "then": "a perquisite input of 16,000 is raised in the exercise month"
+      },
+      {
+       "given": "no fair market value is recorded for the date",
+       "when": "the exercise is submitted",
+       "then": "it is held and finance receives a request for a value"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-045",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "CMB-UC-010",
+   "name": "Enrol employees and dependants in group insurance",
+   "process": null,
+   "capability_gap": "CMB-CG-004",
+   "source": "Authored",
+   "goal": "Manage medical, accident and life cover enrolment with dependants, top-ups, enrolment windows, life events and insurer data exchange.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Payroll manager",
+    "Nucleus platform",
+    "Insurer"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Family is covered from the right date with the chosen top-up."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Enrolment windows close on time with complete data."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Top-up premiums are deducted correctly."
+    }
+   ],
+   "trigger": "Enrolment window opens, a new joiner is hired, or a life event is reported.",
+   "preconditions": [
+    "Policy plans, sum-insured options and top-up premiums are configured.",
+    "Enrolment window dates are set."
+   ],
+   "postconditions_success": [
+    "Enrolment with covered dependants is confirmed and included in the next insurer file.",
+    "Top-up premium deduction is raised as a payroll input."
+   ],
+   "postconditions_failure": [
+    "Enrolment remains in draft and the employee keeps default cover."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens the enrolment window with start and end dates and notifies eligible employees.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Reviews default cover and adds dependants with relationship, date of birth and identity document.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Selects an optional top-up and sees the annual premium and monthly deduction.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Validates dependant eligibility rules such as age limits and relationship types.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Submits the enrolment and gives consent for sharing dependant data with the insurer.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Raises the top-up premium as a recurring payroll deduction.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Generates the insurer addition and deletion file for the period.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Reconciles the insurer's confirmation and resolves rejected members.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Employee reports a life event such as marriage or a birth outside the window.",
+     "steps": [
+      "Platform opens a 30-day life-event window for that employee only.",
+      "Employee adds the new dependant with evidence."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Dependant exceeds the configured age limit.",
+     "handling": "Dependant is rejected with the limit shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Window closes before submission.",
+     "handling": "Default cover applies and the draft is retained for HR review.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "Insurer rejects a member record.",
+     "handling": "Rejection appears on HR's queue with the insurer's reason for correction and resubmission.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "benefit_enrolment (C, U)",
+    "dependant (C)",
+    "payroll_input (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Dependant identity documents are stored encrypted and visible only to self and HR benefits roles.",
+    "Insurer file generation completes within 15 minutes for 20,000 members."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-027",
+     "persona": "Employee / worker",
+     "want": "to add my spouse and children to medical cover during the window",
+     "so_that": "my family is protected from the policy start",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the window is open from 1 to 15 March and I have no dependants enrolled",
+       "when": "I add a spouse and two children and submit on 10 March",
+       "then": "enrolment is confirmed and all three dependants appear in the next insurer file"
+      },
+      {
+       "given": "I add a parent aged 82 where the limit is 80",
+       "when": "I submit",
+       "then": "the parent is rejected with the age limit shown"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-028",
+     "persona": "Employee / worker",
+     "want": "to buy a top-up with the monthly cost shown before I confirm",
+     "so_that": "I know the impact on my net pay",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a top-up with annual premium 6,000",
+       "when": "I select it",
+       "then": "the monthly deduction shows 500 and a payroll input is raised from the next run"
+      },
+      {
+       "given": "I remove the top-up during the window",
+       "when": "I resubmit",
+       "then": "the deduction input is withdrawn"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-029",
+     "persona": "HR operations",
+     "want": "a life-event window opened only for the affected employee",
+     "so_that": "mid-year additions are controlled",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employee E1018 reports a birth on 5 July",
+       "when": "the event is recorded",
+       "then": "E1018 has a window until 4 August and others do not"
+      },
+      {
+       "given": "the window lapses without submission",
+       "when": "the date passes",
+       "then": "the newborn is not added and HR is notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-028",
+    "SYS-033",
+    "SYS-070",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "CMB-UC-011",
+   "name": "Manage NPS and superannuation contributions",
+   "process": null,
+   "capability_gap": "CMB-CG-005",
+   "source": "Authored",
+   "goal": "Capture employee choices for NPS and superannuation and compute contributions within configured statutory caps for payroll.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Payroll manager",
+    "Finance",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Contributions follow the elected rate and appear on the payslip."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Contributions are computed within caps without manual overrides."
+    },
+    {
+     "who": "Finance",
+     "interest": "Remittances reconcile to payroll."
+    }
+   ],
+   "trigger": "Employee elects or changes a retirement contribution, or a payroll run computes contributions.",
+   "preconditions": [
+    "Retirement plans, allowed rates and statutory caps are configured per entity (to be validated by Legal).",
+    "Employee holds a valid retirement account identifier where the plan requires one."
+   ],
+   "postconditions_success": [
+    "Election is stored effective from the next open period.",
+    "Employer and employee contributions appear in the run and the remittance file."
+   ],
+   "postconditions_failure": [
+    "Prior election remains in force."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens retirement benefits and views current elections for NPS and superannuation.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Selects a contribution rate from the plan's allowed options and provides the account identifier.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates the account identifier format and the rate against plan options.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the projected monthly employer and employee contribution and tax treatment note.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms the election, effective from the next open payroll period.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Computes contributions in each run and applies the configured cap, routing any excess per plan rules.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Reviews the contribution register and generates the remittance file.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Election change window is restricted to once per financial year.",
+     "steps": [
+      "Platform shows the date of the last change and the next permitted change date."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Account identifier is missing or invalid.",
+     "handling": "Election cannot be confirmed until a valid identifier is entered.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Employer contribution exceeds the configured cap.",
+     "handling": "Excess is treated per plan configuration and flagged on the register.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "retirement_election (C, U)",
+    "payroll_input (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Cap rules are versioned with effective dates so past runs recompute identically."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-030",
+     "persona": "Employee / worker",
+     "want": "to choose my NPS contribution rate and see the monthly effect",
+     "so_that": "I plan my retirement savings",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "allowed employer rates of 0%, 5% and 10% of basic and basic of 50,000",
+       "when": "I select 10%",
+       "then": "the projection shows 5,000 per month from the next open period"
+      },
+      {
+       "given": "I have not entered an account identifier",
+       "when": "I confirm",
+       "then": "confirmation is blocked asking for the identifier"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-031",
+     "persona": "Payroll manager",
+     "want": "configured caps applied automatically every run",
+     "so_that": "no contribution breaches the cap",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee whose employer contribution would exceed the configured cap by 1,200",
+       "when": "the run is computed",
+       "then": "the excess of 1,200 is treated per plan configuration and flagged"
+      },
+      {
+       "given": "a cap change effective 1 April",
+       "when": "March is recomputed after 1 April",
+       "then": "March uses the cap in force in March"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-026",
+    "SYS-028",
+    "SYS-045",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "CMB-UC-012",
+   "name": "Allocate and reconcile a flexible benefits plan",
+   "process": null,
+   "capability_gap": "CMB-CG-006",
+   "source": "Authored",
+   "goal": "Let employees allocate a flexi budget across a benefits catalogue, claim against it with proofs and reconcile at year end.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Payroll manager",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can structure pay tax-efficiently within policy."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Taxable and exempt amounts are correct at year end."
+    }
+   ],
+   "trigger": "Flexi declaration window opens, a claim is submitted, or year end is reached.",
+   "preconditions": [
+    "Flexi budget is part of the salary structure.",
+    "Catalogue items with limits and proof rules are configured."
+   ],
+   "postconditions_success": [
+    "Allocations, claims and year-end taxable residue are recorded and flow to payroll."
+   ],
+   "postconditions_failure": [
+    "Unallocated budget is paid as taxable allowance."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the flexi plan and sees the annual budget and catalogue items with limits.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Allocates the budget across items such as meal, fuel, telephone and leave travel.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates each allocation against item limits and the total budget.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Submits claims with proofs during the year against allocated items.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Payroll manager",
+     "action": "Verifies proofs and approves or rejects each claim.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Pays approved claims as exempt reimbursements in the named run.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "At year end treats allocated but unproven amounts as taxable and raises the input.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Employee makes no allocation by the window close.",
+     "steps": [
+      "Full budget defaults to the taxable allowance."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Allocation exceeds an item limit or the total budget.",
+     "handling": "Allocation is rejected with the limit shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Proof is illegible or does not match the item.",
+     "handling": "Claim is rejected with reason and the amount stays available to claim.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "flexi_allocation (C, U)",
+    "flexi_claim (C, U)",
+    "payroll_input (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Year-end reconciliation for 20,000 employees completes within one hour."
+   ],
+   "frequency": "Annual",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-032",
+     "persona": "Employee / worker",
+     "want": "to split my flexi budget across items within their limits",
+     "so_that": "I use the plan to my advantage",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an annual flexi budget of 1,20,000 and a meal limit of 26,400",
+       "when": "I allocate 26,400 to meal and 93,600 across other items",
+       "then": "the allocation is accepted"
+      },
+      {
+       "given": "I allocate 30,000 to meal",
+       "when": "I save",
+       "then": "the meal line is rejected naming the 26,400 limit"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-033",
+     "persona": "Payroll manager",
+     "want": "unproven allocations taxed at year end automatically",
+     "so_that": "annual tax computation is correct",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee allocated 24,000 to fuel and proved 18,000",
+       "when": "year end reconciliation runs",
+       "then": "6,000 is raised as a taxable input"
+      },
+      {
+       "given": "all allocations are fully proved",
+       "when": "reconciliation runs",
+       "then": "no taxable residue input is raised"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-040",
+    "SYS-045",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "CMB-UC-013",
+   "name": "View an annual total rewards statement",
+   "process": null,
+   "capability_gap": "CMB-CG-007",
+   "source": "Authored",
+   "goal": "Give each employee a statement of fixed pay, variable pay, benefits, employer statutory contributions and perks for the year.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Understands the full value of employment beyond take-home pay."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Can publish statements without manual compilation."
+    }
+   ],
+   "trigger": "HR publishes statements for a financial year, or an employee opens their statement.",
+   "preconditions": [
+    "Payroll for the year is finalised.",
+    "Benefit and perk costs per employee are recorded."
+   ],
+   "postconditions_success": [
+    "Statement is available to the employee only, with each figure traceable to its source."
+   ],
+   "postconditions_failure": [
+    "Statement is not published if any source total fails reconciliation."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects the financial year and the population and triggers statement generation.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Aggregates fixed pay, variable pay, employer PF, ESIC and gratuity provision, benefit premiums and perks per employee.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Reconciles each statement total to finalised payroll and benefit cost registers.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews a sample and publishes statements.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Opens their statement on mobile or web and views each category with a breakdown.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Downloads the statement as a document.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Employee joined mid-year.",
+     "steps": [
+      "Statement covers the months of service only and states the period."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Statement total does not reconcile to payroll.",
+     "handling": "Employee is excluded from publication and listed for HR investigation.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "total_rewards_statement (C)",
+    "payroll_result (R)",
+    "benefit_enrolment (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Statement opens within 3 s on a mid-range mobile device.",
+    "Only the employee and HR with entity scope can view a statement."
+   ],
+   "frequency": "Annual",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-034",
+     "persona": "Employee / worker",
+     "want": "to see the full value of my pay and benefits in one statement",
+     "so_that": "I understand my total reward",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "fixed pay of 9,60,000, bonus of 80,000, employer PF of 21,600 and medical premium of 18,000",
+       "when": "I open my statement",
+       "then": "each category shows the amount and the total shows 10,79,600"
+      },
+      {
+       "given": "I joined on 1 October",
+       "when": "I open my statement",
+       "then": "it states the period October to March"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-035",
+     "persona": "HR operations",
+     "want": "statements withheld when totals do not reconcile",
+     "so_that": "no employee receives a wrong statement",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee whose statement total differs from payroll by 2,000",
+       "when": "generation runs",
+       "then": "that employee is excluded and listed for investigation"
+      },
+      {
+       "given": "all totals reconcile",
+       "when": "I publish",
+       "then": "every employee in scope receives a statement"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-028",
+    "SYS-067"
+   ]
+  },
+  {
+   "id": "CMB-UC-014",
+   "name": "Analyse pay equity and track remediation",
+   "process": null,
+   "capability_gap": "CMB-CG-008",
+   "source": "Authored",
+   "goal": "Measure pay gaps by gender and other permitted attributes controlling for grade, location and tenure, and track remediation to closure.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Finance",
+    "Director / approver",
+    "Auditor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is paid fairly for comparable work."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Gets evidence for remediation budget decisions."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can verify analysis method and remediation actions."
+    }
+   ],
+   "trigger": "HR runs a scheduled or ad-hoc pay equity analysis.",
+   "preconditions": [
+    "Attributes used are permitted by tenant policy and consented where required under the DPDP Act 2023 (to be validated by Legal).",
+    "Grade, location and tenure data are complete."
+   ],
+   "postconditions_success": [
+    "Adjusted and unadjusted gaps are published to authorised roles with method notes.",
+    "Remediation items are tracked with owner, amount and status."
+   ],
+   "postconditions_failure": [
+    "Results for groups below the minimum size are suppressed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects the population, the attribute to analyse and the control variables grade, location and tenure.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks each comparison group meets the minimum group size and suppresses smaller groups.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes the unadjusted gap and the adjusted gap controlling for the chosen variables.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Lists individuals whose pay falls outside the expected band for their controls, visible only to authorised HR.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Creates remediation items with proposed adjustment, owner and target date.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves the remediation budget.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Routes approved adjustments into the compensation revision process and tracks closure.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "Analysis is scheduled quarterly.",
+     "steps": [
+      "Platform runs it automatically and notifies HR when results are ready."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A comparison group has fewer than the minimum members.",
+     "handling": "Group result is suppressed and marked as insufficient size.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "Attribute is not permitted by tenant policy.",
+     "handling": "Attribute is not selectable and the attempt is logged.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "pay_equity_run (C)",
+    "remediation_item (C, U)",
+    "salary_structure (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Individual-level results are restricted to roles with explicit pay-equity grant.",
+    "Analysis method and inputs are retained so a run can be reproduced."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-036",
+     "persona": "HR operations",
+     "want": "to see the gender pay gap adjusted for grade, location and tenure",
+     "so_that": "I can distinguish structural gaps from unexplained ones",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a population of 1,200 employees with complete controls",
+       "when": "I run the analysis by gender",
+       "then": "both unadjusted and adjusted gaps are shown with the method note"
+      },
+      {
+       "given": "a grade-location group with 4 members and a minimum size of 10",
+       "when": "results are produced",
+       "then": "that group is suppressed as insufficient size"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-037",
+     "persona": "Director / approver",
+     "want": "remediation items with cost and status",
+     "so_that": "I can approve a budget and see it applied",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "12 remediation items totalling 9,60,000",
+       "when": "I approve the budget",
+       "then": "items move to approved and are routed into the next revision cycle"
+      },
+      {
+       "given": "an approved item is applied in the revision cycle",
+       "when": "the revision is effective",
+       "then": "the item shows closed with the effective date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-018",
+    "SYS-019",
+    "SYS-033",
+    "SYS-037"
+   ]
+  }
+ ]
+}

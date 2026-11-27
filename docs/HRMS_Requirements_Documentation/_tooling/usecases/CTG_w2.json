@@ -1,0 +1,489 @@
+{
+ "domain": "CTG",
+ "use_cases": [
+  {
+   "id": "CTG-UC-007",
+   "name": "Validate contractor wage payments against gate attendance and minimum wages before invoice release",
+   "process": null,
+   "capability_gap": "CTG-CG-004",
+   "source": "Authored",
+   "goal": "Confirm that each contract worker was paid for every day recorded at the gate, at no less than the applicable minimum wage, before the contractor's invoice for the period is released.",
+   "level": "User goal",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Contractor vendor",
+    "Plant HR / time office",
+    "Finance",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "As a contract worker, is paid for every day worked at no less than the minimum wage."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Discharges the principal employer's duty to ensure contractor wages are paid, as set out in contract labour law (to be validated by Legal)."
+    },
+    {
+     "who": "Finance",
+     "interest": "Releases vendor payments only for periods with verified wage payment."
+    },
+    {
+     "who": "Contractor vendor",
+     "interest": "Sees exactly which workers and days are disputed and how to clear them."
+    }
+   ],
+   "trigger": "A contractor vendor uploads the wage register and payment evidence for a wage period.",
+   "preconditions": [
+    "The vendor's engagement, worker registrations by class and rate card are active.",
+    "Gate punches for the period are ingested and attendance days are computed for contract workers.",
+    "A minimum wage rule pack for the state, zone and skill category is published (to be validated by Legal)."
+   ],
+   "postconditions_success": [
+    "The vendor-period is marked Wage verified with per-worker results and evidence attached to the invoice decision."
+   ],
+   "postconditions_failure": [
+    "The vendor's invoice for the period stays Held while any underpayment or missing payment proof is unresolved."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Contractor vendor",
+     "action": "Uploads the October 2026 wage register for Chakan Works with days, rate, gross, deductions, net and bank transfer reference per worker.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates the file and matches each row to a contract worker registered on the vendor's engagement.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Compares days paid for each worker with gate attendance days for the period.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks each daily rate against the minimum wage for Maharashtra, the site's zone and the worker's skill category.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Checks overtime paid against gate-recorded overtime hours at the configured overtime rate.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Matches each net payment to a bank transfer reference and amount.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Classifies each worker as Pass, Underpaid, Days mismatch or No payment proof and totals the vendor-period.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Compliance owner",
+     "action": "Reviews exceptions and records a disposition for each: arrears due, evidence accepted or escalated.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Marks the vendor-period Wage verified once no Underpaid or No payment proof item remains, attaching evidence to the invoice decision.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Finance",
+     "action": "Releases the vendor's invoice payment for the period.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 8,
+     "condition": "The vendor pays arrears to underpaid workers.",
+     "steps": [
+      "Vendor uploads a supplementary register with new bank transfer references.",
+      "Platform re-runs the checks for the affected workers only."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 9,
+     "condition": "Payment must be released before verification completes.",
+     "steps": [
+      "Director / approver releases it, and the release names the waived rule with approver identity and reason."
+     ],
+     "rejoin": "Returns to step 10"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A row names a worker not registered on the engagement.",
+     "handling": "The row is rejected and flagged to Plant HR as a possible unregistered deployment.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The invoice claims worker-days with no gate attendance behind them.",
+     "handling": "The days are listed in the variance and block vendor payment, not employee payroll.",
+     "rule": "RL-481"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "No minimum wage rule pack is published for the state and period.",
+     "handling": "Validation stops for that vendor-period and the compliance owner is alerted.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 9,
+     "condition": "A decision is attempted without the variance evidence.",
+     "handling": "The decision cannot be saved until the evidence is attached; by default it is attached automatically.",
+     "rule": "RL-482"
+    }
+   ],
+   "business_rules": [
+    "RL-481",
+    "RL-482"
+   ],
+   "screens": [
+    "SCR-095",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "contractor_wage_register (C)",
+    "wage_validation_result (C, U)",
+    "attendance_day (R)",
+    "rule_pack (R)",
+    "contractor_invoice (U)"
+   ],
+   "events": [
+    "contingent.invoice.reconciled"
+   ],
+   "nfrs": [
+    "Validation of a 600-worker wage register completes within 60 s.",
+    "Uploaded wage registers and bank evidence are retained for the period set by the compliance retention policy."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-019",
+     "persona": "Compliance owner",
+     "want": "every contract worker paid below minimum wage or for fewer days than worked listed before invoice release",
+     "so_that": "we never pay a contractor who has short-paid workers",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "worker CW-2231 at Chakan Works has 26 gate days in October 2026 and the register pays 24",
+       "when": "validation runs",
+       "then": "CW-2231 is classified Days mismatch with 2 unpaid days"
+      },
+      {
+       "given": "the register pays CW-2240 a daily rate ₹35 below the applicable minimum wage",
+       "when": "validation runs",
+       "then": "CW-2240 is classified Underpaid with the shortfall per day and for the month"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-020",
+     "persona": "Finance",
+     "want": "the vendor invoice held until wage verification is complete",
+     "so_that": "payments follow evidence",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "vendor V-014 for October 2026 has 3 Underpaid workers",
+       "when": "I open the invoice",
+       "then": "it shows Held with reason wage verification incomplete"
+      },
+      {
+       "given": "the vendor uploads arrears proof and all 3 pass",
+       "when": "validation re-runs",
+       "then": "the vendor-period shows Wage verified and the invoice becomes payable"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-021",
+     "persona": "Plant HR / time office",
+     "want": "workers in the wage register who are not registered on the engagement flagged to me",
+     "so_that": "I can stop unregistered deployment at the gate",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the register includes CW-2299 who is not registered on the engagement",
+       "when": "the file is validated",
+       "then": "the row is rejected and I receive a flag naming CW-2299 and the vendor"
+      },
+      {
+       "given": "CW-2299 also has gate punches in October",
+       "when": "I open the flag",
+       "then": "the punch dates are shown for investigation"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-051",
+    "SYS-061"
+   ]
+  },
+  {
+   "id": "CTG-UC-008",
+   "name": "Forecast contract labour by line and season and compare with vendor capacity",
+   "process": null,
+   "capability_gap": "CTG-CG-005",
+   "source": "Authored",
+   "goal": "Forecast contract labour needs by production line, worker class and month, test them against vendor caps and site licences, and approve a costed plan.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Agent (governed)",
+    "Director / approver",
+    "Finance",
+    "Compliance owner",
+    "Nucleus platform",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Arranges labour ahead of peak months instead of reacting to shortfalls on the line."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves a contract labour budget grounded in the production plan."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Sees early if planned deployment would exceed a site's licensed headcount."
+    }
+   ],
+   "trigger": "The annual production plan is published, or Plant HR reviews the forecast before a peak season.",
+   "preconditions": [
+    "At least 12 months of contract worker attendance by line and class exist in the analytics projections.",
+    "Production volumes by line and month for the plan year are available from the ERP system as a file in R0.",
+    "Vendor headcount caps, rate cards and site licensed headcounts are maintained."
+   ],
+   "postconditions_success": [
+    "An approved plan exists by line, class, month and vendor with cost, and monthly actuals are tracked against it."
+   ],
+   "postconditions_failure": [
+    "Allocations that would breach a vendor cap or site licence are not accepted into the plan."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Plant HR / time office",
+     "action": "Opens planning for Chakan Works for FY 2027-28 and loads the production plan for the machining and assembly lines.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes the baseline need per line, class and month from labour standards and planned volumes.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Applies seasonal patterns from 24 months of attendance, such as higher absence around festival months.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Agent (governed)",
+     "action": "Proposes adjustments with explanations, such as 12 more helpers in October for the festive dispatch peak.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Plant HR / time office",
+     "action": "Accepts, edits or rejects each proposal; only accepted figures enter the forecast.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Compares the forecast with each vendor's cap per class and the site's licensed headcount, showing shortfall or excess.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Plant HR / time office",
+     "action": "Allocates the requirement across vendors within their caps.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Costs the plan from rate cards and the minimum wage rule pack and shows the monthly total.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Director / approver",
+     "action": "Approves the plan and budget through the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Tracks actual deployment against the plan monthly and alerts Plant HR when a line varies by more than 10%.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "A new line has no attendance history.",
+     "steps": [
+      "Plant HR enters the labour standard and expected attendance rate manually.",
+      "The forecast marks those figures as manual inputs."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Peak-month forecast exceeds the site's licensed headcount.",
+     "handling": "The excess cannot be allocated and the compliance owner is alerted to consider a licence amendment.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "An allocation would exceed a vendor's class cap.",
+     "handling": "The allocation is refused with the cap and current allocation shown.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "A vendor's rate card ends within the plan year.",
+     "handling": "Costs after that date are marked provisional and HR operations is alerted.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-095"
+   ],
+   "data_objects": [
+    "labour_forecast (C, U)",
+    "forecast_adjustment (C)",
+    "vendor_allocation (C)",
+    "vendor_cap (R)",
+    "rate_card (R)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "agent.action.proposed",
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "A plan for 5 sites, 12 lines and 6 worker classes recomputes within 10 s after any edit.",
+    "Each accepted agent proposal is recorded in the action ledger with the user who accepted it."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-022",
+     "persona": "Plant HR / time office",
+     "want": "a monthly forecast by line and class with seasonal peaks",
+     "so_that": "I can book vendors before the festive dispatch peak",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the machining line plan rises 18% in October 2027 and absence historically rises 6% that month",
+       "when": "the forecast is computed",
+       "then": "October shows the higher requirement with both drivers explained"
+      },
+      {
+       "given": "the agent proposes 12 more helpers for October",
+       "when": "I reduce it to 8 and accept",
+       "then": "8 is used in the forecast and my edit is recorded in the action ledger"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-023",
+     "persona": "Compliance owner",
+     "want": "to know when planned deployment would breach a site licence",
+     "so_that": "we apply for an amendment in time",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "Chakan Works is licensed for 450 contract workers and October 2027 forecasts 472",
+       "when": "capacity is compared",
+       "then": "22 workers are shown as unallocatable and I am alerted"
+      },
+      {
+       "given": "the forecast is reduced to 445",
+       "when": "capacity is compared again",
+       "then": "the alert is cleared"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-024",
+     "persona": "Director / approver",
+     "want": "a costed plan to approve with monthly totals by site",
+     "so_that": "the contract labour budget matches the production plan",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the plan totals ₹6.8 crore for FY 2027-28 at Chakan Works",
+       "when": "I open the approval",
+       "then": "I see monthly cost by line and vendor"
+      },
+      {
+       "given": "the approved plan has 100 contract workers on the assembly line for May 2027",
+       "when": "actual deployment reaches 114",
+       "then": "Plant HR is alerted to a 14% variance on that line"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-035",
+    "SYS-045",
+    "SYS-072",
+    "SYS-074"
+   ]
+  }
+ ]
+}

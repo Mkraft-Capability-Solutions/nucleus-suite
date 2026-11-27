@@ -1,0 +1,2700 @@
+{
+ "domain": "TAL",
+ "use_cases": [
+  {
+   "id": "TAL-UC-001",
+   "name": "Raise a requisition with position control check",
+   "process": "TAL-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Raise a requisition that is either a replacement against a vacated position or an addition within sanctioned headroom, with any override recorded.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor (hiring manager)",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Director / approver",
+    "HR operations",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Approved manpower is enforced as a control, not a meeting figure."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Replacement hiring never double-counts headcount."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Overrides carry a recorded business reason."
+    }
+   ],
+   "trigger": "A vacancy arises or the business needs growth headcount.",
+   "preconditions": [
+    "Sanctioned strength is set per org unit, designation and location.",
+    "Positions carry status and vacated_on dates.",
+    "Approval chain for requisitions is configured."
+   ],
+   "postconditions_success": [
+    "Requisition is SUBMITTED, consuming headroom only if it is an addition.",
+    "Any override is stored with override_by, override_reason and an audit entry."
+   ],
+   "postconditions_failure": [
+    "Requisition is BLOCKED with the headroom shown, or WITHDRAWN by the hiring manager."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor (hiring manager)",
+     "action": "Raises a requisition giving org unit, designation, location and type: replacement or addition.",
+     "ref": "TAL-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "For a replacement, requires against_position_code of a vacant position and consumes no fresh sanctioned strength.",
+     "ref": "TAL-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "For an addition, computes headroom as sanctioned minus filled minus open and blocks at approval if headroom is zero.",
+     "ref": "TAL-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Where the business demands it, an authorised role overrides the block with a recorded reason.",
+     "ref": "TAL-01.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Requisition type is addition.",
+     "steps": [
+      "Platform skips the position-code check and proceeds to the headroom check."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Addition has headroom of one or more.",
+     "steps": [
+      "Platform submits the requisition into the approval chain and reserves one unit of headroom as open."
+     ],
+     "rejoin": "Ends"
+    },
+    {
+     "id": "A3",
+     "at_step": 2,
+     "condition": "Replacement with a valid vacated position.",
+     "steps": [
+      "Platform submits the requisition without the headroom check."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Replacement names a position that is filled or does not exist.",
+     "handling": "Submission is refused stating the position must be vacant.",
+     "rule": "RL-461"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Addition finds no headroom, as at Machining in Peenya with 24 of 24 filled.",
+     "handling": "Requisition moves to BLOCKED and talent.requisition.blocked is emitted with headroom and reason.",
+     "rule": "RL-462"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "Override attempted by a role without override rights or without a reason.",
+     "handling": "Override is refused and the requisition stays BLOCKED.",
+     "rule": "RL-463"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-057",
+    "RL-460",
+    "RL-461",
+    "RL-462",
+    "RL-463"
+   ],
+   "screens": [
+    "SCR-090",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "requisition (C, U)",
+    "position (R)",
+    "sanctioned_position (R)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "talent.requisition.raised",
+    "talent.requisition.blocked",
+    "talent.requisition.overridden"
+   ],
+   "nfrs": [
+    "Headroom shown on the requisition form within 1 s of choosing org unit, designation and location.",
+    "Headroom computation is shared with the sanctioned strength board so both show the same figure."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [
+    "R-25",
+    "R-26"
+   ],
+   "acceptance_tests": [
+    "TC-R461",
+    "TC-R462",
+    "TC-R460",
+    "TC-R463",
+    "TC-R57",
+    "TC-P10",
+    "T-39",
+    "T-40"
+   ],
+   "user_stories": [
+    {
+     "id": "TAL-US-001",
+     "persona": "Manager / supervisor (hiring manager)",
+     "want": "to raise a replacement against the vacated position code",
+     "so_that": "the department headcount is not double-counted",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "position POS-2214 is vacant",
+       "when": "I raise REQ-2026-0037 as a replacement against POS-2214",
+       "then": "it is submitted and sanctioned headroom for the unit is unchanged"
+      },
+      {
+       "given": "I name a position that is currently filled",
+       "when": "I submit",
+       "then": "submission is refused stating the position must be vacant"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-002",
+     "persona": "Finance",
+     "want": "additions beyond sanctioned strength stopped at approval",
+     "so_that": "approved manpower works as a control",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "OU-111 at Peenya has 24 sanctioned and 24 filled",
+       "when": "REQ-2026-0041 is raised as an addition",
+       "then": "it moves to BLOCKED with headroom 0 shown and does not pass with a warning"
+      },
+      {
+       "given": "the same unit has 24 sanctioned, 22 filled and 1 open",
+       "when": "an addition is raised",
+       "then": "it is submitted and headroom shows 0 afterwards"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-003",
+     "persona": "Director / approver",
+     "want": "to override a sanction block with a recorded reason",
+     "so_that": "urgent business needs can proceed with accountability",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "REQ-2026-0041 is BLOCKED",
+       "when": "I override with reason new customer line ramp-up",
+       "then": "it moves to SUBMITTED and the audit entry shows my identity and reason"
+      },
+      {
+       "given": "a hiring manager without override rights",
+       "when": "they try to override",
+       "then": "the action is refused"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-036",
+    "SYS-037",
+    "SYS-051",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "TAL-UC-002",
+   "name": "Move candidates through the pipeline to offer",
+   "process": "TAL-02",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Progress candidates for an approved requisition through stages to an offer, with ranking assisting and humans deciding every disposition.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Manager / supervisor (hiring manager)",
+    "Interview panel member",
+    "Candidate",
+    "Agent (governed)",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "Is assessed fairly and never auto-rejected by a machine."
+    },
+    {
+     "who": "Manager / supervisor (hiring manager)",
+     "interest": "Sees a ranked shortlist with reasons."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every rejection carries a human decision and reason."
+    }
+   ],
+   "trigger": "A requisition is approved and open for sourcing.",
+   "preconditions": [
+    "Requisition is APPROVED.",
+    "Pipeline stages are configured for the requisition type."
+   ],
+   "postconditions_success": [
+    "Selected candidate has an accepted offer and the requisition proceeds toward FILLED on joining.",
+    "Every other candidate has a human disposition with reason."
+   ],
+   "postconditions_failure": [
+    "Requisition remains open with candidates in their last stage."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Opens the approved requisition and reviews applicants received from all sources.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Ranks applicants against requisition criteria and shows the evidence behind each ranking; it rejects no one.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations (recruiter)",
+     "action": "Shortlists candidates and records a reason for each candidate not shortlisted.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Interview panel member",
+     "action": "Interviews shortlisted candidates and submits scorecards.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor (hiring manager)",
+     "action": "Selects the preferred candidate and records the decision reason.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations (recruiter)",
+     "action": "Prepares the offer from the approved range and routes it for approval.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Candidate",
+     "action": "Accepts the offer; the platform hands the candidate to pre-boarding.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "Candidate declines the offer.",
+     "steps": [
+      "Recruiter records the decline reason.",
+      "Hiring manager selects the next candidate from the shortlist."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Ranking agent proposes rejecting a candidate.",
+     "handling": "Proposal is ignored as an action; only a human disposition can reject, and the proposal is recorded in the action ledger.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Recruiter dispositions a candidate without a reason.",
+     "handling": "Disposition cannot be saved until a reason is selected.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "candidate (C, U)",
+    "application (C, U)",
+    "offer (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Ranking explanation shown with every ranked candidate.",
+    "Disposition history is retained per candidate for the configured retention period."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-004",
+     "persona": "HR operations (recruiter)",
+     "want": "a ranked list with the reason for each rank",
+     "so_that": "I review the strongest fits first",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "60 applicants for a CNC operator requisition",
+       "when": "ranking completes",
+       "then": "each candidate shows a rank and the matched and missing criteria"
+      },
+      {
+       "given": "the agent's ranking places a candidate last",
+       "when": "I view the candidate",
+       "then": "the candidate is still in Applied stage and not rejected"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-005",
+     "persona": "Candidate",
+     "want": "to be rejected only by a person with a recorded reason",
+     "so_that": "I am treated fairly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my application is under review",
+       "when": "the recruiter rejects it",
+       "then": "the rejection carries the recruiter's identity and a selected reason"
+      },
+      {
+       "given": "no human has acted on my application",
+       "when": "30 days pass",
+       "then": "my application remains open and is not auto-rejected"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-037",
+    "SYS-053",
+    "SYS-074",
+    "SYS-076"
+   ]
+  },
+  {
+   "id": "TAL-UC-003",
+   "name": "Track a referral and pay the award through payroll",
+   "process": "TAL-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Capture an employee referral against an open requisition and pay the award in parts on joining and confirmation through named payroll runs.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Award is paid on time and in full, including the confirmation balance."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Award arrives as a payroll input, not a spreadsheet."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Referral source effectiveness is measurable."
+    }
+   ],
+   "trigger": "An employee submits a referral.",
+   "preconditions": [
+    "Referral programme with award amount and split is configured.",
+    "Requisition is open for sourcing."
+   ],
+   "postconditions_success": [
+    "Joining part and confirmation balance are each raised as payroll inputs in named runs.",
+    "Referral stage and award status are visible to the referrer."
+   ],
+   "postconditions_failure": [
+    "No payroll input is raised if the candidate does not join or is not confirmed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits a referral with candidate details against an open requisition on the referrals screen.",
+     "ref": "TAL-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Matures the award as the candidate progresses: the joining part on joining and the balance on confirmation.",
+     "ref": "TAL-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Raises each matured part as a referral award payroll input in a named run.",
+     "ref": "TAL-03.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Candidate joins but leaves before confirmation.",
+     "steps": [
+      "Joining part remains paid; the balance is cancelled with reason recorded."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Candidate already exists in the pipeline from another source.",
+     "handling": "Referral is recorded as duplicate and the referrer is told the candidate was already sourced.",
+     "rule": "RL-470"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Named payroll run is finalised before the input is raised.",
+     "handling": "Input moves to the next open run and the payroll manager is notified.",
+     "rule": "RL-472"
+    }
+   ],
+   "business_rules": [
+    "RL-470",
+    "RL-471",
+    "RL-472"
+   ],
+   "screens": [
+    "SCR-091"
+   ],
+   "data_objects": [
+    "referral (C, U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "talent.referral.created",
+    "talent.referral.matured",
+    "payroll.input.raised"
+   ],
+   "nfrs": [
+    "Referral status updates within 5 minutes of a candidate stage change."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [
+    "R-20"
+   ],
+   "acceptance_tests": [
+    "TC-R470",
+    "TC-R471",
+    "TC-R472",
+    "T-34"
+   ],
+   "user_stories": [
+    {
+     "id": "TAL-US-006",
+     "persona": "Employee / worker",
+     "want": "to track my referral through stages and see when my award becomes payable",
+     "so_that": "I know what I will receive and when",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a programme paying 20,000 split 50% on joining and 50% on confirmation",
+       "when": "my referred candidate joins on 1 June",
+       "then": "10,000 shows as matured and payable in the June run"
+      },
+      {
+       "given": "the candidate is confirmed on 1 December",
+       "when": "confirmation is recorded",
+       "then": "the balance of 10,000 matures and is raised in the December run"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-007",
+     "persona": "Payroll manager",
+     "want": "referral awards to reach me as payroll inputs",
+     "so_that": "awards are paid and taxed like any other earning",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a matured joining part of 10,000",
+       "when": "the June run is computed",
+       "then": "a referral award input of 10,000 appears for the referrer"
+      },
+      {
+       "given": "the June run is finalised before maturity",
+       "when": "the award matures",
+       "then": "the input is raised in the July run and I am notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-050",
+    "SYS-053",
+    "SYS-056"
+   ]
+  },
+  {
+   "id": "TAL-UC-004",
+   "name": "Set goals, hold check-ins and complete the review cycle",
+   "process": "TAL-04",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Run a quarterly cycle of goal setting, check-ins and review where AI may draft text but humans decide and sign.",
+   "level": "Summary",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Employee / worker",
+    "Agent (governed)",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Has clear goals and a fair, signed review."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Spends less time drafting and more on conversation."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can see which text was AI-drafted and who signed it."
+    }
+   ],
+   "trigger": "HR opens the performance cycle.",
+   "preconditions": [
+    "Cycle template and rating scale are configured.",
+    "Reporting lines are current."
+   ],
+   "postconditions_success": [
+    "Goals, check-in notes and a signed review exist for each employee in the cycle.",
+    "Draft provenance is recorded for any AI-drafted text."
+   ],
+   "postconditions_failure": [
+    "Unsigned reviews remain in draft and are excluded from calibration."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens the cycle with dates for goal setting, check-ins and review.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Drafts goals with weights and submits them to the manager.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Agrees or edits goals and records agreement.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Holds check-ins during the quarter and records notes and progress.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Agent (governed)",
+     "action": "Drafts a review summary from goals, progress and check-in notes, marked as AI draft.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Edits the draft, assigns the rating and signs the review.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Employee / worker",
+     "action": "Reads the review, adds comments and acknowledges it.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Records the signed review with the signer and the provenance of each section.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Manager chooses not to use the AI draft.",
+     "steps": [
+      "Manager writes the review directly; no draft provenance is recorded."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Manager attempts to sign the AI draft without any review action.",
+     "handling": "Platform requires the manager to confirm each section before signing.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Goal weights do not total 100%.",
+     "handling": "Submission is blocked with the current total shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "goal (C, U)",
+    "check_in (C)",
+    "performance_review (C, U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "AI drafts are generated within 10 s and stored with model provenance and the inputs used."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-008",
+     "persona": "Manager / supervisor",
+     "want": "an AI-drafted review summary I can edit before signing",
+     "so_that": "I write better reviews faster while remaining accountable",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee with four goals and three check-in notes",
+       "when": "I request a draft",
+       "then": "a summary marked AI draft appears referencing each goal"
+      },
+      {
+       "given": "I edit two sections and sign",
+       "when": "the review is saved",
+       "then": "the record shows me as signer and which sections were AI-drafted"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-009",
+     "persona": "Employee / worker",
+     "want": "to acknowledge and comment on my signed review",
+     "so_that": "my view is part of the record",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my manager signs my review",
+       "when": "I open it",
+       "then": "I can add comments and acknowledge"
+      },
+      {
+       "given": "I acknowledge",
+       "when": "the cycle report is run",
+       "then": "my review shows acknowledged with the date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-035",
+    "SYS-074",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "TAL-UC-005",
+   "name": "Infer skills and assign learning paths",
+   "process": "TAL-05",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Infer skills from work signals and completions and assign learning paths, using the same assignment mechanism as joining induction.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Agent (governed)",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives relevant learning with clear due dates."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees team skills grounded in evidence."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Induction and development assignments behave consistently."
+    }
+   ],
+   "trigger": "A work signal or a learning completion is recorded, or the joining chain reaches its induction step.",
+   "preconditions": [
+    "Skills taxonomy and learning paths are configured.",
+    "Employee has an active assignment."
+   ],
+   "postconditions_success": [
+    "Inferred skills are stored with evidence and confidence.",
+    "Assigned paths appear in the employee's learning with due dates."
+   ],
+   "postconditions_failure": [
+    "No assignment is made when evidence is insufficient."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receives a work signal or completion such as a course passed or a certification recorded.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Proposes skill updates with the evidence and a confidence level.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Confirms or rejects proposed skills above the tenant's confirmation threshold.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Stores confirmed skills and identifies gaps against the role's skill profile.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Assigns learning paths for the gaps using the standard assignment mechanism.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Sees assigned paths with due dates in My learning and starts them.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Records completion evidence, which feeds back as a new signal.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "Trigger is the joining chain induction step.",
+     "steps": [
+      "Platform assigns the induction path through the same mechanism without inference."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Manager rejects a proposed skill.",
+     "handling": "Skill is not stored and the rejection is recorded against the proposal.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Employee already holds the path assignment.",
+     "handling": "No duplicate assignment is created.",
+     "rule": "RL-395"
+    }
+   ],
+   "business_rules": [
+    "RL-395"
+   ],
+   "screens": [
+    "SCR-063",
+    "SCR-060"
+   ],
+   "data_objects": [
+    "skill_profile (U)",
+    "learning_assignment (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Skill proposals carry evidence links for every inferred skill."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-X395"
+   ],
+   "user_stories": [
+    {
+     "id": "TAL-US-010",
+     "persona": "Employee / worker",
+     "want": "assigned learning paths with due dates in one place",
+     "so_that": "I know what to complete and by when",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I joined on 2 June and the induction path is due in 14 days",
+       "when": "I open My learning",
+       "then": "the induction path shows due 16 June"
+      },
+      {
+       "given": "I complete the path",
+       "when": "completion is recorded",
+       "then": "a certificate is downloadable and the path shows complete"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-011",
+     "persona": "Manager / supervisor",
+     "want": "to confirm skills the system infers for my team",
+     "so_that": "skills data stays trustworthy",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a proposed skill CNC programming with evidence of a passed course",
+       "when": "I confirm it",
+       "then": "the skill is added to the employee's profile with the evidence link"
+      },
+      {
+       "given": "a proposed skill I believe is wrong",
+       "when": "I reject it",
+       "then": "the skill is not stored and the rejection is recorded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-053",
+    "SYS-072",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "TAL-UC-006",
+   "name": "Publish requisitions to sourcing channels and measure source effectiveness",
+   "process": null,
+   "capability_gap": "TAL-CG-001",
+   "source": "Authored",
+   "goal": "Publish an approved requisition to the careers site, job boards and social channels and attribute applicants to their source.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Manager / supervisor (hiring manager)",
+    "Nucleus platform",
+    "Job board"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations (recruiter)",
+     "interest": "Reaches candidates without re-typing postings."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Knows which sources produce hires."
+    }
+   ],
+   "trigger": "A requisition is approved.",
+   "preconditions": [
+    "Requisition is APPROVED.",
+    "Channel connections are configured for the tenant."
+   ],
+   "postconditions_success": [
+    "Posting is live on selected channels with a tracked link per channel.",
+    "Applicants carry their source attribution."
+   ],
+   "postconditions_failure": [
+    "Failed channels are listed for retry; successful ones remain live."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Opens the approved requisition and generates a job posting from the role description.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor (hiring manager)",
+     "action": "Reviews and approves the posting text.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations (recruiter)",
+     "action": "Selects channels: careers site, job boards and social channels.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Publishes to each channel with a channel-specific tracked link.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Attributes each incoming applicant to the channel of first touch.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations (recruiter)",
+     "action": "Reviews source effectiveness: applicants, shortlisted, offered and joined per channel.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Withdraws the posting from all channels when the requisition is filled or withdrawn.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Requisition is internal-only.",
+     "steps": [
+      "Only the internal careers page is selectable."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A channel rejects the posting.",
+     "handling": "Rejection reason is shown and the recruiter can correct and retry that channel.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "job_posting (C, U)",
+    "candidate (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Posting withdrawn from all channels within 1 hour of requisition closure."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-012",
+     "persona": "HR operations (recruiter)",
+     "want": "to publish one posting to several channels at once",
+     "so_that": "I save time and keep postings consistent",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an approved requisition and three configured channels",
+       "when": "I publish to all three",
+       "then": "each channel shows live with its own tracked link"
+      },
+      {
+       "given": "the requisition is filled",
+       "when": "the status changes",
+       "then": "the posting is withdrawn from all three channels"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-013",
+     "persona": "HR operations",
+     "want": "hires per source channel",
+     "so_that": "I invest in the channels that work",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "40 applicants from the careers site and 60 from a job board with 2 and 1 hires",
+       "when": "I open source effectiveness",
+       "then": "conversion shows 5% and 1.7% respectively"
+      },
+      {
+       "given": "an applicant first came via a referral link",
+       "when": "the applicant is hired",
+       "then": "the hire is attributed to referral"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-053",
+    "SYS-084",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "TAL-UC-007",
+   "name": "Manage candidates through a configurable applicant pipeline",
+   "process": null,
+   "capability_gap": "TAL-CG-002",
+   "source": "Authored",
+   "goal": "Move candidates through configurable stages with duplicate detection, consent capture, communications and human dispositioning.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Candidate",
+    "Manager / supervisor (hiring manager)",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "Personal data is used only with consent and they are kept informed."
+    },
+    {
+     "who": "HR operations (recruiter)",
+     "interest": "No duplicate records and a clear view of each stage."
+    }
+   ],
+   "trigger": "A candidate applies or is added by a recruiter.",
+   "preconditions": [
+    "Stage template is configured.",
+    "Consent text is published."
+   ],
+   "postconditions_success": [
+    "Candidate record exists once with consent, stage history and communications."
+   ],
+   "postconditions_failure": [
+    "Candidates without consent are not processed beyond capture."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Candidate",
+     "action": "Applies and gives consent for processing personal data for this and, optionally, future roles.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks for duplicates by email, mobile and identity attributes and proposes a merge.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations (recruiter)",
+     "action": "Confirms or rejects the merge proposal.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations (recruiter)",
+     "action": "Moves the candidate through stages such as screening, interview and offer.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Sends stage communications from approved message templates.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations (recruiter)",
+     "action": "Records a disposition with reason for candidates not progressing.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Applies retention: purges candidate data after the consented period ends.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "Candidate consents only for the current role.",
+     "steps": [
+      "Platform marks the record for purge when the requisition closes."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Candidate declines consent.",
+     "handling": "Application cannot be submitted.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Disposition without reason.",
+     "handling": "Save is blocked until a reason is chosen.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "candidate (C, U)",
+    "application (C, U)",
+    "consent_record (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Duplicate check completes within 2 s of application.",
+    "Candidate data handling aligns with the DPDP Act 2023 (to be validated by Legal)."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-014",
+     "persona": "HR operations (recruiter)",
+     "want": "duplicate candidates detected at application",
+     "so_that": "I do not contact the same person twice",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a candidate with mobile 9876543210 already exists",
+       "when": "a new application uses the same mobile",
+       "then": "a merge proposal is shown"
+      },
+      {
+       "given": "I reject the merge because they are different people",
+       "when": "I confirm",
+       "then": "two separate records remain"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-015",
+     "persona": "Candidate",
+     "want": "to choose whether my data is kept for future roles",
+     "so_that": "I control my personal data",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I consent only for the current role",
+       "when": "the requisition closes",
+       "then": "my data is scheduled for purge"
+      },
+      {
+       "given": "I consent for future roles for 12 months",
+       "when": "12 months pass",
+       "then": "my data is purged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-032",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "TAL-UC-008",
+   "name": "Schedule interviews and capture independent scorecards",
+   "process": null,
+   "capability_gap": "TAL-CG-003",
+   "source": "Authored",
+   "goal": "Schedule interviews against panel calendars and collect structured scorecards per competency before other panelists' feedback is visible.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Interview panel member",
+    "Candidate",
+    "Manager / supervisor (hiring manager)",
+    "Agent (governed)",
+    "Nucleus platform",
+    "Corporate calendar"
+   ],
+   "stakeholders": [
+    {
+     "who": "Interview panel member",
+     "interest": "Can give independent feedback without anchoring."
+    },
+    {
+     "who": "Candidate",
+     "interest": "Gets prompt, convenient interview slots."
+    }
+   ],
+   "trigger": "Candidate moves to the interview stage.",
+   "preconditions": [
+    "Panel and competencies are defined for the requisition.",
+    "Corporate calendar availability is accessible."
+   ],
+   "postconditions_success": [
+    "Interviews are scheduled and each panelist's scorecard is submitted."
+   ],
+   "postconditions_failure": [
+    "Unscheduled candidates remain in interview stage with a pending task."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Requests interview scheduling for a candidate with the required panel.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Proposes slots where all panelists are free; scheduling within the workflow is auto-approved.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Candidate",
+     "action": "Selects a slot from the proposed options.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Sends invitations to panel and candidate and reserves the slot.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Interview panel member",
+     "action": "Conducts the interview and submits a scorecard rating each competency with evidence.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Reveals other panelists' scorecards to a panelist only after that panelist has submitted.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Manager / supervisor (hiring manager)",
+     "action": "Reviews consolidated scorecards and decides the next step.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "No proposed slot suits the candidate.",
+     "steps": [
+      "Candidate requests alternatives; agent proposes new slots."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Panelist has not submitted 24 hours after the interview.",
+     "handling": "Reminder is sent and the recruiter sees the pending scorecard.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Panelist tries to view others' scores before submitting.",
+     "handling": "Access is refused until submission.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "interview (C, U)",
+    "scorecard (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Scheduling actions by the agent are recorded in the action ledger with requisition and candidate IDs."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-016",
+     "persona": "Interview panel member",
+     "want": "to submit my scorecard before seeing others",
+     "so_that": "my judgement is independent",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "two other panelists have submitted",
+       "when": "I open the candidate before submitting",
+       "then": "their scores are hidden"
+      },
+      {
+       "given": "I submit my scorecard",
+       "when": "I reopen the candidate",
+       "then": "all three scorecards are visible"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-017",
+     "persona": "HR operations (recruiter)",
+     "want": "slots proposed automatically from panel availability",
+     "so_that": "I schedule interviews in minutes",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a panel of three with one common free hour on Thursday",
+       "when": "I request scheduling",
+       "then": "Thursday's slot is proposed"
+      },
+      {
+       "given": "the candidate accepts the slot",
+       "when": "acceptance is recorded",
+       "then": "invitations go to all panelists and the candidate"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-035",
+    "SYS-037",
+    "SYS-070",
+    "SYS-072"
+   ]
+  },
+  {
+   "id": "TAL-UC-009",
+   "name": "Generate, approve and release an offer",
+   "process": null,
+   "capability_gap": "TAL-CG-004",
+   "source": "Authored",
+   "goal": "Generate an offer from approved compensation ranges, route it for approval, obtain e-signature and hand the candidate to pre-boarding.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Manager / supervisor (hiring manager)",
+    "Director / approver",
+    "Candidate",
+    "Agent (governed)",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "Receives a correct offer quickly."
+    },
+    {
+     "who": "Finance",
+     "interest": "Offers stay within approved ranges unless explicitly approved."
+    }
+   ],
+   "trigger": "Hiring manager selects a candidate.",
+   "preconditions": [
+    "Pay range for grade and location is published.",
+    "Offer letter templates are versioned."
+   ],
+   "postconditions_success": [
+    "Signed offer exists and pre-boarding is started."
+   ],
+   "postconditions_failure": [
+    "Offer is withdrawn or declined with reason; requisition stays open."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Creates an offer for the selected candidate with grade, location, CTC and joining date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks CTC against the pay range and flags offers above maximum.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Drafts the offer letter from the versioned template for recruiter review.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Approves the offer through the configured chain.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations (recruiter)",
+     "action": "Releases the offer; release is always a named human action, never an agent action.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Candidate",
+     "action": "E-signs the offer.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Hands the candidate to pre-boarding with offer data.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "CTC exceeds range maximum.",
+     "steps": [
+      "Offer routes to an additional approval level with the excess shown."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Agent attempts to release an offer.",
+     "handling": "Release is refused by the policy gate; the attempt is recorded in the action ledger.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Candidate does not sign by the offer expiry date.",
+     "handling": "Offer expires and the recruiter is notified.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "offer (C, U)",
+    "letter_draft (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Signed offer and template version retained for the employee record."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-018",
+     "persona": "HR operations (recruiter)",
+     "want": "offers checked against the approved range",
+     "so_that": "I never send an unapproved salary",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a range maximum of 15,00,000",
+       "when": "I create an offer at 16,00,000",
+       "then": "it routes to an additional approver with excess 1,00,000 shown"
+      },
+      {
+       "given": "an offer at 14,00,000",
+       "when": "I create it",
+       "then": "it follows the standard chain"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-019",
+     "persona": "Candidate",
+     "want": "to e-sign my offer and move to pre-boarding",
+     "so_that": "I can prepare to join",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an approved and released offer",
+       "when": "I e-sign",
+       "then": "pre-boarding tasks appear for me"
+      },
+      {
+       "given": "I do not sign before expiry",
+       "when": "the expiry date passes",
+       "then": "the offer shows expired"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-028",
+    "SYS-037",
+    "SYS-074",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "TAL-UC-010",
+   "name": "Set goals aligned to cascaded objectives",
+   "process": null,
+   "capability_gap": "TAL-CG-005",
+   "source": "Authored",
+   "goal": "Let employees and managers set weighted goals aligned to organisational objectives and track progress.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Team goals ladder up to organisational objectives."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Knows how their work contributes."
+    }
+   ],
+   "trigger": "Goal-setting window opens.",
+   "preconditions": [
+    "Organisational objectives are published for the period."
+   ],
+   "postconditions_success": [
+    "Approved goals totalling 100% weight are linked to objectives."
+   ],
+   "postconditions_failure": [
+    "Goals remain in draft."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Publishes organisational objectives for the period.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Cascades objectives into team goals.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Creates individual goals with measures, targets and weights, linking each to a team goal.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Validates that weights total 100%.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Approves goals or returns them with comments.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Records progress at check-ins.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "Manager returns goals.",
+     "steps": [
+      "Employee revises and resubmits."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Weights do not total 100%.",
+     "handling": "Submission is blocked with the total shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "objective (C)",
+    "goal (C, U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Alignment tree renders within 2 s for 5,000 goals."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-020",
+     "persona": "Employee / worker",
+     "want": "to link each goal to a team goal",
+     "so_that": "my contribution is visible",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "team goal reduce scrap by 10%",
+       "when": "I create a goal reduce scrap on line 3 by 15% weighted 40%",
+       "then": "the goal shows linked to the team goal"
+      },
+      {
+       "given": "my goals total 90%",
+       "when": "I submit",
+       "then": "submission is blocked showing 90%"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-021",
+     "persona": "Manager / supervisor",
+     "want": "to see alignment from objectives to individual goals",
+     "so_that": "gaps in coverage are visible",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an objective with no linked team goal",
+       "when": "I open the alignment view",
+       "then": "the objective is flagged as uncovered"
+      },
+      {
+       "given": "all objectives linked",
+       "when": "I open the view",
+       "then": "no flags are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-037",
+    "SYS-040"
+   ]
+  },
+  {
+   "id": "TAL-UC-011",
+   "name": "Give and request continuous feedback",
+   "process": null,
+   "capability_gap": "TAL-CG-006",
+   "source": "Authored",
+   "goal": "Support requested and unsolicited feedback, private manager notes and periodic check-ins.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets timely feedback."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Has a record to inform reviews."
+    }
+   ],
+   "trigger": "An employee requests or gives feedback, or a check-in is due.",
+   "preconditions": [
+    "Feedback visibility settings are configured."
+   ],
+   "postconditions_success": [
+    "Feedback is stored with visibility honoured."
+   ],
+   "postconditions_failure": [
+    "Nothing is shared beyond the chosen visibility."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Requests feedback from named colleagues on a goal or piece of work.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Notifies the colleagues with the request context.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Colleague gives feedback, choosing visibility: recipient only or recipient and manager.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Records private notes visible only to the manager.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Reminds manager and employee when a check-in is due.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Holds the check-in and records shared notes.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "Employee gives unsolicited feedback.",
+     "steps": [
+      "Flow begins at step 3."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Anyone other than the author tries to view a private note.",
+     "handling": "Access is refused.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "feedback (C)",
+    "check_in (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Private notes are excluded from any export except to the author."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-022",
+     "persona": "Employee / worker",
+     "want": "to request feedback after a project",
+     "so_that": "I learn what to improve",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I request feedback from two colleagues",
+       "when": "they respond",
+       "then": "I see both responses"
+      },
+      {
+       "given": "a colleague chooses recipient-only visibility",
+       "when": "my manager opens my feedback",
+       "then": "that response is not shown"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-023",
+     "persona": "Manager / supervisor",
+     "want": "private notes only I can read",
+     "so_that": "I prepare honest reviews",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I write a private note",
+       "when": "the employee views their record",
+       "then": "the note is not shown"
+      },
+      {
+       "given": "HR exports feedback",
+       "when": "the export runs",
+       "then": "my private note is excluded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "TAL-UC-012",
+   "name": "Run performance reviews with 360 input and calibration",
+   "process": null,
+   "capability_gap": "TAL-CG-007",
+   "source": "Authored",
+   "goal": "Run configurable review templates covering self, manager, peer and upward input with rating scales and calibration.",
+   "level": "Summary",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a rounded and fair assessment."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Ratings are consistent across teams."
+    }
+   ],
+   "trigger": "HR launches a review cycle.",
+   "preconditions": [
+    "Templates and rating scales are configured."
+   ],
+   "postconditions_success": [
+    "Calibrated final ratings are recorded and shared."
+   ],
+   "postconditions_failure": [
+    "Uncalibrated ratings are not released."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Launches the cycle selecting template, population and dates.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Completes the self-assessment.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Peers and direct reports complete 360 input anonymously.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Completes the manager assessment with a proposed rating.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Calibrates ratings in a session, adjusting with recorded reasons.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Releases final ratings.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Shares the final review with each employee.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Fewer than three 360 responses are received.",
+     "steps": [
+      "Responses are merged into manager view without attribution or suppressed per template."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Rating change in calibration without reason.",
+     "handling": "Change cannot be saved without a reason.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "performance_review (C, U)",
+    "calibration_session (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "360 responder identity is never shown when fewer than three responses exist."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-024",
+     "persona": "Director / approver",
+     "want": "to adjust ratings in calibration with reasons recorded",
+     "so_that": "ratings are fair and defensible",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a proposed rating of 4",
+       "when": "I change it to 3 with reason",
+       "then": "the change and reason are recorded"
+      },
+      {
+       "given": "I change a rating without a reason",
+       "when": "I save",
+       "then": "save is blocked"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-025",
+     "persona": "Employee / worker",
+     "want": "360 feedback without knowing who said what",
+     "so_that": "colleagues answer honestly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "five peers responded",
+       "when": "I view my review",
+       "then": "comments show without names"
+      },
+      {
+       "given": "only two peers responded",
+       "when": "I view my review",
+       "then": "peer responses are suppressed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-032",
+    "SYS-036"
+   ]
+  },
+  {
+   "id": "TAL-UC-013",
+   "name": "Plan succession for critical positions",
+   "process": null,
+   "capability_gap": "TAL-CG-008",
+   "source": "Authored",
+   "goal": "Identify critical positions, nominate successors with readiness levels and manage talent pools.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Business continuity for key roles."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Development toward future roles."
+    }
+   ],
+   "trigger": "Annual talent review or a critical position becomes at risk.",
+   "preconditions": [
+    "Positions are maintained with criticality flags."
+   ],
+   "postconditions_success": [
+    "Each critical position has nominated successors with readiness."
+   ],
+   "postconditions_failure": [
+    "Positions without successors are flagged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Marks positions as critical with a reason.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Nominates successors with readiness: ready now, 1–2 years, 3+ years.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows bench strength per critical position.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Groups high-potential employees into talent pools.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Reviews and endorses the succession slate.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Links development plans for nominated successors.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "No internal successor exists.",
+     "steps": [
+      "Position is flagged for external pipeline planning."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Nominee is in notice period.",
+     "handling": "Nomination is refused with the reason.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "position (R)",
+    "succession_nomination (C)",
+    "talent_pool (C, U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Succession data is visible only to HR and endorsed directors."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-026",
+     "persona": "HR operations",
+     "want": "bench strength for each critical position",
+     "so_that": "I focus on the riskiest gaps",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a critical plant head position with one successor ready in 3+ years",
+       "when": "I open bench strength",
+       "then": "it shows as high risk"
+      },
+      {
+       "given": "a ready-now successor is added",
+       "when": "I refresh",
+       "then": "risk shows low"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-027",
+     "persona": "Director / approver",
+     "want": "to endorse the succession slate",
+     "so_that": "the plan is owned by leadership",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a slate of 12 critical positions",
+       "when": "I endorse it",
+       "then": "the slate is marked endorsed with my identity and date"
+      },
+      {
+       "given": "a nominee resigns",
+       "when": "the exit is recorded",
+       "then": "the nomination is removed and the position re-flagged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "TAL-UC-014",
+   "name": "Build career paths and individual development plans",
+   "process": null,
+   "capability_gap": "TAL-CG-009",
+   "source": "Authored",
+   "goal": "Provide career paths and competency frameworks and let employees build development plans linked to learning.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Sees possible next roles and what it takes to reach them."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Can support growth with concrete actions."
+    }
+   ],
+   "trigger": "Employee explores careers or a review identifies development needs.",
+   "preconditions": [
+    "Competency framework and career paths are configured."
+   ],
+   "postconditions_success": [
+    "An agreed development plan with linked learning exists."
+   ],
+   "postconditions_failure": [
+    "Plan remains in draft."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Explores career paths from the current role.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Shows competency gaps between current and target role.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Creates a development plan with actions per gap.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Suggests learning paths for each gap.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Agrees the plan.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Tracks progress as linked learning is completed.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "Target role is in a different function.",
+     "steps": [
+      "Platform shows lateral path competencies."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Manager returns the plan.",
+     "handling": "Employee revises with the manager's comments.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-063"
+   ],
+   "data_objects": [
+    "development_plan (C, U)",
+    "learning_assignment (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Gap analysis computed within 2 s."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-028",
+     "persona": "Employee / worker",
+     "want": "to see the competency gaps to my target role",
+     "so_that": "I know what to develop",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am a quality inspector targeting quality engineer",
+       "when": "I open the path",
+       "then": "three competency gaps are listed"
+      },
+      {
+       "given": "I add learning for a gap",
+       "when": "I complete the course",
+       "then": "the gap shows progress"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-029",
+     "persona": "Manager / supervisor",
+     "want": "to agree my report's development plan",
+     "so_that": "we share accountability",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a submitted plan",
+       "when": "I agree it",
+       "then": "it shows agreed with the date"
+      },
+      {
+       "given": "I return it with comments",
+       "when": "the employee opens it",
+       "then": "the comments are visible"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-037",
+    "SYS-056"
+   ]
+  },
+  {
+   "id": "TAL-UC-015",
+   "name": "Manage the learning catalogue and ingest content",
+   "process": null,
+   "capability_gap": "TAL-CG-010",
+   "source": "Authored",
+   "goal": "Provide a catalogue, curricula, enrolment, classroom sessions and SCORM 1.2/2004 and xAPI content with completion tracking.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Finds and completes relevant learning."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Tracks completion reliably."
+    }
+   ],
+   "trigger": "Learning administrator adds content or an employee enrols.",
+   "preconditions": [
+    "Learning administrator role is granted."
+   ],
+   "postconditions_success": [
+    "Content is published and completions recorded."
+   ],
+   "postconditions_failure": [
+    "Invalid packages are not published."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Uploads a SCORM 1.2, SCORM 2004 or xAPI package.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates the package manifest and registers the course.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Adds the course to the catalogue and curricula.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Enrols in a course or classroom session.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Completes the content.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records completion and score from the package.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "Classroom session is full.",
+     "steps": [
+      "Employee is added to a waitlist."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Package manifest is invalid.",
+     "handling": "Upload is rejected with validation errors.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-063"
+   ],
+   "data_objects": [
+    "course (C)",
+    "enrolment (C)",
+    "completion (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Content player meets WCAG 2.2 AA."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-030",
+     "persona": "HR operations",
+     "want": "to upload SCORM packages",
+     "so_that": "I reuse existing content",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a valid SCORM 2004 package",
+       "when": "I upload",
+       "then": "the course is registered"
+      },
+      {
+       "given": "a package with a broken manifest",
+       "when": "I upload",
+       "then": "validation errors are shown"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-031",
+     "persona": "Employee / worker",
+     "want": "my completions recorded automatically",
+     "so_that": "I get credit without paperwork",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I finish an xAPI course with score 85",
+       "when": "completion is sent",
+       "then": "My learning shows complete with 85"
+      },
+      {
+       "given": "I exit midway",
+       "when": "I return",
+       "then": "I resume where I left off"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-053",
+    "SYS-066",
+    "SYS-069"
+   ]
+  },
+  {
+   "id": "TAL-UC-016",
+   "name": "Track certifications and block assignments on expiry",
+   "process": null,
+   "capability_gap": "TAL-CG-011",
+   "source": "Authored",
+   "goal": "Track certifications and licences with expiry and renewal reminders, and block work assignment when a mandatory certification has expired.",
+   "level": "User goal",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "No one works on a regulated task without a valid certification."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Gets enough notice to renew."
+    }
+   ],
+   "trigger": "A certification is recorded, nears expiry, or a shift assignment is attempted.",
+   "preconditions": [
+    "Mandatory certifications per role or task are configured."
+   ],
+   "postconditions_success": [
+    "Valid certifications allow assignment; expired ones block it."
+   ],
+   "postconditions_failure": [
+    "Assignment is blocked with reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Uploads a certification with issue and expiry dates.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Plant HR / time office",
+     "action": "Verifies the certification.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Sends renewal reminders at 60, 30 and 7 days before expiry.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "On expiry marks the certification expired.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Attempts to assign the employee to a task requiring the certification.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Blocks the assignment and states the expired certification.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Employee renews before expiry.",
+     "steps": [
+      "New certification is verified and replaces the old one."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Urgent need to assign.",
+     "handling": "Block stands; no override for mandatory certifications.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "certification (C, U)",
+    "shift_assignment (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Expiry evaluation runs daily before the first shift."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-032",
+     "persona": "Plant HR / time office",
+     "want": "assignments blocked when a mandatory certificate has expired",
+     "so_that": "we stay compliant",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's forklift licence expired yesterday",
+       "when": "the supervisor assigns E1018 to forklift duty on shift A 08:00–20:00",
+       "then": "the assignment is blocked naming the expired licence"
+      },
+      {
+       "given": "E1018 uploads a renewed licence which is verified",
+       "when": "the supervisor assigns again",
+       "then": "the assignment succeeds"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-033",
+     "persona": "Employee / worker",
+     "want": "reminders before my licence expires",
+     "so_that": "I can renew in time",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my licence expires on 30 June",
+       "when": "it is 31 May",
+       "then": "I receive a 30-day reminder"
+      },
+      {
+       "given": "I renewed on 10 June",
+       "when": "it is 23 June",
+       "then": "no 7-day reminder is sent"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-050",
+    "SYS-051",
+    "SYS-070"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1317 @@
+{
+ "domain": "PLT",
+ "use_cases": [
+  {
+   "id": "PLT-UC-019",
+   "name": "View any record, report or chart as at a past date",
+   "process": null,
+   "capability_gap": "PLT-CG-011",
+   "source": "Authored",
+   "goal": "Let an authorised user see a record, report or organisation chart as it was known on a chosen recorded date and as effective on a chosen valid date, with the differences highlighted.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Auditor",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Auditor",
+     "interest": "Can reconstruct exactly what the organisation knew when a decision or payroll run was made."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Can explain why a closed run used a value that has since been corrected."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Historical views never expose more of their record than the viewer's current scope allows."
+    }
+   ],
+   "trigger": "A user opens the time-travel control on a record, report or organisation chart and selects two dates.",
+   "preconditions": [
+    "All temporal facts are written as new versions with valid and recorded intervals; none are updated in place (RL-020).",
+    "The user holds a grant covering the entity, location and payroll group of the data requested (RL-004)."
+   ],
+   "postconditions_success": [
+    "The user sees the view as at the chosen recorded and valid dates, with every changed attribute marked and its change source shown.",
+    "The as-at query, its two dates and the viewer are written to the audit ledger."
+   ],
+   "postconditions_failure": [
+    "No historical data outside the viewer's present scope is returned and the reason is stated on screen."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens the record of E1020 Arjun Bhat and selects the time-travel control.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Chooses a recorded-at date of 2026-09-05 and a valid-at date of 2026-09-04, and a comparison point of today.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Resolves the viewer's effective scope as the intersection of tenant, entity, location, line and payroll group.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Reads every attribute version where valid_at and recorded_at fall inside the stored intervals.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Renders both views side by side and highlights attributes that differ, naming the change request or event that wrote each.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Drills from a highlighted attribute to its version chain to see who recorded it and when.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Switches the same dates onto the Peenya Works organisation chart or a headcount report.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Records the as-at query, both dates and the viewer in the audit ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The user selects only a valid-at date.",
+     "steps": [
+      "The platform defaults recorded-at to now, showing the latest knowledge about that effective date."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The view is a payroll report for a closed run.",
+     "steps": [
+      "The platform defaults both dates to the run's snapshot timestamp so the report matches the run exactly (RL-021)."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The record was in a payroll group outside the viewer's grant on the chosen date.",
+     "handling": "Compensation attributes return null for the whole history and the view states that they are outside scope.",
+     "rule": "RL-005"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The chosen recorded-at date precedes the tenant's data migration date.",
+     "handling": "The platform shows the migrated baseline version and labels it as the earliest available knowledge.",
+     "rule": "RL-020"
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-005",
+    "RL-020",
+    "RL-021"
+   ],
+   "screens": [
+    "SCR-110"
+   ],
+   "data_objects": [
+    "temporal_version (R)",
+    "assignment (R)",
+    "org_unit (R)",
+    "audit_event (C)"
+   ],
+   "events": [
+    "platform.asat.queried"
+   ],
+   "nfrs": [
+    "An as-at read of one person record returns in under 1 s at p95.",
+    "An as-at organisation chart for 5,000 positions renders in under 4 s."
+   ],
+   "frequency": "Several times a day",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-054",
+     "persona": "Auditor",
+     "want": "to see a record exactly as it was known on a past date",
+     "so_that": "I can test whether a decision used the information available at the time",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1020's shift group was corrected on 2026-09-10 with effect from 2026-09-01",
+       "when": "I view the record recorded-at 2026-09-05, valid-at 2026-09-04",
+       "then": "I see the shift group before the correction and a marker linking to the 2026-09-10 change"
+      },
+      {
+       "given": "I hold read-only auditor scope for LE-01",
+       "when": "I open a time-travel view",
+       "then": "no edit or save action is offered"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-055",
+     "persona": "Payroll manager",
+     "want": "a closed run's report to open at its snapshot timestamp by default",
+     "so_that": "my figures always match what the run actually used",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 PLANT-BLR run was snapshotted at 2026-09-28 18:00",
+       "when": "I open its headcount report in as-at mode",
+       "then": "both dates default to 2026-09-28 18:00 and the count equals the run's population"
+      },
+      {
+       "given": "an assignment for E1022 was back-dated after the snapshot",
+       "when": "I compare the snapshot view with today",
+       "then": "E1022 is highlighted with the back-dated change named"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-056",
+     "persona": "HR operations",
+     "want": "the organisation chart of a site on a past date",
+     "so_that": "I can answer who reported to whom when an incident happened",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "Rekha Deshpande (E1021) became Assembly manager at Peenya Works on 2026-08-01",
+       "when": "I view the Peenya chart valid-at 2026-07-15",
+       "then": "Assembly shows the previous manager and no node for E1021 in that role"
+      },
+      {
+       "given": "my grant covers LE-01 only",
+       "when": "I request the Medchal Works chart",
+       "then": "the chart is refused and the message names the missing entity grant"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-021",
+    "SYS-023",
+    "SYS-032"
+   ]
+  },
+  {
+   "id": "PLT-UC-020",
+   "name": "Publish a policy change through automated regression",
+   "process": null,
+   "capability_gap": "PLT-CG-012",
+   "source": "Authored",
+   "goal": "Store every configurable leave, attendance, payroll and eligibility policy as a versioned, testable definition and block publication until the golden test suite shows no unexplained difference.",
+   "level": "User goal",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations",
+    "Payroll manager",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "No policy edit silently changes a payslip figure."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Policy changes go live on the intended effective date with evidence of testing."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every published policy version carries its test result and approver."
+    }
+   ],
+   "trigger": "A consultant saves a draft change to a policy definition, such as the late-mark grace for the PLANT12 shift group.",
+   "preconditions": [
+    "The policy exists as a versioned definition with an effective date (RL-020).",
+    "A golden test suite with expected outcomes exists for the policy family.",
+    "A publication approval chain is configured for policy changes (RL-010)."
+   ],
+   "postconditions_success": [
+    "The new policy version is published with its effective date, test run identifier, explained differences and approver recorded.",
+    "Affected attendance or payroll periods after the effective date are queued for recompute."
+   ],
+   "postconditions_failure": [
+    "The draft remains unpublished; the live version is unchanged and the failing cases are listed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Opens the policy in the configuration workspace and edits a parameter, for example grace from 15 to 10 minutes.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Sets the effective date and saves the draft as a new version.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Runs the golden suite for the policy family against the current and draft versions on identical inputs.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Lists every case whose outcome changed, with before and after values and the employees and days affected.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Implementation consultant",
+     "action": "Marks each expected difference as explained with a reason linked to the change request.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Confirms no unexplained difference remains and submits the draft to the approval chain.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Director / approver",
+     "action": "Reviews the difference summary and approves publication.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Publishes the version, end-dates the prior one and queues recompute for affected periods.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The consultant wants to add new golden cases for the changed behaviour.",
+     "steps": [
+      "The consultant adds cases with expected outcomes; the platform reruns the suite."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The approver returns the change with a comment.",
+     "steps": [
+      "The draft returns to the consultant with the reason recorded."
+     ],
+     "rejoin": "Returns to step 1"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "At least one difference is unexplained.",
+     "handling": "Publication is blocked; the submit action stays disabled and the unexplained cases are listed.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "The effective date falls inside a locked payroll period.",
+     "handling": "Publication is refused for that date and the consultant must choose the next open period.",
+     "rule": "RL-021"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-013",
+    "RL-020",
+    "RL-021"
+   ],
+   "screens": [
+    "SCR-032",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "policy_definition (C/U)",
+    "policy_version (C)",
+    "golden_case (R/C)",
+    "test_run (C)",
+    "recompute_queue (C)"
+   ],
+   "events": [
+    "platform.policy.tested",
+    "platform.policy.published"
+   ],
+   "nfrs": [
+    "A golden suite of 2,000 cases for one policy family completes in under 5 minutes.",
+    "Every published policy version can be traced to its test run and approver in one click."
+   ],
+   "frequency": "Several times a month",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-057",
+     "persona": "Implementation consultant",
+     "want": "every draft policy to be regression-tested automatically",
+     "so_that": "I see the impact of a change before anyone is paid differently",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a draft lowering PLANT12 grace from 15 to 10 minutes",
+       "when": "I save the draft",
+       "then": "the suite runs and lists the 12 golden days whose disposition changes from present to late"
+      },
+      {
+       "given": "all 12 differences are explained",
+       "when": "I submit",
+       "then": "the draft enters the approval chain with the test run attached"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-058",
+     "persona": "Payroll manager",
+     "want": "publication blocked while any difference is unexplained",
+     "so_that": "a policy edit cannot quietly change pay",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a draft with one unexplained change in overtime minutes for E1018",
+       "when": "the consultant tries to submit",
+       "then": "submission is refused and E1018's case is shown as unexplained"
+      },
+      {
+       "given": "a published version",
+       "when": "I open its history",
+       "then": "I see the test run identifier, explained differences and approver"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-059",
+     "persona": "HR operations",
+     "want": "affected periods recomputed automatically when a policy goes live",
+     "so_that": "attendance already derived reflects the new rule from its effective date",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a grace change effective 2026-10-01 published on 2026-10-05",
+       "when": "publication completes",
+       "then": "attendance days 2026-10-01 to 2026-10-04 for PLANT12 workers are queued for recompute"
+      },
+      {
+       "given": "September 2026 is locked",
+       "when": "a consultant chooses effective date 2026-09-15",
+       "then": "publication is refused and the message names the locked period"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-026",
+    "SYS-037",
+    "SYS-046",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "PLT-UC-021",
+   "name": "Publish and install a governed extension",
+   "process": null,
+   "capability_gap": "PLT-CG-013",
+   "source": "Authored",
+   "goal": "Allow a tenant or partner to package a custom screen, workflow or tool with declared permissions and data scopes, pass automated security review and be installed into a tenant without widening any user's access.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Implementation consultant",
+    "Nucleus platform",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Extensions cannot read data beyond what is declared and approved."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Client-specific needs can be met without changing the core product."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every installed extension, its permissions and its actions are on record."
+    }
+   ],
+   "trigger": "A consultant submits an extension package, for example a canteen coupon screen for Peenya Works, to the tenant catalogue.",
+   "preconditions": [
+    "The extension is built against the published extension interface and declares its screens, tools, events and data scopes.",
+    "The tenant admin holds the extension-installation permission."
+   ],
+   "postconditions_success": [
+    "The extension is installed at a pinned version with only its declared, approved scopes; all its actions write to the action ledger."
+   ],
+   "postconditions_failure": [
+    "The package is rejected or left uninstalled, and no permission or data scope is granted."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Uploads the extension package with its manifest of screens, tools, events and requested data scopes.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Runs automated review: manifest schema, dependency scan, static checks and a sandboxed test against synthetic data.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Produces a review report listing requested scopes, any finding and a pass or fail verdict.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Tenant admin",
+     "action": "Reviews the report and the requested scopes, and narrows them where broader than needed.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Tenant admin",
+     "action": "Approves installation for chosen entities and locations, for example LE-01 at LOC-PLA only.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Creates a service principal for the extension owned by a named human and limited to the approved scopes.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Installs the pinned version and records the installation in the audit ledger.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Employee / worker",
+     "action": "Uses the extension screen; each call passes through the policy gate and is logged.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "A new version of an installed extension is submitted.",
+     "steps": [
+      "The platform reruns review and shows scope changes compared with the installed version; the tenant admin approves or declines the upgrade."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The admin wants a trial first.",
+     "steps": [
+      "The extension is installed only in the sandbox tenant for evaluation."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Automated review finds a critical vulnerability or an undeclared outbound call.",
+     "handling": "The package is rejected with findings and cannot be installed.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "No accountable human owner is named for the extension principal.",
+     "handling": "Installation is blocked until an owner is named.",
+     "rule": "RL-001"
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "The extension requests a compensation field outside the user's payroll group.",
+     "handling": "The policy gate returns null for the field and logs the attempt.",
+     "rule": "RL-005"
+    }
+   ],
+   "business_rules": [
+    "RL-001",
+    "RL-002",
+    "RL-003",
+    "RL-004",
+    "RL-005"
+   ],
+   "screens": [
+    "SCR-005",
+    "SCR-110"
+   ],
+   "data_objects": [
+    "extension_package (C)",
+    "extension_review (C)",
+    "extension_installation (C/U)",
+    "principal (C)",
+    "action_ledger_entry (C)"
+   ],
+   "events": [
+    "platform.extension.reviewed",
+    "platform.extension.installed"
+   ],
+   "nfrs": [
+    "Automated review of a package completes in under 15 minutes.",
+    "An installed extension adds no more than 50 ms at p95 to the screen it extends."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-060",
+     "persona": "Tenant admin",
+     "want": "to see and narrow the scopes an extension requests before installing it",
+     "so_that": "an extension never gets more access than it needs",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an extension requesting attendance for all locations",
+       "when": "I approve it for LOC-PLA only",
+       "then": "its principal can read Peenya Works attendance and nothing at Chakan Works"
+      },
+      {
+       "given": "an extension principal with no named owner",
+       "when": "I try to install",
+       "then": "installation is blocked with a message citing the owner requirement"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-061",
+     "persona": "Implementation consultant",
+     "want": "automated security review on every package I submit",
+     "so_that": "I learn about problems before a client admin sees the package",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a package making an undeclared outbound call",
+       "when": "review runs",
+       "then": "the verdict is fail and the call target is listed as a finding"
+      },
+      {
+       "given": "a clean package",
+       "when": "review runs",
+       "then": "a pass verdict is issued with the requested scopes listed"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-062",
+     "persona": "Auditor",
+     "want": "every extension action recorded in the action ledger",
+     "so_that": "I can attribute any data access by an extension",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the canteen extension read 340 attendance rows on 2026-10-12",
+       "when": "I filter the action ledger by that extension",
+       "then": "I see the read with its principal, owner, scope and row count"
+      },
+      {
+       "given": "an extension version is upgraded",
+       "when": "I view installation history",
+       "then": "both versions, approval dates and approvers are listed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-009",
+    "SYS-016",
+    "SYS-032",
+    "SYS-072",
+    "SYS-073"
+   ]
+  },
+  {
+   "id": "PLT-UC-022",
+   "name": "Consolidate multi-entity reporting across currencies",
+   "process": null,
+   "capability_gap": "PLT-CG-014",
+   "source": "Authored",
+   "goal": "Support several legal entities and currencies in one tenant and produce consolidated workforce cost reports converted at dated exchange rates.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Sees group workforce cost in one reporting currency."
+    },
+    {
+     "who": "Finance",
+     "interest": "Conversions use the correct rate for the date of each transaction and are reproducible."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Entity payroll stays in its own functional currency."
+    }
+   ],
+   "trigger": "Finance requests the group workforce cost report for a period.",
+   "preconditions": [
+    "Legal entities LE-01 and LE-02 are configured with a functional currency, and a reporting currency is set for the tenant.",
+    "Exchange rates with effective dates are loaded for every currency pair used in the period.",
+    "The requesting user holds grants for all entities included (RL-002)."
+   ],
+   "postconditions_success": [
+    "A consolidated report is produced with entity amounts in functional currency, converted amounts in reporting currency and the rate and rate date used per line."
+   ],
+   "postconditions_failure": [
+    "The report is not produced for lines with a missing rate; the missing pairs and dates are listed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Finance",
+     "action": "Selects the period, entities LE-01 and LE-02, the reporting currency and the rate type (month-average or period-end).",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads posted payroll results and cost lines per entity in each entity's functional currency.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Looks up the exchange rate effective for each line's date and rate type.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Converts amounts using integer minor units and records rate, rate date and rounding per line.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Eliminates inter-entity recharges flagged for elimination and totals by entity, site and cost centre.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "Reviews the consolidated view and drills to any entity or line.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Finance",
+     "action": "Exports the report; the export is logged with the rate set version used.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "All entities share one currency.",
+     "steps": [
+      "Conversion is skipped and the report states that no conversion applied."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "Finance wants to compare with a different rate type.",
+     "steps": [
+      "The platform recomputes the conversion with the chosen rate type and shows both side by side."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "No rate exists for a currency pair on a line's date.",
+     "handling": "Those lines are listed as unconverted and the report is marked incomplete until a rate is loaded.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The user lacks a grant for one selected entity.",
+     "handling": "That entity is excluded and the report header states the exclusion.",
+     "rule": "RL-002"
+    }
+   ],
+   "business_rules": [
+    "RL-002",
+    "RL-004",
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "legal_entity (R)",
+    "exchange_rate (R)",
+    "payroll_result (R)",
+    "consolidation_report (C)"
+   ],
+   "events": [
+    "platform.consolidation.generated"
+   ],
+   "nfrs": [
+    "A consolidated report for two entities and 12 months completes in under 30 s.",
+    "Reproducing a report with the same rate set version yields identical figures to the minor unit."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-063",
+     "persona": "Finance",
+     "want": "group workforce cost converted at the rate for each line's date",
+     "so_that": "consolidated figures are accurate and auditable",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an overseas service entity paid in another currency with a month-average rate loaded for October 2026",
+       "when": "I run the October group report in INR",
+       "then": "each line shows the converted amount, the rate and the rate date"
+      },
+      {
+       "given": "no rate is loaded for 2026-10-31",
+       "when": "I request the period-end rate type",
+       "then": "the affected lines are listed as unconverted and the report is marked incomplete"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-064",
+     "persona": "Director / approver",
+     "want": "one consolidated cost view for both Vindhya entities",
+     "so_that": "I can compare entity and site cost without manual spreadsheets",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "LE-01 and LE-02 with posted September payrolls",
+       "when": "I open the consolidated view",
+       "then": "I see totals per entity, per site including Oragadam Works and a group total"
+      },
+      {
+       "given": "an inter-entity recharge flagged for elimination",
+       "when": "the report is built",
+       "then": "the recharge does not inflate the group total"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-065",
+     "persona": "Payroll manager",
+     "want": "each entity's payroll to stay in its functional currency",
+     "so_that": "statutory and payslip amounts are never affected by reporting conversion",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the consolidated report converts LE-02 figures",
+       "when": "I open the LE-02 payroll register",
+       "then": "all amounts remain in INR exactly as computed"
+      },
+      {
+       "given": "a rate is corrected after a report was exported",
+       "when": "the report is regenerated",
+       "then": "a new rate set version is recorded and the earlier export remains reproducible"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-026",
+    "SYS-028",
+    "SYS-029"
+   ]
+  },
+  {
+   "id": "PLT-UC-023",
+   "name": "Classify, extract and confirm employee documents",
+   "process": null,
+   "capability_gap": "PLT-CG-015",
+   "source": "Authored",
+   "goal": "Store employee documents with type classification, expiry tracking and extraction of key fields that a human confirms before anything is written to the record.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Agent (governed)",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Documents are kept securely and their details are recorded correctly."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Less manual keying, with control over what is written to the record."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Expiring statutory and identity documents are renewed on time."
+    }
+   ],
+   "trigger": "An employee or HR uploads a document such as a PAN card, driving licence or educational certificate.",
+   "preconditions": [
+    "Document classes with expiry applicability and reminder intervals are configured.",
+    "The uploader has access to the person record within their scope (RL-004)."
+   ],
+   "postconditions_success": [
+    "The document is stored with class, confidence and expiry; confirmed field values are written as new record versions with source and confirmer recorded."
+   ],
+   "postconditions_failure": [
+    "The document is stored but no field is written to the record; unconfirmed items remain in the verification queue."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Uploads a scan of a driving licence from the self-service document area.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Stores the file encrypted, scans it for malware and records the uploader and timestamp.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Agent (governed)",
+     "action": "Classifies the document type and extracts name, number, issue date and expiry date with a confidence per field.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Compares extracted values with the current record and shows matches, differences and low-confidence fields.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Reviews each field, corrects any errors and confirms the values to be written.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Writes confirmed values as new record versions citing the document and the confirmer.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Schedules expiry reminders for the document and its owner.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Notification service",
+     "action": "Sends reminders to the employee and HR before the expiry date.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The document type is not recognised.",
+     "steps": [
+      "The document is classed as unclassified and HR chooses the class manually."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "HR rejects the document as illegible.",
+     "steps": [
+      "The employee is asked to upload a clearer copy; nothing is written."
+     ],
+     "rejoin": "Returns to step 1"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "An extracted value differs from a previously verified value.",
+     "handling": "The verified value is kept; the difference is shown and can only be changed by explicit HR confirmation.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The malware scan flags the file.",
+     "handling": "The file is quarantined, not shown to any reviewer and the uploader is told to re-upload.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "document (C)",
+    "extraction_result (C)",
+    "verification_task (C/U)",
+    "person (U)",
+    "reminder_schedule (C)"
+   ],
+   "events": [
+    "platform.document.uploaded",
+    "platform.document.confirmed"
+   ],
+   "nfrs": [
+    "Classification and extraction complete in under 20 s for a two-page scan.",
+    "No extracted value reaches the person record without a recorded human confirmation."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-066",
+     "persona": "HR operations",
+     "want": "extracted document fields presented for my confirmation",
+     "so_that": "I avoid retyping while staying in control of the record",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a PAN card uploaded for E1066 Abhinav Rastogi with the number extracted at 0.97 confidence",
+       "when": "I open the verification task",
+       "then": "the number is pre-filled, matched against the record and awaits my confirmation"
+      },
+      {
+       "given": "an extracted date of birth with 0.62 confidence",
+       "when": "I view the task",
+       "then": "the field is flagged low confidence and is not pre-selected for writing"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-067",
+     "persona": "Employee / worker",
+     "want": "reminders before my licence expires",
+     "so_that": "I renew it before it affects my duties",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a forklift operator licence for E1035 expiring on 2026-12-31 with reminders at 60, 30 and 7 days",
+       "when": "the date reaches 2026-11-01",
+       "then": "E1035 and Peenya HR receive the 60-day reminder"
+      },
+      {
+       "given": "a renewed licence is uploaded and confirmed",
+       "when": "the record updates",
+       "then": "pending reminders for the old licence are cancelled"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-068",
+     "persona": "Auditor",
+     "want": "to see who confirmed each value taken from a document",
+     "so_that": "I can verify that extraction was reviewed by a person",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a bank account number written from a cancelled cheque",
+       "when": "I view the field history",
+       "then": "I see the document, extraction confidence, confirmer and confirmation time"
+      },
+      {
+       "given": "an agent extraction",
+       "when": "I query the action ledger",
+       "then": "the agent's extraction is listed as a proposal with no direct write to the record"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-070",
+    "SYS-074",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "PLT-UC-024",
+   "name": "Register visitors and control gate entry and exit",
+   "process": null,
+   "capability_gap": "PLT-CG-016",
+   "source": "Authored",
+   "goal": "Register visitors at a site, issue time-bound passes, record entry and exit at the gate and link each visit to its host employee for safety and security audit.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor",
+    "Employee / worker",
+    "Notification service"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Knows who is on site at any moment for safety and evacuation."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Can pre-register visitors quickly and is told when they arrive."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Safety induction and identity checks are recorded for every visitor."
+    }
+   ],
+   "trigger": "A host employee pre-registers a visitor, or a visitor arrives at the gate without pre-registration.",
+   "preconditions": [
+    "The site has gates configured with gate points and pass validity rules.",
+    "The host is an active employee at the site."
+   ],
+   "postconditions_success": [
+    "The visit is recorded with visitor identity, host, pass validity, entry and exit times and safety induction acknowledgement."
+   ],
+   "postconditions_failure": [
+    "Entry is refused or the pass is closed, and the reason is recorded against the visit."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Pre-registers a supplier visitor for 2026-11-12 10:00–13:00 at Peenya Works with purpose and areas to be visited.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Creates the visit, issues a time-bound pass code and sends it to the visitor.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Plant HR / time office",
+     "action": "At the gate, scans the pass and verifies the visitor's photo identity.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the site safety induction; the visitor acknowledges it and the acknowledgement is recorded.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Records entry time and gate point and notifies the host that the visitor has arrived.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Plant HR / time office",
+     "action": "Records exit at the gate when the visitor leaves.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Closes the visit and updates the live on-site register.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The visitor arrives without pre-registration.",
+     "steps": [
+      "Gate staff register the visitor at the kiosk and the host approves entry from a notification."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "The pass expires while the visitor is still on site.",
+     "steps": [
+      "The platform alerts the host and gate staff; the host extends the pass or escorts the visitor out."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The pass is outside its validity window or already used for exit.",
+     "handling": "Entry is refused and the attempt is recorded against the visit.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The host does not respond within 10 minutes for an unregistered visitor.",
+     "handling": "The request routes to the host's manager and entry stays on hold.",
+     "rule": "RL-012"
+    }
+   ],
+   "business_rules": [
+    "RL-003",
+    "RL-011",
+    "RL-012"
+   ],
+   "screens": [],
+   "data_objects": [
+    "visitor (C/U)",
+    "visit (C/U)",
+    "visitor_pass (C)",
+    "gate_event (C)",
+    "on_site_register (U)"
+   ],
+   "events": [
+    "site.visitor.entered",
+    "site.visitor.exited"
+   ],
+   "nfrs": [
+    "Pass verification at the gate completes in under 3 s.",
+    "The on-site register reflects entries and exits within 30 s for evacuation use."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-069",
+     "persona": "Employee / worker",
+     "want": "to pre-register a visitor and be told when they arrive",
+     "so_that": "I can meet them at the gate without delay",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I pre-registered a visitor for 10:00–13:00 on 2026-11-12",
+       "when": "the visitor's pass is scanned at Gate 1 at 09:52",
+       "then": "I receive an arrival notification naming the gate"
+      },
+      {
+       "given": "the visitor's pass is valid only on 2026-11-12",
+       "when": "it is scanned on 2026-11-13",
+       "then": "entry is refused and the attempt is logged"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-070",
+     "persona": "Plant HR / time office",
+     "want": "a live list of every visitor on site",
+     "so_that": "I can account for everyone during an evacuation drill",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "7 visitors entered and 2 exited Peenya Works today",
+       "when": "I open the on-site register",
+       "then": "it lists 5 visitors with host and entry time"
+      },
+      {
+       "given": "a visitor's pass expired at 13:00 without an exit record",
+       "when": "the time reaches 13:00",
+       "then": "the host and gate staff receive an overstay alert"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-071",
+     "persona": "Compliance owner",
+     "want": "proof that every visitor acknowledged the site safety induction",
+     "so_that": "a safety audit can be answered from records",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a visitor who has not acknowledged the induction",
+       "when": "gate staff try to record entry",
+       "then": "entry cannot be recorded until acknowledgement is captured"
+      },
+      {
+       "given": "a month of visits",
+       "when": "I export the visit register",
+       "then": "each row shows the acknowledgement time and the host employee"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-053",
+    "SYS-070",
+    "SYS-078"
+   ]
+  }
+ ]
+}

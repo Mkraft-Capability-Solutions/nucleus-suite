@@ -1,0 +1,867 @@
+{
+ "domain": "TIM",
+ "use_cases": [
+  {
+   "id": "TIM-UC-016",
+   "name": "Pre-approve overtime against a line budget",
+   "process": null,
+   "capability_gap": "TIM-CG-006",
+   "source": "Authored",
+   "goal": "Require overtime above configured thresholds to be pre-approved against a line or cost-centre overtime budget, and flag unapproved overtime before payroll lock.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Director / approver",
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Overtime spend stays within the approved budget per line."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Overtime worked with approval is paid correctly and on time."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Planned overtime never exceeds statutory weekly limits."
+    }
+   ],
+   "trigger": "A supervisor plans overtime for a line, for example to meet a rush order at Peenya Machining.",
+   "preconditions": [
+    "An overtime budget in hours and amount exists per line or cost centre per month.",
+    "Overtime eligibility is resolved per worker from class and assignment (RL-130).",
+    "Thresholds requiring pre-approval are configured, for example more than 2 hours per worker per day."
+   ],
+   "postconditions_success": [
+    "Approved pre-approvals reserve budget; actual overtime is matched to them and payable overtime flows to the run that will pay it."
+   ],
+   "postconditions_failure": [
+    "Unapproved overtime is flagged before payroll lock and is not paid until approved or rejected."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Requests pre-approval for 4 hours of overtime for 6 operators on shift A at Peenya Machining on 2026-11-14.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks each worker's overtime eligibility and projected weekly hours against the state limit.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows the line's remaining budget and the projected cost of the request at the state multiplier.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Approves the pre-approval, reserving 24 hours against the November budget.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Biometric terminal",
+     "action": "Records actual punches; the attendance engine derives overtime minutes for each worker.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Matches actual overtime to the pre-approval and releases any unused reserved budget.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Before payroll lock, lists overtime above threshold with no matching pre-approval.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Plant HR / time office",
+     "action": "Resolves each flagged item by obtaining retrospective approval or marking it non-payable with a reason.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Tags approved overtime to the run that will pay it.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The request exceeds remaining budget.",
+     "steps": [
+      "The request routes to the next approval level with the overspend shown."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "Actual overtime exceeds the pre-approved hours.",
+     "steps": [
+      "The excess is flagged as unapproved and handled at step 7."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The request would take a worker beyond the statutory weekly limit.",
+     "handling": "The approver is warned with the limit named; approval requires a recorded reason.",
+     "rule": "RL-133"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A worker's eligibility is none.",
+     "handling": "The worker is excluded from payable overtime; raw minutes are retained for reporting.",
+     "rule": "RL-131"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-130",
+    "RL-131",
+    "RL-132",
+    "RL-133",
+    "RL-134"
+   ],
+   "screens": [
+    "SCR-024",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "ot_budget (R/U)",
+    "ot_preapproval (C/U)",
+    "overtime_record (R/U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "time.overtime.preapproved",
+    "time.overtime.unapproved_flagged"
+   ],
+   "nfrs": [
+    "The budget check returns within 1 s.",
+    "The unapproved-overtime list for a site of 2,000 workers is produced in under 30 s."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-055",
+     "persona": "Manager / supervisor",
+     "want": "to request overtime pre-approval with the budget impact shown",
+     "so_that": "I can plan extra hours without overspending",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Peenya Machining has 120 of 400 November OT hours left",
+       "when": "I request 24 hours for 2026-11-14",
+       "then": "the request shows 96 hours remaining after approval and the projected cost"
+      },
+      {
+       "given": "E1030 is a trainee with no overtime eligibility",
+       "when": "I include E1030",
+       "then": "E1030 is excluded from payable hours with the reason shown"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-056",
+     "persona": "Payroll manager",
+     "want": "unapproved overtime flagged before I lock inputs",
+     "so_that": "we never pay overtime nobody approved",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 worked 3 hours overtime on 2026-11-16 with no pre-approval",
+       "when": "I open the pre-lock check",
+       "then": "E1018's 3 hours are listed as unapproved"
+      },
+      {
+       "given": "Plant HR marks it non-payable with a reason",
+       "when": "I lock inputs",
+       "then": "the hours are excluded from pay and retained for reporting"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-057",
+     "persona": "Compliance owner",
+     "want": "a warning when pre-approval would exceed weekly limits",
+     "so_that": "we do not plan unlawful hours",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1019 already has 58 hours that week and the limit is 60",
+       "when": "a 4-hour pre-approval is requested",
+       "then": "the approver sees the limit warning and must enter a reason"
+      },
+      {
+       "given": "the approver rejects it",
+       "when": "the decision is saved",
+       "then": "the rejection reason is recorded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-045",
+    "SYS-051"
+   ]
+  },
+  {
+   "id": "TIM-UC-017",
+   "name": "Reconcile canteen and transport usage with attendance",
+   "process": null,
+   "capability_gap": "TIM-CG-007",
+   "source": "Authored",
+   "goal": "Reconcile canteen consumption and company transport usage with attendance at plant sites for subsidy, deduction and roster planning.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Finance",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Subsidies are paid only for meals and trips actually used by eligible workers."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Deductions are accurate and can be checked."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Canteen and bus capacity match shift rosters."
+    }
+   ],
+   "trigger": "The canteen or transport vendor feed for a day is received, or the monthly reconciliation is due.",
+   "preconditions": [
+    "Canteen and transport feeds identify the worker by badge or employee code.",
+    "Subsidy and deduction rules by worker class and meal or route are configured."
+   ],
+   "postconditions_success": [
+    "Usage is reconciled with attendance, mismatches are resolved, deductions are passed to payroll and subsidies to finance."
+   ],
+   "postconditions_failure": [
+    "Unresolved mismatches are excluded from deductions and listed for follow-up."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receives the canteen and transport feeds for Peenya Works for 2026-11-04.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Matches each meal and bus boarding to the worker's attendance day and shift.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Flags mismatches, such as a meal claimed on an absent day or boarding without a shift.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Plant HR / time office",
+     "action": "Reviews mismatches and marks each as valid, vendor error or recoverable.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "At month end, computes deductions per worker and the subsidy per vendor by worker class.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Receives deductions as payroll inputs for the month.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Finance",
+     "action": "Receives the subsidy summary per vendor and cost centre for payment.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Plant HR / time office",
+     "action": "Reviews usage against roster for next month's canteen and bus capacity.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A vendor feed is late.",
+     "steps": [
+      "Reconciliation for that day is deferred and flagged; deductions wait for the feed or a manual upload."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A badge in the feed does not map to any active worker.",
+     "handling": "The entry is quarantined and reported to the vendor; no deduction is made.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A deduction would take net pay below the protected floor.",
+     "handling": "The deduction is capped and the remainder carried forward, flagged for payroll.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-160",
+    "RL-162"
+   ],
+   "screens": [
+    "SCR-021",
+    "SCR-027"
+   ],
+   "data_objects": [
+    "canteen_usage (C)",
+    "transport_usage (C)",
+    "attendance_day (R)",
+    "usage_reconciliation (C/U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "time.usage.reconciled"
+   ],
+   "nfrs": [
+    "A day's feed for 2,000 workers reconciles in under 2 minutes.",
+    "Employees can view their own usage and deductions in self-service."
+   ],
+   "frequency": "Daily with monthly settlement",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-058",
+     "persona": "Plant HR / time office",
+     "want": "meal and bus usage matched to attendance automatically",
+     "so_that": "I only review the mismatches",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "1,180 meals served at Peenya on 2026-11-04 and 1,172 matched to present workers",
+       "when": "reconciliation runs",
+       "then": "8 mismatches are listed for review"
+      },
+      {
+       "given": "a badge not linked to any active worker",
+       "when": "the feed is processed",
+       "then": "the entry is quarantined and no deduction is made"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-059",
+     "persona": "Employee / worker",
+     "want": "to see my canteen and transport deductions by day",
+     "so_that": "I can raise a query if something is wrong",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am E1029 with 22 meals and 22 bus trips in November",
+       "when": "I open self-service",
+       "then": "I see each date and the deduction per item"
+      },
+      {
+       "given": "a meal is recorded on a day I was on leave",
+       "when": "I raise a query",
+       "then": "it routes to Plant HR with the entry attached"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-060",
+     "persona": "Finance",
+     "want": "subsidy totals per vendor and cost centre",
+     "so_that": "I pay vendors only for reconciled usage",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "November reconciliation is closed",
+       "when": "I open the subsidy summary",
+       "then": "totals by vendor and cost centre exclude unresolved mismatches"
+      },
+      {
+       "given": "a vendor error is confirmed",
+       "when": "the summary is regenerated",
+       "then": "the vendor total is reduced accordingly"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-028",
+    "SYS-053",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "TIM-UC-018",
+   "name": "Declare work location and book a desk",
+   "process": null,
+   "capability_gap": "TIM-CG-008",
+   "source": "Authored",
+   "goal": "Let office employees declare their work location, book desks and see team presence, with location feeding attendance rules.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can plan office days and find a desk near the team."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Knows who is where and can plan team days."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Work-from-home limits and attendance rules apply correctly."
+    }
+   ],
+   "trigger": "An employee plans the week or arrives at the office.",
+   "preconditions": [
+    "The hybrid policy for the employee's group is configured, for example 3 office days a week for Bengaluru Corporate Office staff.",
+    "Desk layouts per floor are configured for the location."
+   ],
+   "postconditions_success": [
+    "Declared location and desk booking are recorded and the attendance day is derived under the rules for that location."
+   ],
+   "postconditions_failure": [
+    "A declaration that breaches policy is held for manager approval and attendance is not credited as office presence."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the week planner and declares office on Monday, Wednesday and Thursday and home on the other days.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the declaration against the hybrid policy and shows remaining home days for the month.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Books a desk on floor 3 near the team for each office day.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Views team presence for the week and sees which days most of the team is in.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "On an office day, punches in at the Bengaluru Corporate Office entry.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Matches the punch to the declared location and confirms the desk booking.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Derives the attendance day using the rules for office or home working as declared.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee declares a client site.",
+     "steps": [
+      "The employee names the client site and the day is attended as on-duty with the manager notified."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The employee does not arrive by 11:30.",
+     "steps": [
+      "The desk is released for others to book."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The declaration exceeds the monthly home-working limit.",
+     "handling": "The extra home day is routed to the manager for approval.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "The employee declared home but punched in at the office.",
+     "handling": "The day is derived as office presence and the declaration is updated with a note.",
+     "rule": "RL-140"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-140",
+    "RL-160"
+   ],
+   "screens": [
+    "SCR-021",
+    "SCR-027"
+   ],
+   "data_objects": [
+    "location_declaration (C/U)",
+    "desk_booking (C/U)",
+    "attendance_day (U)"
+   ],
+   "events": [
+    "time.location.declared",
+    "time.desk.booked"
+   ],
+   "nfrs": [
+    "The team presence view for 50 people loads in under 2 s.",
+    "Only the declared location category is shown to colleagues, never precise location."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-061",
+     "persona": "Employee / worker",
+     "want": "to declare my weekly work location and book desks",
+     "so_that": "my office days are planned and my attendance is correct",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a policy of 3 office days a week",
+       "when": "I declare Monday, Wednesday and Thursday as office",
+       "then": "the plan is accepted and I can book desks for those days"
+      },
+      {
+       "given": "I have used all home days for November",
+       "when": "I declare another home day",
+       "then": "it is routed to my manager for approval"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-062",
+     "persona": "Manager / supervisor",
+     "want": "to see team presence by day",
+     "so_that": "I can set team days when most people are in",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my team of 9 at Bengaluru Corporate Office",
+       "when": "I view the week",
+       "then": "I see each person's declared location by day"
+      },
+      {
+       "given": "Wednesday has 8 of 9 in the office",
+       "when": "I view the week",
+       "then": "Wednesday is highlighted as the best team day"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-063",
+     "persona": "HR operations",
+     "want": "attendance derived from the declared location",
+     "so_that": "home and office days follow the correct rules",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1011 declared home on 2026-11-06 and logged on remotely",
+       "when": "the day is derived",
+       "then": "it is recorded as work from home, not absent"
+      },
+      {
+       "given": "E1011 declared home but punched in at the office",
+       "when": "the day is derived",
+       "then": "it is recorded as office presence with a note"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-059",
+    "SYS-062"
+   ]
+  },
+  {
+   "id": "TIM-UC-019",
+   "name": "Accept opt-in presence signals from wearables or beacons",
+   "process": null,
+   "capability_gap": "TIM-CG-009",
+   "source": "Authored",
+   "goal": "Allow a site to accept presence signals from approved wearables or access beacons only with recorded consent and without continuous location tracking.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Nucleus platform",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Participation is voluntary, revocable and limited to presence at defined points."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Fewer missed punches in large plant areas."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Consent and purpose limitation meet the DPDP Act 2023 (to be validated by Legal)."
+    }
+   ],
+   "trigger": "A site enables beacon-based presence and invites workers to opt in.",
+   "preconditions": [
+    "Approved beacons are registered at defined points such as plant gates and shop-floor entry.",
+    "A consent notice for this purpose is published in the worker's language."
+   ],
+   "postconditions_success": [
+    "Presence events from consenting workers are stored as punches at defined points only, with the consent reference."
+   ],
+   "postconditions_failure": [
+    "No signal from a non-consenting worker or outside defined points is stored."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Plant HR / time office",
+     "action": "Enables beacon presence at Chakan Works gates and shop-floor entry points.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Reads the consent notice in Marathi and opts in from the mobile app.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Records the consent with purpose, scope, timestamp and notice version.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Passes a gate beacon with the paired wearable at 16:52.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Records a single presence event for that point and time as a punch, linked to the consent.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Discards any signal not at a defined point and stores no movement trail.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Derives the attendance day using these punches like any other enrolled source.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The worker declines.",
+     "steps": [
+      "The worker continues to use the biometric terminal; nothing is recorded about the decision beyond the consent status."
+     ],
+     "rejoin": "Ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The worker withdraws consent.",
+     "steps": [
+      "Beacon presence stops immediately and future days use other sources."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "A signal arrives from a wearable with no active consent.",
+     "handling": "The signal is dropped without storage.",
+     "rule": "RL-070"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Two beacon events at the same point within the dedupe window.",
+     "handling": "The second is marked duplicate and retained, not discarded.",
+     "rule": "RL-073"
+    }
+   ],
+   "business_rules": [
+    "RL-070",
+    "RL-073",
+    "RL-074"
+   ],
+   "screens": [
+    "SCR-020"
+   ],
+   "data_objects": [
+    "consent_record (C/U)",
+    "beacon (R)",
+    "punch_event (C)"
+   ],
+   "events": [
+    "time.punch.received",
+    "time.presence_consent.changed"
+   ],
+   "nfrs": [
+    "No stored record contains a location trail between defined points.",
+    "Consent withdrawal takes effect within 1 minute."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Low",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-064",
+     "persona": "Employee / worker",
+     "want": "to opt in to beacon presence and withdraw at any time",
+     "so_that": "I control whether it is used",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "I am E1045 at Chakan Works",
+       "when": "I opt in after reading the Marathi notice",
+       "then": "my consent is recorded with the notice version"
+      },
+      {
+       "given": "I withdraw consent",
+       "when": "I pass a gate beacon one minute later",
+       "then": "no presence event is stored"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-065",
+     "persona": "Compliance owner",
+     "want": "only presence at defined points stored",
+     "so_that": "we do not track workers continuously",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a wearable passes three undefined points and one gate beacon",
+       "when": "signals are processed",
+       "then": "one punch at the gate is stored and nothing else"
+      },
+      {
+       "given": "an audit request",
+       "when": "I export beacon data for October",
+       "then": "every event shows a defined point and a consent reference"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-066",
+     "persona": "Plant HR / time office",
+     "want": "beacon punches treated like any other source",
+     "so_that": "attendance is derived consistently",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "E1045 passes the gate beacon at 16:52 and the exit beacon at 03:05 next morning",
+       "when": "the day is derived",
+       "then": "the D-shift day shows first in 16:52 and last out 03:05"
+      },
+      {
+       "given": "two gate beacon events 20 s apart",
+       "when": "both are received",
+       "then": "the second is marked duplicate and retained"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-062",
+    "SYS-063",
+    "SYS-080"
+   ]
+  }
+ ]
+}

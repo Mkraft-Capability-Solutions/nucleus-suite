@@ -1,0 +1,79 @@
+{
+ "domain": "INT",
+ "use_cases": [
+  {
+   "id": "INT-UC-012",
+   "name": "Connect a client AI environment through the governed MCP tool surface",
+   "process": "IA-03 MCP server flow",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Let a client's own AI assistant call Nucleus Suite tools with exactly the permissions, approvals and ledger recording that apply to internal agents and human users.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": ["Client AI environment", "Nucleus platform", "HR administrator"],
+   "stakeholders": [
+    {"who": "Data Protection Officer", "interest": "No data leaves the tenant beyond the scopes granted to the calling identity, and every call is auditable."},
+    {"who": "Client IT", "interest": "Their assistant can use HR tools without a separate integration or a parallel permission model."},
+    {"who": "Employee / worker", "interest": "An external assistant cannot see or change their record unless a permitted person asked it to."}
+   ],
+   "trigger": "The client wants its enterprise AI assistant to read leave balances and draft letters for HR staff at Vindhya Precision Industries.",
+   "preconditions": [
+    "The tenant has the MCP connection capability enabled and a service identity registered for the client AI environment.",
+    "Each tool on the governed tool surface carries a permission scope, a side-effect class and an approval threshold.",
+    "The calling human is authenticated through the client identity provider and mapped to a Nucleus principal."
+   ],
+   "postconditions_success": [
+    "The client AI environment can list and call only the tools allowed for the connection and for the calling person.",
+    "Every call, its inputs, the policy decision and the outcome are written to the action ledger under both the service identity and the human principal."
+   ],
+   "postconditions_failure": [
+    "No tool is exposed and the connection stays disabled.",
+    "Rejected calls are recorded in the action ledger with the reason."
+   ],
+   "main_flow": [
+    {"n": 1, "actor": "Tenant admin", "action": "Registers the client AI environment as a connection and selects the tools to expose: read_employee, apply_leave and draft_letter.", "ref": ""},
+    {"n": 2, "actor": "Nucleus platform", "action": "Shows each tool's permission scope, side-effect class and approval threshold, and blocks tools whose class exceeds the connection ceiling.", "ref": ""},
+    {"n": 3, "actor": "HR administrator", "action": "Approves the connection through the approval engine after reviewing the exposed tools.", "ref": ""},
+    {"n": 4, "actor": "Client AI environment", "action": "Lists the available tools for the signed-in HR user and receives only those the user's role and data scope allow.", "ref": ""},
+    {"n": 5, "actor": "Client AI environment", "action": "Calls read_employee for E1043 on behalf of the HR user.", "ref": ""},
+    {"n": 6, "actor": "Nucleus platform", "action": "Evaluates the call at the policy gate against the user's scope, returns masked fields as masked, and writes the call to the action ledger.", "ref": ""},
+    {"n": 7, "actor": "Client AI environment", "action": "Calls draft_letter for a salary certificate; the platform returns a draft for human review because the tool is write-class.", "ref": ""},
+    {"n": 8, "actor": "HR administrator", "action": "Reviews the draft in Nucleus Suite and confirms issue; the ledger links the confirmation to the original tool call.", "ref": ""}
+   ],
+   "alternate_flows": [
+    {"id": "A1", "at_step": 5, "condition": "The call is for an employee outside the HR user's data scope.", "steps": ["The policy gate denies the call.", "The client AI environment receives a refusal naming the scope rule, without any employee data."], "rejoin": "Use case ends for that call"},
+    {"id": "A2", "at_step": 7, "condition": "The tool's side-effect class is above the connection's approval threshold.", "steps": ["The platform creates an approval request instead of executing.", "The call result tells the client AI environment that a human decision is pending."], "rejoin": "Returns to step 8"}
+   ],
+   "exception_flows": [
+    {"id": "E1", "at_step": 4, "condition": "The service identity's credential has expired or been revoked.", "handling": "The connection is refused, no tools are listed and the tenant admin is notified.", "rule": ""},
+    {"id": "E2", "at_step": 6, "condition": "The call rate exceeds the connection's quota.", "handling": "The platform throttles further calls, returns a retry-after value and records the event.", "rule": ""}
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": ["tool_connection (C, U)", "action_ledger (C)", "approval_request (C)"],
+   "events": [],
+   "nfrs": [
+    "A permitted read tool call returns within 2 seconds at p95 excluding the client's own processing time.",
+    "No tool exposed through MCP bypasses the policy gate; verified by a property test on every build."
+   ],
+   "frequency": "Continuous once connected",
+   "criticality": "High",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "system_requirements": ["SYS-009", "SYS-035", "SYS-072", "SYS-073", "SYS-074", "SYS-075"],
+   "user_stories": [
+    {"id": "INT-US-025", "persona": "Tenant admin", "want": "to expose only selected tools to our enterprise AI assistant", "so_that": "the assistant can help HR staff without any wider access than our own users have", "priority": "Must",
+     "acceptance": [
+      {"given": "the connection exposes read_employee, apply_leave and draft_letter", "when": "the assistant lists tools for an HR user at LOC-PUN", "then": "exactly those three tools are returned and each shows its permission scope"},
+      {"given": "a tool is classified above the connection's ceiling", "when": "I try to add it to the connection", "then": "the platform blocks it and names the ceiling"}
+     ]},
+    {"id": "INT-US-026", "persona": "Data Protection Officer", "want": "every external AI tool call recorded with both the service identity and the human on whose behalf it ran", "so_that": "I can answer any access question from the ledger", "priority": "Must",
+     "acceptance": [
+      {"given": "the assistant reads E1043's record for an HR user", "when": "I open the action ledger", "then": "the entry shows the connection, the HR user, the tool, the policy decision and that masked fields stayed masked"},
+      {"given": "the assistant requests an employee outside the HR user's scope", "when": "the call is evaluated", "then": "it is refused, no data is returned and the refusal is in the ledger"}
+     ]}
+   ]
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "findings": {
+  "PLT": [
+   "5 process(es) have no step-level flow in the source (PLT-01, PLT-03, PLT-04, PLT-06, PLT-07); their flows are specified as authored use cases in FRS-PLT-12."
+  ],
+  "PPL": [
+   "3 process(es) have no step-level flow in the source (PPL-05, PPL-07, PPL-08); their flows are specified as authored use cases in FRS-PPL-12."
+  ],
+  "TIM": [],
+  "LVE": [],
+  "PAY": [
+   "2 process(es) have no step-level flow in the source (PAY-11, PAY-14); their flows are specified as authored use cases in FRS-PAY-12."
+  ],
+  "CMP": [
+   "3 process(es) have no step-level flow in the source (CMP-04p, CMP-05p, CMP-06p); their flows are specified as authored use cases in FRS-CMP-12."
+  ],
+  "LCY": [
+   "6 process(es) have no step-level flow in the source (LCY-01, LCY-03, LCY-04, LCY-05, LCY-07, LCY-08); their flows are specified as authored use cases in FRS-LCY-12."
+  ],
+  "SSV": [
+   "3 process(es) have no step-level flow in the source (SSV-01, SSV-03, SSV-04); their flows are specified as authored use cases in FRS-SSV-12.",
+   "No source test cases are mapped to this domain; acceptance is defined by the user-story criteria in FRS-SSV-13."
+  ],
+  "CMB": [
+   "2 process(es) have no step-level flow in the source (CMB-05, CMB-06); their flows are specified as authored use cases in FRS-CMB-12."
+  ],
+  "TAL": [
+   "3 process(es) have no step-level flow in the source (TAL-02, TAL-04, TAL-05); their flows are specified as authored use cases in FRS-TAL-12."
+  ],
+  "CTG": [
+   "2 process(es) have no step-level flow in the source (CTG-01, CTG-03); their flows are specified as authored use cases in FRS-CTG-12.",
+   "No source test cases are mapped to this domain; acceptance is defined by the user-story criteria in FRS-CTG-13."
+  ],
+  "EXP": [
+   "1 process(es) have no step-level flow in the source (EXP-02); their flows are specified as authored use cases in FRS-EXP-12."
+  ],
+  "FIN": [
+   "2 process(es) have no step-level flow in the source (FIN-02, FIN-05); their flows are specified as authored use cases in FRS-FIN-12."
+  ],
+  "INT": [
+   "3 process(es) have no step-level flow in the source (INT-02, INT-03, INT-04); their flows are specified as authored use cases in FRS-INT-12.",
+   "No source test cases are mapped to this domain; acceptance is defined by the user-story criteria in FRS-INT-13."
+  ]
+ },
+ "authored_tests": 652
+}

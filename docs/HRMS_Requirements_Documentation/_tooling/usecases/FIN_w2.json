@@ -1,0 +1,517 @@
+{
+ "domain": "FIN",
+ "use_cases": [
+  {
+   "id": "FIN-UC-009",
+   "name": "Request travel, claim expenses and settle the advance",
+   "process": null,
+   "capability_gap": "FIN-CG-004",
+   "source": "Authored",
+   "goal": "Let an employee request business travel with an advance, claim expenses against policy limits with receipt capture, and have the claim approved, settled and posted to the ERP system.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Finance",
+    "Payroll manager",
+    "Agent (governed)",
+    "Nucleus platform",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is reimbursed quickly and correctly, with the advance netted off automatically."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Approves only business-justified travel and sees policy deviations named."
+    },
+    {
+     "who": "Finance",
+     "interest": "Receives balanced, cost-centre-coded postings and clears advances on time."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can trace every reimbursement to receipts, approvals and the ERP document."
+    }
+   ],
+   "trigger": "An employee plans a business trip, for example a 3-day process audit from the Pune office to Medchal Works.",
+   "preconditions": [
+    "Travel and expense policy limits are configured by grade and city class.",
+    "Expense categories are mapped to GL accounts and cost centres.",
+    "The employee has an active assignment with a cost centre."
+   ],
+   "postconditions_success": [
+    "The claim is settled against the advance, the net amount is paid or recovered, and the journal is posted to the ERP system with a document number."
+   ],
+   "postconditions_failure": [
+    "Claims rejected or returned keep their history and no payment or posting occurs.",
+    "Unsettled advances older than the policy limit are flagged to Finance."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Raises a travel request for 2026-11-17 to 2026-11-19 to Medchal Works, with purpose, cost centre and an advance of ₹15,000.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the estimate against grade limits for hotel, per diem and travel class and highlights any deviation.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Approves the request through the approval engine; the advance is queued for Finance payment.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "After the trip, photographs receipts in the mobile app.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Agent (governed)",
+     "action": "Extracts vendor, date, amount and tax details from each receipt as a draft line for the employee to check.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Corrects and confirms each line and submits the claim of ₹21,400.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Checks each line against policy limits, duplicate receipts and travel dates, and flags exceptions with the limit breached.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Manager / supervisor",
+     "action": "Approves the claim; lines over limit need a stated justification before approval.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Finance",
+     "action": "Audits flagged lines and approves; the platform nets the ₹15,000 advance and schedules ₹6,400 for reimbursement.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Builds the expense journal by GL and cost centre and posts it to the ERP system, storing the returned document number.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 9,
+     "condition": "The claim is less than the advance.",
+     "steps": [
+      "Platform computes the excess advance.",
+      "The employee repays it, or it is raised as a payroll recovery in the next open run after the employee confirms."
+     ],
+     "rejoin": "Returns to step 10"
+    },
+    {
+     "id": "A2",
+     "at_step": 9,
+     "condition": "The tenant reimburses expenses through payroll.",
+     "steps": [
+      "Platform raises a non-taxable reimbursement payroll input for the net amount."
+     ],
+     "rejoin": "Returns to step 10"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "The same receipt has been claimed before.",
+     "handling": "The line is blocked and both claims are shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 10,
+     "condition": "An expense category has no GL mapping.",
+     "handling": "The journal is blocked and the message names the category.",
+     "rule": "RL-521"
+    },
+    {
+     "id": "E3",
+     "at_step": 10,
+     "condition": "The ERP system rejects the posting or times out.",
+     "handling": "The failure is shown and the retry reuses the same journal ID so no duplicate is created.",
+     "rule": "RL-523"
+    },
+    {
+     "id": "E4",
+     "at_step": 10,
+     "condition": "No document number is returned.",
+     "handling": "The claim batch is not marked posted and is flagged for Finance.",
+     "rule": "RL-524"
+    }
+   ],
+   "business_rules": [
+    "RL-521",
+    "RL-523",
+    "RL-524"
+   ],
+   "screens": [
+    "SCR-102"
+   ],
+   "data_objects": [
+    "travel_request (C, U)",
+    "travel_advance (C, U)",
+    "expense_claim (C, U)",
+    "expense_line (C, U)",
+    "receipt_image (C)",
+    "journal (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "integration.journal.posted"
+   ],
+   "nfrs": [
+    "Receipt extraction returns a draft within 5 s per receipt; nothing is submitted without employee confirmation.",
+    "Receipt images are retained for the period configured in the finance retention policy."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-019",
+     "persona": "Employee / worker",
+     "want": "to photograph receipts and have the lines filled for me to check",
+     "so_that": "I can claim in minutes instead of typing every bill",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 photographs a Medchal hotel bill for ₹9,600 for two nights",
+       "when": "extraction completes",
+       "then": "a draft line shows vendor, dates and ₹9,600 for her to confirm, and nothing is submitted until she does"
+      },
+      {
+       "given": "she corrects the amount to ₹9,450",
+       "when": "she confirms",
+       "then": "the line is saved with ₹9,450 and the correction is recorded"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-020",
+     "persona": "Manager / supervisor",
+     "want": "policy deviations named on the claim I approve",
+     "so_that": "I can decide with the facts in front of me",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the grade limit for a city-class B hotel is ₹4,500 per night",
+       "when": "a claim includes ₹4,800 per night",
+       "then": "the line shows Over limit by ₹300 per night and needs a justification"
+      },
+      {
+       "given": "no justification is given",
+       "when": "I try to approve",
+       "then": "approval is blocked until the employee adds one"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-021",
+     "persona": "Finance",
+     "want": "advances netted and the journal posted with an ERP document number",
+     "so_that": "advances are cleared and the books match",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an advance of ₹15,000 and an approved claim of ₹21,400",
+       "when": "I approve the audit",
+       "then": "₹6,400 is scheduled for reimbursement and the advance shows settled"
+      },
+      {
+       "given": "the ERP system returns document 5100004312",
+       "when": "posting completes",
+       "then": "the claim batch shows posted with that document number"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-040",
+    "SYS-074",
+    "SYS-084",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "FIN-UC-010",
+   "name": "Account for employer statutory contributions, benefit costs and liabilities",
+   "process": null,
+   "capability_gap": "FIN-CG-005",
+   "source": "Authored",
+   "goal": "Post employer statutory contributions, benefit costs and related liabilities to the general ledger with period-end accruals, reversals and clearing on payment.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Payroll manager",
+    "Compliance owner",
+    "Auditor",
+    "Nucleus platform",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Books the full employer cost of people in the right period and cost centre."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Sees liabilities cleared when statutory payments are made."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can drill from each GL line to the payroll lines and payments behind it."
+    }
+   ],
+   "trigger": "A payroll run reaches APPROVED, a statutory payment is recorded, or the accounting period closes.",
+   "preconditions": [
+    "Employer contribution components (PF and pension, ESIC, labour welfare fund, group insurance premium, gratuity and leave encashment provisions) are mapped to expense and liability GL accounts.",
+    "Accrual and reversal method is configured per component.",
+    "The ERP system accepts journals for the entity and period."
+   ],
+   "postconditions_success": [
+    "Expense and liability journals are posted with document numbers, and liability balances reconcile to statutory payments."
+   ],
+   "postconditions_failure": [
+    "Unmapped or unbalanced journals are blocked and the period stays open."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Derives employer contributions and benefit costs from the approved November 2026 run for both legal entities.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates that every component has both an expense and a liability mapping by cost centre.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Builds the cost journal debiting expense by cost centre and crediting statutory and benefit liabilities.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Reviews the journal summary by entity, site and component and approves it.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Posts the journal to the ERP system and stores the returned document number.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "At period close, posts accruals for costs incurred but not yet in a run, such as provisions for the last week of attendance.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Reverses the accruals on day 1 of the next period as configured.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Compliance owner",
+     "action": "Records the statutory payment reference when the contribution is paid.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Posts the clearing journal debiting the liability and crediting the bank clearing account.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Reconciles each liability balance to statutory payments and shows the result to Finance.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The tenant uses gratuity and leave encashment valuations rather than monthly provisions.",
+     "steps": [
+      "Finance uploads the actuarial valuation figure.",
+      "Platform posts the difference from the booked liability as a true-up journal."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A component has no GL mapping.",
+     "handling": "The journal is blocked and the message names the component.",
+     "rule": "RL-521"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A provision is mapped with a debit leg only.",
+     "handling": "Validation fails and names the missing credit leg.",
+     "rule": "RL-522"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "The ERP system rejects the posting.",
+     "handling": "The failure is shown and the retry reuses the journal ID.",
+     "rule": "RL-523"
+    },
+    {
+     "id": "E4",
+     "at_step": 10,
+     "condition": "The liability does not reconcile to the payment.",
+     "handling": "The check shows Fail with expected, actual and variance and the period stays open.",
+     "rule": "RL-530"
+    },
+    {
+     "id": "E5",
+     "at_step": 10,
+     "condition": "A GL line cannot be drilled to payslip lines.",
+     "handling": "It is treated as a failed drill-through assertion and flagged.",
+     "rule": "RL-531"
+    }
+   ],
+   "business_rules": [
+    "RL-521",
+    "RL-522",
+    "RL-523",
+    "RL-530",
+    "RL-531"
+   ],
+   "screens": [
+    "SCR-102",
+    "SCR-103"
+   ],
+   "data_objects": [
+    "payroll_result (R)",
+    "gl_mapping (R)",
+    "journal (C)",
+    "accrual_entry (C)",
+    "statutory_payment (R)",
+    "reconciliation_check (C)"
+   ],
+   "events": [
+    "payroll.journal.ready",
+    "payroll.journal.blocked",
+    "integration.journal.posted",
+    "finance.reconciliation.run"
+   ],
+   "nfrs": [
+    "Debits equal credits for every journal before posting.",
+    "Journals for a 3,000-employee run are built within 60 s."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-022",
+     "persona": "Finance",
+     "want": "employer contributions posted by cost centre as soon as the run is approved",
+     "so_that": "I see the true monthly people cost",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the November 2026 run for Vindhya Precision Industries Pvt Ltd is approved with employer PF of ₹38,40,000",
+       "when": "the cost journal is built",
+       "then": "PF expense is debited by cost centre and the PF liability is credited ₹38,40,000"
+      },
+      {
+       "given": "the labour welfare fund component has no liability mapping",
+       "when": "the journal is built",
+       "then": "it is blocked and names the component"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-023",
+     "persona": "Finance",
+     "want": "accruals reversed automatically next period",
+     "so_that": "I do not double-count costs",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an accrual of ₹4,20,000 posted on 2026-11-30",
+       "when": "the period opens on 2026-12-01",
+       "then": "a reversal of ₹4,20,000 is posted dated 2026-12-01"
+      },
+      {
+       "given": "the reversal fails at the ERP system",
+       "when": "the failure is shown",
+       "then": "a retry with the same journal ID posts once"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-024",
+     "persona": "Compliance owner",
+     "want": "the liability cleared when I record the statutory payment",
+     "so_that": "the balance shows what is still owed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the PF liability is ₹38,40,000 and I record a payment of ₹38,40,000",
+       "when": "the clearing journal posts",
+       "then": "the reconciliation shows Pass with nil variance"
+      },
+      {
+       "given": "I record a payment of ₹38,10,000",
+       "when": "reconciliation runs",
+       "then": "it shows Fail with variance ₹30,000 and the period stays open"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-045",
+    "SYS-051",
+    "SYS-084"
+   ]
+  }
+ ]
+}

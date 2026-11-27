@@ -1,0 +1,1309 @@
+{
+ "domain": "CTG",
+ "use_cases": [
+  {
+   "id": "CTG-UC-001",
+   "name": "Engage a contractor and register its workers by class",
+   "process": "CTG-01",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Record a signed contractor engagement with the worker classes and rates it supplies, and register each deployed worker with an assignment whose class carries the time and pay policy.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Contractor vendor",
+    "Finance",
+    "Plant HR / time office",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Purchase function",
+     "interest": "The engagement on file matches the signed contract: vendor, sites, period, classes and rates."
+    },
+    {
+     "who": "Finance",
+     "interest": "Sees the deployed population by class and rate that later invoices must reconcile against."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Every contract worker at the gate is registered, enrolled and governed by the correct class policy."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Rest days and overtime eligibility follow the class they were engaged in, not a blanket contract setting."
+    }
+   ],
+   "trigger": "A contract with a labour contractor is signed.",
+   "preconditions": [
+    "The contractor exists as an active vendor for the entity and site.",
+    "The worker classes to be supplied (for example WC-3PE and WC-3PH) are configured with rest-day, overtime-eligibility and wage-basis policy."
+   ],
+   "postconditions_success": [
+    "An active engagement records vendor, entity, site, contract period, classes, rate per class and invoice basis.",
+    "Each deployed worker holds an active assignment with class, site, shift group, vendor and supervisor, and is enrolled on site punch sources.",
+    "The engagement screen shows the deployed population by class and rate."
+   ],
+   "postconditions_failure": [
+    "A worker who is already active under another engagement, or who would exceed the engagement's headcount by class, is not registered."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Records the engagement: vendor, entity, site, contract period and the worker classes the vendor will supply.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Enters the agreed rate per worker class, the invoice basis (monthly, per worker per day) and the headcount by class.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Confirms each class carries its own rest-day, overtime and wage-basis policy; the engagement itself holds no such policy.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Contractor vendor",
+     "action": "Submits the list of workers to deploy with identity, UAN, worker class and site.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Registers each worker with an assignment carrying class, site, shift group, default shift, vendor and reporting supervisor.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Checks the worker is not active under another engagement and that deployment stays within the headcount for the class.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Plant HR / time office",
+     "action": "Enrols the registered workers on the site's punch sources.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Activates the assignments and shows the deployed population by class and rate on the engagement screen.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "A deployed worker moves to a different class during the engagement, for example from helper to employee.",
+     "steps": [
+      "HR operations records a new effective-dated assignment with the new class.",
+      "From the effective date the new class's rest-day and overtime policy applies and earlier days are unaffected."
+     ],
+     "rejoin": "Returns to step 8"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The signed contract renews an existing engagement.",
+     "steps": [
+      "HR operations extends the contract period on the existing engagement and active workers carry over without re-registration."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A class named on the engagement has no rest-day or overtime policy configured.",
+     "handling": "The engagement cannot be activated until the class policy is configured; policy is never entered on the engagement instead.",
+     "rule": "RL-102"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "The worker is already active under another engagement.",
+     "handling": "Registration is refused and the message names the existing engagement and site.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "Registering the worker would exceed the engagement's headcount for that class.",
+     "handling": "Registration is refused with the class headcount and current deployment shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-101",
+    "RL-102"
+   ],
+   "screens": [
+    "SCR-095",
+    "SCR-011"
+   ],
+   "data_objects": [
+    "contractor_engagement (C/U)",
+    "worker_class (R)",
+    "person (C)",
+    "assignment (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Class is the unit of policy: a change to a class's rest-day policy applies to every worker in that class across all engagements from its effective date.",
+    "Engagement and assignment changes are effective-dated and auditable."
+   ],
+   "frequency": "Per contract",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-T102"
+   ],
+   "user_stories": [
+    {
+     "id": "CTG-US-001",
+     "persona": "HR operations",
+     "want": "to register employees and helpers from one vendor under their own classes",
+     "so_that": "each group gets the rest days its class allows",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an engagement with VN-01 Sharada Manpower Services at Peenya Works supplying classes WC-3PE and WC-3PH",
+       "when": "I register E1034 Imran Shaikh as WC-3PE and E1036 Lakshmi Rao as WC-3PH",
+       "then": "Sunday 06 Sep resolves as Weekly Off for E1034 and Working for E1036"
+      },
+      {
+       "given": "the same engagement",
+       "when": "I open it for editing",
+       "then": "no rest-day or overtime field is offered on the engagement; each class's policy is shown read-only"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-002",
+     "persona": "Finance",
+     "want": "to see the deployed population by class and rate for each engagement",
+     "so_that": "I know what a correct invoice should look like before it arrives",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01 has 4 active workers across WC-3PE and WC-3PH at a rate of 700 rupees per worker per day",
+       "when": "I open the engagement",
+       "then": "I see the count per class, the rate per class and the invoice basis"
+      },
+      {
+       "given": "one of those assignments ends on 15 Sep",
+       "when": "I view the deployed population for 16 Sep",
+       "then": "the count for that worker's class is reduced by one"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-003",
+     "persona": "Plant HR / time office",
+     "want": "a worker already deployed by one vendor to be refused when another vendor submits them",
+     "so_that": "no person is billed twice or enrolled under two engagements",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1036 is active under the VN-01 engagement at Peenya Works",
+       "when": "VN-05 submits E1036 for deployment at Oragadam Works",
+       "then": "registration is refused and the message names the VN-01 engagement"
+      },
+      {
+       "given": "E1036's VN-01 assignment has ended",
+       "when": "VN-05 submits her again",
+       "then": "registration proceeds"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-007",
+    "SYS-022",
+    "SYS-026",
+    "SYS-059",
+    "SYS-080"
+   ]
+  },
+  {
+   "id": "CTG-UC-002",
+   "name": "Reconcile a contractor invoice against attendance",
+   "process": "CTG-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Reconcile each monthly contractor invoice against the attendance the system already holds, by class and rate, so any variance is visible and decided before payment.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Contractor vendor",
+    "Nucleus platform",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Pays only for worker-days the attendance supports."
+    },
+    {
+     "who": "Contractor vendor",
+     "interest": "Receives a clear, evidenced query rather than an unexplained short payment."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every invoice decision carries its variance evidence."
+    }
+   ],
+   "trigger": "A contractor submits its monthly invoice.",
+   "preconditions": [
+    "An active engagement defines classes, rates and invoice basis for the vendor and site.",
+    "Attendance days for the deployed workers in the invoice period have been computed."
+   ],
+   "postconditions_success": [
+    "The invoice is reconciled with system days, variance days and variance amount by class and rate, and contingent.invoice.reconciled is emitted.",
+    "Finance's decision (approve, query or reject) is recorded with the variance evidence attached."
+   ],
+   "postconditions_failure": [
+    "An invoice with unsupported days is not paid in full; the unsupported amount is held under query."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Contractor vendor",
+     "action": "Submits the monthly invoice for the deployed population, stating claimed days and amount by worker class and rate.",
+     "ref": "CTG-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reconciles claimed days against attendance held, by class and rate, showing variance days and amount before payment.",
+     "ref": "CTG-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Finance",
+     "action": "Approves, queries or rejects the invoice in the approvals inbox, with the variance evidence attached to the decision.",
+     "ref": "CTG-02.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Claimed days equal attendance days for every class.",
+     "steps": [
+      "The invoice is marked as matching with zero variance and presented for approval at the claimed amount."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Finance passes only the supported amount and queries the remainder.",
+     "steps": [
+      "The supported amount is passed for payment and the variance amount is held under query with the vendor."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A3",
+     "at_step": 3,
+     "condition": "The vendor answers a query with a corrected invoice or further evidence.",
+     "steps": [
+      "The corrected invoice replaces the original claim and is reconciled again."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "An invoice line names a class or rate that is not on the engagement.",
+     "handling": "The line is refused at submission with the engagement's classes and rates shown.",
+     "rule": "RL-480"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A worker-day is claimed with no attendance behind it.",
+     "handling": "The day is listed in the variance and raised as an exception that blocks vendor payment, not employee payroll.",
+     "rule": "RL-481"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A decision is attempted without the variance evidence.",
+     "handling": "The decision cannot be saved until the reconciliation evidence is attached; by default it is attached automatically.",
+     "rule": "RL-482"
+    }
+   ],
+   "business_rules": [
+    "RL-480",
+    "RL-481",
+    "RL-482"
+   ],
+   "screens": [
+    "SCR-095",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "contractor_invoice (C/U)",
+    "attendance_day (R)",
+    "contractor_engagement (R)"
+   ],
+   "events": [
+    "contingent.invoice.reconciled"
+   ],
+   "nfrs": [
+    "Reconciliation of a 500-worker monthly invoice completes within 30 seconds of submission.",
+    "Variance is shown before any payment is released, never after."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-G480",
+    "TC-G481",
+    "TC-G482"
+   ],
+   "user_stories": [
+    {
+     "id": "CTG-US-004",
+     "persona": "Finance",
+     "want": "the variance between claimed and attended days shown before I pay",
+     "so_that": "we do not pay for days nobody worked",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "invoice INV-VN01-2609 claims 56 worker-days at 700 rupees (39,200 rupees) and attendance holds 53",
+       "when": "the invoice is reconciled",
+       "then": "a variance of 3 days and 2,100 rupees is shown, listing E1036 on 06, 07 and 13 Sep"
+      },
+      {
+       "given": "invoice INV-VN01-2608 claims 104 worker-days and attendance holds 104",
+       "when": "it is reconciled",
+       "then": "variance is zero and 72,800 rupees is presented for approval"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-005",
+     "persona": "Finance",
+     "want": "to pass the supported amount and query the rest with evidence attached",
+     "so_that": "the vendor is paid promptly for undisputed days and knows exactly what is queried",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the reconciled INV-VN01-2609",
+       "when": "I pass 37,100 rupees and raise a query on the remaining 2,100 rupees",
+       "then": "the decision records the evidence reference, the passed amount and the held amount, and the invoice status is Query raised"
+      },
+      {
+       "given": "the same query",
+       "when": "it is sent to VN-01",
+       "then": "it lists the three unsupported worker-days by worker and date"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-006",
+     "persona": "Plant HR / time office",
+     "want": "claimed days without attendance raised as exceptions that block vendor payment only",
+     "so_that": "I can check the gate records without holding anyone's salary",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "07 Sep is claimed for E1036 on INV-VN01-2609 with no punch recorded",
+       "when": "reconciliation runs",
+       "then": "an exception of type 'Vendor claim without attendance' with severity 'Blocks vendor payment' appears in the exception queue"
+      },
+      {
+       "given": "the same exception is open",
+       "when": "the employee payroll run is prepared",
+       "then": "it is not blocked by this exception"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-040",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "CTG-UC-003",
+   "name": "Verify a contractor's monthly statutory compliance as principal employer",
+   "process": "CTG-03",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Collect and verify each contractor's monthly PF and ESI filing evidence and hold it per engagement and period, so the principal employer's exposure is known before payment.",
+   "level": "User goal",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Contractor vendor",
+    "Finance",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Knows every month which contractors have evidenced their PF and ESI payments; the principal employer may be liable for a contractor's unpaid contributions (to be validated by Legal)."
+    },
+    {
+     "who": "Finance",
+     "interest": "Sees the verification status of a vendor before approving its invoice."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can retrieve the evidence and verification decision for any vendor and period."
+    }
+   ],
+   "trigger": "The monthly statutory filing cycle opens.",
+   "preconditions": [
+    "The vendor master holds the contractor's PF establishment code and ESI code.",
+    "At least one engagement with that vendor had deployed workers in the previous wage period."
+   ],
+   "postconditions_success": [
+    "A verification record per engagement and period holds the challans, payment proof and wage register, with outcome, reviewer and date.",
+    "The verification status is visible on the engagement and on the vendor's invoices."
+   ],
+   "postconditions_failure": [
+    "Engagements without evidence by the due date are marked Held and escalated with a recommended payment hold."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Opens a verification item for each active engagement for the previous wage period when the monthly cycle starts.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Requests the PF and ESI challans with payment proof and the wage register from each vendor, with a due date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Contractor vendor",
+     "action": "Uploads the challans, payment proof and wage register against the verification item.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks completeness: both challans present, period correct and establishment codes matching the vendor master.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Compliance owner",
+     "action": "Reviews the evidence and records the outcome as verified, query or not compliant, with comments.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Stores the evidence and outcome against the engagement and period and shows the status on the engagement and its invoices.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Compliance owner",
+     "action": "Escalates engagements not verified by the due date to the Director / approver with a recommended payment hold.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The compliance owner raises a query.",
+     "steps": [
+      "The vendor receives the query with the points to correct and uploads revised evidence."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "An engagement ended during the period.",
+     "steps": [
+      "A verification item is still opened for the final period worked."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The vendor has not uploaded evidence by the due date.",
+     "handling": "The item is marked Held, the vendor's invoices show the Held status and the item is escalated.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "A challan's establishment code does not match the vendor master.",
+     "handling": "The evidence is rejected with the expected and received codes shown and the vendor is asked to re-upload.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-095"
+   ],
+   "data_objects": [
+    "contractor_compliance_verification (C/U)",
+    "compliance_evidence (C)",
+    "contractor_engagement (R)",
+    "contractor_vendor (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Evidence is retained per vendor and period for the statutory retention period (to be validated by Legal) and is read-only after verification.",
+    "Every verification outcome records reviewer, date and comment."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-007",
+     "persona": "Compliance owner",
+     "want": "vendors without filing evidence by the due date flagged as Held",
+     "so_that": "our exposure as principal employer is visible before we pay them",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01 Sharada Manpower Services has not produced its August 2026 PF challan by the due date",
+       "when": "the due date passes",
+       "then": "VN-01's August verification is Held, escalated to the Director / approver and shown on VN-01's invoices"
+      },
+      {
+       "given": "VN-02 uploads its August PF and ESI challans and wage register with establishment codes matching the vendor master",
+       "when": "I review them",
+       "then": "I can mark August Verified and the evidence is stored against VN-02's engagement and period"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-008",
+     "persona": "Auditor",
+     "want": "to retrieve a contractor's verified evidence for any period",
+     "so_that": "I can test the principal-employer control without asking the team",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "VN-05 Kaveri Industrial Services' August 2026 verification is Verified",
+       "when": "I open it",
+       "then": "I see the challans, payment proof, wage register, reviewer and verification date, all read-only"
+      },
+      {
+       "given": "the same record",
+       "when": "I attempt to replace a document",
+       "then": "the action is not available to me"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-009",
+     "persona": "Finance",
+     "want": "the vendor's verification status shown on its invoice",
+     "so_that": "I do not approve a payment without knowing the compliance position",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01's August verification is Held",
+       "when": "I open a VN-01 invoice",
+       "then": "the verification status Held is shown with a link to the verification item"
+      },
+      {
+       "given": "VN-02's August verification is Verified",
+       "when": "I open a VN-02 invoice",
+       "then": "the status Verified is shown with the verification date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-037",
+    "SYS-040",
+    "SYS-043"
+   ]
+  },
+  {
+   "id": "CTG-UC-004",
+   "name": "Maintain contract-labour vendors with licences, rate cards and caps",
+   "process": null,
+   "capability_gap": "CTG-CG-001",
+   "source": "Authored",
+   "goal": "Maintain each labour contractor with statutory registrations, site licences, rate cards and per-site headcount caps so engagements and invoices rest on verified vendor data.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Compliance owner",
+    "Finance",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "No contractor deploys at a site beyond its licence or after the licence or contract expires."
+    },
+    {
+     "who": "Finance",
+     "interest": "Invoices reconcile against an effective-dated rate card."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Knows how many contract workers each vendor may deploy at the site."
+    }
+   ],
+   "trigger": "A new labour contractor is onboarded, or a vendor's licence, rate or cap changes.",
+   "preconditions": [
+    "The vendor's PAN, PF establishment code, ESI code and contract labour licence for each site are available.",
+    "The worker classes the vendor will supply are configured."
+   ],
+   "postconditions_success": [
+    "An active vendor holds registrations, site licences with validity and licensed headcount, an effective-dated rate card per class and a headcount cap per site.",
+    "Expiry alerts are scheduled for each licence and contract."
+   ],
+   "postconditions_failure": [
+    "A vendor with missing registrations, an expired licence or a cap above its licence is not activated."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates the vendor with legal name, PAN, PF establishment code, ESI code and engagement type.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates identifier formats and refuses a PAN or PF code already held by another vendor.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Records the contract labour licence for each site with number, validity dates and licensed headcount, attaching a copy.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Records the rate card per worker class with effective dates and the invoice basis.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Sets the headcount cap per site, not exceeding the licensed headcount.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves activation of the vendor.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Activates the vendor for engagements and schedules alerts ahead of each licence and contract expiry.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "An existing vendor's rate is revised.",
+     "steps": [
+      "Finance adds a new rate card row effective from the agreed date; the previous rate remains for earlier periods."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The vendor serves more than one site.",
+     "steps": [
+      "A separate licence, validity and licensed headcount is recorded for each site."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The headcount cap entered exceeds the site's licensed headcount.",
+     "handling": "The cap is refused with the licensed headcount shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "A site licence has expired.",
+     "handling": "New deployments at that site are blocked and existing deployments are flagged to the compliance owner.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "A contract end date is within the alert lead time and no renewal has been raised.",
+     "handling": "An alert is raised to HR operations and the compliance owner naming the vendor, site and end date.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 4,
+     "condition": "A new rate card row overlaps an existing row for the same class.",
+     "handling": "The row is refused with the overlapping period shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-480",
+    "RL-102"
+   ],
+   "screens": [
+    "SCR-095"
+   ],
+   "data_objects": [
+    "contractor_vendor (C/U)",
+    "vendor_licence (C/U)",
+    "rate_card (C)",
+    "headcount_cap (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Vendor identifiers and licence documents are stored with access limited to HR operations, Compliance owner and Finance.",
+    "Rate cards and caps are effective-dated so past invoices always reconcile against the values then in force."
+   ],
+   "frequency": "Per vendor change",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-010",
+     "persona": "HR operations",
+     "want": "the per-site headcount cap held within the vendor's licence",
+     "so_that": "we never deploy more contract workers than the licence permits",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01's licence at Peenya Works permits 20 workers",
+       "when": "I set a cap of 25 for VN-01 at Peenya Works",
+       "then": "the cap is refused and the licensed headcount of 20 is shown"
+      },
+      {
+       "given": "a cap of 4 for VN-01 at Peenya Works with 4 workers deployed",
+       "when": "a fifth worker is registered",
+       "then": "registration is refused and the cap is named"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-011",
+     "persona": "Compliance owner",
+     "want": "an alert before a contractor's contract or licence expires without renewal",
+     "so_that": "workers are not deployed under an expired contract",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-04 Deccan Facility Services' contract at Medchal Works ends on 30 Sep 2026 and no renewal has been raised",
+       "when": "the configured 30-day lead time is reached on 31 Aug 2026",
+       "then": "I receive an alert naming VN-04, Medchal Works and the 30 Sep end date"
+      },
+      {
+       "given": "the contract is not renewed by 30 Sep",
+       "when": "a VN-04 worker is submitted for deployment on 01 Oct",
+       "then": "the deployment is blocked"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-012",
+     "persona": "Finance",
+     "want": "rate cards with effective dates",
+     "so_that": "invoices before and after a rate change reconcile at the right rate",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01's rate is 700 rupees per worker per day from 01 Apr 2025",
+       "when": "I add a rate of 735 rupees effective 01 Oct 2026",
+       "then": "September 2026 invoices reconcile at 700 and October 2026 invoices at 735"
+      },
+      {
+       "given": "the same rate card",
+       "when": "I add a row effective 15 Sep 2026 that overlaps the existing rows",
+       "then": "the row is refused with the overlapping period shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-019",
+    "SYS-022",
+    "SYS-026",
+    "SYS-037",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "CTG-UC-005",
+   "name": "Verify contractor challans against deployed workers before invoice approval",
+   "process": null,
+   "capability_gap": "CTG-CG-002",
+   "source": "Authored",
+   "goal": "Reconcile each vendor's monthly PF and ESI challans and wage register against the contract workers actually deployed, and hold invoice approval until verification is complete.",
+   "level": "User goal",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Contractor vendor",
+    "Finance",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Every deployed contract worker is covered by the contractor's contributions before the contractor is paid."
+    },
+    {
+     "who": "Finance",
+     "interest": "Invoice approval is gated by a clear, worker-level verification result."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Contract workers' PF and ESI contributions are actually paid."
+    }
+   ],
+   "trigger": "A vendor uploads its monthly challans and wage register, or the invoice for that period reaches approval.",
+   "preconditions": [
+    "The vendor master holds PF and ESI establishment codes (CTG-UC-004).",
+    "Attendance for the vendor's deployed workers in the period has been computed."
+   ],
+   "postconditions_success": [
+    "A worker-level reconciliation shows each deployed worker as covered, missing or mismatched, and the vendor-period is Verified.",
+    "Invoice approval for that vendor and period is released."
+   ],
+   "postconditions_failure": [
+    "Invoice approval remains blocked while verification is incomplete, unless a Director / approver releases it with the waived rule named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Contractor vendor",
+     "action": "Uploads the month's PF and ESI challans, member-wise contribution lists and wage register.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Confirms challan period and establishment codes match the vendor master and records payment dates.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Matches every worker deployed in the period, from attendance, to the contribution lists by UAN and ESI number.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Compares wage-register days with attendance days held for each worker.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Produces a worker-level reconciliation: covered, missing from contributions, or days mismatched.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Compliance owner",
+     "action": "Reviews the reconciliation and accepts it or raises a query to the vendor.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Marks the vendor-period Verified and releases the hold on invoice approval for that period.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Finance",
+     "action": "Approves the vendor's invoice for the period with the verification and variance evidence attached.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The compliance owner raises a query.",
+     "steps": [
+      "The vendor receives the worker-level discrepancies and uploads corrected evidence."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Challans for the period have not been uploaded.",
+     "handling": "Invoice approval for that vendor and period is blocked with the reason 'statutory verification incomplete'.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A deployed worker is missing from a contribution list.",
+     "handling": "The worker is listed as missing and the vendor-period cannot be marked Verified until resolved.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "Payment must be released before verification completes.",
+     "handling": "Only a Director / approver may release it; the release names the waived rule and records approver identity and reason.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-481",
+    "RL-482"
+   ],
+   "screens": [
+    "SCR-095",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "statutory_challan (C)",
+    "wage_register (C)",
+    "challan_reconciliation (C/U)",
+    "attendance_day (R)",
+    "contractor_invoice (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Worker-level matching for a 500-worker vendor completes within 60 seconds of upload.",
+    "Identifiers in uploaded documents are visible only to roles with a compliance need."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-013",
+     "persona": "Finance",
+     "want": "invoice approval blocked until the vendor's challans are verified",
+     "so_that": "we never pay a contractor whose statutory dues are unevidenced",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01 has not produced its August 2026 PF challan",
+       "when": "I try to approve INV-VN01-2608",
+       "then": "approval is blocked with the reason 'statutory verification incomplete for Aug 2026'"
+      },
+      {
+       "given": "VN-01's August challans are uploaded and the vendor-period is marked Verified",
+       "when": "I open INV-VN01-2608",
+       "then": "approval is available"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-014",
+     "persona": "Compliance owner",
+     "want": "each deployed worker matched to the contribution lists",
+     "so_that": "I can see exactly who is not covered",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "VN-01 deployed 4 workers in August including E1034 and E1036",
+       "when": "the ESI contribution list omits E1036",
+       "then": "the reconciliation shows E1036 as missing and Verified cannot be selected"
+      },
+      {
+       "given": "the wage register shows 26 days for E1034 and attendance holds 26",
+       "when": "the reconciliation runs",
+       "then": "E1034 is shown as covered with no day mismatch"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-015",
+     "persona": "Director / approver",
+     "want": "to release a held payment with the waived rule named",
+     "so_that": "an exceptional release is deliberate and traceable",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "VN-01's August verification is incomplete and its invoice is blocked",
+       "when": "I release the invoice with the reason 'Challan paid, upload delayed; evidence due 10 Oct'",
+       "then": "the release records me, the time, the reason and the waived rule"
+      },
+      {
+       "given": "the release is recorded",
+       "when": "an auditor views the invoice",
+       "then": "the waiver and its reason are shown alongside the decision"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-019",
+    "SYS-033",
+    "SYS-051",
+    "SYS-061"
+   ]
+  },
+  {
+   "id": "CTG-UC-006",
+   "name": "Complete safety induction and PPE issue before gate access",
+   "process": null,
+   "capability_gap": "CTG-CG-003",
+   "source": "Authored",
+   "goal": "Ensure every contract worker completes the site safety induction and receives the required PPE before their gate access is activated.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform",
+    "Biometric terminal",
+    "Contractor vendor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "No contract worker enters the shop floor without induction and PPE, supporting obligations under the Factories Act 1948 (to be validated by Legal)."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Knows the site hazards and has the protective equipment before starting work."
+    },
+    {
+     "who": "Contractor vendor",
+     "interest": "Knows what each worker must complete before they can be deployed."
+    }
+   ],
+   "trigger": "A contract worker is registered for deployment at a site (CTG-UC-001).",
+   "preconditions": [
+    "The site has a safety induction programme and a PPE requirement list per worker class or role.",
+    "The worker has an assignment at the site with gate access not yet active."
+   ],
+   "postconditions_success": [
+    "Induction completion and each PPE item issued are recorded and acknowledged, and gate access is active for the site."
+   ],
+   "postconditions_failure": [
+    "Gate access stays pending and any gate punch attempt is refused and logged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "On registration, sets the worker's gate access to Pending induction and creates induction and PPE checklist items for the site and role.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Plant HR / time office",
+     "action": "Schedules the worker into the next site safety induction session.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Attends the induction and completes the assessment.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Plant HR / time office",
+     "action": "Records induction completion with date, trainer and assessment result.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Plant HR / time office",
+     "action": "Issues the PPE set required for the role, such as safety shoes, helmet and goggles, recording each item and issue date.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Acknowledges receipt of each PPE item.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Confirms the induction and PPE checklist are complete, activates gate access and enrols the worker on the site's gate terminals.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Biometric terminal",
+     "action": "Accepts the worker's first gate punch, which enters the standard punch path.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The worker completed this site's induction within its validity period under an earlier engagement.",
+     "steps": [
+      "The earlier induction record is reused and only the PPE checklist is completed."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The worker fails the induction assessment.",
+     "handling": "Gate access stays pending and the worker is scheduled into another session.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "The worker attempts a gate punch before access is active.",
+     "handling": "Entry is refused, the attempt is recorded and an exception is raised to the time office.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "A required PPE item has not been issued because it is out of stock.",
+     "handling": "Gate access stays pending and the shortfall is reported to the time office.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 8,
+     "condition": "The worker's induction passes its validity period.",
+     "handling": "Gate access is suspended until a refresher induction is recorded.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "induction_record (C)",
+    "ppe_issue (C)",
+    "gate_access (U)",
+    "assignment (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Gate access activation reaches the site gate terminals within 5 minutes of the checklist completing.",
+    "Induction and PPE records are retained for the duration required by the applicable safety rules (to be validated by Legal)."
+   ],
+   "frequency": "Per worker deployment",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CTG-US-016",
+     "persona": "Plant HR / time office",
+     "want": "gate access activated only after induction and PPE are complete",
+     "so_that": "no contract worker reaches the shop floor unprepared",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1036 is registered at Peenya Works and has not completed the safety induction",
+       "when": "she presents at the gate terminal",
+       "then": "entry is refused, the attempt is logged and an exception is raised to the time office"
+      },
+      {
+       "given": "her induction is recorded as passed and safety shoes, helmet and goggles are issued and acknowledged",
+       "when": "the checklist completes",
+       "then": "gate access is activated and her next gate punch is accepted"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-017",
+     "persona": "Employee / worker",
+     "want": "to acknowledge each PPE item I receive",
+     "so_that": "there is a clear record of what I was issued",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a helmet, safety shoes and goggles are issued to me on 02 Sep",
+       "when": "I acknowledge receipt at the site kiosk",
+       "then": "each item is recorded against me with the issue date and my acknowledgement"
+      },
+      {
+       "given": "only two of the three required items are issued",
+       "when": "I acknowledge them",
+       "then": "my gate access stays pending and the missing item is shown"
+      }
+     ]
+    },
+    {
+     "id": "CTG-US-018",
+     "persona": "Compliance owner",
+     "want": "a site list of contract workers with induction and PPE status",
+     "so_that": "I can evidence the control during an inspection",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "VN-01 has 4 active workers at Peenya Works",
+       "when": "I open the site induction and PPE status list",
+       "then": "each worker shows induction date, validity end, PPE items issued and gate access status"
+      },
+      {
+       "given": "one worker's induction validity has ended",
+       "when": "the list is refreshed",
+       "then": "that worker is flagged and their gate access shows Suspended"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-051",
+    "SYS-053",
+    "SYS-062",
+    "SYS-080"
+   ]
+  }
+ ]
+}

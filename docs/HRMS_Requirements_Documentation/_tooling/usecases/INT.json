@@ -1,0 +1,1360 @@
+{
+ "domain": "INT",
+ "use_cases": [
+  {
+   "id": "INT-UC-001",
+   "name": "Invoke an agent through the policy gate",
+   "process": "INT-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Run an agent as a scoped principal whose every tool call passes the policy gate, is simulated if it writes, is approved by a human where required and lands in the action ledger.",
+   "level": "User goal",
+   "primary_actor": "Agent (governed)",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Director / approver",
+    "Tenant admin",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Agents never exceed the rights of their human owner or tenant caps."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves exactly the diff that will execute."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can reconstruct what any agent did, why and who approved it."
+    }
+   ],
+   "trigger": "A schedule fires or a user asks an agent to act.",
+   "preconditions": [
+    "Agent principal exists with agent_id, scoped role and named human owner.",
+    "Tools are registered with typed schemas and side-effect classes.",
+    "Tenant policy defines caps and auto-approval thresholds, for example 120 minutes for regularisations."
+   ],
+   "postconditions_success": [
+    "Action executed within caps, verified, and recorded in the ledger with plan, simulation, approval, outcome and reversal handle."
+   ],
+   "postconditions_failure": [
+    "Denied or rejected actions are recorded in the ledger with reason and no side effect."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Starts the agent run with identity: agent_id, scoped role and named human owner.",
+     "ref": "INT-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Plans the work using only declared tools, each with a typed schema and a side-effect class.",
+     "ref": "INT-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Policy gate checks per-tool permission, tenant policy, value and blast-radius caps and the dry-run requirement.",
+     "ref": "INT-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Determines whether the tool is classified write or irreversible and, if so, produces a dry-run diff.",
+     "ref": "INT-01.4"
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the diff, or the platform auto-approves only when within the tenant's configured threshold.",
+     "ref": "INT-01.5"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Verifier runs post-execution rule checks and writes outcome and reversal handle to the action ledger.",
+     "ref": "INT-01.6"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "Tool is read or propose only.",
+     "steps": [
+      "No dry-run is needed; execution proceeds and is ledgered."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "Proposed regularisation of 45 minutes is under the 120-minute tenant threshold.",
+     "steps": [
+      "Platform auto-approves and records the threshold applied."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Agent principal has no named human owner.",
+     "handling": "Run is refused.",
+     "rule": "RL-001"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Plan requires a capability outside declared tools, such as direct data access.",
+     "handling": "Plan is rejected; agents never touch the database or hold credentials.",
+     "rule": "RL-541"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "Action exceeds value or blast-radius caps.",
+     "handling": "Action is DENIED and recorded with reason.",
+     "rule": "RL-542"
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "Action is irreversible: disbursement, termination, offer release, statutory filing or loan sanction.",
+     "handling": "Auto-approval is disabled; a named human must approve.",
+     "rule": "RL-544"
+    },
+    {
+     "id": "E5",
+     "at_step": 6,
+     "condition": "Post-execution check fails.",
+     "handling": "Action is reversed using the handle and the failure is recorded.",
+     "rule": "RL-545"
+    }
+   ],
+   "business_rules": [
+    "RL-001",
+    "RL-141",
+    "RL-540",
+    "RL-541",
+    "RL-542",
+    "RL-543",
+    "RL-544",
+    "RL-545"
+   ],
+   "screens": [
+    "SCR-110"
+   ],
+   "data_objects": [
+    "agent_principal (R)",
+    "tool_registry (R)",
+    "policy_gate_decision (C)",
+    "approval_instance (C)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "agent.run.started",
+    "agent.plan.created",
+    "agent.policy.evaluated",
+    "platform.approval.completed",
+    "agent.action.executed"
+   ],
+   "nfrs": [
+    "Policy gate decision within 200 ms at p95.",
+    "Action ledger is append-only; no update or delete path exists."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P01",
+    "TC-A141",
+    "TC-A540",
+    "TC-A541",
+    "TC-A542",
+    "TC-A543",
+    "TC-A544",
+    "TC-A545"
+   ],
+   "user_stories": [
+    {
+     "id": "INT-US-001",
+     "persona": "Tenant admin",
+     "want": "every agent to act under its own scoped identity and owner",
+     "so_that": "an agent can never do more than a human could",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an agent principal without a named owner",
+       "when": "a run is scheduled",
+       "then": "the run is refused"
+      },
+      {
+       "given": "the attendance agent's scope excludes payroll tools",
+       "when": "its plan includes a payroll tool",
+       "then": "the policy gate denies it and records the reason"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-002",
+     "persona": "Director / approver",
+     "want": "to approve the dry-run diff before a write executes",
+     "so_that": "I know exactly what will change",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the agent proposes a 3-hour regularisation for E1018 above the 120-minute threshold",
+       "when": "the diff is produced",
+       "then": "I see before and after punch times and must approve"
+      },
+      {
+       "given": "a 45-minute regularisation",
+       "when": "the gate evaluates",
+       "then": "it auto-approves and records the threshold used"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-003",
+     "persona": "Auditor",
+     "want": "every agent action in the ledger with plan, simulation, approval and outcome",
+     "so_that": "I can answer what the AI did",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an executed regularisation",
+       "when": "I open the ledger",
+       "then": "I see agent_id, human approver, inputs, diff, outcome and reversal handle"
+      },
+      {
+       "given": "an agent tries to sanction a loan",
+       "when": "no human approves",
+       "then": "nothing executes and the attempt is ledgered"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-009",
+    "SYS-010",
+    "SYS-035",
+    "SYS-072",
+    "SYS-073",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "INT-UC-002",
+   "name": "Write the action ledger and reverse an agent action",
+   "process": "INT-02",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Record every agent action in an append-only ledger and allow authorised humans to reverse reversible actions, tracking the reversal rate.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Tenant admin",
+    "Auditor",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Auditor",
+     "interest": "Complete, tamper-evident record."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Can undo a wrong agent action quickly."
+    }
+   ],
+   "trigger": "An agent action executes or a human requests reversal.",
+   "preconditions": [
+    "Action has executed with a stored reversal handle."
+   ],
+   "postconditions_success": [
+    "Ledger entry exists; reversed actions are marked REVERSED with reason."
+   ],
+   "postconditions_failure": [
+    "Irreversible actions remain as executed with a note."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receives agent.action.executed and writes the ledger entry with plan, simulation, approval, outcome and reversal handle.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Tenant admin",
+     "action": "Reviews an executed action in the agent console.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Tenant admin",
+     "action": "Requests reversal stating a reason.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows a dry-run of the reversal for confirmation.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Tenant admin",
+     "action": "Confirms the reversal.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Executes the reversal, marks the action REVERSED and emits agent.action.reversed.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Updates the reversal-rate metric per agent and tool.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Reversal concerns an approved payroll-impacting change.",
+     "steps": [
+      "Reversal requires the original approver's role to confirm."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Action has no reversal handle (irreversible).",
+     "handling": "Reversal is refused; a compensating manual process is opened.",
+     "rule": "RL-545"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "Ledger write fails.",
+     "handling": "Action is rolled back; no action exists without a ledger entry.",
+     "rule": "RL-545"
+    }
+   ],
+   "business_rules": [
+    "RL-544",
+    "RL-545"
+   ],
+   "screens": [
+    "SCR-110"
+   ],
+   "data_objects": [
+    "action_ledger (C)"
+   ],
+   "events": [
+    "agent.action.executed",
+    "agent.action.reversed"
+   ],
+   "nfrs": [
+    "Ledger entries are retained for the long retention class and hash-chained."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-A545"
+   ],
+   "user_stories": [
+    {
+     "id": "INT-US-004",
+     "persona": "Tenant admin",
+     "want": "to reverse a wrong agent action after previewing the reversal",
+     "so_that": "mistakes are corrected safely",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an executed regularisation for E1018",
+       "when": "I request reversal with reason and confirm the preview",
+       "then": "the punch returns to its prior state and the action shows REVERSED"
+      },
+      {
+       "given": "an executed statutory filing",
+       "when": "I request reversal",
+       "then": "reversal is refused as irreversible"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-005",
+     "persona": "Auditor",
+     "want": "the reversal rate per agent",
+     "so_that": "I can judge agent quality",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "100 actions with 4 reversals",
+       "when": "I open the metric",
+       "then": "the rate shows 4%"
+      },
+      {
+       "given": "I view a reversed action",
+       "when": "I open it",
+       "then": "reversed_by and reason are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-034",
+    "SYS-035",
+    "SYS-036",
+    "SYS-053",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "INT-UC-003",
+   "name": "Project analytics and produce operational reports",
+   "process": "INT-03",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Project events into analytics stores and deliver configured operational reports within each user's scope.",
+   "level": "User goal",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Manager / supervisor",
+    "Plant HR / time office",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Gets break, OT, late and gate-pass reports without building them."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees team history."
+    }
+   ],
+   "trigger": "Events arrive or a report schedule fires.",
+   "preconditions": [
+    "Shipped report definitions are configured."
+   ],
+   "postconditions_success": [
+    "Reports reflect events within freshness targets and respect scope."
+   ],
+   "postconditions_failure": [
+    "Stale data is labelled with last refresh time."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Consumes domain events and updates analytics projections.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Plant HR / time office",
+     "action": "Opens operational reports: break, OT register, late summary, gate-pass utilisation.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Resolves the user's scope and filters rows accordingly.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Plant HR / time office",
+     "action": "Filters by date, site and shift and exports.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Plant HR / time office",
+     "action": "Schedules recurring delivery.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Agent (governed)",
+     "action": "Answers a natural-language question with a read-only governed query and records question, query and row count in the ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Manager opens team history.",
+     "steps": [
+      "Rows are limited to the manager's subtree."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Projection lag exceeds target.",
+     "handling": "Report shows last refresh time and a stale banner.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "analytics_projection (U)",
+    "report_schedule (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Projection lag under 5 minutes at p95."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-006",
+     "persona": "Plant HR / time office",
+     "want": "an OT register for my site ready to use",
+     "so_that": "I need not build it",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "shift A 08:00–20:00 OT records at Peenya",
+       "when": "I open the OT register for June",
+       "then": "rows for Peenya only appear"
+      },
+      {
+       "given": "I schedule weekly delivery",
+       "when": "Monday arrives",
+       "then": "the report is delivered"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-007",
+     "persona": "Manager / supervisor",
+     "want": "to ask a question in plain words and get a governed answer",
+     "so_that": "I get insights fast",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I ask how many late arrivals my team had in May",
+       "when": "the agent answers",
+       "then": "a chart and the query appear and the ledger records it"
+      },
+      {
+       "given": "I ask about another team",
+       "when": "the agent runs",
+       "then": "rows outside my scope are excluded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-035",
+    "SYS-055",
+    "SYS-072",
+    "SYS-073"
+   ]
+  },
+  {
+   "id": "INT-UC-004",
+   "name": "Score predictive risk with explanations",
+   "process": "INT-04",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Produce monthly predictive scores such as attrition risk with explanations, visible to HR by default, with manager exposure only by tenant opt-in.",
+   "level": "User goal",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Manager / supervisor",
+    "Tenant admin",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Scores do not drive automated decisions."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Gets early warning with reasons."
+    }
+   ],
+   "trigger": "Monthly scoring schedule.",
+   "preconditions": [
+    "Model is approved by tenant admin.",
+    "Features exclude prohibited attributes."
+   ],
+   "postconditions_success": [
+    "Scores with top contributing factors are available to permitted roles."
+   ],
+   "postconditions_failure": [
+    "No scores published if model checks fail."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Runs monthly scoring on approved features.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes top factors explaining each score.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Runs bias and drift checks before publishing.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews scores with explanations.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Records any intervention decision; no automated action follows a score.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records scoring run, model version and viewers in the ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "Tenant has opted in manager exposure.",
+     "steps": [
+      "Managers see scores for their subtree with guidance text."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Bias or drift check fails.",
+     "handling": "Publication is withheld and the tenant admin alerted.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-544"
+   ],
+   "screens": [],
+   "data_objects": [
+    "prediction_score (C)",
+    "action_ledger (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Every score shows at least three contributing factors."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-008",
+     "persona": "HR operations",
+     "want": "attrition risk with the reasons behind it",
+     "so_that": "I can act early and appropriately",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee scored high risk",
+       "when": "I open the score",
+       "then": "top factors are listed"
+      },
+      {
+       "given": "I record an intervention",
+       "when": "I save",
+       "then": "the decision is ledgered with my identity"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-009",
+     "persona": "Tenant admin",
+     "want": "manager exposure off by default",
+     "so_that": "scores are handled carefully",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "opt-in disabled",
+       "when": "a manager opens team view",
+       "then": "no scores are shown"
+      },
+      {
+       "given": "I enable opt-in",
+       "when": "the manager reopens",
+       "then": "subtree scores appear with guidance"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-074",
+    "SYS-076",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "INT-UC-005",
+   "name": "Build and schedule self-service reports",
+   "process": null,
+   "capability_gap": "INT-CG-001",
+   "source": "Authored",
+   "goal": "Let authorised users build ad-hoc reports on secured data sources with filters, grouping, calculated fields and scheduled distribution while honouring field-level security.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Agent (governed)",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Answers questions without waiting for IT."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Field-level security is never bypassed."
+    }
+   ],
+   "trigger": "User creates a report.",
+   "preconditions": [
+    "User has report-builder rights on the data source."
+   ],
+   "postconditions_success": [
+    "Report saved and optionally scheduled."
+   ],
+   "postconditions_failure": [
+    "Fields outside permission are not available."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects a secured data source.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Lists only fields the user may see.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Adds filters, grouping and calculated fields.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Previews the result applying row and field security.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Saves the report and sets a distribution schedule and recipients.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Delivers each scheduled run only to recipients with access to the fields.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "User asks the agent to build the report in plain words.",
+     "steps": [
+      "Agent drafts a report definition; the user confirms it before saving; the ledger records the request and draft."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "A recipient lacks access to some fields.",
+     "handling": "Those fields are masked for that recipient.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "report_definition (C)",
+    "report_schedule (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Preview returns within 5 s for 100,000 rows."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-010",
+     "persona": "HR operations",
+     "want": "to build a headcount report by site",
+     "so_that": "I answer leadership quickly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "access to headcount data",
+       "when": "I group by site",
+       "then": "counts per site appear"
+      },
+      {
+       "given": "salary fields restricted for me",
+       "when": "I browse fields",
+       "then": "salary is not listed"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-011",
+     "persona": "Tenant admin",
+     "want": "scheduled reports masked per recipient",
+     "so_that": "distribution cannot leak data",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a recipient without salary access",
+       "when": "the schedule runs",
+       "then": "salary columns are masked"
+      },
+      {
+       "given": "the agent drafts a report",
+       "when": "the user has not confirmed",
+       "then": "the report is not saved"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-015",
+    "SYS-017",
+    "SYS-018",
+    "SYS-019",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "INT-UC-006",
+   "name": "View executive dashboards and people analytics",
+   "process": null,
+   "capability_gap": "INT-CG-002",
+   "source": "Authored",
+   "goal": "Provide headcount, attrition, diversity, cost, absenteeism and overtime dashboards with drill-down within the viewer's scope.",
+   "level": "User goal",
+   "primary_actor": "Director / approver",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Sees workforce health at a glance."
+    }
+   ],
+   "trigger": "User opens dashboards.",
+   "preconditions": [
+    "Analytics projections are current."
+   ],
+   "postconditions_success": [
+    "Dashboards render within scope."
+   ],
+   "postconditions_failure": [
+    "Small groups are suppressed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Director / approver",
+     "action": "Opens the people analytics dashboard.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Renders KPIs for the viewer's scope.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Director / approver",
+     "action": "Drills from entity to site to department.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Suppresses diversity cuts below the minimum group size.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Exports a view.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Drill target is outside scope.",
+     "steps": [
+      "Drill is not offered."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Viewer asks the analyst agent to explain a movement in a KPI.",
+     "steps": [
+      "Agent runs a read-only governed query within the viewer's scope and returns a chart with the query used.",
+      "Ledger records question, generated query and row count; any follow-up write action, such as scheduling the view, requires the viewer's explicit confirmation."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Projection is stale.",
+     "handling": "Last refresh time is shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "analytics_projection (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Dashboard loads within 3 s."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-012",
+     "persona": "Director / approver",
+     "want": "attrition by site with drill-down",
+     "so_that": "I can find hotspots",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "annualised attrition of 14% at Peenya",
+       "when": "I drill to departments",
+       "then": "department rates appear"
+      },
+      {
+       "given": "a department with 3 women",
+       "when": "I view gender split",
+       "then": "it is suppressed"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-013",
+     "persona": "HR operations",
+     "want": "overtime cost trend by month",
+     "so_that": "I can manage cost",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "OT data for six months",
+       "when": "I open the OT dashboard",
+       "then": "a monthly trend appears"
+      },
+      {
+       "given": "I select Pune only",
+       "when": "I filter",
+       "then": "only Pune data appears"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-067",
+    "SYS-077"
+   ]
+  },
+  {
+   "id": "INT-UC-007",
+   "name": "Export de-identified data to a customer data warehouse",
+   "process": null,
+   "capability_gap": "INT-CG-003",
+   "source": "Authored",
+   "goal": "Export analytics-ready, de-identified datasets to the customer's data warehouse on a schedule with schema documentation.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Data leaves only in de-identified form."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Exports are logged."
+    }
+   ],
+   "trigger": "Scheduled export time or admin request.",
+   "preconditions": [
+    "Target warehouse connection is configured.",
+    "De-identification rules are configured."
+   ],
+   "postconditions_success": [
+    "Dataset delivered with schema documentation and logged."
+   ],
+   "postconditions_failure": [
+    "Failed exports are retried and alerted."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Selects datasets and de-identification rules.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Generates schema documentation for the datasets.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Tenant admin",
+     "action": "Approves the export definition.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Runs the export on schedule applying de-identification.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Delivers to the warehouse and logs row counts.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "Schema changed since last run.",
+     "steps": [
+      "New schema version is documented and admin notified."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Delivery fails.",
+     "handling": "Retry with backoff and alert after three failures.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "export_definition (C)",
+    "export_run (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "No direct identifiers leave the tenant in any export."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-014",
+     "persona": "Tenant admin",
+     "want": "exports de-identified automatically",
+     "so_that": "we share data safely",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a headcount dataset with names",
+       "when": "the export runs",
+       "then": "names are removed and person IDs pseudonymised"
+      },
+      {
+       "given": "a schema change",
+       "when": "the next run executes",
+       "then": "a new schema version is documented"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-015",
+     "persona": "Auditor",
+     "want": "each export logged with row counts",
+     "so_that": "I can verify data leaving",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an export of 25,000 rows",
+       "when": "it completes",
+       "then": "the log shows 25,000 rows and the definition version"
+      },
+      {
+       "given": "a failed export",
+       "when": "retries exhaust",
+       "then": "an alert is logged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-033",
+    "SYS-037",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "INT-UC-008",
+   "name": "Produce statutory and regulatory reports from rule packs",
+   "process": null,
+   "capability_gap": "INT-CG-004",
+   "source": "Authored",
+   "goal": "Provide a library of statutory reports per jurisdiction maintained with rule packs, prepared by the platform or agent and filed by a human.",
+   "level": "User goal",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Agent (governed)",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Reports are correct and on time."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can trace reports to rule pack versions."
+    }
+   ],
+   "trigger": "Obligation due date approaches.",
+   "preconditions": [
+    "Rule packs for the jurisdiction are current."
+   ],
+   "postconditions_success": [
+    "Report generated, reviewed and filed by a named human."
+   ],
+   "postconditions_failure": [
+    "Unreviewed reports are not filed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Compliance owner",
+     "action": "Opens the statutory report library filtered by entity and state.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Prepares the report from posted data under the current rule pack version and records the preparation in the ledger.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Compliance owner",
+     "action": "Reviews the prepared report and confirms it.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Compliance owner",
+     "action": "Files the report; filing is always a named human action.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Stores the report with rule pack version and filing evidence.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Rule pack updated after preparation.",
+     "steps": [
+      "Report is regenerated and the change highlighted."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Agent attempts to file.",
+     "handling": "Policy gate refuses; attempt recorded.",
+     "rule": "RL-544"
+    }
+   ],
+   "business_rules": [
+    "RL-544",
+    "RL-545"
+   ],
+   "screens": [],
+   "data_objects": [
+    "statutory_report (C)",
+    "action_ledger (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Reports reproducible from stored rule pack version."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-A544"
+   ],
+   "user_stories": [
+    {
+     "id": "INT-US-016",
+     "persona": "Compliance owner",
+     "want": "statutory reports prepared for my review",
+     "so_that": "I file on time",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a monthly return due on the 15th",
+       "when": "the agent prepares it on the 10th",
+       "then": "I see it for review with the rule pack version"
+      },
+      {
+       "given": "I confirm and file",
+       "when": "filing completes",
+       "then": "evidence is stored with my identity"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-017",
+     "persona": "Auditor",
+     "want": "reports traceable to rule pack version",
+     "so_that": "I can verify correctness",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a filed report",
+       "when": "I open it",
+       "then": "rule pack version is shown"
+      },
+      {
+       "given": "the agent attempted to file",
+       "when": "I view the ledger",
+       "then": "the refused attempt is listed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-045",
+    "SYS-074",
+    "SYS-086"
+   ]
+  }
+ ]
+}

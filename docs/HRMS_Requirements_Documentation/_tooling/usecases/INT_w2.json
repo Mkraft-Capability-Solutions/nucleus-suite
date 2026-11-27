@@ -1,0 +1,646 @@
+{
+ "domain": "INT",
+ "use_cases": [
+  {
+   "id": "INT-UC-009",
+   "name": "Analyse skills gaps and act on recommended learning and hiring",
+   "process": null,
+   "capability_gap": "INT-CG-005",
+   "source": "Authored",
+   "goal": "Show current versus required skills by role, team and site and turn agent-recommended learning and hiring actions into approved, ledgered changes.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Agent (governed)",
+    "Manager / supervisor",
+    "Director / approver",
+    "Auditor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Knows which skills the line lacks before a new product launch and how the gap will close."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves hiring only where learning cannot close the gap in time."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can see which recommendations were accepted, by whom, and what changed as a result."
+    }
+   ],
+   "trigger": "HR operations opens skills gap analysis, or a new role profile is published for a planned line.",
+   "preconditions": [
+    "Role profiles define required skills and proficiency levels.",
+    "Employee skill profiles are populated from assessments, certifications and inferred skills confirmed by the employee or manager.",
+    "The skills agent runs as an agent principal whose tools can read the skills projection and propose assignments and requisitions."
+   ],
+   "postconditions_success": [
+    "Approved learning assignments and requisitions exist in their owning services and each action is recorded in the action ledger."
+   ],
+   "postconditions_failure": [
+    "Rejected recommendations are recorded with reason and nothing is assigned or raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects the role CNC programmer for the new aerospace line at Peenya Works and the team of 26 programmers and setters.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads the skills analytics projection and compares each person's proficiency with the role profile.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows a heatmap of required versus current proficiency by skill, team and site, with gap counts.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Agent (governed)",
+     "action": "Recommends actions: assign 5-axis programming path to 9 people, and raise 2 requisitions where no internal candidate is within reach in 6 months.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Passes each recommended write through the policy gate and shows the dry-run: who gets which path and which requisitions would be raised.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Reviews and confirms the learning assignments, removing one person on long leave.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Director / approver",
+     "action": "Approves the 2 requisitions through the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Creates the 8 assignments and 2 requisitions and records each in the action ledger with recommendation, approver and reversal handle.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Tracks gap closure monthly as learners complete paths and certifications.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The recommended assignments are within the tenant auto-approval threshold of 10 learners and no cost.",
+     "steps": [
+      "Platform assigns them without separate approval and records the threshold applied in the action ledger."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The proposed change exceeds the auto-resolve threshold.",
+     "handling": "The agent may only propose; the change waits for a human decision.",
+     "rule": "RL-141"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A bulk assignment exceeds the blast-radius cap of 50 learners.",
+     "handling": "The action is denied and recorded with reason.",
+     "rule": "RL-542"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "A recommendation would require reading data outside declared tools, such as individual pay.",
+     "handling": "The plan is rejected; the agent uses only declared tools.",
+     "rule": "RL-541"
+    },
+    {
+     "id": "E4",
+     "at_step": 8,
+     "condition": "A created assignment fails the post-execution check because the learner already holds the path.",
+     "handling": "The action is reversed using the handle and the failure is recorded.",
+     "rule": "RL-545"
+    }
+   ],
+   "business_rules": [
+    "RL-141",
+    "RL-541",
+    "RL-542",
+    "RL-545"
+   ],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "role_profile (R)",
+    "skill_profile (R)",
+    "skills_projection (R)",
+    "learning_assignment (C)",
+    "requisition (C)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "agent.action.proposed",
+    "agent.policy.evaluated",
+    "agent.action.executed",
+    "learning.path.assigned",
+    "talent.requisition.raised"
+   ],
+   "nfrs": [
+    "The heatmap for 3,000 employees and 400 skills renders within 4 s at p95.",
+    "Every recommendation states the evidence used, such as assessment date or certification."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-018",
+     "persona": "HR operations",
+     "want": "a heatmap of required versus current skills for a role at one site",
+     "so_that": "I can plan training before the new line starts",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the CNC programmer profile requires 5-axis programming at level 3 and 17 of 26 people are at level 1 or 2",
+       "when": "I open the analysis",
+       "then": "the heatmap shows a gap of 17 for that skill at Peenya Works"
+      },
+      {
+       "given": "a manager has not confirmed an inferred skill",
+       "when": "the heatmap is computed",
+       "then": "the unconfirmed skill is excluded and counted separately"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-019",
+     "persona": "HR operations",
+     "want": "to confirm agent-recommended learning assignments from a dry-run",
+     "so_that": "nothing is assigned without my decision",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the agent recommends the 5-axis path for 9 people, within the cap of 50",
+       "when": "I remove E1034 and confirm",
+       "then": "8 assignments are created and each appears in the action ledger with my confirmation"
+      },
+      {
+       "given": "a recommendation covers 60 learners against a cap of 50",
+       "when": "the policy gate evaluates it",
+       "then": "it is denied and recorded with the reason"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-020",
+     "persona": "Auditor",
+     "want": "to trace a requisition back to the recommendation and approval that raised it",
+     "so_that": "I can verify the agent acted within policy",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "requisition REQ-2026-131 was raised from a skills recommendation",
+       "when": "I open its action ledger entry",
+       "then": "I see the recommendation, the dry-run, the approver and the time of approval"
+      },
+      {
+       "given": "the requisition is later cancelled",
+       "when": "I view the entry",
+       "then": "the reversal is linked to the original action"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-035",
+    "SYS-037",
+    "SYS-072",
+    "SYS-073",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "INT-UC-010",
+   "name": "Analyse collaboration networks from consented, aggregated metadata",
+   "process": null,
+   "capability_gap": "INT-CG-006",
+   "source": "Authored",
+   "goal": "Identify silos and connecting teams from consented collaboration metadata, aggregated above privacy thresholds and never using message or meeting content.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Tenant admin",
+    "Employee / worker",
+    "Auditor",
+    "Nucleus platform",
+    "Corporate calendar"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Takes part only with consent, can withdraw at any time, and is never ranked or judged individually."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Sees where sites or functions work in isolation, for example between engineering at Pune and production at Medchal Works."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Approves the study scope, data sources and retention before any data is read."
+    }
+   ],
+   "trigger": "HR operations proposes a network study, for example on the handover between design engineering and plant production.",
+   "preconditions": [
+    "A study charter defines purpose, population, metadata sources, thresholds and a 90-day retention, approved by the tenant admin and the data protection lead (to be validated by Legal).",
+    "Connectors to the corporate calendar and the business messaging channel are declared tools limited to sender, recipient, time and count.",
+    "Employees in scope have been asked for consent under the DPDP Act 2023."
+   ],
+   "postconditions_success": [
+    "A team-level network map and findings are published to authorised viewers, and raw metadata is deleted at the end of retention."
+   ],
+   "postconditions_failure": [
+    "The study does not run if consent coverage is below the configured minimum."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Submits the study charter for the design-to-production handover across Pune and Medchal Works.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Tenant admin",
+     "action": "Approves the charter through the approval engine with the data protection lead.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Requests consent from the 420 employees in scope, explaining that only counts and timing are used, never content.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Collects 8 weeks of metadata only for consenting employees through the declared connectors.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Pseudonymises identities and aggregates interactions to team level, applying a minimum of 8 people per node.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Computes cross-team link strength, isolated teams and bridging teams.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Reviews findings and adds interventions such as a weekly design-production stand-up.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Director / approver",
+     "action": "Views the team-level map and approves the interventions.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Deletes raw metadata at day 90 and keeps only the aggregated results.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "An individual has opted in to be named as a connector for a recognition programme.",
+     "steps": [
+      "Platform shows that person's name only in the recognition view and only with their opt-in recorded."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Consent coverage is below 60% of the population.",
+     "handling": "The study does not proceed and HR is told the coverage.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A team node has fewer than 8 consenting members.",
+     "handling": "It is merged into its parent unit or suppressed.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "A connector tool returns content fields such as message text.",
+     "handling": "The tool call is rejected by the policy gate and the connector is disabled pending review.",
+     "rule": "RL-541"
+    },
+    {
+     "id": "E4",
+     "at_step": 3,
+     "condition": "An employee withdraws consent during the study.",
+     "handling": "Their metadata is deleted within 24 hours and excluded from results.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-541"
+   ],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "ona_study (C, U)",
+    "ona_consent (C, U)",
+    "interaction_aggregate (C, D)",
+    "team_network (C)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "agent.tool.called"
+   ],
+   "nfrs": [
+    "No output, export or agent answer contains an individual node unless that person opted in to be named.",
+    "Raw metadata is deleted within 24 hours of the retention end date."
+   ],
+   "frequency": "Annual",
+   "criticality": "Low",
+   "phase": "P5",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-021",
+     "persona": "Employee / worker",
+     "want": "to consent to the network study knowing exactly what is collected",
+     "so_that": "my privacy is respected",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "I receive the consent request for the design-production study",
+       "when": "I open it",
+       "then": "it states that only sender, recipient, time and count are used, never content, and that data is deleted after 90 days"
+      },
+      {
+       "given": "I withdraw consent on day 20",
+       "when": "the withdrawal is processed",
+       "then": "my metadata is deleted within 24 hours"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-022",
+     "persona": "Director / approver",
+     "want": "a team-level map showing isolated and bridging teams",
+     "so_that": "I can fix handover problems between sites",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "the study covers 31 teams with at least 8 consenting members each",
+       "when": "I open the map",
+       "then": "design engineering Pune and production Medchal show a weak link with link strength in the bottom 10%"
+      },
+      {
+       "given": "a team has 6 consenting members",
+       "when": "the map is built",
+       "then": "that team is merged into its parent unit"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-027",
+    "SYS-035",
+    "SYS-037",
+    "SYS-072"
+   ]
+  },
+  {
+   "id": "INT-UC-011",
+   "name": "Show context metrics embedded in transactional screens",
+   "process": null,
+   "capability_gap": "INT-CG-007",
+   "source": "Authored",
+   "goal": "Display metrics relevant to the decision on the screen, within the viewer's scope, such as team absence trend beside a leave approval.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Implementation consultant",
+    "Plant HR / time office",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Decides approvals with coverage and trend in view, without opening a separate report."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Configures which metric widgets appear on which screen for the tenant."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Personal data shown in context never exceeds what the viewer may already see."
+    }
+   ],
+   "trigger": "A user opens a transactional screen that has context widgets configured.",
+   "preconditions": [
+    "Context widgets are registered with the screen, metric, scope rule and minimum group size.",
+    "Analytics projections for the metrics are refreshed on their configured schedule."
+   ],
+   "postconditions_success": [
+    "The screen shows its widgets with the projection timestamp, scoped to the viewer."
+   ],
+   "postconditions_failure": [
+    "When a widget cannot load, the screen states that context is unavailable and the transaction remains usable."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Opens a leave request from E1066 for 2026-11-23 to 2026-11-25 at Peenya Works.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Looks up the context widgets registered for the screen: team absence trend, overlap on the dates and shift coverage.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Resolves the viewer's scope and queries the analytics projections within it.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows an 8-week team absence trend, 3 others already approved for 2026-11-24 and shift A coverage dropping to 82%.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Drills into the coverage figure to see the roster for those dates within the team.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Approves the request with the context in view.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Records which widgets were shown with the decision for later review.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "An implementation consultant adds a widget to the overtime approval screen.",
+     "steps": [
+      "Consultant selects the metric and scope rule in configuration and previews it as a sample manager.",
+      "The widget appears for all managers after publishing."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A metric would cover fewer than 5 people, such as team wellbeing scores.",
+     "handling": "The widget is suppressed and shows the minimum-size notice.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The projection is unavailable or older than its freshness limit.",
+     "handling": "The widget shows Context unavailable or the data age, and the approval remains possible.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "The drill-through would leave the viewer's scope.",
+     "handling": "The drill stops at the scope boundary.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-111"
+   ],
+   "data_objects": [
+    "context_widget (R)",
+    "analytics_projection (R)",
+    "widget_render_log (C)"
+   ],
+   "events": [
+    "leave.request.approved"
+   ],
+   "nfrs": [
+    "Widgets load within 800 ms at p95 and never delay the transactional form from rendering.",
+    "Each widget shows the timestamp of the projection it used."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "INT-US-023",
+     "persona": "Manager / supervisor",
+     "want": "team absence and coverage shown beside a leave request",
+     "so_that": "I can approve without opening another report",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "3 team members are approved on leave on 2026-11-24 and shift A has 22 rostered",
+       "when": "I open E1066's request",
+       "then": "the widget shows 3 overlapping absences and coverage of 82% for that day"
+      },
+      {
+       "given": "the analytics projection is unavailable",
+       "when": "I open the request",
+       "then": "the widget shows Context unavailable and I can still approve"
+      }
+     ]
+    },
+    {
+     "id": "INT-US-024",
+     "persona": "Implementation consultant",
+     "want": "to add a context widget to a screen through configuration",
+     "so_that": "the tenant gets relevant metrics without custom development",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I add monthly overtime hours per worker to the overtime approval screen",
+       "when": "I preview it as a sample supervisor at Chakan Works",
+       "then": "it shows only that supervisor's team"
+      },
+      {
+       "given": "I configure a wellbeing metric with minimum group size 5",
+       "when": "a manager of 4 opens the screen",
+       "then": "the widget is suppressed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-037",
+    "SYS-040"
+   ]
+  }
+ ]
+}

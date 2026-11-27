@@ -1,0 +1,3633 @@
+{
+ "domain": "TIM",
+ "use_cases": [
+  {
+   "id": "TIM-UC-001",
+   "name": "Ingest punches from every enrolled source",
+   "process": "TIM-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Capture every attendance punch from any enrolled source exactly once, store it immutably and queue the affected attendance day for derivation.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Biometric terminal",
+    "Business messaging channel",
+    "Nucleus platform",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Every punch reaches the platform, including those taken while a terminal or phone was offline, so daily attendance needs no manual reconstruction."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Locked payroll inputs are never changed silently by a punch that arrives late."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Raw punches and any clock corrections are retained side by side and can be traced to the device that produced them."
+    }
+   ],
+   "trigger": "A worker punches at a biometric terminal, kiosk, geofenced mobile app, business messaging channel, web page or integrated gate system.",
+   "preconditions": [
+    "The worker holds an active assignment and is enrolled on the source used to punch.",
+    "The terminal or kiosk is registered to a location and has completed at least one clock sync with the platform.",
+    "The set of enabled punch sources is configured for the tenant (RL-070)."
+   ],
+   "postconditions_success": [
+    "One immutable attendance_event exists with person, punch time, direction, source and device, and time.punch.received and time.punch.ingested have been emitted.",
+    "Repeat punches inside the 60-second dedupe window are stored and marked as duplicates rather than dropped.",
+    "The affected attendance date is in the recompute queue (attendance_day state PENDING) and time.recompute.requested has been emitted."
+   ],
+   "postconditions_failure": [
+    "A punch for a date inside a locked payroll period is stored and raised as an exception; the locked attendance day is unchanged.",
+    "A punch held offline beyond the 7-day queue limit is not replayed and must be recovered through regularisation (TIM-08)."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Punches IN or OUT at an enrolled source, which captures person, time, direction, device and, on mobile, location and selfie reference.",
+     "ref": "TIM-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Biometric terminal",
+     "action": "Pushes the punch batch to the ingestion endpoint, or the site agent polls the device buffer and pushes it; received_at is stamped.",
+     "ref": "TIM-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "De-duplicates on person, punch time and device within the 60-second window and stores the raw event immutably.",
+     "ref": "TIM-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Queues the person's affected attendance date for derivation with reason new_punch and emits time.recompute.requested.",
+     "ref": "TIM-01.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The terminal, kiosk or phone has no connection to the platform when the worker punches.",
+     "steps": [
+      "The source queues the punch locally with a signed timestamp.",
+      "On reconnect the source replays queued punches in order, keeping the original punch time and adding the actual received_at."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The terminal clock has drifted from platform time.",
+     "steps": [
+      "The platform corrects punch time using the device's last sync offset, within the configured maximum of plus or minus 120,000 ms.",
+      "The correction is recorded and the raw device value is retained beside it."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 1,
+     "condition": "The worker punches through the business messaging channel instead of a terminal or app.",
+     "steps": [
+      "The channel relays the punch with the worker's verified identity and message timestamp to the same ingestion service."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A second punch from the same person and device arrives inside the 60-second dedupe window.",
+     "handling": "The event is stored with is_duplicate set, excluded from pairing and counted towards the device health signal; it is never discarded.",
+     "rule": "RL-073"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The punch belongs to a date inside a locked payroll period.",
+     "handling": "The attendance day is not re-queued; an attendance exception is raised for time office and payroll review instead of changing the locked day.",
+     "rule": "RL-075"
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "A locally queued punch is older than the 7-day queue limit when connectivity returns.",
+     "handling": "The punch is not replayed automatically; the worker or supervisor recovers the time through a regularisation in the exception queue.",
+     "rule": "RL-071"
+    }
+   ],
+   "business_rules": [
+    "RL-070",
+    "RL-071",
+    "RL-072",
+    "RL-073",
+    "RL-074",
+    "RL-075"
+   ],
+   "screens": [
+    "SCR-020"
+   ],
+   "data_objects": [
+    "attendance_event (C)",
+    "recompute_queue (C)",
+    "attendance_exception (C)"
+   ],
+   "events": [
+    "time.punch.received",
+    "time.punch.ingested",
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "Sustains a peak of 500 punches per second per tenant without loss or reordering of a person's events.",
+    "Offline sources retain queued punches with signed timestamps for at least 7 days.",
+    "Raw attendance events are append-only; corrections are stored as additional values, never as overwrites."
+   ],
+   "frequency": "Continuous (500/s peak)",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-01"
+   ],
+   "acceptance_tests": [
+    "TC-T70",
+    "TC-T71",
+    "TC-T72",
+    "TC-T73",
+    "TC-T74",
+    "TC-T75",
+    "T-01"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-001",
+     "persona": "Employee / worker",
+     "want": "to punch from the mobile app even when the site has no network",
+     "so_that": "my attendance is recorded at the time I actually arrived or left and I do not have to raise a correction",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employee E1018 is inside the plant geofence and his phone is offline at 21:15 on 08 Sep",
+       "when": "he punches IN on the app",
+       "then": "the app stores the punch locally with a signed timestamp of 21:15 and shows it as waiting to sync"
+      },
+      {
+       "given": "the queued 21:15 punch",
+       "when": "the phone reconnects at 21:52",
+       "then": "the platform stores one attendance_event with punch_ts 21:15, source mobile and received_at 21:52, and queues 08 Sep for derivation"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-002",
+     "persona": "Plant HR / time office",
+     "want": "duplicate reads from a terminal to be marked rather than dropped",
+     "so_that": "I can find terminals that double-read without losing any genuine punch",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 places his finger twice on the same terminal at 08:00:05 and 08:00:41",
+       "when": "both reads are ingested",
+       "then": "two attendance_events are stored, the second has is_duplicate set and only the 08:00:05 event is used for pairing"
+      },
+      {
+       "given": "two punches from the same person and terminal 90 seconds apart",
+       "when": "they are ingested",
+       "then": "neither is marked as a duplicate because the gap exceeds the 60-second window"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-003",
+     "persona": "Auditor",
+     "want": "every clock-drift correction to keep the raw device time alongside the corrected time",
+     "so_that": "I can explain any punch time shown on a payslip back to what the terminal recorded",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a terminal whose last sync offset shows it running 95,000 ms fast",
+       "when": "it sends a punch stamped 08:01:35",
+       "then": "the event stores a corrected punch time of 08:00:00, the raw value 08:01:35 and the offset applied"
+      },
+      {
+       "given": "the same corrected event",
+       "when": "the attendance day is derived",
+       "then": "first_in uses 08:00:00 and the raw value remains retrievable from the event history"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-004",
+     "persona": "Payroll manager",
+     "want": "a punch that arrives for a locked payroll period to raise an exception instead of altering the day",
+     "so_that": "figures I have already locked for payroll never move without my knowledge",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "September attendance inputs are locked for payroll",
+       "when": "a replayed punch for E1018 dated 28 Sep arrives on 03 Oct",
+       "then": "the 28 Sep attendance day is unchanged and an attendance exception citing RL-075 appears in the exception queue"
+      },
+      {
+       "given": "the same late punch",
+       "when": "I inspect the raw events for E1018 on 28 Sep",
+       "then": "the punch is present and immutable with received_at 03 Oct"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-057",
+    "SYS-062",
+    "SYS-063",
+    "SYS-064",
+    "SYS-080",
+    "SYS-082"
+   ]
+  },
+  {
+   "id": "TIM-UC-002",
+   "name": "Derive the attendance day from paired punches",
+   "process": "TIM-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Turn a person's punches into one attendance day keyed on the shift start date, with segments, breaks, gross, net and raw overtime, stamped with provenance.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Payroll manager",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "A night that runs past midnight counts as one working day and the next day is not marked absent."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Breaks such as the dinner gap are reportable on their own without a special query."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Gross, net and overtime figures follow the client's configured break and overtime basis, so pay inputs are correct."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every computed day carries the ruleset version and every recomputation leaves a field-level delta."
+    }
+   ],
+   "trigger": "A punch lands for the day (TIM-01) or a recompute is requested for it (TIM-09).",
+   "preconditions": [
+    "The attendance date is queued for derivation (attendance_day state PENDING).",
+    "The applied shift and the tenant's break-deduction and overtime-basis settings are effective for the date.",
+    "Gate passes for the date, if any, are recorded with their approval status."
+   ],
+   "postconditions_success": [
+    "attendance_day is COMPUTED with first_in, last_out, gross, recorded and deducted break minutes, net minutes and ot_minutes_raw.",
+    "One attendance_segment exists per IN/OUT pair and one attendance_break per gap between segments.",
+    "computed_at, ruleset version and input hash are stamped and time.attendance_day.computed is emitted; a recompute that changed values has written attendance_day_delta rows."
+   ],
+   "postconditions_failure": [
+    "Where an event cannot be paired, the day is in EXCEPTION state, the event is retained and an exception is raised to the queue (TIM-08)."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Sets attendance_date to the date the shift started, so a shift that runs past midnight stays on one day.",
+     "ref": "TIM-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Collects all of the person's events inside the 30-hour day window and orders them by timestamp.",
+     "ref": "TIM-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Pairs each IN with the next OUT and writes one attendance_segment per pair.",
+     "ref": "TIM-02.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Writes each gap between consecutive segments as an attendance_break with a break type (meal, gate_pass, other) and a paid flag.",
+     "ref": "TIM-02.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Computes gross_minutes as last OUT minus first IN.",
+     "ref": "TIM-02.5"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Computes recorded and deducted break minutes and net_minutes per the tenant's break treatment; the demo client records breaks without deducting them.",
+     "ref": "TIM-02.6"
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Deducts gate-pass gaps as breaks and credits back the minutes of approved gate passes before disposition.",
+     "ref": "TIM-02.7"
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Computes ot_minutes_raw as the greater of zero and basis minus shift minutes, using gross or net as configured (gross for the demo client).",
+     "ref": "TIM-02.8"
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Stamps computed_at, ruleset version and input hash, and emits time.attendance_day.computed.",
+     "ref": "TIM-02.9"
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "When recomputing an existing day, writes an attendance_day_delta per changed field instead of overwriting silently.",
+     "ref": "TIM-02.10"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The tenant is configured to deduct recorded breaks from net time.",
+     "steps": [
+      "Break minutes are written as both recorded and deducted.",
+      "net_minutes is gross minus deducted breaks, so a 19h20m span with a 45-minute break gives 18h35m."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 8,
+     "condition": "The tenant's overtime basis is net rather than gross.",
+     "steps": [
+      "ot_minutes_raw is computed from net_minutes against shift minutes."
+     ],
+     "rejoin": "Returns to step 9"
+    },
+    {
+     "id": "A3",
+     "at_step": 10,
+     "condition": "The recomputed day is identical to the stored day.",
+     "steps": [
+      "The stored row is left as it is and no delta or recomputed event is written."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "An IN has no following OUT, or an OUT has no preceding IN, inside the day window.",
+     "handling": "No segment is written for the event, the event is retained, the day enters EXCEPTION state and an unpaired-punch exception is raised to the queue.",
+     "rule": "RL-082"
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "A gate-pass gap exists but the pass is pending or rejected.",
+     "handling": "The gap stays deducted as a gate_pass break and no minutes are credited until approval triggers a recompute.",
+     "rule": "RL-086"
+    }
+   ],
+   "business_rules": [
+    "RL-080",
+    "RL-081",
+    "RL-082",
+    "RL-083",
+    "RL-084",
+    "RL-085",
+    "RL-086",
+    "RL-087",
+    "RL-088",
+    "RL-089",
+    "BS:RL-01",
+    "BS:RL-02",
+    "BS:RL-03"
+   ],
+   "screens": [
+    "SCR-022",
+    "SCR-021"
+   ],
+   "data_objects": [
+    "attendance_event (R)",
+    "attendance_day (C/U)",
+    "attendance_segment (C)",
+    "attendance_break (C)",
+    "gate_pass (R)",
+    "attendance_day_delta (C)"
+   ],
+   "events": [
+    "time.attendance_day.computed",
+    "time.attendance_day.recomputed"
+   ],
+   "nfrs": [
+    "Derivation is deterministic: identical inputs and ruleset version always produce an identical attendance_day row (property TC-PR06).",
+    "For every day, segment minutes plus break minutes equal gross minutes (property TC-PR07).",
+    "Break treatment and overtime basis are tenant configuration; changing them requires no release."
+   ],
+   "frequency": "Nightly and on demand",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-01",
+    "R-12"
+   ],
+   "acceptance_tests": [
+    "TC-T80",
+    "TC-T81",
+    "TC-T82",
+    "TC-T83",
+    "TC-T84",
+    "TC-T85",
+    "TC-T86",
+    "TC-T87",
+    "TC-T88",
+    "TC-T89",
+    "TC-PR06",
+    "TC-PR07",
+    "T-01",
+    "T-02",
+    "T-03"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-005",
+     "persona": "Plant HR / time office",
+     "want": "a shift that runs past midnight to be one attendance day on the date it started",
+     "so_that": "night workers are neither split across two days nor marked absent the next morning",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 on shift A 08:00-20:00 punches IN 08:00, OUT 20:30, IN 21:15 on 08 Sep and OUT 03:20 on 09 Sep",
+       "when": "the day is derived",
+       "then": "one attendance day dated 08 Sep exists with first_in 08:00, last_out 03:20 and gross 19h20m"
+      },
+      {
+       "given": "the same punches",
+       "when": "09 Sep is derived",
+       "then": "the 03:20 OUT is not counted on 09 Sep and 09 Sep is not marked Absent because of it"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-006",
+     "persona": "Plant HR / time office",
+     "want": "each gap between punches stored as its own break row",
+     "so_that": "I can run a break register without asking for a custom report",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's day of 08 Sep is derived",
+       "when": "I run the break register for E1018 on 08 Sep",
+       "then": "exactly one row appears: start 20:30, end 21:15, 45 minutes, type meal, recorded and not deducted"
+      },
+      {
+       "given": "segments 08:00-20:30 and 21:15-03:20",
+       "when": "the totals are checked",
+       "then": "750 plus 365 segment minutes plus the 45-minute break equal the 1,160-minute gross span"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-007",
+     "persona": "Implementation consultant",
+     "want": "break deduction and overtime basis to be tenant settings",
+     "so_that": "each client's policy is applied without code changes",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "deduct_breaks is NO and ot_basis is GROSS for the tenant",
+       "when": "E1018's 08 Sep day is derived against the 12-hour shift",
+       "then": "net is 19h20m and ot_minutes_raw is 440 (7h20m)"
+      },
+      {
+       "given": "a test tenant with deduct_breaks YES and ot_basis NET",
+       "when": "the same punches are derived",
+       "then": "net is 18h35m and ot_minutes_raw is 395 (6h35m)"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-008",
+     "persona": "Auditor",
+     "want": "every computed day to carry its ruleset version and every recomputation to leave a field-level delta",
+     "so_that": "I can explain why a recomputed day differs from the original",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's 08 Sep day was computed under the then-current ruleset",
+       "when": "an approved regularisation changes last_out and the day is recomputed",
+       "then": "an attendance_day_delta records last_out with old value, new value and reason, and the row shows the ruleset version used"
+      },
+      {
+       "given": "a day whose inputs have not changed",
+       "when": "it is recomputed",
+       "then": "the row is identical and no delta is written"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-026",
+    "SYS-047",
+    "SYS-059",
+    "SYS-068"
+   ]
+  },
+  {
+   "id": "TIM-UC-003",
+   "name": "Infer the applied shift from the first in-punch",
+   "process": "TIM-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Apply the shift a worker actually punched into, record it against the rostered shift and let the roster owner correct it.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Manager / supervisor",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees when actual coverage departed from the published roster."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Is judged against the thresholds of the shift actually worked, not the one rostered."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every override of an inferred shift names who changed it and why."
+    }
+   ],
+   "trigger": "The first in-punch of a person's day is derived.",
+   "preconditions": [
+    "A published roster or an assignment default shift exists for the date.",
+    "Each shift in the shift group has a non-overlapping inference window (earliest_in, latest_in)."
+   ],
+   "postconditions_success": [
+    "attendance_day records shift_id_assigned and shift_id_applied, and the inference reason where they differ.",
+    "time.shift.inferred (and time.shift.overridden after a correction) has been emitted.",
+    "Disposition thresholds are looked up using the applied shift's duration."
+   ],
+   "postconditions_failure": [
+    "Where no inference window matches, the assigned shift is applied and an exception is raised for review."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Reads the assigned shift for the date from the published roster, falling back to the assignment default.",
+     "ref": "TIM-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the first in-punch falls inside another shift's inference window within the same shift group.",
+     "ref": "TIM-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Adopts the inferred shift for the day, records assigned shift, applied shift and inference reason, and emits time.shift.inferred.",
+     "ref": "TIM-03.3"
+    },
+    {
+     "n": 4,
+     "actor": "Plant HR / time office",
+     "action": "Reviews the inferred shift on the attendance day detail and overrides it, with a reason, where the inference is wrong.",
+     "ref": "TIM-03.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Passes the applied shift's duration to the disposition threshold lookup (TIM-05).",
+     "ref": "TIM-03.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The first in-punch falls inside the assigned shift's own window.",
+     "steps": [
+      "The assigned shift is recorded as the applied shift and no inference event is emitted."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "The roster owner agrees with the inferred shift.",
+     "steps": [
+      "No override is recorded and the inferred shift stands."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "While configuring the shift group, a window is saved that overlaps another shift's window in the same group.",
+     "handling": "The save fails validation and names both shifts and the overlapping interval; no ambiguous inference can occur at run time.",
+     "rule": "RL-091"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The first in-punch falls outside every inference window in the group.",
+     "handling": "The assigned shift is applied and an inferred-shift exception is raised to the attendance exception queue for review.",
+     "rule": "RL-140"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "An override is submitted without a reason.",
+     "handling": "The override is rejected; actor and reason are mandatory for the audit entry.",
+     "rule": "RL-093"
+    }
+   ],
+   "business_rules": [
+    "RL-090",
+    "RL-091",
+    "RL-092",
+    "RL-093",
+    "RL-094",
+    "BS:RL-19"
+   ],
+   "screens": [
+    "SCR-022"
+   ],
+   "data_objects": [
+    "roster (R)",
+    "assignment (R)",
+    "shift_window (R)",
+    "attendance_day (U)",
+    "audit_entry (C)",
+    "attendance_rule_set (R)"
+   ],
+   "events": [
+    "time.shift.inferred",
+    "time.shift.overridden"
+   ],
+   "nfrs": [
+    "Inference is never silent: every day where applied differs from assigned is visible to the roster owner on the attendance day detail.",
+    "Inference windows are configuration rows validated at save time."
+   ],
+   "frequency": "Per day",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-14"
+   ],
+   "acceptance_tests": [
+    "TC-T90",
+    "TC-T91",
+    "TC-T92",
+    "TC-T93",
+    "TC-T94",
+    "T-27"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-009",
+     "persona": "Plant HR / time office",
+     "want": "the shift to be taken from the time a worker actually punched in",
+     "so_that": "a worker who covers B shift is processed on B shift without me editing the roster",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee rostered to shift A (08:00-20:00) whose first in-punch is 20:05, inside shift B's window",
+       "when": "the day is derived",
+       "then": "shift applied is B, shift assigned remains A, the inference reason is recorded and time.shift.inferred is emitted"
+      },
+      {
+       "given": "E1020 Arjun Bhat's days of 04 and 11 Sep, where the applied shift differs from the assigned one",
+       "when": "disposition runs",
+       "then": "the 12-hour thresholds of the inferred shift are applied, not those of the rostered shift"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-010",
+     "persona": "Implementation consultant",
+     "want": "overlapping inference windows to be rejected when I save the shift group",
+     "so_that": "inference can never be ambiguous in production",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "SH-A in shift group PLANT12 has the inference window 06:30-09:29",
+       "when": "I save SH-B in PLANT12 with earliest-in 09:00",
+       "then": "the save fails and the message names SH-A and SH-B and the overlapping interval 09:00-09:29"
+      },
+      {
+       "given": "the same group",
+       "when": "I set SH-B's window to 19:00-22:29",
+       "then": "the group saves successfully"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-011",
+     "persona": "Plant HR / time office",
+     "want": "to override a wrong inference with a reason",
+     "so_that": "the day is judged on the correct shift and the change is auditable",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a day inferred as shift B for a worker who stayed on shift A for a line changeover",
+       "when": "I override the applied shift to A with the reason 'Line 3 changeover cover'",
+       "then": "an audit entry records me, the time, old and new shift and the reason, and time.shift.overridden is emitted"
+      },
+      {
+       "given": "the same day",
+       "when": "I try to save the override with an empty reason",
+       "then": "the save is blocked with a message that a reason is required"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-036",
+    "SYS-059",
+    "SYS-068"
+   ]
+  },
+  {
+   "id": "TIM-UC-004",
+   "name": "Resolve the day type before disposition",
+   "process": "TIM-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Decide whether each attendance day is a working day, weekly off, holiday or festival for that worker, from the location calendar and the worker's class, before any threshold is applied.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "HR operations",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Working on a rest day is never mistaken for a short working day."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Policy follows the worker class, so two classes under one contractor are treated correctly."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Rest-day and holiday working feed overtime eligibility correctly (TIM-07)."
+    }
+   ],
+   "trigger": "An attendance day reaches the point before disposition.",
+   "preconditions": [
+    "A work calendar and holiday calendar are published for the worker's location and year.",
+    "The worker's assignment carries a worker class effective on the date, with has_rest_days and rest_day_pattern set."
+   ],
+   "postconditions_success": [
+    "attendance_day.day_type is written before any disposition threshold is applied.",
+    "Workers of different classes at the same vendor, site and shift carry day types from their own class policy."
+   ],
+   "postconditions_failure": [
+    "Where the calendar or class cannot be resolved, the day is not disposed and a missing-data exception is raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Resolves the day type for the location and date from its work and holiday calendars: working, weekly off, holiday or festival.",
+     "ref": "TIM-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Overlays the worker class's rest-day policy (has_rest_days, rest_day_pattern) as effective on that date.",
+     "ref": "TIM-04.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Where workers share vendor, site and shift but differ in class, resolves each worker by their own class policy.",
+     "ref": "TIM-04.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Writes day_type on the attendance day before disposition thresholds are applied.",
+     "ref": "TIM-04.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The worker's class has no rest days, as for daily-wage contractual workers.",
+     "steps": [
+      "A calendar weekly off such as Sunday resolves to Working for this worker."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "All workers in the vendor, site and shift group belong to the same class.",
+     "steps": [
+      "The single class policy is applied to every worker in the group."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Disposition is requested for a day whose day_type has not yet been written.",
+     "handling": "Disposition is refused and the day is re-queued so that day type resolves first; a rest-day volunteer can never be marked Half Day.",
+     "rule": "RL-103"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "No published calendar exists for the worker's location and date.",
+     "handling": "The day is held undisposed and a missing-data exception is raised to the attendance exception queue for the time office.",
+     "rule": "RL-100"
+    }
+   ],
+   "business_rules": [
+    "RL-100",
+    "RL-101",
+    "RL-102",
+    "RL-103"
+   ],
+   "screens": [
+    "SCR-021",
+    "SCR-011"
+   ],
+   "data_objects": [
+    "work_calendar (R)",
+    "holiday_calendar (R)",
+    "worker_class (R)",
+    "assignment (R)",
+    "attendance_day (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Calendars are held per location, so plants in different states never share one holiday list.",
+    "Rest-day policy is read as effective on the attendance date, not as at today."
+   ],
+   "frequency": "Per day",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-T100",
+    "TC-T101",
+    "TC-T102",
+    "TC-T103"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-012",
+     "persona": "Plant HR / time office",
+     "want": "daily-wage contractual workers with no rest days to show Sunday as a working day",
+     "so_that": "their attendance and daily wages are computed on the days they are expected to work",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1032 Shivanna Muniyappa belongs to a class with has_rest_days set to NO",
+       "when": "Sundays 06 and 13 Sep are resolved",
+       "then": "both days show day type Working, not Weekly Off"
+      },
+      {
+       "given": "E1032 raises a regularisation asking for Sunday 13 Sep to be treated as a weekly off",
+       "when": "the request is decided",
+       "then": "it is rejected and 13 Sep stays Working, because rest-day entitlement comes from the worker class and cannot be created by an attendance correction"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-013",
+     "persona": "HR operations",
+     "want": "rest-day policy to attach to the worker class rather than the contractor engagement",
+     "so_that": "employees and helpers supplied by the same vendor each get their own entitlement",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1034 Imran Shaikh (class 3PE) and E1036 Lakshmi Rao (class 3PH) are deployed by the same vendor at the same site and shift",
+       "when": "Sunday 06 Sep is resolved",
+       "then": "the day is Weekly Off for E1034 and Working for E1036"
+      },
+      {
+       "given": "the vendor engagement record is edited",
+       "when": "the days are recomputed",
+       "then": "the day types do not change, because the engagement carries no rest-day policy"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-014",
+     "persona": "Employee / worker",
+     "want": "work done on my weekly off to be shown as rest-day working",
+     "so_that": "I am not marked Half Day or Absent for volunteering on a rest day",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my class has Sunday as weekly off and I work 5 hours on a Sunday",
+       "when": "the day is disposed",
+       "then": "my status reads Weekly Off - worked, and no half-day or absent threshold is applied"
+      },
+      {
+       "given": "the same day",
+       "when": "I open My attendance",
+       "then": "the day type is shown as Weekly Off with the hours I worked"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-015",
+     "persona": "Implementation consultant",
+     "want": "each location to have its own holiday calendar",
+     "so_that": "a local festival at one plant does not become a holiday at plants in other states",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "15 Sep 2026 is Vinayaka Chaturthi in the holiday calendars of Medchal Works (Hyderabad) and Oragadam Works (Chennai) only",
+       "when": "15 Sep is resolved for workers at Medchal Works and at Chakan Works (Pune)",
+       "then": "Medchal workers get day type Holiday and Chakan workers get Working"
+      },
+      {
+       "given": "a worker transfers between the two plants mid-month",
+       "when": "days on either side of the transfer are resolved",
+       "then": "each day uses the calendar of the location effective on that date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-007",
+    "SYS-023",
+    "SYS-026",
+    "SYS-068"
+   ]
+  },
+  {
+   "id": "TIM-UC-005",
+   "name": "Dispose the attendance day against shift thresholds and late rules",
+   "process": "TIM-05",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Assign Present, Half Day, Absent or a non-working status to each day using thresholds for the applied shift's length, grace, the monthly late allowance, designation exemption and long-night relief, with the rule trail stored.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Employee / worker",
+    "Plant HR / time office",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Sees the late counter and the rules behind every status, so penalties are never silent."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Can defend any disputed status from its stored rule trail."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Half-day and absent statuses that drive loss-of-pay are correct before the payroll cut-off."
+    }
+   ],
+   "trigger": "Totals for the attendance day have been computed (TIM-02) and the day type resolved (TIM-04).",
+   "preconditions": [
+    "attendance_day holds net (or configured basis) minutes, the applied shift and day_type.",
+    "attendance_rule_set has a threshold row for the applied shift's duration (12h, 10h, 9h or 8h for the demo client).",
+    "The employee's designation band carries the grace_exempt attribute."
+   ],
+   "postconditions_success": [
+    "attendance_day.status is written with applied_rule_ids and time.attendance_day.disposed is emitted.",
+    "late_by_minutes and the monthly late counter are updated and visible to the employee (time.late.counted)."
+   ],
+   "postconditions_failure": [
+    "Where no threshold row exists for the applied shift duration, the day is left undisposed and an exception is raised for configuration."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the day type is anything other than Working.",
+     "ref": "TIM-05.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Looks up absent, half-day and grace thresholds for the applied shift's duration from attendance_rule_set.",
+     "ref": "TIM-05.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks whether net (or configured basis) minutes fall below the absent threshold, for example 6:30 on a 12-hour shift.",
+     "ref": "TIM-05.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks whether they fall below the half-day threshold, for example 11:30 on a 12-hour shift.",
+     "ref": "TIM-05.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Computes late_by_minutes against shift start plus 15 minutes of grace, with grace applied to both the in and the out punch.",
+     "ref": "TIM-05.5"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the employee's designation band is grace-exempt (Assistant Manager and above for the demo client).",
+     "ref": "TIM-05.6"
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Increments the monthly late-instance counter, visible to the employee; three instances per calendar month are forgiven.",
+     "ref": "TIM-05.7"
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Checks whether this is the fourth or later late instance in the calendar month.",
+     "ref": "TIM-05.8"
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the previous attendance day ended after the long-night hour (03:00), allowing arrival up to 09:30.",
+     "ref": "TIM-05.9"
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Writes the status with the IDs of the rules that produced it and emits time.attendance_day.disposed.",
+     "ref": "TIM-05.10"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The day type is weekly off, holiday or festival.",
+     "steps": [
+      "Status is set to the day type, or to 'day type - worked' where punches exist.",
+      "Thresholds and late rules are skipped and the day passes to overtime eligibility (TIM-07)."
+     ],
+     "rejoin": "Returns to step 10"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Basis minutes are below the absent threshold (390/360/300/270 for 12h/10h/9h/8h shifts).",
+     "steps": [
+      "Status is set to Absent with RL-112 recorded."
+     ],
+     "rejoin": "Returns to step 10"
+    },
+    {
+     "id": "A3",
+     "at_step": 4,
+     "condition": "Basis minutes are below the half-day threshold (690/570/510/450 for 12h/10h/9h/8h shifts).",
+     "steps": [
+      "Status is set to Half Day with RL-113 recorded."
+     ],
+     "rejoin": "Returns to step 10"
+    },
+    {
+     "id": "A4",
+     "at_step": 6,
+     "condition": "The designation band is grace-exempt.",
+     "steps": [
+      "No late instance is recorded and no late deduction applies."
+     ],
+     "rejoin": "Returns to step 10"
+    },
+    {
+     "id": "A5",
+     "at_step": 8,
+     "condition": "The arrival is the fourth or later late instance this month.",
+     "steps": [
+      "Status becomes Half Day even where hours qualify as Present, with RL-117 recorded."
+     ],
+     "rejoin": "Returns to step 9"
+    },
+    {
+     "id": "A6",
+     "at_step": 9,
+     "condition": "The previous day's last OUT was after 03:00, today's arrival is no later than 09:30 and work continues until at least 20:00.",
+     "steps": [
+      "The arrival is not treated as late, the late instance from step 7 is withdrawn and a full day is credited with RL-118 recorded."
+     ],
+     "rejoin": "Returns to step 10"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "No threshold row exists for the applied shift's duration.",
+     "handling": "The day is not disposed; an exception is raised so the implementation consultant adds the threshold row as configuration, then the day is recomputed.",
+     "rule": "RL-111"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A working day has no punches at all.",
+     "handling": "A no-punch exception is raised to the attendance exception queue and the day awaits regularisation or leave before final status.",
+     "rule": "RL-140"
+    }
+   ],
+   "business_rules": [
+    "RL-052",
+    "RL-094",
+    "RL-110",
+    "RL-111",
+    "RL-112",
+    "RL-113",
+    "RL-114",
+    "RL-115",
+    "RL-116",
+    "RL-117",
+    "RL-118",
+    "RL-119",
+    "BS:RL-16",
+    "BS:RL-17",
+    "BS:RL-18"
+   ],
+   "screens": [
+    "SCR-021",
+    "SCR-022"
+   ],
+   "data_objects": [
+    "attendance_day (R/U)",
+    "attendance_rule_set (R)",
+    "designation (R)",
+    "late_counter (U)"
+   ],
+   "events": [
+    "time.late.counted",
+    "time.attendance_day.disposed"
+   ],
+   "nfrs": [
+    "A new shift length is supported by adding a threshold row, with no release.",
+    "My attendance shows the last 60 days and the current late count even when the phone is offline.",
+    "Every status is explainable from its stored applied_rule_ids without re-running the rules."
+   ],
+   "frequency": "Per day",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-13"
+   ],
+   "acceptance_tests": [
+    "TC-T52",
+    "TC-T94",
+    "TC-T110",
+    "TC-T111",
+    "TC-T112",
+    "TC-T113",
+    "TC-T114",
+    "TC-T115",
+    "TC-T116",
+    "TC-T117",
+    "TC-T118",
+    "TC-T119",
+    "T-24",
+    "T-25",
+    "T-26"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-016",
+     "persona": "Plant HR / time office",
+     "want": "half-day and absent thresholds to follow the length of the shift applied",
+     "so_that": "workers on 8, 9, 10 and 12-hour shifts are judged against their own thresholds",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "three working days on a 12-hour shift with net hours of 11:45, 11:00 and 6:00",
+       "when": "the days are disposed",
+       "then": "the statuses are Present, Half Day and Absent respectively"
+      },
+      {
+       "given": "E1041 on a 10-hour shift on 07 Sep with net hours of 9:15",
+       "when": "the day is disposed",
+       "then": "the status is Half Day because 9:15 is below 9:30, and RL-113 appears in the rule trail"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-017",
+     "persona": "Employee / worker",
+     "want": "to see how many late arrivals I have used this month",
+     "so_that": "I know before a fourth late arrival turns a day into a half day",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1019 Sneha Nair on an 08:00 shift arrives late beyond grace on 01, 03 and 07 Sep with full hours",
+       "when": "she opens My attendance on 07 Sep",
+       "then": "the counter shows 3 of 3 forgiven and all three days are Present"
+      },
+      {
+       "given": "she arrives at 08:20 on 10 Sep and again late on 14 Sep",
+       "when": "those days are disposed",
+       "then": "both are Half Day citing RL-117, an 08:10 arrival on any day records no late instance, and the counter resets to 0 on 01 Oct"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-018",
+     "persona": "HR operations",
+     "want": "grace exemption to come from the designation band",
+     "so_that": "managers are exempt from late deductions without a hardcoded grade list",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1021 Rekha Deshpande holds a designation whose band is grace-exempt and works the 09:00 general shift",
+       "when": "she arrives at 09:25, as on each of her five late days in September",
+       "then": "no late instance is recorded, no deduction applies and every such day is Present"
+      },
+      {
+       "given": "a non-exempt colleague arrives at 09:25 on the same shift",
+       "when": "the day is disposed",
+       "then": "a late instance of 25 minutes is recorded and the monthly counter increases by one"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-019",
+     "persona": "Employee / worker",
+     "want": "a late start after a long night to still count as a full day",
+     "so_that": "I am not penalised for staying until the early hours to finish the work",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's shift of 08 Sep ended at 03:20 on 09 Sep",
+       "when": "he arrives at 09:25 on 09 Sep and leaves at 20:10",
+       "then": "09 Sep is Present with no late mark and no grace deduction, citing RL-118, even though the 10h45m span is below the 11h30m half-day threshold"
+      },
+      {
+       "given": "the same long night",
+       "when": "he arrives at 09:40 instead",
+       "then": "the relief window does not apply and the arrival is counted as late against the 08:00 shift start"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-049",
+    "SYS-059",
+    "SYS-068"
+   ]
+  },
+  {
+   "id": "TIM-UC-006",
+   "name": "Request, approve and credit a gate pass",
+   "process": "TIM-06",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Let an employee step out during a shift on an approved gate pass, enforce the personal monthly ceiling in the service and credit approved minutes back into work hours.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Nucleus platform",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Approves only passes that are within entitlement and sees the remaining allowance."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "The ceiling is applied identically on every channel, so no pass slips through the messaging route."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Approved pass minutes do not reduce net hours; unapproved absence does."
+    }
+   ],
+   "trigger": "An employee requests a gate pass.",
+   "preconditions": [
+    "The employee holds an active assignment with a gate-pass entitlement of 240 minutes and 2 personal instances per calendar month.",
+    "An approval chain for gate passes is defined for the employee's class and location (RL-010)."
+   ],
+   "postconditions_success": [
+    "gate_pass is approved, time.gate_pass.approved is emitted and the day is queued for recompute.",
+    "The approved minutes are credited back into work hours before disposition, so net hours are unchanged by the pass."
+   ],
+   "postconditions_failure": [
+    "A personal pass that would breach the ceiling is rejected at validation with the ceiling named; nothing reaches the approver.",
+    "A rejected or pending pass credits nothing and the absence stays deducted."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Requests a gate pass with date, from and to times, type (personal or official) and reason.",
+     "ref": "TIM-06.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "For a personal pass, checks whether it would exceed 240 minutes or 2 instances in the calendar month.",
+     "ref": "TIM-06.2"
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Approves or rejects the pass in the approvals inbox, on the chain resolved for the request type, class and location.",
+     "ref": "TIM-06.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "On approval, credits the approved minutes back into work hours before disposition thresholds and requests recompute of the day.",
+     "ref": "TIM-06.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Tracks official passes on the employee's record without counting them against the personal ceiling.",
+     "ref": "TIM-06.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee raises the request through the business messaging channel.",
+     "steps": [
+      "The channel passes the request to the same gate-pass service, which applies the same validation as the web and app forms."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The pass type is official.",
+     "steps": [
+      "The personal ceiling check is skipped and the pass is routed for approval."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 3,
+     "condition": "The approver rejects the pass.",
+     "steps": [
+      "The pass is closed as rejected with the approver's reason.",
+      "The time away stays deducted as a gate_pass break when the day is derived."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The personal pass would take the month beyond 240 minutes or beyond 2 instances.",
+     "handling": "The request is rejected at validation with reason text naming the ceiling and the amount already used; it is not routed to the approver.",
+     "rule": "RL-121"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The day is derived while the pass is still pending.",
+     "handling": "No minutes are credited; the gap stays deducted until approval triggers a recompute.",
+     "rule": "RL-122"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-086",
+    "RL-120",
+    "RL-121",
+    "RL-122",
+    "RL-123",
+    "BS:RL-20"
+   ],
+   "screens": [
+    "SCR-023",
+    "SCR-040",
+    "SCR-021"
+   ],
+   "data_objects": [
+    "gate_pass (C/R/U)",
+    "attendance_day (U)"
+   ],
+   "events": [
+    "time.gate_pass.requested",
+    "time.gate_pass.approved",
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "The ceiling is enforced in the gate-pass service, so every channel returns the same decision for the same request.",
+    "Remaining personal minutes and instances for the month are shown to the employee before submission."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-12"
+   ],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-T86",
+    "TC-T120",
+    "TC-T121",
+    "TC-T122",
+    "TC-T123",
+    "T-23"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-020",
+     "persona": "Employee / worker",
+     "want": "to be told immediately when a gate pass would exceed my monthly entitlement",
+     "so_that": "I do not wait for an approval that cannot be given",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1023 Kavya Venkatesh has approved personal passes GP-2026-0141 (04 Sep) and GP-2026-0155 (11 Sep) of 120 minutes each",
+       "when": "she submits GP-2026-0163 for 15:00-17:00 on 24 Sep",
+       "then": "the request is rejected at validation with text naming the 240-minute and 2-pass monthly ceiling, and no approver is notified"
+      },
+      {
+       "given": "E1044 Rahul Gaikwad has no personal passes in September",
+       "when": "he requests GP-2026-0152, one 240-minute pass on 09 Sep",
+       "then": "it is accepted for approval, and once approved any further personal pass that month is rejected on the minutes ceiling"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-021",
+     "persona": "Manager / supervisor",
+     "want": "approved gate-pass time to be credited back to my team member's work hours",
+     "so_that": "an approved errand does not turn a full day into a half day",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1023 is out from 12:00 to 14:00 on 04 Sep on personal pass GP-2026-0141, which I approve",
+       "when": "the day is recomputed",
+       "then": "a 120-minute gate_pass break is recorded, 120 minutes are credited back and net hours equal those without the pass"
+      },
+      {
+       "given": "a pass that is still pending when the day is derived",
+       "when": "I view the day",
+       "then": "no minutes are credited, and after I approve it the day is recomputed with the credit applied"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-022",
+     "persona": "Employee / worker",
+     "want": "to request a gate pass through the business messaging channel",
+     "so_that": "I can ask from the shop floor without a computer",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I have used 2 personal passes this month",
+       "when": "I request a third through the business messaging channel",
+       "then": "I receive the same ceiling rejection text as the web form"
+      },
+      {
+       "given": "I have used no passes this month",
+       "when": "I request a 60-minute personal pass through the channel",
+       "then": "the request appears in my manager's approvals inbox with source shown as messaging channel"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-023",
+     "persona": "Plant HR / time office",
+     "want": "official passes tracked separately from personal ones",
+     "so_that": "staff sent out on company business do not lose their personal entitlement",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1023 has used 240 personal minutes in September",
+       "when": "an official pass of 90 minutes for a supplier visit is requested for her",
+       "then": "it is accepted for approval and her personal usage remains 240 of 240"
+      },
+      {
+       "given": "E1026 has approved official pass GP-2026-0148 of 60 minutes on 07 Sep for a vendor pickup at the gate",
+       "when": "I view E1026's gate-pass history",
+       "then": "the pass is listed as official and his personal usage for September shows 0 minutes and 0 instances"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-049",
+    "SYS-057",
+    "SYS-059",
+    "SYS-071"
+   ]
+  },
+  {
+   "id": "TIM-UC-007",
+   "name": "Compute and approve overtime",
+   "process": "TIM-07",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Turn raw overtime minutes into an approved, payable overtime record that respects class eligibility, the state multiplier and the run in which it will be paid.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Eligible overtime is recorded at the right rate and paid in the expected run."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Only approved overtime reaches the pay run, and overtime cannot be pulled into the salary run."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Approved overtime feeds the statutory overtime register and statutory limits are flagged before approval."
+    }
+   ],
+   "trigger": "An attendance day is computed with ot_minutes_raw greater than zero or is worked on a rest day or holiday.",
+   "preconditions": [
+    "attendance_day is COMPUTED with ot_minutes_raw and day_type.",
+    "The person's ot_eligibility (always, rest_day_and_holiday_only or none) is resolved from class and assignment.",
+    "The state rule pack provides the overtime multiplier and weekly limit (2.0 multiplier for the demo client)."
+   ],
+   "postconditions_success": [
+    "overtime_record exists with minutes, eligibility basis, day type and multiplier, approved by the manager (time.overtime.approved).",
+    "The record is tagged with the run that will pay it; for the demo client this is the off-cycle run after salary."
+   ],
+   "postconditions_failure": [
+    "Ineligible or rejected overtime has zero payable minutes; raw minutes are retained for reporting."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Reads ot_minutes_raw from the attendance day and the person's resolved overtime eligibility.",
+     "ref": "TIM-07.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks whether overtime eligibility is none.",
+     "ref": "TIM-07.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks whether eligibility is rest-day-and-holiday-only and applies it against the resolved day type.",
+     "ref": "TIM-07.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Writes the overtime_record with eligibility basis, day type and state rule-pack multiplier, and emits time.overtime.computed.",
+     "ref": "TIM-07.4"
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Reviews the overtime in the approvals inbox and approves it before it becomes payable.",
+     "ref": "TIM-07.5"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Tags the approved overtime with the run that will pay it, regular or off-cycle (off-cycle after salary for the demo client).",
+     "ref": "TIM-07.6"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Eligibility is none.",
+     "steps": [
+      "Payable overtime is set to zero and the raw minutes are kept on the record for reporting.",
+      "No approval task is created."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Eligibility is rest-day-and-holiday-only.",
+     "steps": [
+      "On a working day payable overtime is zero despite a span above shift length.",
+      "On a rest day or holiday the whole worked span is payable overtime."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A3",
+     "at_step": 5,
+     "condition": "The manager rejects the overtime.",
+     "steps": [
+      "The record is marked rejected with the reason; payable minutes are zero and raw minutes remain for reporting."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Approving the overtime would exceed the statutory weekly limit in the state rule pack (to be validated by Legal).",
+     "handling": "The approver sees a warning naming the limit and the excess minutes; overtime is never paid past a limit silently.",
+     "rule": "RL-133"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "An overtime payment run is started before the linked salary run is closed.",
+     "handling": "The run is blocked; after the salary run closes the overtime run executes and posts separately.",
+     "rule": "RL-134"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-130",
+    "RL-131",
+    "RL-132",
+    "RL-133",
+    "RL-134",
+    "BS:RL-04",
+    "BS:RL-23"
+   ],
+   "screens": [
+    "SCR-024",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "attendance_day (R)",
+    "assignment (R)",
+    "overtime_record (C/U)"
+   ],
+   "events": [
+    "time.overtime.computed",
+    "time.overtime.approved"
+   ],
+   "nfrs": [
+    "Approved overtime records are retained long-term as the source for the statutory overtime register.",
+    "Overtime eligibility and multiplier are configuration (class and state rule pack), not code."
+   ],
+   "frequency": "Daily",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-01",
+    "R-11"
+   ],
+   "acceptance_tests": [
+    "TC-T130",
+    "TC-T131",
+    "TC-T132",
+    "TC-T133",
+    "TC-Y134",
+    "T-03",
+    "T-22"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-024",
+     "persona": "Manager / supervisor",
+     "want": "to approve overtime with its basis and rate in front of me",
+     "so_that": "only overtime I have checked becomes payable",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018, eligible on all days, worked a 19h20m gross span on 08 Sep against a 12-hour shift",
+       "when": "I open the overtime approval",
+       "then": "it shows 440 minutes (7h20m), basis gross, day type Working and multiplier 2.0"
+      },
+      {
+       "given": "I have not yet approved it",
+       "when": "payroll inputs are prepared",
+       "then": "the record is excluded from every pay run; once I approve, time.overtime.approved is emitted and it becomes payable"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-025",
+     "persona": "Payroll manager",
+     "want": "rest-day-only overtime eligibility applied by day type",
+     "so_that": "workers with that eligibility are paid overtime only for rest-day and holiday working",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1034 Imran Shaikh has eligibility rest_day_and_holiday_only and works a span above 12 hours on Friday 04 Sep",
+       "when": "overtime is computed",
+       "then": "payable overtime is 0 and the raw minutes are retained on the record"
+      },
+      {
+       "given": "E1034 works on Sunday 06 Sep, his weekly off",
+       "when": "overtime is computed",
+       "then": "the whole worked span is payable overtime"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-026",
+     "persona": "Payroll manager",
+     "want": "overtime paid in its own run after salary",
+     "so_that": "overtime is never mixed into the salary run, as the client requires",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September salary run is still open",
+       "when": "I try to execute the September overtime payment run",
+       "then": "it is blocked with a message that the linked salary run must close first"
+      },
+      {
+       "given": "the September salary run is closed",
+       "when": "I execute the overtime run",
+       "then": "approved September overtime records tagged to it are paid and posted separately from salary"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-027",
+     "persona": "Manager / supervisor",
+     "want": "a warning when approving overtime would breach the statutory weekly limit",
+     "so_that": "I never approve overtime beyond the limit unknowingly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a team member whose approved overtime this week already reaches the weekly limit in the state rule pack",
+       "when": "I open a further overtime record for approval",
+       "then": "a warning names the limit and the excess minutes before I can decide"
+      },
+      {
+       "given": "a record within the weekly limit",
+       "when": "I open it",
+       "then": "no limit warning is shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-045",
+    "SYS-059",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "TIM-UC-008",
+   "name": "Resolve attendance exceptions through regularisation",
+   "process": "TIM-08",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Raise attendance exceptions, let the governed attendance agent propose evidence-based regularisations and have a manager or HR decide them so the day can be recomputed.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Agent (governed)",
+    "Plant HR / time office",
+    "Nucleus platform",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "A missed punch is corrected quickly from evidence, without a paper form."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "The daily queue is triaged before it reaches people, with low-risk fixes handled within policy."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every agent proposal and decision is in the action ledger with its evidence and simulation."
+    }
+   ],
+   "trigger": "An unpaired punch, missing punch on a working day, offline device, inferred shift, missing regularisation or late-threshold crossing is detected.",
+   "preconditions": [
+    "The attendance day has been derived and the condition detected.",
+    "The tenant's auto-resolve threshold for the agent is configured (120 minutes illustrative)."
+   ],
+   "postconditions_success": [
+    "A regularisation is approved (time.regularisation.approved), the day is queued for recompute and the exception is closed.",
+    "Agent proposals and decisions are recorded in the action ledger."
+   ],
+   "postconditions_failure": [
+    "A rejected proposal leaves the exception open with the rejection reason, and the attendance day stays in EXCEPTION state."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Raises exceptions for unpaired punch, no punch on a working day, device offline, inferred shift, missing regularisation or late-threshold crossing.",
+     "ref": "TIM-08.1"
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Triages the queue and proposes a regularisation from device and roster evidence, with a dry-run diff and confidence, logged to the ledger.",
+     "ref": "TIM-08.2"
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Approves, amends or rejects the proposed regularisation, recording a reason.",
+     "ref": "TIM-08.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Queues recompute for the affected day and closes the exception.",
+     "ref": "TIM-08.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The proposed change is within the tenant's auto-resolve threshold and auto-resolve is enabled.",
+     "steps": [
+      "The agent applies the regularisation under its scoped role and records it in the action ledger as auto-resolved."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The approver amends the proposal, for example a different OUT time.",
+     "steps": [
+      "The approver edits the proposed values and sees a refreshed dry-run diff before approving."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A3",
+     "at_step": 2,
+     "condition": "No device or roster evidence supports a proposal.",
+     "steps": [
+      "The agent leaves the exception unproposed and flags it for manual regularisation by the manager or time office."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The proposed change exceeds the auto-resolve threshold.",
+     "handling": "The agent may only propose; the change waits for a human decision.",
+     "rule": "RL-141"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The approver rejects the proposal.",
+     "handling": "The exception stays open with the rejection reason and the employee is asked for evidence or a leave request.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "The regularised date lies in a locked payroll period.",
+     "handling": "The locked day is not changed; recompute raises an arrears item for the next open run.",
+     "rule": "RL-153"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-140",
+    "RL-141",
+    "RL-142"
+   ],
+   "screens": [
+    "SCR-025"
+   ],
+   "data_objects": [
+    "attendance_exception (C/U)",
+    "action_ledger (C)",
+    "regularisation (C)",
+    "recompute_queue (C)"
+   ],
+   "events": [
+    "time.exception.raised",
+    "agent.action.proposed",
+    "time.regularisation.approved",
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "The agent acts only through declared tools under a role narrower than its human owner, and every action is ledgered.",
+    "Each proposal carries its evidence reference and dry-run result so an approver can decide without opening another screen."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-T140",
+    "TC-A141",
+    "TC-T142"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-028",
+     "persona": "Manager / supervisor",
+     "want": "the agent to propose a fix for a missed punch with evidence and a preview of the result",
+     "so_that": "I can clear the exception queue in one decision per item",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1026 Manjunath Poojary has an IN at 20:02 on 05 Sep with no matching OUT (exception EX-2026-0341), and the gate security register shows his exit at 08:12",
+       "when": "the agent proposes OUT 08:12",
+       "then": "I see the register evidence, a dry-run diff setting last_out and gross minutes and adding a 12-minute overtime line, and a confidence value"
+      },
+      {
+       "given": "I approve the proposal",
+       "when": "the decision is saved",
+       "then": "a regularisation is created, recompute is queued for 05 Sep and EX-2026-0341 is closed"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-029",
+     "persona": "Tenant admin",
+     "want": "to set the threshold under which the agent may resolve exceptions itself",
+     "so_that": "small, well-evidenced fixes are automatic and larger ones stay with people",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the auto-resolve threshold is set to 120 minutes",
+       "when": "the agent finds a 15-minute correction supported by terminal evidence",
+       "then": "it applies the regularisation and the action ledger records it as auto-resolved under the agent principal"
+      },
+      {
+       "given": "the same threshold",
+       "when": "the agent's proposed correction is 180 minutes",
+       "then": "the change is proposal-only and waits in the queue for a human decision"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-030",
+     "persona": "Auditor",
+     "want": "every agent proposal and every decision on it recorded in the action ledger",
+     "so_that": "I can verify that the agent stayed within its permitted threshold",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "12 regularisations in September, 5 of them auto-resolved",
+       "when": "I review the action ledger for September",
+       "then": "each of the 12 shows the proposer, the evidence reference, the simulation result and either the human approver or the threshold in force"
+      },
+      {
+       "given": "an auto-resolved entry",
+       "when": "I compare its change size with the threshold recorded on it",
+       "then": "the change is within that threshold"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-037",
+    "SYS-057",
+    "SYS-072",
+    "SYS-074",
+    "SYS-082"
+   ]
+  },
+  {
+   "id": "TIM-UC-009",
+   "name": "Recompute attendance after a change",
+   "process": "TIM-09",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Re-derive every affected attendance day after a late punch, regularisation, rule change, roster republish or policy change, using inputs as at the snapshot and never altering a locked payroll period.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "HR operations",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Locked periods stay locked; corrections arrive as arrears in the next open run."
+    },
+    {
+     "who": "HR operations",
+     "interest": "A policy change dated in the future does not rewrite the past."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Corrections reach attendance and pay without anyone re-entering data."
+    }
+   ],
+   "trigger": "A recompute request lands for a late punch, regularisation, rule change, roster republish, policy or class change, gate pass or leave reversal.",
+   "preconditions": [
+    "The recompute queue holds person, date range and reason for each request.",
+    "Effective-dated history exists for worker class, assignment, shift, rule set and calendar."
+   ],
+   "postconditions_success": [
+    "Every affected day in open periods is recomputed, deltas are written and time.attendance_day.recomputed is emitted.",
+    "Days in locked or closed payroll periods are unchanged and an arrears item exists for the next open run."
+   ],
+   "postconditions_failure": [
+    "Days that still cannot be paired remain in EXCEPTION state in the exception queue."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Consumes recompute queue entries of person, date range and reason, such as late punch, regularisation, rule change or roster republish.",
+     "ref": "TIM-09.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads worker class, assignment, shift, rule set and calendar as at the recompute snapshot, never as at today.",
+     "ref": "TIM-09.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Re-runs derivation, shift inference, day type and disposition for every affected day in an isolated worker process.",
+     "ref": "TIM-09.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks whether any affected date falls inside a locked or closed payroll period.",
+     "ref": "TIM-09.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Emits the delta set for audit and for the pre-payroll check on days not recomputed since the last rule change.",
+     "ref": "TIM-09.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The reason is a change to class, rest days, shift group, grace exemption or location.",
+     "steps": [
+      "The platform derives the affected population and date range from the change's effective date and queues them automatically."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "A recomputed day is identical to the stored day.",
+     "steps": [
+      "No delta is written for that day."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "An affected date lies inside a locked or closed payroll period.",
+     "handling": "The locked day is not altered; an arrears item is raised for the next open run, payroll.input.stale and payroll.arrears.requested are emitted and payroll is notified.",
+     "rule": "RL-153"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A recomputed day still contains an unpaired event.",
+     "handling": "The day stays in EXCEPTION state and the exception remains in the queue for regularisation.",
+     "rule": "RL-082"
+    }
+   ],
+   "business_rules": [
+    "RL-021",
+    "RL-042",
+    "RL-075",
+    "RL-150",
+    "RL-151",
+    "RL-152",
+    "RL-153",
+    "RL-154"
+   ],
+   "screens": [
+    "SCR-026"
+   ],
+   "data_objects": [
+    "recompute_queue (R)",
+    "attendance_day (U)",
+    "attendance_day_delta (C)",
+    "payroll_run (R)"
+   ],
+   "events": [
+    "time.attendance_day.recomputed",
+    "payroll.input.stale",
+    "payroll.arrears.requested"
+   ],
+   "nfrs": [
+    "Recomputes one month for 5,000 people in under 10 minutes.",
+    "Runs in an isolated worker and does not degrade interactive response times while running.",
+    "All derived reads pass the snapshot timestamp (valid_at, recorded_at), never the current time."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P21",
+    "TC-T42",
+    "TC-T75",
+    "TC-T150",
+    "TC-T151",
+    "TC-N152",
+    "TC-Y153",
+    "TC-Y154"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-031",
+     "persona": "Payroll manager",
+     "want": "a correction to a locked period to become arrears instead of changing the locked day",
+     "so_that": "a closed payroll always reconciles to the attendance it was paid on",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "August payroll is closed and a regularisation adds 4 hours to E1018's day of 28 Aug",
+       "when": "recompute runs",
+       "then": "the 28 Aug attendance day is unchanged and an arrears item for E1018 is raised for the September run"
+      },
+      {
+       "given": "the same recompute",
+       "when": "I check notifications",
+       "then": "payroll.input.stale has been emitted and I am notified of the arrears item with its reason"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-032",
+     "persona": "HR operations",
+     "want": "recompute to read policy as it was on each date",
+     "so_that": "a class change from mid-month does not rewrite the earlier days",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1032 moves to a class with Sunday weekly off effective 15 Sep",
+       "when": "recompute runs for 01-30 Sep",
+       "then": "06 and 13 Sep remain Working and 20 and 27 Sep become Weekly Off"
+      },
+      {
+       "given": "the class change is recorded on 18 Sep with effect from 15 Sep",
+       "when": "recompute runs",
+       "then": "it is queued automatically for E1032 from 15 Sep without manual action"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-033",
+     "persona": "Plant HR / time office",
+     "want": "to watch a large recompute progress without slowing the system for others",
+     "so_that": "I can change a rule mid-cycle with confidence",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a change to the 9-hour threshold row affects 5,000 people for one month",
+       "when": "the recompute is queued",
+       "then": "the recompute monitor shows progress and the job completes in under 10 minutes"
+      },
+      {
+       "given": "the recompute is running",
+       "when": "employees check in and open My attendance",
+       "then": "their response times stay within normal interactive targets"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-034",
+     "persona": "Payroll manager",
+     "want": "the pre-payroll audit to list days not recomputed since the last rule change",
+     "so_that": "I never pay on stale attendance",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a rule change at 10:00 on 25 Sep leaves 40 days not yet recomputed",
+       "when": "I run the pre-payroll audit",
+       "then": "the check fails and lists those 40 person-days"
+      },
+      {
+       "given": "the recompute for those days completes",
+       "when": "I rerun the audit",
+       "then": "the check passes"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-025",
+    "SYS-052",
+    "SYS-055",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "TIM-UC-010",
+   "name": "View and export team attendance history",
+   "process": "TIM-10",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Give a manager a date-range history of attendance, leave, overtime, gate pass, late status and applied shift for their own team, on a phone, with a logged export.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Only their own reporting manager can see their day-by-day history."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Exports of personal data are logged with who, what scope and when."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Supervisors answer their own team history questions without raising requests."
+    }
+   ],
+   "trigger": "A manager needs the history of a team member or the whole team for a date range.",
+   "preconditions": [
+    "The manager holds an active reporting line to at least one person.",
+    "Attendance days for the range have been computed."
+   ],
+   "postconditions_success": [
+    "Per-day history for the selected scope and range is shown, and any export is recorded with format, generator and scope (report.exported)."
+   ],
+   "postconditions_failure": [
+    "No data is returned for anyone outside the manager's reporting line at query time."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Opens the team calendar, chooses a from and to date and selects one reportee or the whole team.",
+     "ref": "TIM-10.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Returns per-day attendance status, leave, overtime, gate pass, late status and applied shift, scoped to the reporting line at query time.",
+     "ref": "TIM-10.2"
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Exports the result to CSV or PDF; the export is logged because it contains personal data.",
+     "ref": "TIM-10.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The manager selects the whole team instead of one member.",
+     "steps": [
+      "The platform returns one row per person per day for all current reportees."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The manager only needs to view the history.",
+     "steps": [
+      "No export is generated and nothing is logged as an export."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A request names a person outside the manager's reporting line, for example through an edited link.",
+     "handling": "The server returns no data for that person; scope is enforced at query time, not by hiding the option.",
+     "rule": "RL-160"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The phone is on a weak network.",
+     "handling": "Results load in pages per person so the first member's history renders before the rest arrive.",
+     "rule": "RL-161"
+    }
+   ],
+   "business_rules": [
+    "RL-160",
+    "RL-161",
+    "RL-162"
+   ],
+   "screens": [
+    "SCR-027"
+   ],
+   "data_objects": [
+    "attendance_day (R)",
+    "leave_request (R)",
+    "overtime_record (R)",
+    "gate_pass (R)",
+    "report_export (C)"
+   ],
+   "events": [
+    "report.exported"
+   ],
+   "nfrs": [
+    "Usable on a phone over a weak network, with the first page of results rendered before the full range loads.",
+    "Every export of personal data is logged with generator, scope and format."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-02"
+   ],
+   "acceptance_tests": [
+    "TC-T160",
+    "TC-T161",
+    "TC-C162",
+    "T-05"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-035",
+     "persona": "Manager / supervisor",
+     "want": "to pick any date range, even across months, for one team member",
+     "so_that": "I can review their full history in one view",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am the reporting manager of E1018",
+       "when": "I set the range 01 Jan to 15 Mar and select E1018",
+       "then": "the history returns every day in the range with status, net hours, overtime, gate pass, late status and applied shift"
+      },
+      {
+       "given": "the same view",
+       "when": "I export it to CSV",
+       "then": "the exported rows match the screen row for row"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-036",
+     "persona": "Manager / supervisor",
+     "want": "the person selector to offer only my own reportees",
+     "so_that": "I cannot see colleagues' teams by mistake",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1036 is not in my reporting line",
+       "when": "I search for E1036 in the team calendar",
+       "then": "E1036 cannot be selected"
+      },
+      {
+       "given": "I open a link that requests E1036's history directly",
+       "when": "the server evaluates it",
+       "then": "no data is returned and the attempt is refused"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-037",
+     "persona": "Compliance owner",
+     "want": "every team-history export to be logged",
+     "so_that": "I can show who took personal data out of the system",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a manager exports a PDF of the whole team for 01-30 Sep",
+       "when": "I review the export log",
+       "then": "an entry shows the manager, the time, format PDF and the scope of team and range"
+      },
+      {
+       "given": "a manager views the same range without exporting",
+       "when": "I review the log",
+       "then": "no export entry is created"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-038",
+     "persona": "Manager / supervisor",
+     "want": "team history to work on my phone on the shop floor",
+     "so_that": "I can answer a worker's query without going to a desk",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I open team history on a phone for E1018 on 08 Sep",
+       "when": "the page loads",
+       "then": "I see status Present, net 19h20m, overtime 7h20m and applied shift A"
+      },
+      {
+       "given": "my phone is on a weak network and I select the whole team for one month",
+       "when": "results load",
+       "then": "the first member's rows render before the remaining members finish loading"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-033"
+   ]
+  },
+  {
+   "id": "TIM-UC-011",
+   "name": "Log and approve project and task timesheets",
+   "process": null,
+   "capability_gap": "TIM-CG-001",
+   "source": "Authored",
+   "goal": "Let knowledge workers record time against projects, tasks and cost centres, have it approved and pass approved cost to Finance.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Finance",
+    "Nucleus platform",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Approved time is costed to the right cost centre and project for allocation."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Reviews logged effort against attendance before approving."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Logs time quickly, starting from hours already known from attendance."
+    }
+   ],
+   "trigger": "A knowledge worker records the week's effort, usually at week end.",
+   "preconditions": [
+    "The employee is assigned to at least one active project with tasks and a cost centre.",
+    "An approval chain for timesheets is defined for the employee's class and location (RL-010).",
+    "Attendance days for the week have been computed."
+   ],
+   "postconditions_success": [
+    "An approved timesheet exists with lines per project, task, cost centre and day.",
+    "Costed lines are available to Finance for allocation and journal export to the ERP system."
+   ],
+   "postconditions_failure": [
+    "A returned or rejected timesheet stays editable by the employee with the approver's comments, and nothing is costed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the weekly timesheet, prefilled with each day's net attendance hours and the projects assigned to them.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Logs hours per day against project, task and cost centre, adding a short note per line.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Compares each day's logged hours with net attendance hours and flags days where logged time exceeds attendance.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Submits the week for approval.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Resolves the approval chain for the request type, class and location and routes the timesheet to the approver.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Approves the timesheet, or returns individual lines with a comment.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Costs each approved line at the cost-centre rate effective on the day and makes it available to Finance.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Finance",
+     "action": "Reviews project cost allocation for the period and releases the allocation journal to the ERP system.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The approver returns some lines.",
+     "steps": [
+      "Returned lines reopen for the employee with the comment; approved lines stay approved.",
+      "The employee corrects and resubmits only the returned lines."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The employee copies last week's project and task lines.",
+     "steps": [
+      "Lines are copied with zero hours so only the hours need entering."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Logged hours on a day exceed net attendance hours.",
+     "handling": "Submission is blocked and the days are listed until hours are corrected or attendance is regularised.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "The costing period is already closed in Finance.",
+     "handling": "Late-approved lines are costed into the next open period as adjustments and shown as such.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-010"
+   ],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "timesheet (C/U)",
+    "timesheet_line (C/U)",
+    "attendance_day (R)",
+    "project_cost_allocation (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "A week with 10 lines can be entered and submitted on a phone in under 3 minutes.",
+    "Costing uses the rate effective on the worked date, not the approval date."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-039",
+     "persona": "Employee / worker",
+     "want": "my weekly timesheet prefilled with my attendance hours",
+     "so_that": "I only allocate time rather than retyping it",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my net attendance for Monday 07 Sep was 8h45m",
+       "when": "I open the timesheet for that week",
+       "then": "Monday shows 8h45m available to allocate across my projects"
+      },
+      {
+       "given": "I allocate 9h30m to projects on Monday",
+       "when": "I try to submit",
+       "then": "submission is blocked and Monday is flagged as exceeding attendance by 45 minutes"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-040",
+     "persona": "Manager / supervisor",
+     "want": "to approve or return individual timesheet lines",
+     "so_that": "one wrong entry does not hold up the whole week",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a submitted timesheet with 6 lines",
+       "when": "I return line 4 with the comment 'Wrong task'",
+       "then": "lines 1-3 and 5-6 are approved and only line 4 reopens for the employee"
+      },
+      {
+       "given": "the employee corrects and resubmits line 4",
+       "when": "it reaches me",
+       "then": "only line 4 is presented for approval"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-041",
+     "persona": "Finance",
+     "want": "approved time costed to project and cost centre",
+     "so_that": "project costs are allocated without spreadsheets",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "approved lines totalling 120 hours on a project for September",
+       "when": "I open the allocation view",
+       "then": "I see 120 hours costed by cost centre at the rates effective on each worked date"
+      },
+      {
+       "given": "a line approved after the September costing period closed",
+       "when": "allocation runs",
+       "then": "the line appears in October as an adjustment referencing September"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-028",
+    "SYS-037",
+    "SYS-038",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "TIM-UC-012",
+   "name": "Punch from mobile inside a geofence with a live selfie",
+   "process": null,
+   "capability_gap": "TIM-CG-002",
+   "source": "Authored",
+   "goal": "Let field and remote workers punch from a phone only inside a configured geofence and with a liveness-checked selfie, keeping biometric templates on the device unless consented.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Plant HR / time office",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Mobile punches are trustworthy and suspect ones are visible for review."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Biometric data is minimised and handled only with consent, in line with the DPDP Act 2023 (to be validated by Legal)."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Can record attendance from a site or client location without a terminal."
+    }
+   ],
+   "trigger": "A field or remote worker opens the check-in screen on the mobile app.",
+   "preconditions": [
+    "Mobile is an enabled punch source for the worker (RL-070) and at least one geofence is configured for the worker's location or assignment.",
+    "The worker has enrolled their face on the device; any consent to share the template is recorded.",
+    "The app has location permission."
+   ],
+   "postconditions_success": [
+    "An attendance_event with source mobile, location and selfie reference is ingested through the standard punch path and the day is queued for derivation.",
+    "No biometric template has left the device unless a recorded consent allows it."
+   ],
+   "postconditions_failure": [
+    "A punch outside the geofence or failing liveness is refused, and the attempt is visible to the time office."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the check-in screen on the mobile app.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads the device location and confirms it lies within a geofence configured for the worker's location or assignment.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Takes a selfie when prompted.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Runs the liveness check and face match on the device against the locally held template.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms the punch direction, IN or OUT.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records the punch with signed timestamp, geo_lat, geo_lng and selfie reference, sending only the match result, not the template.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Ingests the event through the standard punch path, de-duplicates it and queues the day for derivation.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Plant HR / time office",
+     "action": "Reviews refused or suspect mobile punches raised on the attendance exception queue.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The phone has no network.",
+     "steps": [
+      "The punch is queued on the device with a signed timestamp, location and liveness result, and replayed on reconnect."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "The worker has recorded consent for server-side matching.",
+     "steps": [
+      "The template is transmitted under the consent record for server-side verification and the consent reference is stored with the event."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The device location is outside every configured geofence.",
+     "handling": "The punch is refused with the distance to the nearest geofence shown; the attempt is logged and the worker can seek regularisation.",
+     "rule": "RL-140"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The liveness check fails.",
+     "handling": "The worker may retry up to the tenant's configured limit; after that the punch is refused and an exception is raised for the time office.",
+     "rule": "RL-140"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "Location permission is denied on the phone.",
+     "handling": "No punch can be recorded; the app explains that location is required for mobile attendance.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-070",
+    "RL-071",
+    "RL-073",
+    "RL-074",
+    "RL-140"
+   ],
+   "screens": [
+    "SCR-020",
+    "SCR-025"
+   ],
+   "data_objects": [
+    "attendance_event (C)",
+    "geofence (R)",
+    "consent_record (R)",
+    "attendance_exception (C)"
+   ],
+   "events": [
+    "time.punch.received",
+    "time.punch.ingested",
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "Biometric templates never leave the device without a recorded consent.",
+    "The geofence and liveness checks complete within 3 seconds on a mid-range phone.",
+    "Queued offline mobile punches are retained for at least 7 days."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-T70",
+    "TC-T71",
+    "TC-T73"
+   ],
+   "user_stories": [
+    {
+     "id": "TIM-US-042",
+     "persona": "Employee / worker",
+     "want": "to punch from my phone when I am at an approved site",
+     "so_that": "my attendance is recorded without a terminal",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a 200-metre geofence around a client site assigned to me",
+       "when": "I punch IN 50 metres from its centre after a successful selfie",
+       "then": "the punch is accepted with source mobile, my coordinates and a selfie reference"
+      },
+      {
+       "given": "I am 1.2 km from the nearest assigned geofence",
+       "when": "I try to punch",
+       "then": "the punch is refused and the app shows the distance to the nearest geofence"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-043",
+     "persona": "Compliance owner",
+     "want": "face templates to stay on the worker's phone unless the worker consents",
+     "so_that": "we hold no more biometric data than the law and our policy allow",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a worker without a recorded consent for server-side matching",
+       "when": "they punch from the app",
+       "then": "only the match and liveness result is sent with the punch and no template is transmitted"
+      },
+      {
+       "given": "a worker who records consent",
+       "when": "they punch",
+       "then": "the event stores the consent reference used for server-side matching"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-044",
+     "persona": "Plant HR / time office",
+     "want": "refused and suspect mobile punches raised as exceptions",
+     "so_that": "I can follow up attempts made outside the geofence or failing liveness",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a worker fails liveness three times when the tenant limit is three",
+       "when": "the third attempt fails",
+       "then": "an exception appears on the attendance exception queue with the worker, time and reason"
+      },
+      {
+       "given": "the same worker later punches successfully",
+       "when": "I view the exception",
+       "then": "it links to the successful punch so I can close it"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-045",
+     "persona": "Employee / worker",
+     "want": "a mobile punch taken without signal to be kept and sent later",
+     "so_that": "working at a remote site does not cost me attendance",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am inside the geofence with no signal at 07:58",
+       "when": "I complete the selfie and punch IN",
+       "then": "the punch is queued on the phone with a signed 07:58 timestamp and its location and liveness result"
+      },
+      {
+       "given": "the phone regains signal at 09:10",
+       "when": "the queue replays",
+       "then": "the platform stores the punch with punch_ts 07:58 and queues the day for derivation"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-062",
+    "SYS-063",
+    "SYS-064",
+    "SYS-065",
+    "SYS-081"
+   ]
+  },
+  {
+   "id": "TIM-UC-013",
+   "name": "Swap shifts and claim open shifts",
+   "process": null,
+   "capability_gap": "TIM-CG-003",
+   "source": "Authored",
+   "goal": "Let workers swap shifts with colleagues or claim open shifts, subject to qualification, rest-period and overtime rules, with supervisor approval and an updated roster.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Nucleus platform",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Coverage changes stay within skills and statutory limits and are approved before they take effect."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "The published roster matches what will be worked, reducing inferred-shift exceptions."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Can arrange cover for personal commitments without informal swaps."
+    }
+   ],
+   "trigger": "A worker requests a swap with a colleague or claims an open shift.",
+   "preconditions": [
+    "A published roster exists for the period and open shifts, if any, are posted with required qualifications.",
+    "An approval chain for roster changes is defined (RL-010)."
+   ],
+   "postconditions_success": [
+    "The roster is republished with the swapped or claimed shifts and affected days are queued for recompute."
+   ],
+   "postconditions_failure": [
+    "A swap or claim that breaks a rule is refused with the rule named and the roster is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Views their rostered shifts and the open shifts posted at their site.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Requests a swap of a named shift with a colleague, or claims an open shift.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "For a swap, the named colleague accepts the exchange.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks qualifications, minimum rest between shifts, rest-day policy of the worker class and weekly overtime limits for both workers.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Routes the request to the supervisor through the approval chain resolved for type, class and location.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Approves or rejects the swap or claim.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Republishes the roster with the new assigned shifts and queues recompute for the affected dates.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Several workers claim the same open shift.",
+     "steps": [
+      "All valid claims are shown to the supervisor in claim order with each claimant's weekly hours.",
+      "The supervisor picks one; the other claims are declined automatically."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The colleague declines the swap.",
+     "steps": [
+      "The request closes as declined and the requester is notified."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Either worker lacks the qualification required for the shift.",
+     "handling": "The request is refused, naming the missing qualification.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The change would breach the statutory weekly overtime limit in the state rule pack.",
+     "handling": "The request is refused with the limit and excess named; it never reaches approval silently.",
+     "rule": "RL-133"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "The change would place a worker on a day their class treats as a rest day.",
+     "handling": "The supervisor is warned that the shift falls on a rest day and that rest-day rules will apply.",
+     "rule": "RL-101"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-090",
+    "RL-101",
+    "RL-133",
+    "RL-150"
+   ],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "shift_swap_request (C/U)",
+    "open_shift (U)",
+    "roster (U)",
+    "recompute_queue (C)"
+   ],
+   "events": [
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "Rule checks for a swap request complete within 2 seconds.",
+    "The republished roster is the source for the assigned shift used in shift inference."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-046",
+     "persona": "Employee / worker",
+     "want": "to swap a shift with a colleague through the app",
+     "so_that": "cover is arranged formally and both of us are paid correctly",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am on shift A on 18 Sep and my colleague is on shift B the same day, both qualified for each other's line",
+       "when": "I request a swap and she accepts",
+       "then": "the request goes to our supervisor for approval"
+      },
+      {
+       "given": "the supervisor approves",
+       "when": "the roster is republished",
+       "then": "I am assigned B and she is assigned A on 18 Sep and both days are queued for recompute"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-047",
+     "persona": "Manager / supervisor",
+     "want": "swaps and claims that break rest or overtime rules refused before they reach me",
+     "so_that": "I only spend time on compliant requests",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a worker whose approved overtime this week already reaches the weekly limit",
+       "when": "they claim an open 12-hour shift",
+       "then": "the claim is refused and the message names the weekly limit"
+      },
+      {
+       "given": "a worker without the forklift qualification",
+       "when": "they claim an open shift that requires it",
+       "then": "the claim is refused naming the missing qualification"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-048",
+     "persona": "Manager / supervisor",
+     "want": "to choose between several claimants for one open shift",
+     "so_that": "I can give the shift to the most suitable person",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "three valid claims for an open night shift on 20 Sep",
+       "when": "I open the request",
+       "then": "I see the claimants in claim order with each one's hours this week"
+      },
+      {
+       "given": "I approve the second claimant",
+       "when": "the decision is saved",
+       "then": "the other two claims are declined automatically and their claimants notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-038",
+    "SYS-057",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "TIM-UC-014",
+   "name": "Work flexi-time and manage a time bank",
+   "process": null,
+   "capability_gap": "TIM-CG-004",
+   "source": "Authored",
+   "goal": "Support core-hours flexi-time with a time bank that records daily credits and debits and converts surplus to leave or overtime under policy.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Implementation consultant",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Balances long and short days within the rules and sees the balance at any time."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Core hours are covered and conversions are approved."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Conversions to overtime follow the same eligibility and approval path as ordinary overtime."
+    }
+   ],
+   "trigger": "A flexi-time worker's attendance day is computed, or the worker requests a conversion of banked time.",
+   "preconditions": [
+    "A flexi policy with core hours, flexible band, daily target, bank cap and conversion rules applies to the worker's class.",
+    "The worker's attendance day has been computed (TIM-02)."
+   ],
+   "postconditions_success": [
+    "The day's surplus or deficit against target is posted to the time bank and the balance is visible to the worker.",
+    "An approved conversion is posted as leave credit or as an overtime record."
+   ],
+   "postconditions_failure": [
+    "A conversion beyond the available balance or policy limit is refused and the bank is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Configures core hours, flexible band, daily target, bank cap and conversion ratios per worker class.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Punches in and out within the flexible band on a working day.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks presence across the whole core-hours window using the day's segments.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Posts the day's net minutes above or below the daily target to the time bank as a credit or debit.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Views the time-bank balance and its daily postings on My attendance.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Requests conversion of banked credit to leave or to overtime.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Manager / supervisor",
+     "action": "Approves or rejects the conversion.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Debits the bank and posts a leave credit or creates an overtime record for approval and payment.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The worker chooses conversion to overtime.",
+     "steps": [
+      "The platform checks the worker's overtime eligibility before routing the request."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "Posting a credit would take the balance above the bank cap.",
+     "steps": [
+      "Only the amount up to the cap is credited; the excess is shown as not banked."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The worker is absent for part of core hours.",
+     "handling": "The day is flagged as a core-hours breach and treated as a late arrival or early departure under the disposition rules.",
+     "rule": "RL-114"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "The requested conversion exceeds the available balance.",
+     "handling": "The request is refused and the available balance is shown.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "The worker's overtime eligibility is none.",
+     "handling": "Conversion to overtime is refused; conversion to leave remains available.",
+     "rule": "RL-131"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-084",
+    "RL-111",
+    "RL-114",
+    "RL-130",
+    "RL-131"
+   ],
+   "screens": [
+    "SCR-021",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "flexi_policy (R)",
+    "time_bank_ledger (C)",
+    "attendance_day (R)",
+    "overtime_record (C)",
+    "leave_balance (U)"
+   ],
+   "events": [
+    "time.overtime.computed"
+   ],
+   "nfrs": [
+    "Every time-bank posting is traceable to the attendance day and ruleset version that produced it.",
+    "Flexi policy parameters are configuration per worker class, with no release needed to change them."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-049",
+     "persona": "Employee / worker",
+     "want": "my long and short days to balance in a time bank",
+     "so_that": "I can adjust my hours around commitments without penalty",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a daily target of 8h with core hours 10:00-16:00",
+       "when": "I work 09:00-18:30 on Monday with net 9h30m",
+       "then": "90 minutes are credited to my time bank"
+      },
+      {
+       "given": "I work 10:00-17:00 on Tuesday with net 7h",
+       "when": "the day is computed",
+       "then": "60 minutes are debited and my balance shows 30 minutes"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-050",
+     "persona": "Manager / supervisor",
+     "want": "absence during core hours flagged",
+     "so_that": "flexibility does not leave the team uncovered when it matters",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "core hours 10:00-16:00",
+       "when": "a team member arrives at 10:40",
+       "then": "the day is flagged as a core-hours breach and treated as a late arrival"
+      },
+      {
+       "given": "a team member arrives at 09:50 and leaves at 16:05",
+       "when": "the day is computed",
+       "then": "no breach is flagged"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-051",
+     "persona": "Employee / worker",
+     "want": "to convert banked hours into leave",
+     "so_that": "surplus time becomes time off",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a balance of 8h and a policy converting 8h to one day of leave",
+       "when": "I request conversion and my manager approves",
+       "then": "one day of leave is credited and my bank balance becomes zero"
+      },
+      {
+       "given": "a balance of 5h",
+       "when": "I request conversion of 8h",
+       "then": "the request is refused and my available balance of 5h is shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-049",
+    "SYS-050",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "TIM-UC-015",
+   "name": "Generate rosters from forecast labour demand",
+   "process": null,
+   "capability_gap": "TIM-CG-005",
+   "source": "Authored",
+   "goal": "Generate a draft roster per line and site from forecast labour demand that honours skills, statutory limits, class rest days and worker preferences, then publish it after review.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Each line has the required skills on every shift."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Rosters respect rest days and stated preferences where possible."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Generated rosters never plan work beyond statutory weekly limits (to be validated by Legal)."
+    }
+   ],
+   "trigger": "The roster owner starts roster planning for the next period.",
+   "preconditions": [
+    "A demand forecast of headcount by line, shift and skill exists for the period.",
+    "Worker skills, class rest-day policies, approved leave and preferences are recorded.",
+    "Shift definitions with non-overlapping inference windows exist for the site (RL-091)."
+   ],
+   "postconditions_success": [
+    "A published roster exists for the period, assigned shifts take effect and any already-worked dates affected are queued for recompute."
+   ],
+   "postconditions_failure": [
+    "Where demand cannot be met within the rules, the shortfall is reported and no worker is planned beyond a limit."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Plant HR / time office",
+     "action": "Loads or confirms the labour demand forecast by line, shift and skill for the roster period.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads available workers with skills, class rest-day policy, approved leave and stated preferences.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Generates a draft roster that fills demand within rest-day patterns and statutory weekly limits, favouring stated preferences.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows coverage per line and shift, unfilled demand, projected overtime and rule warnings for the draft.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Plant HR / time office",
+     "action": "Adjusts individual assignments, with rules rechecked on each change.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Reviews coverage for their lines and confirms or comments.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Plant HR / time office",
+     "action": "Publishes the roster so its shifts become the assigned shifts for the period.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Queues recompute for any affected dates already worked and notifies workers of their shifts.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The supervisor requests changes.",
+     "steps": [
+      "Comments return to the roster owner, who adjusts the draft."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "No forecast is available for a line.",
+     "steps": [
+      "The roster owner copies the previous period's demand for that line as the forecast."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Demand cannot be met without breaching a weekly limit or a rest day.",
+     "handling": "The draft leaves the demand unfilled and reports the shortfall by line and shift; no worker is planned beyond the limit.",
+     "rule": "RL-133"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A manual change places a worker on their class's rest day.",
+     "handling": "The change is allowed only with a warning naming the rest-day rule, which is recorded on the assignment.",
+     "rule": "RL-101"
+    }
+   ],
+   "business_rules": [
+    "RL-090",
+    "RL-091",
+    "RL-101",
+    "RL-133",
+    "RL-150"
+   ],
+   "screens": [],
+   "data_objects": [
+    "labour_demand_forecast (C/R)",
+    "roster (C/U)",
+    "assignment (R)",
+    "leave_request (R)",
+    "recompute_queue (C)"
+   ],
+   "events": [
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "A draft roster for one site of 1,000 workers over 4 weeks is generated in under 2 minutes.",
+    "Every generated assignment can show the demand line and rule checks that justified it."
+   ],
+   "frequency": "Per roster period",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TIM-US-052",
+     "persona": "Plant HR / time office",
+     "want": "a draft roster generated from demand",
+     "so_that": "I start from a compliant plan instead of a blank grid",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "demand of 40 operators on shift A and 25 on shift B for line 3 for a 4-week period",
+       "when": "I generate the draft",
+       "then": "the draft shows coverage per day against 40 and 25 and lists any unfilled positions"
+      },
+      {
+       "given": "a worker with approved leave on 22 Sep",
+       "when": "the draft is generated",
+       "then": "the worker is not rostered on 22 Sep"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-053",
+     "persona": "Compliance owner",
+     "want": "the generator to stop at statutory limits and rest days",
+     "so_that": "a generated roster never plans unlawful hours",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "demand that can only be met by planning some workers beyond the weekly limit",
+       "when": "the draft is generated",
+       "then": "those positions stay unfilled and are reported as shortfall"
+      },
+      {
+       "given": "a worker whose class has Sunday weekly off",
+       "when": "the draft is generated",
+       "then": "the worker is not rostered on Sundays"
+      }
+     ]
+    },
+    {
+     "id": "TIM-US-054",
+     "persona": "Manager / supervisor",
+     "want": "to review coverage for my lines before publication",
+     "so_that": "the skills I need are on every shift",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a draft roster for my two lines",
+       "when": "I open the coverage view",
+       "then": "I see each shift's planned headcount by skill against demand"
+      },
+      {
+       "given": "I comment 'need one more welder on B shift, 15 Sep'",
+       "when": "I send it back",
+       "then": "the roster owner sees the comment against that line, shift and date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-045",
+    "SYS-057",
+    "SYS-059",
+    "SYS-070"
+   ]
+  }
+ ]
+}

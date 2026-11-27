@@ -1,0 +1,3824 @@
+{
+ "domain": "PAY",
+ "use_cases": [
+  {
+   "id": "PAY-UC-001",
+   "name": "Create a payroll run for a period",
+   "process": "PAY-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Create a typed payroll run for an entity, period and payroll group, with its population and inputs assembled from every source.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Starts each cycle from a complete, explainable population and input set."
+    },
+    {
+     "who": "Finance",
+     "interest": "Can distinguish regular, overtime, arrears, F&F and bonus runs in the journal."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Joiners, leavers and transfers are paid in the right run."
+    }
+   ],
+   "trigger": "Start of the monthly cycle, or an off-cycle need (overtime, arrears, F&F, bonus).",
+   "preconditions": [
+    "The entity, payroll group and pay period are configured.",
+    "Attendance, leave, overtime and claims data for the period are available through their modules."
+   ],
+   "postconditions_success": [
+    "A payroll_run exists in DRAFT with its run_type and payroll.run.created emitted.",
+    "The population and pulled inputs are listed on the run cockpit with source counts."
+   ],
+   "postconditions_failure": [
+    "No run is created, or the run stays DRAFT with the missing input source named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Create the run on the run cockpit: entity, period, payroll group and run_type (regular, off_cycle_ot, arrears, fnf, bonus).",
+     "ref": "PAY-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Resolve the population: active assignments in scope plus joiners, leavers and transfers within the period.",
+     "ref": "PAY-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Pull inputs: attendance days, leave, gate pass, OT, claims, arrears, one-time earnings and recoveries.",
+     "ref": "PAY-01.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A regular run already exists for the period and an off-cycle run is needed.",
+     "steps": [
+      "The payroll manager creates a second run with the off-cycle run_type against the same period.",
+      "The cockpit shows both runs under the period with a run selector."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "An employee transferred between payroll groups mid-period.",
+     "steps": [
+      "The platform includes the employee in each group's run for the days assigned to that group."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "An input source has not published its period data.",
+     "handling": "The run remains DRAFT and the cockpit names the missing source; inputs cannot be locked until it is present or explicitly marked nil.",
+     "rule": "RL-242"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "An active employee has no assignment in any payroll group.",
+     "handling": "The person is excluded from the population and listed as an exception for the pre-payroll audit.",
+     "rule": "RL-241"
+    }
+   ],
+   "business_rules": [
+    "RL-240",
+    "RL-241",
+    "RL-242",
+    "RL-134"
+   ],
+   "screens": [
+    "SCR-050"
+   ],
+   "data_objects": [
+    "payroll_run (C)",
+    "assignment (R)",
+    "attendance_day (R)",
+    "leave_ledger (R)",
+    "overtime_record (R)",
+    "payroll_input (R)"
+   ],
+   "events": [
+    "payroll.run.created"
+   ],
+   "nfrs": [
+    "Population and input pull for 10,000 employees completes within 5 minutes.",
+    "Every screen that lists runs accepts a period and a run selector."
+   ],
+   "frequency": "Monthly, plus off-cycle",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y240",
+    "TC-Y241",
+    "TC-Y242",
+    "TC-Y134"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-001",
+     "persona": "Payroll manager",
+     "want": "to create a run with an explicit run type",
+     "so_that": "a period can carry a regular run and separate off-cycle runs",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "PR-2026-09-01 is a regular run for September 2026",
+       "when": "I create a run for September with run_type off_cycle_ot",
+       "then": "PR-2026-09-02 is created in DRAFT and both runs appear under September"
+      },
+      {
+       "given": "I omit run_type",
+       "when": "I submit the form",
+       "then": "creation is refused and run_type is marked required"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-002",
+     "persona": "Payroll manager",
+     "want": "joiners, leavers and transfers to be included automatically",
+     "so_that": "nobody is missed or paid twice",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee joined on 18 September 2026 and another left on 12 September",
+       "when": "the September regular run is created",
+       "then": "both appear in the population with their in-period dates"
+      },
+      {
+       "given": "an employee moved from LE-01 to LE-02 on 16 September",
+       "when": "both entities' runs are created",
+       "then": "each run includes the employee for the days assigned to it"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-007",
+    "SYS-016",
+    "SYS-024"
+   ]
+  },
+  {
+   "id": "PAY-UC-002",
+   "name": "Lock payroll inputs and take an immutable snapshot",
+   "process": "PAY-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Freeze a run's inputs at cut-off and store a hashed snapshot of inputs, rule pack versions and configuration so the run can be recomputed exactly at any later date.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Late changes cannot alter a run under review."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Any past run can be recomputed and matched to the paisa."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Late punches are handled as exceptions, not silent changes."
+    }
+   ],
+   "trigger": "The cut-off date and time for the run is reached.",
+   "preconditions": [
+    "The run is in DRAFT with all input sources present or marked nil."
+   ],
+   "postconditions_success": [
+    "The run is INPUTS_LOCKED; payroll.inputs.locked and payroll.snapshot.taken are emitted.",
+    "The snapshot stores the input hash and rule pack versions."
+   ],
+   "postconditions_failure": [
+    "The run remains DRAFT and no snapshot is stored."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Lock the run's inputs at cut-off on the run cockpit.",
+     "ref": "PAY-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Write an immutable, hashed snapshot of inputs, rule pack versions and configuration; emit payroll.snapshot.taken.",
+     "ref": "PAY-02.2"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A material input error is found before the pre-payroll audit starts.",
+     "steps": [
+      "The payroll manager returns the run to DRAFT with a reason; the snapshot is superseded, not deleted.",
+      "After correction the inputs are locked again and a new snapshot is written."
+     ],
+     "rejoin": "Returns to step 1"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A punch, leave approval or claim arrives after the lock.",
+     "handling": "The run is not changed; the item is raised as an exception and flows to the next open run or arrears.",
+     "rule": "RL-250"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Recomputing a closed run from its snapshot gives a different result.",
+     "handling": "A CRITICAL integrity alert is raised to the payroll manager and auditor with the differing lines.",
+     "rule": "RL-251"
+    }
+   ],
+   "business_rules": [
+    "RL-250",
+    "RL-251"
+   ],
+   "screens": [
+    "SCR-050"
+   ],
+   "data_objects": [
+    "payroll_run (U)",
+    "payroll_snapshot (C)"
+   ],
+   "events": [
+    "payroll.inputs.locked",
+    "payroll.snapshot.taken"
+   ],
+   "nfrs": [
+    "Snapshots are write-once; no role, including tenant admin, can alter one.",
+    "Recomputation of any run up to 8 years old reproduces every payslip line exactly."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y250",
+    "TC-Y251",
+    "TC-PR03"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-003",
+     "persona": "Payroll manager",
+     "want": "locking inputs to stop late changes from altering the run",
+     "so_that": "the figures I review are the figures that get paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 regular run is INPUTS_LOCKED",
+       "when": "a punch for 29 September arrives",
+       "then": "the run's attendance input is unchanged and an exception names the late punch"
+      },
+      {
+       "given": "inputs are locked",
+       "when": "the snapshot is written",
+       "then": "payroll.snapshot.taken carries the input hash and rule pack versions"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-004",
+     "persona": "Auditor",
+     "want": "to recompute a closed run from its snapshot",
+     "so_that": "I can prove the paid figures were produced by the recorded rules",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a run closed eleven months ago",
+       "when": "it is recomputed from its snapshot today",
+       "then": "every payslip line matches to the paisa"
+      },
+      {
+       "given": "a recomputation differs on one line",
+       "when": "the comparison completes",
+       "then": "a CRITICAL integrity alert lists the differing line"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-031",
+    "SYS-051",
+    "SYS-052",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "PAY-UC-003",
+   "name": "Run the pre-payroll audit",
+   "process": "PAY-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Detect and resolve every input defect before calculation, using explainable rule checks first, with an agent proposing but never applying resolutions.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Agent (governed)",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Sees a ranked, explained list of defects with draft fixes."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Is not paid wrongly because of a missing UAN or a duplicate bank account."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every waiver has a reason and a role at or above the threshold."
+    }
+   ],
+   "trigger": "payroll.snapshot.taken for the run.",
+   "preconditions": [
+    "The run is INPUTS_LOCKED with a stored snapshot."
+   ],
+   "postconditions_success": [
+    "Every flag is resolved or waived with reason; no CRITICAL flag is open; the run moves to PRE_AUDIT complete and payroll.audit.completed is emitted.",
+    "A signed readiness report is attached to the run."
+   ],
+   "postconditions_failure": [
+    "Open CRITICAL flags keep the run from calculation and approval."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Run the rule checks (missing attendance, unprorated joiner, bank change in cycle, missing PF/UAN, negative net and others); emit payroll.audit.completed.",
+     "ref": "PAY-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Classify each flag, draft a resolution and produce a signed readiness report; record each proposal in the action ledger.",
+     "ref": "PAY-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Payroll manager",
+     "action": "Resolve or waive each flag with a reason on the pre-payroll audit screen.",
+     "ref": "PAY-03.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "No flags are raised.",
+     "steps": [
+      "The readiness report states zero flags and the run proceeds to calculation."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The agent is unavailable.",
+     "steps": [
+      "The payroll manager works the flags without proposals; the readiness report is signed by the payroll manager."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 1,
+     "condition": "Statistical checks run after the rule checks.",
+     "steps": [
+      "Per-employee net and component variance outside configured bounds raises WARNING flags."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A user below the role threshold tries to waive a CRITICAL flag.",
+     "handling": "The waiver is refused; the flag stays open and approval remains blocked.",
+     "rule": "RL-262"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The agent attempts to change a payroll figure.",
+     "handling": "The write is rejected at the tool boundary and the attempt is recorded in the action ledger.",
+     "rule": "RL-261"
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "An employee's Aadhaar or PAN does not match.",
+     "handling": "A payroll-blocking flag is raised for that employee only; joining is not reversed.",
+     "rule": "RL-033"
+    }
+   ],
+   "business_rules": [
+    "RL-033",
+    "RL-154",
+    "RL-260",
+    "RL-261",
+    "RL-262"
+   ],
+   "screens": [
+    "SCR-051"
+   ],
+   "data_objects": [
+    "payroll_audit_flag (C/U)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "payroll.audit.completed",
+    "agent.action.proposed"
+   ],
+   "nfrs": [
+    "The eleven rule checks complete within 3 minutes for 10,000 employees.",
+    "Each flag shows the rule that raised it and the input values that triggered it."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H33",
+    "TC-Y154",
+    "TC-Y260",
+    "TC-A261",
+    "TC-Y262"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-005",
+     "persona": "Payroll manager",
+     "want": "rule checks to flag defects with the reason before calculation",
+     "so_that": "I fix inputs rather than correct payslips",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee in the September run has no UAN",
+       "when": "the audit runs",
+       "then": "a CRITICAL 'missing PF/UAN' flag names the employee"
+      },
+      {
+       "given": "two employees share bank account number ending 4471",
+       "when": "the audit runs",
+       "then": "a duplicate bank account flag lists both employees"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-006",
+     "persona": "Payroll manager",
+     "want": "the agent to propose fixes that I accept or reject",
+     "so_that": "I save time without losing control of figures",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a mid-month joiner is not prorated",
+       "when": "the agent classifies the flag",
+       "then": "a draft resolution is shown and no payslip value has changed"
+      },
+      {
+       "given": "I reject the proposal",
+       "when": "I record my own resolution with a reason",
+       "then": "the action ledger shows the proposal, my rejection and my resolution"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-007",
+     "persona": "Auditor",
+     "want": "CRITICAL waivers to be limited to the configured role threshold",
+     "so_that": "no one can wave through a blocking defect",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the threshold is Payroll manager or above",
+       "when": "an HR operations user tries to waive a CRITICAL flag",
+       "then": "the waiver is refused"
+      },
+      {
+       "given": "the payroll manager waives it with the reason 'UAN generation pending with EPFO'",
+       "when": "the waiver is saved",
+       "then": "the flag shows the actor, time and reason"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-036",
+    "SYS-051",
+    "SYS-072",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "PAY-UC-004",
+   "name": "Execute gross-to-net calculation",
+   "process": "PAY-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Evaluate the tenant's pay component graph once per employee in topological order, in integer money, storing every intermediate value for drill-down.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Gets deterministic, explainable results."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Can see how each payslip line was produced."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can trace each value to its rule pack version."
+    }
+   ],
+   "trigger": "Pre-payroll audit cleared for the run.",
+   "preconditions": [
+    "The run has no open CRITICAL flag.",
+    "The pay component graph for the tenant is acyclic and published."
+   ],
+   "postconditions_success": [
+    "Payslip lines and their traces exist for every employee; the run is CALCULATED and payroll.run.calculated is emitted."
+   ],
+   "postconditions_failure": [
+    "No partial result is visible; the run stays in PRE_AUDIT with the failing node named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Topologically sort the tenant's pay component graph.",
+     "ref": "PAY-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Evaluate earnings nodes per employee (basic, DA, HRA, conveyance, special, OT, one-time awards) in integer paise.",
+     "ref": "PAY-04.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Apply attendance-driven proration for LOP days, half days, unpaid absence, joiners and leavers.",
+     "ref": "PAY-04.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Store every intermediate value with its inputs and rule pack version so each line drills to its rule.",
+     "ref": "PAY-04.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The employee joined or left mid-month.",
+     "steps": [
+      "Proration uses calendar days in the employment span per the component's proration basis."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The component graph contains a cycle.",
+     "handling": "Calculation stops before any employee is evaluated; the cycle's nodes are named to the payroll manager.",
+     "rule": "RL-270"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A configured formula would produce a fractional paisa.",
+     "handling": "The node applies the configured rounding rule and stores the rounding difference as a separate trace value.",
+     "rule": "RL-271"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "Proration of a component across a month boundary does not sum to the full-month value.",
+     "handling": "The property check fails the run and names the component and employee.",
+     "rule": "RL-272"
+    }
+   ],
+   "business_rules": [
+    "RL-270",
+    "RL-271",
+    "RL-272",
+    "RL-273"
+   ],
+   "screens": [
+    "SCR-053"
+   ],
+   "data_objects": [
+    "pay_component (R)",
+    "payslip_line (C/U)",
+    "payslip_line_trace (C)"
+   ],
+   "events": [
+    "payroll.run.calculated"
+   ],
+   "nfrs": [
+    "Gross-to-net for 10,000 employees completes within 10 minutes.",
+    "No floating-point type is used anywhere in the engine (verified by static analysis)."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y270",
+    "TC-Y271",
+    "TC-Y272",
+    "TC-Y273",
+    "TC-PR04"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-008",
+     "persona": "Payroll manager",
+     "want": "every payslip line to drill down to its rule and inputs",
+     "so_that": "I can answer any employee query from the screen",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September run is calculated",
+       "when": "I open an employee's HRA line",
+       "then": "the trace shows the HRA node, its inputs, output and rule pack version"
+      },
+      {
+       "given": "a component formula references a node that references it back",
+       "when": "calculation starts",
+       "then": "it stops before evaluation and names both nodes"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-009",
+     "persona": "Auditor",
+     "want": "proration to be exact across month boundaries",
+     "so_that": "no paisa is created or lost when a span crosses months",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a joiner on 16 September 2026 with basic of 30,000 rupees",
+       "when": "September is calculated",
+       "then": "basic is prorated on 15 of 30 days to 15,000 rupees"
+      },
+      {
+       "given": "a property test splits a month at every day boundary",
+       "when": "the parts are summed",
+       "then": "the sum equals the full-month value for every component"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-028",
+    "SYS-029",
+    "SYS-030",
+    "SYS-045",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "PAY-UC-005",
+   "name": "Compute the statutory wage base with the 50% floor",
+   "process": "PAY-05",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Compute one statutory wage base per employee, adding back excluded components above 50% of total remuneration, and publish it to every statutory consumer.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Payroll manager",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "PF, ESI, gratuity, bonus and overtime use a wage base consistent with the Code on Wages (to be validated by Legal)."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Can see statutory cost and take-home impact before changing a structure."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Contributions are computed on the correct base."
+    }
+   ],
+   "trigger": "Calculation of a run reaches the wage base node; or HR runs a structure simulation.",
+   "preconditions": [
+    "Each pay component is classified as wage-base or excluded in the effective rule pack."
+   ],
+   "postconditions_success": [
+    "statutory_wage_base is stored once per employee and consumed by PF, ESI, gratuity, bonus, OT and encashment nodes."
+   ],
+   "postconditions_failure": [
+    "Calculation stops for the employee with the unclassified component named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Compute wage_base = basic + DA + retaining allowance.",
+     "ref": "PAY-05.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Test whether excluded components exceed 50% of total remuneration.",
+     "ref": "PAY-05.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Publish statutory_wage_base to the PF, ESI, gratuity, bonus, OT and leave encashment nodes.",
+     "ref": "PAY-05.3"
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Simulate a proposed structure on the salary structure simulator to see statutory cost and take-home impact.",
+     "ref": "PAY-05.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Excluded components exceed 50% of total remuneration.",
+     "steps": [
+      "The excess over 50% is added back to the wage base; for 60,000 rupees remuneration with 24,000 in basic and DA, 6,000 is added back to give 30,000.",
+      "The add-back is stored as its own trace value."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "HR simulates for a population rather than one employee.",
+     "steps": [
+      "The simulator reports aggregate employer statutory cost and the distribution of take-home change; emits payroll.simulation.run."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A component has no wage-base classification in the rule pack.",
+     "handling": "Calculation stops for affected employees and a CRITICAL flag names the component.",
+     "rule": "RL-280"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A statutory node attempts to compute its own wage base.",
+     "handling": "The configuration is rejected; only the single wage base node may be referenced.",
+     "rule": "RL-282"
+    }
+   ],
+   "business_rules": [
+    "RL-280",
+    "RL-281",
+    "RL-282",
+    "RL-283"
+   ],
+   "screens": [
+    "SCR-052"
+   ],
+   "data_objects": [
+    "payslip_line (C/U)",
+    "simulation_run (C)"
+   ],
+   "events": [
+    "payroll.simulation.run"
+   ],
+   "nfrs": [
+    "A single-employee simulation returns within 2 s; a 5,000-employee simulation within 2 minutes.",
+    "The wage base node is unit-testable in isolation against the rule pack version."
+   ],
+   "frequency": "Per run; simulations on demand",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y280",
+    "TC-Y281",
+    "TC-Y282",
+    "TC-Y283"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-010",
+     "persona": "Compliance owner",
+     "want": "the 50% floor add-back to apply automatically",
+     "so_that": "contributions are not understated when allowances are high",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1014's excluded components exceed 50% of total remuneration in 13_Salary_Structure",
+       "when": "the run is calculated",
+       "then": "the excess is added back and the wage base trace shows the add-back amount"
+      },
+      {
+       "given": "an employee's excluded components are exactly 50%",
+       "when": "the run is calculated",
+       "then": "no add-back is made"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-011",
+     "persona": "HR operations",
+     "want": "to simulate a new structure before adopting it",
+     "so_that": "I can show statutory cost and take-home effects to management",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1049's structure is changed in the simulator to raise basic by 5,000 rupees",
+       "when": "I run the simulation",
+       "then": "the result shows the change in employer PF cost and in monthly take-home"
+      },
+      {
+       "given": "a simulation has run",
+       "when": "I close it without adopting",
+       "then": "no salary structure has changed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-047",
+    "SYS-048"
+   ]
+  },
+  {
+   "id": "PAY-UC-006",
+   "name": "Compute daily-wage earnings",
+   "process": "PAY-06",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Pay daily-wage classes on days present times the daily rate through a dedicated earnings node, with the day count shown on the payslip.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "Plant HR / time office",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can reconcile pay against attendance day by day."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Attendance dispositions drive pay without manual conversion."
+    }
+   ],
+   "trigger": "Calculation reaches earnings for an employee whose worker class has wage_type daily.",
+   "preconditions": [
+    "The worker class carries wage_type daily and the assignment a daily rate."
+   ],
+   "postconditions_success": [
+    "Earnings equal days present × daily rate, and the payslip shows the day count."
+   ],
+   "postconditions_failure": [
+    "The employee's calculation stops with a CRITICAL flag naming the missing rate."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Check whether the worker class has wage_type daily.",
+     "ref": "PAY-06.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Compute earnings = days present (from attendance disposition) × daily rate, with half days at the configured fraction.",
+     "ref": "PAY-06.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Show the day count on the payslip so the worker can reconcile it with the attendance record.",
+     "ref": "PAY-06.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The worker class is monthly.",
+     "steps": [
+      "The monthly earnings node with attendance proration applies (PAY-04)."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "No daily rate is recorded on the assignment.",
+     "handling": "No earnings are computed; a CRITICAL flag blocks approval until the rate is entered.",
+     "rule": "RL-291"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "A daily-wage class is configured to use the monthly node with a proration parameter.",
+     "handling": "Configuration validation rejects it; daily classes must use the daily node.",
+     "rule": "RL-290"
+    }
+   ],
+   "business_rules": [
+    "RL-290",
+    "RL-291",
+    "RL-292",
+    "RL-101"
+   ],
+   "screens": [
+    "SCR-053"
+   ],
+   "data_objects": [
+    "assignment (R)",
+    "attendance_day (R)",
+    "payslip_line (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "The payslip day count equals the attendance record's present-day count for 100% of daily-wage workers in reconciliation tests."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y290",
+    "TC-Y291",
+    "TC-Y292",
+    "TC-T101"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-012",
+     "persona": "Employee / worker",
+     "want": "to be paid for the days I was present at my daily rate",
+     "so_that": "I can check my pay against my attendance",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1032 (WC-CONT) has 24 full days and 2 half days present at a daily rate of 700 rupees",
+       "when": "the run is calculated",
+       "then": "earnings are 17,500 rupees and the payslip shows 25 paid days"
+      },
+      {
+       "given": "the same worker",
+       "when": "the payslip is opened",
+       "then": "the earnings line is labelled as daily wages, not as prorated monthly pay"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-013",
+     "persona": "Payroll manager",
+     "want": "a missing daily rate to block approval",
+     "so_that": "no daily-wage worker is paid zero by mistake",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a daily-wage assignment has no rate",
+       "when": "the run is calculated",
+       "then": "a CRITICAL flag names the employee and no earnings line is written"
+      },
+      {
+       "given": "the rate is entered and the employee recalculated",
+       "when": "calculation completes",
+       "then": "the flag is resolved automatically"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-028",
+    "SYS-047",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "PAY-UC-007",
+   "name": "Compute statutory deductions and provisions",
+   "process": "PAY-07",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Compute PF, EPS, ESI, PT, LWF and TDS from the central and state rule packs effective for the period, and accrue gratuity and bonus provisions (statutory specifics to be validated by Legal).",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "Compliance owner",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Deductions follow the effective central and state packs so returns reconcile."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Deductions and tax projection are correct and explained."
+    },
+    {
+     "who": "Finance",
+     "interest": "Gratuity and bonus provisions reach the journal monthly."
+    }
+   ],
+   "trigger": "Calculation reaches the statutory nodes after the wage base is published.",
+   "preconditions": [
+    "Central and state rule packs effective for the period are published.",
+    "Each employee's location maps to a state, and the regime choice is recorded or defaulted by the pack."
+   ],
+   "postconditions_success": [
+    "Statutory deduction lines and provision lines exist for every employee, each traced to its pack version."
+   ],
+   "postconditions_failure": [
+    "Calculation stops for affected employees with the missing pack or input named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Evaluate PF and EPS on the statutory wage base against the ceiling in the effective rule pack.",
+     "ref": "PAY-07.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Check whether the employee crossed the ESI wage threshold within the current contribution period.",
+     "ref": "PAY-07.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Evaluate PT from the location's state slab set and LWF from the state schedule.",
+     "ref": "PAY-07.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Evaluate TDS: regime choice, exemptions, perquisites and projection to year end.",
+     "ref": "PAY-07.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Accrue gratuity and bonus provisions on the statutory wage base for the journal.",
+     "ref": "PAY-07.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Gross wages crossed the ESI threshold mid-period.",
+     "steps": [
+      "ESI continues to be deducted until the end of the contribution period."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The employee's state does not levy PT.",
+     "steps": [
+      "No PT line is written and the trace records 'not applicable in state'."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A3",
+     "at_step": 4,
+     "condition": "The employee switched tax regime mid-year where the pack permits it.",
+     "steps": [
+      "TDS is reprojected for the remaining months under the new regime, offsetting tax already deducted."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "No rule pack version is effective for the period.",
+     "handling": "Calculation stops for the run and a CRITICAL flag names the missing pack.",
+     "rule": "RL-300"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "No regime choice is recorded.",
+     "handling": "The default regime defined in the effective pack is applied and the employee is notified (to be validated by Legal).",
+     "rule": "RL-303"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The location has no state mapping.",
+     "handling": "PT and LWF are not computed for the employee and a CRITICAL flag names the location.",
+     "rule": "RL-302"
+    }
+   ],
+   "business_rules": [
+    "RL-300",
+    "RL-301",
+    "RL-302",
+    "RL-303",
+    "RL-304",
+    "RL-282"
+   ],
+   "screens": [
+    "SCR-054"
+   ],
+   "data_objects": [
+    "payslip_line (C)",
+    "provision_line (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "A rule pack change takes effect from its effective date without a code release.",
+    "Each statutory line records the pack name and version used."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y300",
+    "TC-Y301",
+    "TC-Y302",
+    "TC-Y303",
+    "TC-Y304",
+    "TC-C380",
+    "TC-C382"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-014",
+     "persona": "Compliance owner",
+     "want": "PT to follow each location's state slab set on the same run",
+     "so_that": "multi-state entities deduct correctly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "LE-01 in Karnataka and LE-02 in Tamil Nadu are both in the September 2026 run",
+       "when": "the run is calculated",
+       "then": "PT amounts differ by state and each line cites its state slab set"
+      },
+      {
+       "given": "an employee works in a state with no PT",
+       "when": "the run is calculated",
+       "then": "no PT line is written and the trace states 'not applicable in state'"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-015",
+     "persona": "Employee / worker",
+     "want": "ESI to continue to the end of the contribution period after my pay rise",
+     "so_that": "my coverage does not stop mid-period",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my gross crosses the ESI threshold from August in a period ending September",
+       "when": "August and September are calculated",
+       "then": "ESI is deducted in both months"
+      },
+      {
+       "given": "the next contribution period starts",
+       "when": "the first month is calculated",
+       "then": "no ESI is deducted"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-016",
+     "persona": "Employee / worker",
+     "want": "my TDS projection to update when I switch regime mid-year",
+     "so_that": "the remaining months deduct the right tax",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I switch regime effective October 2026 where the pack permits",
+       "when": "the October run is calculated",
+       "then": "TDS for October to March is reprojected under the new regime, net of tax already deducted"
+      },
+      {
+       "given": "I have not recorded a regime",
+       "when": "the run is calculated",
+       "then": "the pack's default regime is applied and I am notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-045",
+    "SYS-046",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "PAY-UC-008",
+   "name": "Recover loans, advances and earned wage access",
+   "process": "PAY-08",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Deduct due instalments for loans, advances and earned wage access without breaching the net-pay floor, and report closing outstanding back to the loans module and the GL.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "Finance",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Never receives net pay below the protected floor."
+    },
+    {
+     "who": "Finance",
+     "interest": "Loan outstanding in the GL equals the loans module."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Sees every reduced or skipped recovery as a flag."
+    }
+   ],
+   "trigger": "Calculation reaches the recovery nodes.",
+   "preconditions": [
+    "Active loans and advances with instalment schedules exist in the loans module; the net-pay floor is configured."
+   ],
+   "postconditions_success": [
+    "Recovery lines are written, outstanding reduced, loan.repayment.posted emitted; closed loans emit loan.closed."
+   ],
+   "postconditions_failure": [
+    "No recovery is posted for the employee and the instalment remains due."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Read active loans and advances for the population from the loans module.",
+     "ref": "PAY-08.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Test whether the instalment would drive net pay below the statutory minimum wage or configured floor.",
+     "ref": "PAY-08.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Write the recovery line, reduce outstanding and stop recovery when the loan closes; emit loan.repayment.posted.",
+     "ref": "PAY-08.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Report closing outstanding to the loans module and the GL; emit loan.closed on closure.",
+     "ref": "PAY-08.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The instalment would breach the floor.",
+     "steps": [
+      "The instalment is reduced (or skipped) to keep net at the floor; payroll.recovery.reduced is emitted.",
+      "The shortfall is carried forward and flagged to the payroll manager."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Outstanding is less than the scheduled instalment.",
+     "steps": [
+      "Only the outstanding amount is recovered and the loan closes; guarantor release follows in the loans module."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Payroll is asked to create or approve a loan.",
+     "handling": "The request is refused; origination and eligibility belong to the loans module.",
+     "rule": "RL-310"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A recovery would produce negative net without a flag.",
+     "handling": "The invariant check fails the employee's calculation.",
+     "rule": "RL-311"
+    }
+   ],
+   "business_rules": [
+    "RL-310",
+    "RL-311",
+    "RL-312",
+    "RL-313",
+    "RL-430",
+    "RL-450"
+   ],
+   "screens": [
+    "SCR-080"
+   ],
+   "data_objects": [
+    "loan (R/U)",
+    "loan_repayment (C)",
+    "payslip_line (C)"
+   ],
+   "events": [
+    "payroll.recovery.reduced",
+    "loan.repayment.posted",
+    "loan.closed"
+   ],
+   "nfrs": [
+    "Closing outstanding reported to the loans module equals the GL balance for 100% of loans at period close."
+   ],
+   "frequency": "Per run",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y310",
+    "TC-Y311",
+    "TC-Y312",
+    "TC-Y313",
+    "TC-PR02",
+    "TC-M430",
+    "TC-M452"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-017",
+     "persona": "Employee / worker",
+     "want": "loan recovery to stop at the protected net-pay floor",
+     "so_that": "I always receive at least the minimum",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my net before recovery is 14,000 rupees, the floor is 12,000 and the instalment 5,000",
+       "when": "the run is calculated",
+       "then": "2,000 rupees is recovered, 3,000 is carried forward and the reduction is flagged"
+      },
+      {
+       "given": "the next month has no shortfall",
+       "when": "the run is calculated",
+       "then": "the instalment plus the 3,000 carried forward is recovered up to the floor"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-018",
+     "persona": "Finance",
+     "want": "the closing outstanding to be reported back after each run",
+     "so_that": "the GL loan balance agrees with the loans module",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a loan has 2,500 rupees outstanding and a 5,000 instalment",
+       "when": "the run is calculated",
+       "then": "2,500 is recovered, outstanding is zero and loan.closed is emitted"
+      },
+      {
+       "given": "the run is posted",
+       "when": "the loan control account is reconciled",
+       "then": "it equals the loans module total"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-049",
+    "SYS-053",
+    "SYS-055"
+   ]
+  },
+  {
+   "id": "PAY-UC-009",
+   "name": "Review, approve and disburse a payroll run",
+   "process": "PAY-09",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Take a calculated run through variance review, approval, dual-controlled bank file generation and release, then emit its journal.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Director / approver",
+    "Finance",
+    "Nucleus platform",
+    "Bank",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Bank file totals are verified out of band before money moves."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves only runs with no open CRITICAL flag and full GL mapping."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Is paid on the pay date."
+    }
+   ],
+   "trigger": "The run reaches CALCULATED.",
+   "preconditions": [
+    "No CRITICAL flag is open; bank details are verified for the population."
+   ],
+   "postconditions_success": [
+    "The run is DISBURSED, payroll.run.disbursed emitted, and payroll.journal.ready sent for FIN-03."
+   ],
+   "postconditions_failure": [
+    "The run remains at REVIEW or APPROVED with the blocking reason shown; no bank file is released."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Review variance against the prior period, the exception list and headcount reconciliation on the run cockpit.",
+     "ref": "PAY-09.1"
+    },
+    {
+     "n": 2,
+     "actor": "Director / approver",
+     "action": "Approve the run; approval is blocked if any CRITICAL flag is open or any component lacks a GL mapping.",
+     "ref": "PAY-09.2"
+    },
+    {
+     "n": 3,
+     "actor": "Finance",
+     "action": "Generate the bank file and verify its total out of band under dual control before release.",
+     "ref": "PAY-09.3"
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Release the disbursement; emit payroll.run.disbursed.",
+     "ref": "PAY-09.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Emit the run's salary journal to the finance handshake (FIN-03); emit payroll.journal.ready.",
+     "ref": "PAY-09.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The approver rejects the run.",
+     "steps": [
+      "The run returns to REVIEW or CALCULATED with the approver's comment."
+     ],
+     "rejoin": "Returns to step 1"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The out-of-band total does not match the file total.",
+     "steps": [
+      "The file is voided, the run returns to APPROVED and Finance investigates before regenerating."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A pay component has no GL mapping.",
+     "handling": "Approval is refused with the unmapped component named.",
+     "rule": "RL-321"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "An employee's bank details changed inside the payroll window.",
+     "handling": "An alert is raised to Finance and the payroll manager before the file is released.",
+     "rule": "RL-322"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "A correction is requested after DISBURSEMENT_PREPARED.",
+     "handling": "The run is not reopened; the correction is raised as arrears in the next open run.",
+     "rule": "RL-323"
+    }
+   ],
+   "business_rules": [
+    "RL-320",
+    "RL-321",
+    "RL-322",
+    "RL-323",
+    "RL-324"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-040",
+    "SCR-055"
+   ],
+   "data_objects": [
+    "payroll_run (U)",
+    "bank_file (C)",
+    "gl_journal (C)"
+   ],
+   "events": [
+    "payroll.run.approved",
+    "payroll.bank_file.prepared",
+    "payroll.run.disbursed",
+    "payroll.journal.ready"
+   ],
+   "nfrs": [
+    "The user who generates the bank file cannot be the user who verifies its total.",
+    "Bank files are encrypted at rest and their hash is recorded on the run."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y320",
+    "TC-Y321",
+    "TC-Y322",
+    "TC-Y323",
+    "TC-F324"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-019",
+     "persona": "Director / approver",
+     "want": "approval to be blocked while any component is unmapped to the GL",
+     "so_that": "every rupee paid lands in a known account",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a new 'site allowance' component has no GL mapping",
+       "when": "I select Approve",
+       "then": "approval is refused and the component is named"
+      },
+      {
+       "given": "the mapping is added",
+       "when": "I approve again",
+       "then": "the run moves to APPROVED and payroll.run.approved is emitted"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-020",
+     "persona": "Finance",
+     "want": "bank file totals to be verified by a second person out of band",
+     "so_that": "a tampered file cannot be released",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I generated the bank file",
+       "when": "I try to verify its total",
+       "then": "verification is refused because a different user must verify"
+      },
+      {
+       "given": "an employee changed bank account two days before the pay date",
+       "when": "the file is generated",
+       "then": "an alert names the employee before release"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-021",
+     "persona": "Payroll manager",
+     "want": "variance against the prior period on the review screen",
+     "so_that": "I catch unexpected swings before approval",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "net pay for a department rose 18% against August with a 10% threshold",
+       "when": "I open the review",
+       "then": "the department is highlighted with the variance and contributing employees"
+      },
+      {
+       "given": "headcount is 1,212 and the population is 1,211",
+       "when": "I open the reconciliation",
+       "then": "the missing employee is listed with the reason"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-037",
+    "SYS-051",
+    "SYS-053",
+    "SYS-084",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "PAY-UC-010",
+   "name": "Run off-cycle overtime payroll",
+   "process": "PAY-10",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Pay approved overtime in a separate run against the same period, with its own payslip view, bank file and journal.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Finance",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Sees overtime cost as its own line, not restated salary."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Receives overtime pay on its own date with its own payslip."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Only approved, tagged overtime is paid."
+    }
+   ],
+   "trigger": "Overtime for the period is approved and tagged to the off-cycle run.",
+   "preconditions": [
+    "The regular run for the period exists; overtime records are approved and tagged."
+   ],
+   "postconditions_success": [
+    "An off_cycle_ot run with its own payslip view, bank file and dimensioned journal exists; payroll.journal.ready emitted."
+   ],
+   "postconditions_failure": [
+    "The off-cycle run stays in its current state and the regular run is unaffected."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Create a second run for the same period with run_type off_cycle_ot; emit payroll.run.created.",
+     "ref": "PAY-10.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Pull only the approved overtime records tagged to this run.",
+     "ref": "PAY-10.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Compute OT pay on the statutory wage base and the state multiplier, and apply statutory treatment.",
+     "ref": "PAY-10.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Produce the run's own payslip view, bank file and journal with run type as a dimension; emit payroll.journal.ready.",
+     "ref": "PAY-10.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "An overtime record is approved after the off-cycle run locks inputs.",
+     "steps": [
+      "The record stays untagged and is picked up by the next off-cycle run."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "An overtime record is tagged to both the regular and off-cycle runs.",
+     "handling": "The record is excluded from both and flagged until it carries a single tag.",
+     "rule": "RL-331"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "No state multiplier is defined for the employee's location.",
+     "handling": "OT is not computed for that employee and a CRITICAL flag names the location.",
+     "rule": "RL-332"
+    }
+   ],
+   "business_rules": [
+    "RL-330",
+    "RL-331",
+    "RL-332",
+    "RL-333",
+    "RL-240",
+    "RL-134"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-053"
+   ],
+   "data_objects": [
+    "payroll_run (C)",
+    "overtime_record (R)",
+    "payslip_line (C)",
+    "bank_file (C)",
+    "gl_journal (C)"
+   ],
+   "events": [
+    "payroll.run.created",
+    "payroll.journal.ready"
+   ],
+   "nfrs": [
+    "An off-cycle run for 2,000 employees completes calculation within 3 minutes."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y330",
+    "TC-Y331",
+    "TC-Y332",
+    "TC-F333",
+    "TC-Y134"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-022",
+     "persona": "Payroll manager",
+     "want": "overtime paid in its own run after salary",
+     "so_that": "salary is not held up by overtime approvals",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "PR-2026-09-01 is the September regular run paying on 30 September",
+       "when": "I create PR-2026-09-02 as off_cycle_ot",
+       "then": "it pays on 07 October with its own bank file and journal"
+      },
+      {
+       "given": "an OT record is tagged to PR-2026-09-02",
+       "when": "PR-2026-09-01 is calculated",
+       "then": "the record is not included in the regular run"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-023",
+     "persona": "Finance",
+     "want": "the overtime journal dimensioned by run type",
+     "so_that": "overtime cost is reported separately",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "PR-2026-09-02 is disbursed",
+       "when": "its journal is emitted",
+       "then": "each line carries run type off_cycle_ot"
+      },
+      {
+       "given": "both September runs are posted",
+       "when": "I view September payroll cost",
+       "then": "salary and overtime appear as separate lines"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-047",
+    "SYS-084",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "PAY-UC-011",
+   "name": "Process retro changes as arrears",
+   "process": "PAY-11",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Recompute pay for closed periods affected by a back-dated change, as at the rule version used then, and pay the difference as arrears in the next open run without rewriting closed runs.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "HR operations",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives back pay for a back-dated revision with each period itemised."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Closed runs stay intact and the arrears are explainable."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Statutory differences (PF, ESI) are captured for the affected periods."
+    }
+   ],
+   "trigger": "payroll.arrears.requested, or a back-dated salary, attendance or leave change effective inside a closed period.",
+   "preconditions": [
+    "The affected periods' runs are closed with stored snapshots.",
+    "A next open run of type regular or arrears exists."
+   ],
+   "postconditions_success": [
+    "Arrears lines exist in the next open run, each traced to its originating period; closed runs are unchanged."
+   ],
+   "postconditions_failure": [
+    "No arrears line is posted; the request remains queued with the reason shown."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receive the back-dated change or payroll.arrears.requested with person, effective date and reason.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Identify every closed run for the person whose period falls on or after the effective date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Recompute each affected period from its snapshot with the corrected input, using the rule pack version of that period.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Compute the difference per payslip line, including statutory deduction and provision lines.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Post the differences as arrears lines in the next open run, each referencing its original period and run.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Review the arrears lines in the pre-payroll audit of the next open run.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Pay the arrears with the run and show them on the payslip as a separate section by period.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The difference is negative (an over-payment).",
+     "steps": [
+      "A recovery line is posted instead, subject to the net-pay floor in PAY-08."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A user tries to edit a closed run directly.",
+     "handling": "The edit is refused; the change must enter as arrears.",
+     "rule": "RL-041"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The snapshot for an affected period cannot be read.",
+     "handling": "The arrears request is held and a CRITICAL flag is raised to the payroll manager.",
+     "rule": "RL-251"
+    }
+   ],
+   "business_rules": [
+    "RL-041",
+    "RL-251",
+    "RL-273",
+    "RL-323"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-053"
+   ],
+   "data_objects": [
+    "payroll_snapshot (R)",
+    "payslip_line (C)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "payroll.arrears.requested"
+   ],
+   "nfrs": [
+    "Arrears for 12 affected periods per employee compute within 10 s."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y41",
+    "TC-PR03"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-024",
+     "persona": "Payroll manager",
+     "want": "back-dated changes to arrive as arrears in the next run",
+     "so_that": "closed runs remain exactly as paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a revision effective 1 July 2026 is approved on 15 September after July and August are closed",
+       "when": "the October run is created",
+       "then": "it contains arrears lines for July and August, each referencing its original run"
+      },
+      {
+       "given": "the July run is opened after the arrears are posted",
+       "when": "its totals are compared",
+       "then": "they are unchanged"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-025",
+     "persona": "Employee / worker",
+     "want": "to see arrears itemised by month on my payslip",
+     "so_that": "I can check each month's difference",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I receive arrears for July and August",
+       "when": "I open the October payslip",
+       "then": "an arrears section shows July and August separately with earnings and deduction differences"
+      },
+      {
+       "given": "an over-payment occurred in August",
+       "when": "arrears are computed",
+       "then": "a recovery line is shown and net stays at or above the floor"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-025",
+    "SYS-028",
+    "SYS-031",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "PAY-UC-012",
+   "name": "Settle full and final on the last working day",
+   "process": "PAY-12",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Compute and settle an exiting employee's full and final dues on the last working day once all blocking clearance items are closed or waived.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations",
+    "Finance",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives the settlement on the last working day with a clear statement."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Clearance runs in parallel with notice and gates the settlement."
+    },
+    {
+     "who": "Finance",
+     "interest": "Negative settlements are recovered, not ignored."
+    }
+   ],
+   "trigger": "All clearance items for the exit are closed or waived (LCY processes).",
+   "preconditions": [
+    "The exit has a confirmed last working day; an fnf run type exists for the period."
+   ],
+   "postconditions_success": [
+    "The F&F is approved and settled; payroll.fnf.settled is emitted with the net amount."
+   ],
+   "postconditions_failure": [
+    "The F&F run is held with the open clearance items listed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Check that all blocking clearance items are closed or explicitly waived.",
+     "ref": "PAY-12.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Compute settlement: salary to LWD, leave encashment from the ledger, gratuity, notice recovery, loan foreclosure and recoveries.",
+     "ref": "PAY-12.2"
+    },
+    {
+     "n": 3,
+     "actor": "Payroll manager",
+     "action": "Approve and settle on the last working day; emit payroll.fnf.settled.",
+     "ref": "PAY-12.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The settlement net is negative.",
+     "steps": [
+      "The statement shows the amount due from the employee and a recovery task is raised to Finance; the run is not blocked."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The employee has not met the gratuity service condition.",
+     "steps": [
+      "No gratuity line is computed and the statement states the reason (to be validated by Legal)."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A blocking clearance item is open and not waived.",
+     "handling": "The F&F run is held with the same lock semantics as the payroll input lock; the open items are listed.",
+     "rule": "RL-340"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The leave ledger projection is unavailable.",
+     "handling": "Encashment is not computed and the run is held with a CRITICAL flag.",
+     "rule": "RL-341"
+    }
+   ],
+   "business_rules": [
+    "RL-340",
+    "RL-341",
+    "RL-342",
+    "RL-400",
+    "RL-403"
+   ],
+   "screens": [
+    "SCR-056",
+    "SCR-061",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "clearance_item (R)",
+    "leave_ledger (R)",
+    "loan (U)",
+    "payslip_line (C)",
+    "payroll_run (U)"
+   ],
+   "events": [
+    "payroll.fnf.settled"
+   ],
+   "nfrs": [
+    "The F&F statement is available to the employee on the settlement date in mobile and web."
+   ],
+   "frequency": "Per exit",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-X340",
+    "TC-X341",
+    "TC-X342",
+    "TC-X400",
+    "TC-X402"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-026",
+     "persona": "Payroll manager",
+     "want": "the F&F to stay held until every blocking clearance item is closed or waived",
+     "so_that": "no settlement is paid with assets or dues outstanding",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the IT asset return is open for an exiting employee",
+       "when": "I start the F&F run",
+       "then": "it is held and the IT item is listed"
+      },
+      {
+       "given": "E1068 Dinesh Vaidya is fully cleared with LWD 30 September 2026",
+       "when": "I approve the F&F",
+       "then": "settlement is made on 30 September and payroll.fnf.settled is emitted"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-027",
+     "persona": "Employee / worker",
+     "want": "a settlement statement with each component listed",
+     "so_that": "I understand what I received or owe",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my settlement includes salary to LWD, 12 days EL encashment and a loan foreclosure",
+       "when": "I open the statement",
+       "then": "each component appears with its amount and source"
+      },
+      {
+       "given": "my notice recovery exceeds my dues",
+       "when": "the statement is produced",
+       "then": "it shows the net amount payable by me and the recovery reference"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-047",
+    "SYS-049",
+    "SYS-051"
+   ]
+  },
+  {
+   "id": "PAY-UC-013",
+   "name": "View and download payslips",
+   "process": "PAY-13",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Let employees retrieve the payslip for any period and run, and drill into how each line was computed.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can explain their own pay without raising a query."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Fewer payslip queries reach the helpdesk."
+    }
+   ],
+   "trigger": "The run is disbursed and payslips are published.",
+   "preconditions": [
+    "The employee is authenticated; the run is DISBURSED."
+   ],
+   "postconditions_success": [
+    "The payslip is displayed or downloaded and payslip.viewed is emitted."
+   ],
+   "postconditions_failure": [
+    "Nothing is displayed and the reason (not yet published, out of scope) is shown."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Open payslips and select the period and the run.",
+     "ref": "PAY-13.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Serve the payslip with drill-down from each line to its rule and inputs; emit payslip.viewed.",
+     "ref": "PAY-13.2"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The period has more than one run.",
+     "steps": [
+      "The run selector lists each run with type and pay date, defaulting to the regular run."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The mobile app is offline.",
+     "steps": [
+      "Previously opened payslips are shown from encrypted local storage, marked with the sync time."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The selected run is not yet disbursed.",
+     "handling": "The payslip is not shown and the expected pay date is displayed.",
+     "rule": "RL-350"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A user requests another employee's payslip without scope.",
+     "handling": "The request is refused and an access event is recorded.",
+     "rule": "RL-351"
+    }
+   ],
+   "business_rules": [
+    "RL-350",
+    "RL-351"
+   ],
+   "screens": [
+    "SCR-053"
+   ],
+   "data_objects": [
+    "payslip (R)",
+    "payslip_line_trace (R)"
+   ],
+   "events": [
+    "payslip.viewed"
+   ],
+   "nfrs": [
+    "A payslip renders within 2 s at p95 on a mid-range mobile device.",
+    "Each payslip view is logged with actor and time."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y350",
+    "TC-Y351"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-028",
+     "persona": "Employee / worker",
+     "want": "to pick the run as well as the month",
+     "so_that": "I can find my overtime payslip separately from salary",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "September 2026 has PR-2026-09-01 and PR-2026-09-02",
+       "when": "I open September payslips",
+       "then": "both runs are listed with type and pay date"
+      },
+      {
+       "given": "I select PR-2026-09-02",
+       "when": "the payslip opens",
+       "then": "only overtime lines appear"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-029",
+     "persona": "Employee / worker",
+     "want": "to tap a payslip line and see how it was calculated",
+     "so_that": "I understand deductions without asking HR",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my PF line is 1,800 rupees",
+       "when": "I open its detail",
+       "then": "the wage base, rate source and pack version are shown"
+      },
+      {
+       "given": "I am offline and opened the payslip last week",
+       "when": "I open it again",
+       "then": "it displays with the last sync time"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-030",
+    "SYS-033",
+    "SYS-067",
+    "SYS-069"
+   ]
+  },
+  {
+   "id": "PAY-UC-014",
+   "name": "Roll back a payroll run before disbursement",
+   "process": "PAY-14",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Return a run to an earlier state to correct a defect found before disbursement, with full audit, and refuse rollback once money has moved.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Finance",
+    "Director / approver",
+    "Nucleus platform",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Can fix a defect without creating arrears when money has not moved."
+    },
+    {
+     "who": "Finance",
+     "interest": "A voided bank file can never be released."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every rollback has an actor, reason and from/to state."
+    }
+   ],
+   "trigger": "A defect is found in a run between CALCULATED and DISBURSEMENT_PREPARED.",
+   "preconditions": [
+    "The run is in CALCULATED, REVIEW, APPROVED or DISBURSEMENT_PREPARED."
+   ],
+   "postconditions_success": [
+    "The run is in the chosen earlier state, artefacts from later states are voided, and an audit entry records the rollback."
+   ],
+   "postconditions_failure": [
+    "The run state is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Select Roll back on the run cockpit and choose the target state the defect requires.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Check the current state is DISBURSEMENT_PREPARED or earlier and the target is an allowed previous state.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Payroll manager",
+     "action": "Enter the defect description and reason.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Void artefacts produced after the target state (bank file, approval record), keeping them read-only for audit.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Move the run to the target state and record actor, reason and from/to states.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Correct the defect and take the run forward again through audit, calculation and approval.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The run is in DISBURSEMENT_PREPARED.",
+     "steps": [
+      "Finance is notified that the bank file is voided; any copy held outside the platform must not be released."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The defect concerns inputs.",
+     "steps": [
+      "The target state is DRAFT; the inputs are unlocked and a new snapshot is taken on re-lock."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The run is DISBURSED or later.",
+     "handling": "Rollback is refused; the correction must be raised as arrears in the next open run.",
+     "rule": "RL-323"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "The re-approved run has an open CRITICAL flag.",
+     "handling": "Approval is blocked as for any run.",
+     "rule": "RL-321"
+    }
+   ],
+   "business_rules": [
+    "RL-323",
+    "RL-250",
+    "RL-251",
+    "RL-321",
+    "RL-322"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-055"
+   ],
+   "data_objects": [
+    "payroll_run (U)",
+    "bank_file (U)",
+    "audit_entry (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Rollback completes within 30 s and voided bank files can no longer be downloaded."
+   ],
+   "frequency": "Rare",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y323",
+    "TC-Y321"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-030",
+     "persona": "Payroll manager",
+     "want": "to roll an approved run back to review when I find a defect",
+     "so_that": "I correct it before anyone is paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September run is APPROVED and an HRA formula error is found",
+       "when": "I roll back to CALCULATED with a reason",
+       "then": "the run is CALCULATED, the approval is voided and the audit entry shows my reason"
+      },
+      {
+       "given": "the September run is DISBURSED",
+       "when": "I select Roll back",
+       "then": "rollback is refused with the message to raise arrears"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-031",
+     "persona": "Finance",
+     "want": "a voided bank file to be impossible to release",
+     "so_that": "no stale file is paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the run is DISBURSEMENT_PREPARED with a generated bank file",
+       "when": "the run is rolled back to APPROVED",
+       "then": "the file is marked voided and its download is disabled"
+      },
+      {
+       "given": "the run is regenerated",
+       "when": "a new file is produced",
+       "then": "it has a new hash and requires fresh dual-control verification"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-036",
+    "SYS-051",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "PAY-UC-015",
+   "name": "Run payroll for another country on a country pack",
+   "process": null,
+   "capability_gap": "PAY-CG-001",
+   "source": "Authored",
+   "goal": "Run payroll for an entity outside India using a versioned country pack of earnings, deductions, taxes, filings and payslip format on the same calculation engine.",
+   "level": "User goal",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Payroll manager",
+    "Compliance owner",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Runs non-India entities with the same cockpit, audit and approval controls."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Country statutory rules are versioned and effective-dated."
+    }
+   ],
+   "trigger": "A legal entity in a new country is onboarded to the tenant.",
+   "preconditions": [
+    "A country pack for the country is published with an effective date."
+   ],
+   "postconditions_success": [
+    "The entity's runs calculate with the country pack and produce payslips in the country format."
+   ],
+   "postconditions_failure": [
+    "The entity cannot create runs until a pack is bound."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Bind the entity to the country pack version effective from its first pay period.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Map the entity's pay components to the pack's earnings and deduction nodes.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validate the combined component graph is acyclic and every component has a GL mapping.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Payroll manager",
+     "action": "Create, lock and audit a run for the entity as for any run.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Calculate using the country pack nodes in integer minor currency units with traces.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Produce payslips in the pack's format and language and the pack's statutory outputs.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A new pack version is published mid-year.",
+     "steps": [
+      "Runs for periods on or after its effective date use the new version; earlier periods keep the old one."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A component is unmapped or the graph has a cycle.",
+     "handling": "Binding is refused with the offending components named.",
+     "rule": "RL-270"
+    }
+   ],
+   "business_rules": [
+    "RL-270",
+    "RL-271",
+    "RL-273",
+    "RL-251"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-053"
+   ],
+   "data_objects": [
+    "pay_component (R)",
+    "payslip_line (C)"
+   ],
+   "events": [
+    "payroll.run.created"
+   ],
+   "nfrs": [
+    "Adding a country pack requires no change to the calculation engine code."
+   ],
+   "frequency": "Per run",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y270",
+    "TC-PR03"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-032",
+     "persona": "Implementation consultant",
+     "want": "to bind a new entity to a country pack and map its components",
+     "so_that": "it can run payroll without engine changes",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an entity is created for a new country with pack version 1.0 effective 1 April 2027",
+       "when": "I bind the entity and map all components",
+       "then": "validation passes and run creation is enabled"
+      },
+      {
+       "given": "one component is unmapped",
+       "when": "I attempt to bind",
+       "then": "binding is refused naming the component"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-033",
+     "persona": "Payroll manager",
+     "want": "a non-India run to follow the same lock, audit and approval steps",
+     "so_that": "controls are uniform across countries",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a run for the new entity is calculated",
+       "when": "I open the cockpit",
+       "then": "states, flags and approval gates match those of an India run"
+      },
+      {
+       "given": "the run is recomputed from its snapshot",
+       "when": "results are compared",
+       "then": "they match to the minor currency unit"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-028",
+    "SYS-045",
+    "SYS-047",
+    "SYS-066"
+   ]
+  },
+  {
+   "id": "PAY-UC-016",
+   "name": "Compute and pay retro differences with an arrears statement",
+   "process": null,
+   "capability_gap": "PAY-CG-002",
+   "source": "Authored",
+   "goal": "Pay back-dated salary, attendance or leave changes spanning several closed periods as arrears in the next open run, with an itemised statement per period and component.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives an itemised arrears statement."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "PF and ESI differences are reported against the right periods."
+    }
+   ],
+   "trigger": "HR approves a back-dated change effective in a closed period.",
+   "preconditions": [
+    "Snapshots exist for the affected periods; the next open run exists."
+   ],
+   "postconditions_success": [
+    "An arrears statement per employee lists each period and component difference and its payment run."
+   ],
+   "postconditions_failure": [
+    "No arrears are posted and the reason is listed for the payroll manager."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Approve a back-dated salary revision, attendance correction or leave change with its effective date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Raise payroll.arrears.requested for each affected employee and period.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Recompute each closed period from its snapshot with the corrected input and the then-effective rule pack.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Compute differences per component, including PF, ESI and TDS effects.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Payroll manager",
+     "action": "Review the arrears batch, totals by period and component, in the next open run's audit.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Post arrears lines to the next open run, each referencing its original period and run.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Produce the itemised arrears statement on the employee's payslip for that run.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The payroll manager prefers a separate arrears run.",
+     "steps": [
+      "An arrears run_type is created for the period and the lines are posted there instead."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The rule pack version for an affected period is no longer available.",
+     "handling": "The batch is held and a CRITICAL flag names the period and pack.",
+     "rule": "RL-251"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A user attempts to post arrears into a closed run.",
+     "handling": "The posting is refused; arrears go only to an open run.",
+     "rule": "RL-041"
+    }
+   ],
+   "business_rules": [
+    "RL-041",
+    "RL-240",
+    "RL-251",
+    "RL-273"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-053"
+   ],
+   "data_objects": [
+    "payroll_snapshot (R)",
+    "payslip_line (C)"
+   ],
+   "events": [
+    "payroll.arrears.requested"
+   ],
+   "nfrs": [
+    "Arrears for 1,000 employees across 6 periods compute within 5 minutes."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y41",
+    "TC-Y240"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-034",
+     "persona": "Payroll manager",
+     "want": "a back-dated revision across three closed months to produce one reviewed arrears batch",
+     "so_that": "I approve the whole correction at once",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a revision effective 1 June 2026 is approved on 10 September",
+       "when": "the October run audit opens",
+       "then": "an arrears batch shows June, July and August differences by component"
+      },
+      {
+       "given": "the batch is approved",
+       "when": "the October run is calculated",
+       "then": "arrears lines reference the June, July and August regular runs respectively"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-035",
+     "persona": "Employee / worker",
+     "want": "an itemised arrears statement",
+     "so_that": "I can verify each month's back pay and deduction change",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my basic was revised by 2,000 rupees from 1 June",
+       "when": "I open the October payslip",
+       "then": "the statement shows 2,000 basic arrears for each of June, July and August with PF differences"
+      },
+      {
+       "given": "no change affects me",
+       "when": "I open the October payslip",
+       "then": "no arrears section appears"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-024",
+    "SYS-025",
+    "SYS-031",
+    "SYS-037",
+    "SYS-047"
+   ]
+  },
+  {
+   "id": "PAY-UC-017",
+   "name": "Declare tax regime and investments with proof verification",
+   "process": null,
+   "capability_gap": "PAY-CG-003",
+   "source": "Authored",
+   "goal": "Let employees choose the income-tax regime, declare investments and upload proofs, with payroll verification driving the TDS projection.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "TDS reflects the regime and investments actually declared and proven."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Proof verification is tracked and drives year-end reconciliation."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Declarations and verified proofs support the annual returns."
+    }
+   ],
+   "trigger": "The declaration window opens for the financial year, or the proof submission window opens.",
+   "preconditions": [
+    "The effective income-tax rule pack defines regimes, declarable heads and limits (to be validated by Legal)."
+   ],
+   "postconditions_success": [
+    "Regime, declarations and verified proof amounts are recorded and TDS is reprojected."
+   ],
+   "postconditions_failure": [
+    "The previous declaration stands and TDS is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Open tax declaration and projection and choose the tax regime for the year.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Show the TDS projection under both regimes using current salary and declarations.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Declare investments and exemptions by head, within the limits from the rule pack.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Reproject TDS for the remaining months using declared amounts.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Upload proofs for each declared item during the proof window.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Verify each proof, accepting, partly accepting or rejecting it with a reason.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Reproject TDS from verified amounts and show the change to the employee.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee changes regime during the year where the pack permits.",
+     "steps": [
+      "The new regime applies from the next run and TDS is reprojected net of tax already deducted."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A declared amount exceeds the head's limit.",
+     "handling": "The excess is not accepted and the limit is shown.",
+     "rule": "RL-303"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A proof is rejected or not submitted by the window close.",
+     "handling": "The declared amount is replaced by the verified amount (possibly zero) and TDS increases for the remaining months.",
+     "rule": "RL-303"
+    }
+   ],
+   "business_rules": [
+    "RL-303"
+   ],
+   "screens": [
+    "SCR-054"
+   ],
+   "data_objects": [
+    "tax_declaration (C/U)",
+    "document (C)",
+    "payslip_line (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Proof files are restricted to PDF and image types up to 5 MB each and encrypted at rest."
+   ],
+   "frequency": "Annual windows; occasional changes",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y303"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-036",
+     "persona": "Employee / worker",
+     "want": "to compare TDS under both regimes before choosing",
+     "so_that": "I pick the regime that suits me",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my annual salary and declarations are loaded",
+       "when": "I open tax declaration and projection",
+       "then": "monthly TDS under each regime is shown side by side"
+      },
+      {
+       "given": "I choose a regime and save",
+       "when": "the next run is calculated",
+       "then": "TDS follows the chosen regime"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-037",
+     "persona": "Payroll manager",
+     "want": "to verify proofs and have TDS reprojected from verified amounts",
+     "so_that": "year-end tax is not under-deducted",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee declared 1,50,000 rupees and proved 1,00,000",
+       "when": "I accept 1,00,000 with a reason",
+       "then": "the projection uses 1,00,000 and the employee sees the change"
+      },
+      {
+       "given": "an employee submits no proof by the window close",
+       "when": "the next run is calculated",
+       "then": "the declared amount is treated as zero and TDS increases"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-033",
+    "SYS-040",
+    "SYS-045",
+    "SYS-048"
+   ]
+  },
+  {
+   "id": "PAY-UC-018",
+   "name": "Claim reimbursements and flexible benefits",
+   "process": null,
+   "capability_gap": "PAY-CG-004",
+   "source": "Authored",
+   "goal": "Let employees claim fuel, telephone, LTA and meal reimbursements against limits with bills, approved claims flowing to payroll with the right tax treatment.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Claims are paid in the next run with correct tax treatment."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Only approved, within-limit claims reach payroll."
+    },
+    {
+     "who": "Finance",
+     "interest": "Reimbursement cost posts to the right GL accounts."
+    }
+   ],
+   "trigger": "An employee submits a reimbursement claim.",
+   "preconditions": [
+    "Reimbursement heads, annual limits and tax treatment are configured in the employee's salary structure."
+   ],
+   "postconditions_success": [
+    "Approved claims are raised as payroll inputs with taxable and exempt portions."
+   ],
+   "postconditions_failure": [
+    "The claim is rejected or returned; no payroll input is raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Select a reimbursement head, enter the amount and bill date and upload the bill.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Check the claim against the remaining annual limit and the bill date's financial year.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Approve or reject the claim.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Payroll manager",
+     "action": "Verify the bill and confirm the exempt and taxable portions per the head's tax treatment.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Raise the approved claim as a payroll input for the next open run; emit payroll.input.raised.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Pay the claim in the run with reimbursement lines shown separately on the payslip.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The bill does not support the full amount.",
+     "steps": [
+      "The payroll manager approves a reduced amount with a reason; the employee is notified."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The claim exceeds the remaining limit.",
+     "handling": "The claim is limited to the remaining amount and the employee is told the excess.",
+     "rule": "RL-242"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The next run has locked inputs.",
+     "handling": "The input is raised for the following open run.",
+     "rule": "RL-250"
+    }
+   ],
+   "business_rules": [
+    "RL-242",
+    "RL-250",
+    "RL-273"
+   ],
+   "screens": [
+    "SCR-053"
+   ],
+   "data_objects": [
+    "claim (C/U)",
+    "document (C)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "payroll.input.raised"
+   ],
+   "nfrs": [
+    "Claim submission with a 5 MB bill completes within 5 s on mobile."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y242"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-038",
+     "persona": "Employee / worker",
+     "want": "to submit a fuel claim with a photo of the bill",
+     "so_that": "I am reimbursed in the next run",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my remaining fuel limit is 18,000 rupees",
+       "when": "I claim 3,200 rupees with a bill dated 4 November 2026",
+       "then": "the claim is created and routed to my manager"
+      },
+      {
+       "given": "my remaining limit is 1,000 rupees",
+       "when": "I claim 3,200 rupees",
+       "then": "the claim is limited to 1,000 and I am told the excess"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-039",
+     "persona": "Payroll manager",
+     "want": "only verified claims to reach payroll with tax treatment set",
+     "so_that": "taxable reimbursements are taxed correctly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a 3,200 rupee fuel claim is approved by the manager",
+       "when": "I verify it",
+       "then": "a payroll input is raised for the next open run with exempt and taxable portions"
+      },
+      {
+       "given": "the November run is calculated",
+       "when": "the employee opens the payslip",
+       "then": "the reimbursement appears as a separate line"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-045",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "PAY-UC-019",
+   "name": "Apply court-ordered deductions",
+   "process": null,
+   "capability_gap": "PAY-CG-005",
+   "source": "Authored",
+   "goal": "Deduct court-ordered amounts in their legal priority order while protecting the employee's minimum net pay (specific statutory limits to be validated by Legal).",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "HR operations",
+    "Compliance owner",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Net pay never falls below the protected minimum."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Orders are honoured in the right priority and evidenced."
+    }
+   ],
+   "trigger": "HR operations receives a court order or attachment against an employee's wages.",
+   "preconditions": [
+    "Deduction priority order and the protected net-pay floor are configured (to be validated by Legal)."
+   ],
+   "postconditions_success": [
+    "The order deducts each run in priority order until satisfied, with remittance records."
+   ],
+   "postconditions_failure": [
+    "The order is recorded but not active; no deduction occurs."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Record the order: issuing authority, reference, amount or rate, start date and payee, with the order document.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Compliance owner",
+     "action": "Confirm the order's priority relative to statutory deductions, loans and other orders.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "In each run, compute available net after statutory deductions and apply orders in priority order.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Reduce any deduction that would breach the protected net-pay floor and carry the shortfall forward.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Write deduction lines, update the order's balance and raise a payee remittance record.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Close the order when the amount is satisfied and notify HR operations.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Two orders apply to the same employee.",
+     "steps": [
+      "The higher-priority order is satisfied first; the second takes only what remains above the floor."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "No amount is available above the floor.",
+     "handling": "No deduction is made, the shortfall is carried forward and the payroll manager is flagged.",
+     "rule": "RL-311"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The order document is missing.",
+     "handling": "The order cannot be activated.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-311",
+    "RL-310"
+   ],
+   "screens": [
+    "SCR-050"
+   ],
+   "data_objects": [
+    "court_order (C/U)",
+    "payslip_line (C)",
+    "document (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Order documents are visible only to HR operations, the compliance owner and the payroll manager in scope."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-PR02",
+    "TC-Y311"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-040",
+     "persona": "Payroll manager",
+     "want": "court orders to deduct in priority order without breaching the floor",
+     "so_that": "we comply with the order and protect the employee",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "net after statutory deductions is 20,000 rupees, the floor 12,000 and an order requires 10,000",
+       "when": "the run is calculated",
+       "then": "8,000 is deducted and 2,000 is carried forward"
+      },
+      {
+       "given": "a loan instalment also applies and the order ranks higher",
+       "when": "the run is calculated",
+       "then": "the order is deducted first and the loan uses only what remains above the floor"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-041",
+     "persona": "HR operations",
+     "want": "an order to close automatically when satisfied",
+     "so_that": "no deduction continues beyond the amount ordered",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an order has 3,000 rupees remaining",
+       "when": "the next run deducts 3,000",
+       "then": "the order closes and I am notified"
+      },
+      {
+       "given": "the order is closed",
+       "when": "the following run is calculated",
+       "then": "no deduction line is written for it"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-019",
+    "SYS-028",
+    "SYS-047",
+    "SYS-049",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "PAY-UC-020",
+   "name": "Send change extracts to an external payroll provider",
+   "process": null,
+   "capability_gap": "PAY-CG-006",
+   "source": "Authored",
+   "goal": "For countries without a native pack, send effective-dated employee and pay changes to an external payroll provider and reconcile its acknowledgement and results.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "External payroll provider",
+    "Nucleus platform",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Knows every change reached the provider and was applied."
+    },
+    {
+     "who": "Finance",
+     "interest": "Provider results reconcile with the platform's records."
+    }
+   ],
+   "trigger": "The extract schedule for the entity's pay period fires.",
+   "preconditions": [
+    "The entity is configured for external payroll with a provider endpoint and extract format."
+   ],
+   "postconditions_success": [
+    "The extract is acknowledged and provider results are reconciled with no open differences."
+   ],
+   "postconditions_failure": [
+    "The extract remains unacknowledged and is escalated."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Collect effective-dated changes since the last acknowledged extract: hires, exits, pay and bank changes.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Produce the extract with a sequence number and content hash.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Deliver the extract to the provider over the configured secure channel.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "External payroll provider",
+     "action": "Return an acknowledgement with the sequence number and record counts.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Match acknowledgement counts to the extract and mark it acknowledged.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "External payroll provider",
+     "action": "Return period results (gross, deductions, net per employee).",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Reconcile results against platform records and resolve differences.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A change is back-dated before the last extract.",
+     "steps": [
+      "The change is included with its original effective date and marked as a correction."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "No acknowledgement within 24 hours.",
+     "handling": "The extract is re-sent once with the same sequence number, then escalated to the payroll manager.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Acknowledged counts differ from the extract.",
+     "handling": "The extract is marked rejected and the differing records listed.",
+     "rule": "RL-251"
+    }
+   ],
+   "business_rules": [
+    "RL-251"
+   ],
+   "screens": [
+    "SCR-050"
+   ],
+   "data_objects": [
+    "payroll_extract (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Extracts are encrypted in transit and at rest; sequence numbers have no gaps."
+   ],
+   "frequency": "Per pay period",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PAY-US-042",
+     "persona": "Payroll manager",
+     "want": "every change to be acknowledged by the provider",
+     "so_that": "nothing is lost between systems",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "extract 42 contains 37 changes",
+       "when": "the provider acknowledges 37 records for sequence 42",
+       "then": "the extract is marked acknowledged"
+      },
+      {
+       "given": "the provider acknowledges 35 records",
+       "when": "matching runs",
+       "then": "the extract is rejected and the 2 missing records are listed"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-043",
+     "persona": "Payroll manager",
+     "want": "to reconcile provider results with our records",
+     "so_that": "differences are found before the period closes",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "provider net for an employee differs from the expected net by 450 rupees",
+       "when": "reconciliation runs",
+       "then": "the employee is listed with both values"
+      },
+      {
+       "given": "all differences are resolved",
+       "when": "I close reconciliation",
+       "then": "the period is marked reconciled"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-050",
+    "SYS-084",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "PAY-UC-021",
+   "name": "Close the payroll financial year",
+   "process": null,
+   "capability_gap": "PAY-CG-007",
+   "source": "Authored",
+   "goal": "Produce annual employee tax certificates and perquisite statements, reconcile investments, prepare quarterly TDS returns, and lock the financial year with controlled re-open (forms and obligations to be validated by Legal).",
+   "level": "Summary",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Payroll manager",
+    "Nucleus platform",
+    "Statutory portal",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives Form 16 and Form 12BA on time and correct."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Quarterly 24Q returns reconcile to payroll deductions."
+    },
+    {
+     "who": "Auditor",
+     "interest": "A locked year cannot be changed without a recorded re-open."
+    }
+   ],
+   "trigger": "Quarter end for 24Q; financial year end for certificates and lock.",
+   "preconditions": [
+    "All runs in the quarter or year are CLOSED; verified proofs are recorded."
+   ],
+   "postconditions_success": [
+    "Returns are filed, certificates published to employees and the year locked."
+   ],
+   "postconditions_failure": [
+    "The year stays open with the blocking reconciliation item named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "At quarter end, aggregate TDS deducted per employee and challan details for the quarter.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Compliance owner",
+     "action": "Review the 24Q return data, resolve mismatches and file it on the statutory portal.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "At year end, reconcile declared versus verified investments and TDS deducted per employee.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Generate Form 16 and Form 12BA per employee from the reconciled data.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Compliance owner",
+     "action": "Approve publication; certificates appear in employee self-service.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Lock the financial year; further changes are refused.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Record the lock with actor and time and block new runs dated in the year.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "A correction is needed after the lock.",
+     "steps": [
+      "The Director / approver authorises a re-open with reason; the change is made and the year re-locked, with revised certificates where affected."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Return data has an invalid PAN or challan mismatch.",
+     "handling": "Filing is blocked and the affected records listed for correction.",
+     "rule": "RL-303"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "TDS deducted differs from the computed annual liability.",
+     "handling": "The employee is listed for reconciliation before certificates are generated.",
+     "rule": "RL-303"
+    }
+   ],
+   "business_rules": [
+    "RL-303",
+    "RL-250"
+   ],
+   "screens": [
+    "SCR-054",
+    "SCR-070"
+   ],
+   "data_objects": [
+    "payslip_line (R)",
+    "tax_declaration (R)",
+    "statutory_return (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Certificates for 10,000 employees generate within 30 minutes.",
+    "Re-open of a locked year requires two distinct users."
+   ],
+   "frequency": "Quarterly and annual",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-Y303"
+   ],
+   "user_stories": [
+    {
+     "id": "PAY-US-044",
+     "persona": "Compliance owner",
+     "want": "24Q data checked for PAN and challan mismatches before filing",
+     "so_that": "returns are accepted first time",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "one employee in Q2 has an invalid PAN",
+       "when": "I prepare the 24Q return",
+       "then": "filing is blocked and the employee is listed"
+      },
+      {
+       "given": "all records are valid",
+       "when": "I approve the return",
+       "then": "it is marked filed with the filing date"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-045",
+     "persona": "Employee / worker",
+     "want": "to download my Form 16 from self-service",
+     "so_that": "I can file my tax return",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "FY 2026-27 certificates are approved for publication",
+       "when": "I open my tax documents",
+       "then": "Form 16 and Form 12BA are available to download"
+      },
+      {
+       "given": "a correction later revises my TDS",
+       "when": "the year is re-opened and re-locked",
+       "then": "a revised Form 16 replaces the earlier one, which remains in history"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-046",
+     "persona": "Payroll manager",
+     "want": "to lock the financial year with controlled re-open",
+     "so_that": "closed-year figures cannot change silently",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "FY 2026-27 is locked",
+       "when": "a user tries to create a run dated March 2027",
+       "then": "creation is refused"
+      },
+      {
+       "given": "a re-open is requested",
+       "when": "a second user approves with reason",
+       "then": "the year is re-opened and the event is audited"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-032",
+    "SYS-045",
+    "SYS-051",
+    "SYS-086"
+   ]
+  }
+ ]
+}

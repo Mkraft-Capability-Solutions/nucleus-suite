@@ -1,0 +1,2928 @@
+{
+ "domain": "PPL",
+ "use_cases": [
+  {
+   "id": "PPL-UC-001",
+   "name": "Create person, position and assignment",
+   "process": "PPL-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Bring a new worker onto the record as one durable person with an employment and an assignment against a vacant position, with policy attributes resolved and the joining chain started.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Payroll group is set explicitly and identity mismatches block pay, not joining."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "The new worker's shift group, default shift and location are ready before the first punch."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Joins on the planned date even if a statutory identifier needs correction."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Duplicate decisions and policy overrides are recorded with a reason."
+    }
+   ],
+   "trigger": "An offer is accepted or a data load presents a new worker.",
+   "preconditions": [
+    "HR operations holds entity scope for the hiring legal entity.",
+    "The target position exists in the position register.",
+    "Worker classes, designations and payroll groups are configured."
+   ],
+   "postconditions_success": [
+    "One person, one employment under the legal entity and one assignment exist, with payroll group and location set independently.",
+    "The resolved policy vector is stamped on the assignment and the joining chain is running.",
+    "people.worker.hired is emitted with person_id, assignment_id, worker_class, location_id and doj."
+   ],
+   "postconditions_failure": [
+    "No assignment is created against a filled, frozen or abolished position.",
+    "Where a likely duplicate exists, no new person is created until HR records a decision."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Searches for an existing person by name, date of birth, Aadhaar token, PAN token and mobile before creating one.",
+     "ref": "PPL-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Scores candidate matches and checks whether any is above the 0.85 confidence threshold.",
+     "ref": "PPL-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Creates the person with identity and contact facts: name, gender, date of birth, nationality, mobile, email, Aadhaar, PAN and UAN.",
+     "ref": "PPL-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Selects or creates the position and confirms it is vacant and budgeted.",
+     "ref": "PPL-01.4"
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Creates the employment against the legal entity with start date, probation months and notice days.",
+     "ref": "PPL-01.5"
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Creates the assignment: position, worker class, designation, band, manager, shift group, payroll group and location.",
+     "ref": "PPL-01.6"
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Resolves policy attributes from the worker class and stamps them on the assignment, keeping any reasoned overrides.",
+     "ref": "PPL-01.7"
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Starts the joining chain and emits the hire event.",
+     "ref": "PPL-01.8"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "A candidate scores at or above 0.85.",
+     "steps": [
+      "Nucleus platform shows the existing record and the new entry side by side and emits people.person.duplicate_suspected.",
+      "HR operations decides Same person or Different person and the decision is logged with actor and reason.",
+      "If Different person, creation continues; same name, date of birth and site is routine and is not a reason to block."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The search finds the person as a former worker.",
+     "steps": [
+      "HR operations routes the case to rehire instead of creating a new person."
+     ],
+     "rejoin": "Ends the use case (continues in PPL-UC-007)"
+    },
+    {
+     "id": "A3",
+     "at_step": 7,
+     "condition": "HR operations needs a policy value different from the worker class default.",
+     "steps": [
+      "HR operations enters the override value, a reason and an effective date on the assignment screen.",
+      "Nucleus platform stores the override as a temporal fact."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Aadhaar or PAN details do not match the verification source.",
+     "handling": "Joining proceeds; a payroll-blocking flag is raised so the worker is held out of pay until corrected.",
+     "rule": "RL-033"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The selected position is filled, frozen or abolished.",
+     "handling": "The assignment is blocked with the position status and reason shown.",
+     "rule": "RL-034"
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "Payroll group or location is left blank on the assumption that one will default from the other.",
+     "handling": "Save is refused until both are chosen explicitly; neither defaults from the other.",
+     "rule": "RL-036"
+    },
+    {
+     "id": "E4",
+     "at_step": 7,
+     "condition": "An override is entered without a reason or effective date.",
+     "handling": "Validation fails at write time and the override is not saved.",
+     "rule": "RL-037"
+    }
+   ],
+   "business_rules": [
+    "RL-030",
+    "RL-031",
+    "RL-032",
+    "RL-033",
+    "RL-034",
+    "RL-035",
+    "RL-036",
+    "RL-037",
+    "RL-038",
+    "RL-005"
+   ],
+   "screens": [
+    "SCR-010",
+    "SCR-011",
+    "SCR-012"
+   ],
+   "data_objects": [
+    "person (C)",
+    "position (U)",
+    "employment (C)",
+    "assignment (C)",
+    "assignment (U)",
+    "workflow_instance (C)"
+   ],
+   "events": [
+    "people.person.duplicate_suspected",
+    "people.person.created",
+    "people.position.filled",
+    "people.employment.started",
+    "people.assignment.started",
+    "people.assignment.policy_resolved",
+    "people.worker.hired"
+   ],
+   "nfrs": [
+    "Duplicate search returns candidates in under 1 second at p95 for a tenant of 50,000 persons.",
+    "Aadhaar and PAN are stored only as tokens and are masked on every screen by default."
+   ],
+   "frequency": "Daily",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H30",
+    "TC-H31",
+    "TC-H32",
+    "TC-H33",
+    "TC-H34",
+    "TC-H35",
+    "TC-H36",
+    "TC-H37",
+    "TC-H38",
+    "TC-P05"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-001",
+     "persona": "HR operations",
+     "want": "the system to search for an existing person before I create a new one",
+     "so_that": "a returning or duplicate worker does not end up with two records",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a new joiner with the same name and date of birth as an existing worker at LOC-PLA",
+       "when": "HR operations searches before creating",
+       "then": "both records are shown side by side with a match score and HR must choose Same person or Different person"
+      },
+      {
+       "given": "HR chooses Different person with reason 'Different PAN and mobile'",
+       "when": "creation continues",
+       "then": "a new person is created and the decision is logged with HR's identity and reason"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-002",
+     "persona": "HR operations",
+     "want": "to assign a new hire only to a vacant, active position",
+     "so_that": "headcount and budget stay consistent with the position register",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "POS-2214 Senior Engineer — Machining at LOC-PLA has status Vacant",
+       "when": "HR creates the assignment against POS-2214",
+       "then": "the assignment is saved and people.position.filled is emitted"
+      },
+      {
+       "given": "POS-2216 is Filled by E1018",
+       "when": "HR selects POS-2216 for a new hire",
+       "then": "the assignment is blocked with the message that the position is already filled"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-003",
+     "persona": "Payroll manager",
+     "want": "payroll group and location to be set independently on every assignment",
+     "so_that": "head-office-payrolled staff can work at a plant without their salary moving to plant payroll",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1056 Anand Krishnan is assigned to location LOC-CHN",
+       "when": "HR sets payroll group HO",
+       "then": "the assignment stores LOC-CHN and HO with no defaulting between them"
+      },
+      {
+       "given": "HR leaves payroll group blank on a new assignment at LOC-CHN",
+       "when": "they save",
+       "then": "the save is refused with the message that payroll group is required"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-004",
+     "persona": "Employee / worker",
+     "want": "to join on my planned date even if my PAN record needs correction",
+     "so_that": "a data mismatch does not delay my start",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a joiner whose PAN name does not match the verification source",
+       "when": "HR completes creation",
+       "then": "the worker is hired with a payroll-blocking flag visible to the payroll manager"
+      },
+      {
+       "given": "the flag is open at payroll input validation",
+       "when": "the run is prepared",
+       "then": "the worker is held out of pay with the reason PAN mismatch"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-007",
+    "SYS-022",
+    "SYS-033",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "PPL-UC-002",
+   "name": "Change an assignment with an effective date",
+   "process": "PPL-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Apply an approved change to an assignment attribute from a stated effective date, triggering attendance recompute or payroll arrears where the change reaches back into past periods.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Nucleus platform",
+    "ERP system",
+    "Payroll manager",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Closed payroll runs are never rewritten; retro effects arrive as arrears."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Attendance is recomputed when a change affects time policy."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Reporting-line changes route approvals to the right person from the right date."
+    }
+   ],
+   "trigger": "A grade, manager, location, cost centre or worker class change is needed.",
+   "preconditions": [
+    "The worker has an active assignment within HR operations' entity scope.",
+    "An approval chain exists for the change type."
+   ],
+   "postconditions_success": [
+    "A new assignment version exists with valid_from equal to the effective date and the prior version end-dated.",
+    "Attendance recompute and payroll arrears are queued where required."
+   ],
+   "postconditions_failure": [
+    "On rejection, the assignment is unchanged and the requester is told the reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Raises a change request naming the attribute, the new value, the effective date and the reason.",
+     "ref": "PPL-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Director / approver",
+     "action": "Approves the change per the change type's approval chain.",
+     "ref": "PPL-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Writes a new assignment version with valid_from set to the effective date.",
+     "ref": "PPL-02.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the change affects time policy: class, rest days, shift group, grace exemption or location.",
+     "ref": "PPL-02.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Checks whether the change affects pay for a closed payroll period.",
+     "ref": "PPL-02.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The change affects time policy.",
+     "steps": [
+      "Nucleus platform queues an attendance recompute for the affected date range and emits time.recompute.requested."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The change affects pay in a closed period.",
+     "steps": [
+      "Nucleus platform queues arrears in the next open run and emits payroll.arrears.requested.",
+      "The closed run remains exactly as paid."
+     ],
+     "rejoin": "Ends the use case"
+    },
+    {
+     "id": "A3",
+     "at_step": 1,
+     "condition": "The change originates from the ERP system's employee master.",
+     "steps": [
+      "Nucleus platform receives the inbound change and creates the change request with the ERP system as source.",
+      "The request follows the same chain as a manual change."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The effective date or reason is missing.",
+     "handling": "The request is rejected at submission with the missing field named.",
+     "rule": "RL-040"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The effective date falls inside a closed payroll period.",
+     "handling": "The request is flagged as retro and the approver sees the flag and affected periods.",
+     "rule": "RL-041"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "The approver rejects the change.",
+     "handling": "No version is written; HR operations is notified with the reason.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "Any process attempts to update a closed payroll run for the change.",
+     "handling": "The update is refused; only arrears in the next open run are permitted.",
+     "rule": "RL-041"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-020",
+    "RL-040",
+    "RL-041",
+    "RL-042"
+   ],
+   "screens": [
+    "SCR-011",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "assignment_change_request (C)",
+    "approval_instance (C)",
+    "assignment (C)",
+    "assignment (U)",
+    "attendance_day (R)",
+    "payroll_run (R)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "people.assignment.changed",
+    "time.recompute.requested",
+    "payroll.arrears.requested"
+   ],
+   "nfrs": [
+    "The new assignment version is visible to time, leave and payroll within 1 minute of approval.",
+    "An attendance recompute for a 90-day range for one worker completes within 2 minutes."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H40",
+    "TC-Y41",
+    "TC-T42",
+    "TC-P20"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-005",
+     "persona": "HR operations",
+     "want": "to record an assignment change with an effective date and reason",
+     "so_that": "the change applies from the right day and the history explains why",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's manager is E1017",
+       "when": "HR raises a change to manager E1021 effective 2026-12-01 with reason 'Line rebalancing'",
+       "then": "after approval a new assignment version exists from 2026-12-01 and the earlier version is retained"
+      },
+      {
+       "given": "HR submits a change with no effective date",
+       "when": "they click submit",
+       "then": "the request is rejected with 'Effective date is required'"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-006",
+     "persona": "Payroll manager",
+     "want": "retro changes to produce arrears instead of rewriting closed runs",
+     "so_that": "paid payslips and filed returns stay unchanged",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the August 2026 run for PLANT-BLR is closed and E1022's grade change is approved effective 2026-08-01",
+       "when": "the change is written",
+       "then": "payroll.arrears.requested is queued for the next open run and the August run is untouched"
+      },
+      {
+       "given": "the arrears are queued",
+       "when": "the October 2026 run is computed",
+       "then": "it contains an arrears line for August with the difference amount"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-007",
+     "persona": "Plant HR / time office",
+     "want": "attendance to be recomputed automatically when a worker's shift group or rest days change",
+     "so_that": "past days reflect the policy that actually applied",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1026's shift group changes effective 2026-10-15",
+       "when": "the change is approved on 2026-10-20",
+       "then": "a recompute is queued for 2026-10-15 to 2026-10-20 and time.recompute.requested is emitted"
+      },
+      {
+       "given": "a cost centre change with no time-policy effect",
+       "when": "it is approved",
+       "then": "no recompute is queued"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-025",
+    "SYS-037",
+    "SYS-053",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "PPL-UC-003",
+   "name": "Resolve worker class and policy attributes",
+   "process": "PPL-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Give every time, leave, payroll and compliance computation one authoritative policy vector for a worker on a given date, built from class defaults, assignment overrides and designation-band attributes.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Payroll manager",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Contractual workers get no weekly off and third-party helpers differ from third-party employees without code changes."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Daily-wage workers are paid on days present and OT follows each worker's eligibility basis."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Client policy differences are configured on class, sub-category, designation or assignment rather than coded."
+    }
+   ],
+   "trigger": "Any time, leave, payroll or compliance computation requests the policy for a worker on a reference date.",
+   "preconditions": [
+    "Worker classes, designations and employment categories and sub-categories are configured with effective dates."
+   ],
+   "postconditions_success": [
+    "The caller receives a resolved policy vector valid at the reference date, or 'not employed' when the date is outside the assignment span."
+   ],
+   "postconditions_failure": [
+    "No defaults are returned for a date on which the worker had no assignment."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Reads worker class defaults as at the reference date: rest days, wage type, OT eligibility, leave eligibility and statutory set.",
+     "ref": "PPL-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Overlays assignment-level overrides valid at the reference date, each carrying its override reason.",
+     "ref": "PPL-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Overlays designation-band attributes: grace exemption, leave band, OT default and notice days.",
+     "ref": "PPL-03.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Returns the resolved policy vector to the calling time, leave, payroll or compliance engine.",
+     "ref": "PPL-03.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Rest-day applicability is being resolved.",
+     "steps": [
+      "Nucleus platform takes the value on the employee record if present.",
+      "Otherwise it takes the employment sub-category default, then the employment category default; the first non-empty value wins."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The class wage type is Daily.",
+     "steps": [
+      "Nucleus platform marks the vector so payroll pays on days present and attendance generates no weekly off."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A caller passes today instead of the reference date for a past computation.",
+     "handling": "The resolver uses the supplied reference date only; class values are never read as at today for a past date.",
+     "rule": "RL-050"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "An override without a reason is found.",
+     "handling": "Such an override cannot exist because it fails validation at write time; resolution does not compensate at read time.",
+     "rule": "RL-051"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "The reference date is before the assignment start or after its end.",
+     "handling": "The resolver returns 'not employed', never class defaults.",
+     "rule": "RL-053"
+    }
+   ],
+   "business_rules": [
+    "RL-037",
+    "RL-050",
+    "RL-051",
+    "RL-052",
+    "RL-053",
+    "RL-101",
+    "RL-102",
+    "RL-130",
+    "RL-132",
+    "RL-290",
+    "RL-291",
+    "BS:RL-05",
+    "BS:RL-26"
+   ],
+   "screens": [
+    "SCR-011"
+   ],
+   "data_objects": [
+    "worker_class (R)",
+    "assignment (R)",
+    "designation (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Policy resolution returns in under 5 ms at p95 per worker-date, and under 30 seconds for 5,000 workers over a 31-day month.",
+    "Time, leave, payroll and compliance call the same resolver; no module holds its own copy of policy logic."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-03",
+    "R-04",
+    "R-05"
+   ],
+   "acceptance_tests": [
+    "TC-H37",
+    "TC-H50",
+    "TC-H51",
+    "TC-T52",
+    "TC-H53",
+    "TC-T101",
+    "TC-T102",
+    "TC-T130",
+    "TC-T132",
+    "TC-Y290",
+    "T-04",
+    "T-06",
+    "T-07"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-008",
+     "persona": "Payroll manager",
+     "want": "contractual daily-wage workers to be paid only for days present with no weekly off",
+     "so_that": "pay follows the contract terms without manual adjustment",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1032 Shivanna Muniyappa in class WC-CONT with wage type Daily",
+       "when": "attendance runs for a week containing Sunday",
+       "then": "no weekly off is generated for E1032"
+      },
+      {
+       "given": "E1032 is present 24 days in a 30-day month",
+       "when": "payroll computes",
+       "then": "E1032 is paid for 24 days"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-009",
+     "persona": "Plant HR / time office",
+     "want": "third-party employees and helpers under one vendor to resolve different rest-day rules",
+     "so_that": "each sub-category gets its entitlement without a code change",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1034 Imran Shaikh in class WC-3PE and E1053 Padmaja Cheruku in class WC-3PH, both under third-party category",
+       "when": "a week of attendance is run",
+       "then": "E1034 receives a Sunday rest day and E1053 does not"
+      },
+      {
+       "given": "an employee-record rest-day value of N for a WC-3PE worker",
+       "when": "resolution runs",
+       "then": "the employee-record value wins over the sub-category default"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-010",
+     "persona": "Plant HR / time office",
+     "want": "OT to be generated only on rest days or holidays for workers with that eligibility basis",
+     "so_that": "ordinary working-day extra hours do not create OT for them",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1034 with OT eligibility RestDayHolidayOnly works 2 extra hours on a working day",
+       "when": "OT is computed",
+       "then": "OT hours are zero"
+      },
+      {
+       "given": "E1034 works 8 hours on his Sunday rest day",
+       "when": "OT is computed",
+       "then": "OT is generated normally for that day"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-011",
+     "persona": "Implementation consultant",
+     "want": "grace exemption to come from the designation band",
+     "so_that": "a new senior designation is exempt from late marks without code changes",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "designation DES-07 Assistant Manager has grace exemption Y",
+       "when": "an Assistant Manager punches in 12 minutes late",
+       "then": "no late-mark deduction is generated"
+      },
+      {
+       "given": "a policy request for a worker on a date before their joining date",
+       "when": "the resolver runs",
+       "then": "it returns 'not employed' rather than class defaults"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-023",
+    "SYS-026",
+    "SYS-059",
+    "SYS-071"
+   ]
+  },
+  {
+   "id": "PPL-UC-004",
+   "name": "Control positions and sanctioned strength",
+   "process": "PPL-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Maintain approved manpower by org unit, designation and location and expose filled, open and headroom figures derived from live assignments and requisitions.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Hiring stays within approved manpower and budget."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Can see headroom before raising a requisition."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Replacement hiring points at the exact vacated position."
+    }
+   ],
+   "trigger": "A manpower budget is approved or a vacancy arises.",
+   "preconditions": [
+    "Org units, designations and locations exist.",
+    "The user holds entity and location scope for the units concerned."
+   ],
+   "postconditions_success": [
+    "Sanctioned strength is recorded with effective date and approver, and the strength board shows sanctioned, filled, open and headroom."
+   ],
+   "postconditions_failure": [
+    "No sanction change is saved without an effective date and approver."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Finance",
+     "action": "Records sanctioned strength by org unit, designation and location with effective date and approver.",
+     "ref": "PPL-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Derives the filled count from active assignments and the open count from open requisitions.",
+     "ref": "PPL-04.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Exposes headroom as sanctioned minus filled minus open for requisition checks.",
+     "ref": "PPL-04.3"
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "On separation, sets the position to vacant with last incumbent and vacated date.",
+     "ref": "PPL-04.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Headroom would become negative because a hire is needed above sanction.",
+     "steps": [
+      "Finance records an override with reason and approver.",
+      "Nucleus platform shows the negative headroom with the override reference on the strength board."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The sanction has no effective date or approver.",
+     "handling": "The sanction is rejected with the missing field named.",
+     "rule": "RL-055"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A user tries to edit filled or open counts directly.",
+     "handling": "The counts are read-only; they are always derived from assignments and requisitions.",
+     "rule": "RL-056"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A requisition would take headroom below zero without a recorded override.",
+     "handling": "The requisition is blocked and the headroom shortfall is shown.",
+     "rule": "RL-057"
+    }
+   ],
+   "business_rules": [
+    "RL-055",
+    "RL-056",
+    "RL-057",
+    "RL-058",
+    "RL-461",
+    "RL-462"
+   ],
+   "screens": [
+    "SCR-012",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "sanctioned_position (C)",
+    "assignment (R)",
+    "requisition (R)",
+    "position (U)"
+   ],
+   "events": [
+    "people.sanction.set",
+    "people.position.vacated"
+   ],
+   "nfrs": [
+    "The strength board for an entity of 5,000 positions loads in under 3 seconds.",
+    "Filled and open figures reflect a new assignment or requisition within 1 minute."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-R55",
+    "TC-R56",
+    "TC-R57",
+    "TC-R58",
+    "TC-R461",
+    "TC-R462"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-012",
+     "persona": "Finance",
+     "want": "to record approved manpower by department, designation and location",
+     "so_that": "hiring can be checked against what was sanctioned",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Finance sets sanctioned strength 12 for OU-112 Assembly, designation DES-12, location LOC-PUN effective 2027-04-01 with approver recorded",
+       "when": "it is saved",
+       "then": "people.sanction.set is emitted and the strength board shows 12 sanctioned from 2027-04-01"
+      },
+      {
+       "given": "Finance saves a sanction without an approver",
+       "when": "they submit",
+       "then": "the save is rejected with 'Approver is required'"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-013",
+     "persona": "Manager / supervisor",
+     "want": "to see headroom before raising a requisition",
+     "so_that": "I do not raise requests that will be blocked",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "OU-112 at LOC-PUN has 12 sanctioned, 9 filled and 2 open requisitions",
+       "when": "the manager opens the strength board",
+       "then": "headroom shows 1"
+      },
+      {
+       "given": "headroom is 0 and no override exists",
+       "when": "the manager raises a new requisition",
+       "then": "it is blocked with the shortfall shown"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-014",
+     "persona": "HR operations",
+     "want": "a separated worker's position to be marked vacant with the last incumbent",
+     "so_that": "the replacement requisition references the exact position",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1071 separates from POS-2214 on 2026-08-22",
+       "when": "the separation is processed",
+       "then": "POS-2214 shows status Vacant, last incumbent E1071 and vacated on 2026-08-22, and people.position.vacated is emitted"
+      },
+      {
+       "given": "POS-2214 is vacant",
+       "when": "a replacement requisition is raised",
+       "then": "it is linked to POS-2214"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-022",
+    "SYS-023",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "PPL-UC-005",
+   "name": "Change an org unit or reorganise",
+   "process": "PPL-05",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Rename, re-parent, merge or split organisation units with an effective date so that the hierarchy changes going forward while history remains intact.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Nucleus platform",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "The organisation chart and their team view reflect the new structure from the effective date."
+    },
+    {
+     "who": "Finance",
+     "interest": "Cost centre changes align with the new structure and sanctioned strength moves with the unit."
+    },
+    {
+     "who": "Auditor",
+     "interest": "The structure on any past date can be reproduced."
+    }
+   ],
+   "trigger": "A restructure is approved by management.",
+   "preconditions": [
+    "HR operations holds entity scope over every unit affected.",
+    "The org units involved exist in the current hierarchy."
+   ],
+   "postconditions_success": [
+    "New effective-dated versions of the affected org units, and of positions where needed, are written; earlier versions remain readable.",
+    "The organisation chart shows the new structure from the effective date."
+   ],
+   "postconditions_failure": [
+    "The hierarchy is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects an org unit, for example OU-113 Quality Assurance, and chooses rename, re-parent, merge or split.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Enters the new structure, cost centre where it changes, the effective date and the reason.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Previews the impact: positions, assignments, approval routes and sanctioned strength rows that move.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Submits the change for approval with the impact preview attached.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the reorganisation through the approval chain.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Writes new effective-dated versions of the org units and moves positions and sanctioned strength rows with them.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Rebuilds the organisation chart and department views from the effective date from reporting relationships.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The change involves several units and many people at once.",
+     "steps": [
+      "HR operations stages the change as a mass reorganisation change set."
+     ],
+     "rejoin": "Ends the use case (continues in PPL-UC-013)"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The new parent would create a cycle in the hierarchy.",
+     "handling": "The change is rejected and the cycle path is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The effective date or reason is missing.",
+     "handling": "The change cannot be submitted until both are entered.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "Merging units would give derived filled counts above the combined sanction.",
+     "handling": "Nucleus platform flags the negative headroom for Finance to resolve with an override or a new sanction.",
+     "rule": "RL-057"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-020",
+    "RL-055",
+    "RL-056",
+    "RL-057"
+   ],
+   "screens": [
+    "SCR-012",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "org_unit (C)",
+    "org_unit (U)",
+    "position (U)",
+    "sanctioned_position (U)",
+    "approval_instance (C)"
+   ],
+   "events": [
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "A reorganisation affecting 500 positions is applied in under 2 minutes after approval.",
+    "Reading the hierarchy as at any past date returns the structure in force on that date."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P1",
+   "client_requirements": [
+    "R-23"
+   ],
+   "acceptance_tests": [
+    "TC-H35",
+    "TC-R56",
+    "T-37"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-015",
+     "persona": "HR operations",
+     "want": "to re-parent a department with an effective date",
+     "so_that": "the change happens on the agreed day and earlier history is kept",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "OU-113 Quality Assurance sits under OU-110 Manufacturing",
+       "when": "HR re-parents it under OU-100 effective 2027-01-01 and it is approved",
+       "then": "the chart as at 2026-12-31 shows OU-113 under OU-110 and as at 2027-01-01 under OU-100"
+      },
+      {
+       "given": "HR tries to make OU-110 a child of OU-111",
+       "when": "they submit",
+       "then": "the change is rejected because it would create a cycle"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-016",
+     "persona": "Manager / supervisor",
+     "want": "the organisation chart to follow reporting relationships on the employee record",
+     "so_that": "no one has to maintain a separate hierarchy",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1022's reporting manager changes from E1021 to E1016",
+       "when": "the chart is reopened after the change is effective",
+       "then": "E1022 appears under E1016 with no separate hierarchy update"
+      },
+      {
+       "given": "the department-wise view is selected",
+       "when": "the chart renders",
+       "then": "workers are grouped by their current org unit"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-023",
+    "SYS-037",
+    "SYS-038",
+    "SYS-048"
+   ]
+  },
+  {
+   "id": "PPL-UC-006",
+   "name": "Capture, classify and track documents",
+   "process": "PPL-06",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Store a worker's documents with class, extracted fields and expiry so that verification is controlled and expiries trigger timely reminders.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Expiring licences and permits are renewed before they lapse."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Only low-confidence extractions need manual verification."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Can upload from a phone, even offline, and is reminded before a document expires."
+    }
+   ],
+   "trigger": "An employee or HR uploads a document.",
+   "preconditions": [
+    "Document classes and their expiry requirements are configured.",
+    "The uploader has access to the person's document vault within scope."
+   ],
+   "postconditions_success": [
+    "The document is stored encrypted with class, extracted fields, confidence and expiry, and reminders are scheduled."
+   ],
+   "postconditions_failure": [
+    "The document is not saved without a class, and verified values are never overwritten."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Uploads a document in the document vault and selects or accepts the inferred class.",
+     "ref": "PPL-06.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Classifies the document, extracts fields and stores extraction confidence without overwriting any verified value.",
+     "ref": "PPL-06.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Schedules expiry reminders at the configured intervals of 60, 30 and 7 days.",
+     "ref": "PPL-06.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR operations uploads on the worker's behalf.",
+     "steps": [
+      "HR operations uploads within its scope and the document records HR as uploader."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "Extraction confidence is below 0.80.",
+     "steps": [
+      "Nucleus platform routes the document to the HR verification queue.",
+      "HR operations confirms or corrects the fields and records verified_by."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 1,
+     "condition": "The worker uploads from the mobile app without connectivity.",
+     "steps": [
+      "The upload is queued on the device and sent when connectivity returns."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "No class is selected, or an expiring class has no expiry date.",
+     "handling": "The upload is rejected with the missing field named.",
+     "rule": "RL-060"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "An extracted value differs from a value already verified.",
+     "handling": "The verified value is kept and the difference is sent to the verification queue.",
+     "rule": "RL-061"
+    }
+   ],
+   "business_rules": [
+    "RL-060",
+    "RL-061",
+    "RL-062"
+   ],
+   "screens": [
+    "SCR-014"
+   ],
+   "data_objects": [
+    "document (C)",
+    "document (U)",
+    "notification (C)"
+   ],
+   "events": [
+    "people.document.uploaded",
+    "people.document.classified",
+    "people.document.expiring"
+   ],
+   "nfrs": [
+    "Classification and extraction complete within 30 seconds of upload for files up to 10 MB.",
+    "Documents are encrypted at rest and identifiers in them are tokenised."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H60",
+    "TC-H61",
+    "TC-H62"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-017",
+     "persona": "Employee / worker",
+     "want": "to upload my documents from my phone with the type suggested for me",
+     "so_that": "I can complete my records without visiting HR",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1060 uploads a photo of her driving licence",
+       "when": "the upload completes",
+       "then": "the class Driving licence is suggested and the expiry date is extracted for confirmation"
+      },
+      {
+       "given": "she uploads a file with no class selected and rejects the suggestion",
+       "when": "she saves",
+       "then": "the save is rejected with 'Document class is required'"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-018",
+     "persona": "HR operations",
+     "want": "only low-confidence extractions to come to my verification queue",
+     "so_that": "I spend time on documents that need it",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an extraction with confidence 0.72",
+       "when": "classification completes",
+       "then": "the document appears in the HR verification queue"
+      },
+      {
+       "given": "E1060's PAN is already verified and a new upload extracts a different PAN",
+       "when": "extraction completes",
+       "then": "the verified PAN is unchanged and the difference is queued for HR"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-019",
+     "persona": "Compliance owner",
+     "want": "reminders before a document expires",
+     "so_that": "workers renew licences before they lapse",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a forklift licence for E1026 expires on 2027-01-31",
+       "when": "reminders are scheduled",
+       "then": "reminders are set for 2026-12-02, 2027-01-01 and 2027-01-24"
+      },
+      {
+       "given": "the 30-day reminder date arrives",
+       "when": "the reminder fires",
+       "then": "people.document.expiring is emitted and E1026 and HR are notified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-033",
+    "SYS-070",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "PPL-UC-007",
+   "name": "Rehire, transfer between entities or change worker class",
+   "process": "PPL-07",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Move a worker into a new employment or assignment while keeping one person record and deciding tenure and gratuity continuity by rule.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Prior service is recognised where the rules say it should be."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "The old employment is closed cleanly and the new one starts on the right payroll group."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Statutory identifiers such as UAN carry over to the same person (to be validated by Legal)."
+    }
+   ],
+   "trigger": "A former worker rejoins, a worker transfers between legal entities, or a worker converts to another class.",
+   "preconditions": [
+    "The person record exists.",
+    "Continuity rules for tenure and gratuity are configured per scenario."
+   ],
+   "postconditions_success": [
+    "The same person holds a new employment or assignment; the previous one is closed with an end date; continuity outcome is recorded with the rule applied."
+   ],
+   "postconditions_failure": [
+    "No new employment or assignment is created and the current one is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Searches for the person and opens the existing record found by identity attributes.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Chooses the scenario: rehire, entity transfer or class change, with the effective date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows prior employments and assignments with dates, entity, class and separation reason.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Applies the configured continuity rule and proposes tenure start and gratuity service start dates.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Creates the new employment, or for a class change a new assignment, against a vacant position.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "For a transfer, ends the old employment the day before the new one starts in the other entity.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Re-resolves policy attributes for the new class and assignment, then starts the joining chain.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "HR operations needs a continuity outcome different from the rule's proposal.",
+     "steps": [
+      "HR operations enters the override with a reason.",
+      "The override is routed to the Director / approver for approval before it applies."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The target position is filled, frozen or abolished.",
+     "handling": "Creation is blocked with the position status shown.",
+     "rule": "RL-034"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The person has an open payroll-blocking identity flag.",
+     "handling": "The move proceeds but the flag carries to the new employment and continues to block pay.",
+     "rule": "RL-033"
+    }
+   ],
+   "business_rules": [
+    "RL-030",
+    "RL-032",
+    "RL-034",
+    "RL-035",
+    "RL-037",
+    "RL-038"
+   ],
+   "screens": [
+    "SCR-010",
+    "SCR-011"
+   ],
+   "data_objects": [
+    "person (R)",
+    "employment (C)",
+    "employment (U)",
+    "assignment (C)",
+    "assignment (U)",
+    "workflow_instance (C)"
+   ],
+   "events": [
+    "people.employment.started",
+    "people.assignment.started",
+    "people.worker.hired"
+   ],
+   "nfrs": [
+    "Continuity proposal is computed in under 2 seconds from full employment history.",
+    "No scenario creates a second person record for the same individual."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H32",
+    "TC-H34",
+    "TC-H38"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-020",
+     "persona": "HR operations",
+     "want": "to rehire a former worker on the same person record",
+     "so_that": "history, statutory identifiers and documents stay together",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a former worker separated on 2025-03-31 is found by PAN token",
+       "when": "HR rehires them effective 2026-12-01",
+       "then": "a new employment is created under the existing person_id and no new person is created"
+      },
+      {
+       "given": "the rehire is saved",
+       "when": "the employee record is opened",
+       "then": "both employments are listed with their dates and separation reason"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-021",
+     "persona": "Payroll manager",
+     "want": "an entity transfer to close the old employment and open the new one without a gap or overlap",
+     "so_that": "each entity's payroll pays exactly the right days",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1050 transfers from LE-02 to LE-01 effective 2027-01-01",
+       "when": "the transfer is processed",
+       "then": "the LE-02 employment ends 2026-12-31 and the LE-01 employment starts 2027-01-01"
+      },
+      {
+       "given": "the configured continuity rule recognises group service",
+       "when": "the transfer is processed",
+       "then": "tenure start remains E1050's original joining date 2017-10-30 and the rule applied is recorded"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-022",
+     "persona": "HR operations",
+     "want": "converting a third-party worker to permanent to re-resolve their policy",
+     "so_that": "rest days, leave and statutory set change from the conversion date",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1034 converts from WC-3PE to WC-PERM effective 2027-02-01",
+       "when": "the new assignment is created",
+       "then": "the resolved vector from 2027-02-01 shows leave eligible Y and OT eligibility All"
+      },
+      {
+       "given": "the same worker on 2027-01-31",
+       "when": "policy is resolved",
+       "then": "the WC-3PE values still apply"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-022",
+    "SYS-053",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "PPL-UC-008",
+   "name": "Detect duplicate persons",
+   "process": "PPL-08",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Catch likely duplicate person records at onboarding and on ERP synchronisation, and let HR decide each case, never merging or rejecting automatically.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Sees credible duplicates only and decides with both records in view."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "No person is paid twice under two records."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Two genuine workers with the same name and birth date at one site are not merged."
+    }
+   ],
+   "trigger": "A person is created during onboarding or arrives from the ERP system's employee master.",
+   "preconditions": [
+    "The match threshold is configured (default 0.85).",
+    "Identity tokens for Aadhaar and PAN are available where captured."
+   ],
+   "postconditions_success": [
+    "Each suspected duplicate has a recorded HR decision; confirmed-distinct pairs are not flagged again."
+   ],
+   "postconditions_failure": [
+    "An inbound ERP record held as a suspected duplicate is not applied until decided."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receives a candidate person from onboarding or from the ERP system's inbound employee master.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Scores the candidate against existing persons on name, date of birth, mobile, PAN token, Aadhaar token and site.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Raises a suspected duplicate for any score at or above the threshold and emits people.person.duplicate_suspected.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews both records side by side with the attributes that matched and those that differ.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Decides Same person or Different person with a reason.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Applies the decision and logs it; a Different person pair is remembered so it is not raised again.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "HR decides Same person.",
+     "steps": [
+      "Nucleus platform links the candidate to the existing person and routes the case to rehire or record update.",
+      "No second person record is created."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The score is below the threshold.",
+     "steps": [
+      "Nucleus platform proceeds with creation without raising a case."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "An inbound ERP record matches an existing person on name and birth date but carries a different PAN token.",
+     "handling": "The inbound record is held, the case is raised to HR and the ERP integration log shows the hold.",
+     "rule": "RL-031"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Any process attempts to merge or reject a candidate without an HR decision.",
+     "handling": "The action is refused; duplicates above the threshold are always decided by HR.",
+     "rule": "RL-031"
+    }
+   ],
+   "business_rules": [
+    "RL-030",
+    "RL-031",
+    "RL-032"
+   ],
+   "screens": [
+    "SCR-010"
+   ],
+   "data_objects": [
+    "person (R)",
+    "duplicate_case (C)",
+    "duplicate_case (U)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "people.person.duplicate_suspected"
+   ],
+   "nfrs": [
+    "Matching runs in under 1 second per candidate against 50,000 persons.",
+    "Precision of raised cases is monitored monthly; a confirmed-distinct pair is never raised twice."
+   ],
+   "frequency": "Per hire",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H30",
+    "TC-H31"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-023",
+     "persona": "HR operations",
+     "want": "to decide suspected duplicates with both records side by side",
+     "so_that": "two real people are never merged and one person is never created twice",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a candidate scoring 0.91 against an existing worker at LOC-PLA with matching name and date of birth but different mobile and PAN",
+       "when": "HR opens the case",
+       "then": "both records are shown with matching attributes highlighted and differing ones marked"
+      },
+      {
+       "given": "HR decides Different person with reason 'Different PAN'",
+       "when": "the same pair is evaluated again next month",
+       "then": "no new case is raised"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-024",
+     "persona": "Payroll manager",
+     "want": "inbound ERP employee records that look like duplicates to be held",
+     "so_that": "no worker is set up twice for pay",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an inbound ERP record matching an existing person at 0.88",
+       "when": "the sync runs",
+       "then": "the record is held, a case is raised to HR and nothing is written to the person"
+      },
+      {
+       "given": "HR decides Same person",
+       "when": "the decision is saved",
+       "then": "the inbound record updates the existing person and no new person is created"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-033",
+    "SYS-053",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "PPL-UC-009",
+   "name": "Maintain job architecture",
+   "process": null,
+   "capability_gap": "PPL-CG-001",
+   "source": "Authored",
+   "goal": "Define job families, job profiles, grades and bands, and competency requirements as effective-dated objects that positions and assignments reference.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Implementation consultant",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Positions describe what the role needs, which guides hiring and development."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Grades and bands drive pay ranges consistently."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Client grading structures are configured, not coded."
+    }
+   ],
+   "trigger": "A new role type is introduced or the grading structure changes.",
+   "preconditions": [
+    "HR operations holds the job-architecture permission for the tenant."
+   ],
+   "postconditions_success": [
+    "Job family, profile, grade or band versions exist with effective dates and are linked to positions."
+   ],
+   "postconditions_failure": [
+    "The architecture is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates or edits a job family, for example Manufacturing Engineering, with an effective date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Defines a job profile, for example Senior Engineer — Machining, with purpose, grade or band and required competencies.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates that the grade or band exists and that competency levels are within the defined scale.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Links positions to the profile, for example POS-2214 and POS-2216.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the new or changed profile.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Publishes the profile as a new version; linked positions read the version valid at each date.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A profile is to be retired.",
+     "steps": [
+      "HR operations sets an end date on the profile.",
+      "Nucleus platform checks that no active position references it after that date."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A retirement is requested while active positions still reference the profile.",
+     "handling": "The retirement is blocked and the referencing positions are listed.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A change is attempted as an in-place edit.",
+     "handling": "A new version is written and the prior version is end-dated.",
+     "rule": "RL-020"
+    }
+   ],
+   "business_rules": [
+    "RL-020",
+    "RL-052"
+   ],
+   "screens": [
+    "SCR-012"
+   ],
+   "data_objects": [
+    "job_family (C)",
+    "job_profile (C)",
+    "grade_band (R)",
+    "competency_requirement (C)",
+    "position (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Profiles support at least 30 competency requirements each without degrading position screen load beyond 2 seconds."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-025",
+     "persona": "HR operations",
+     "want": "to define job profiles with band and required competencies",
+     "so_that": "positions share a consistent definition of the role",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "profile Senior Engineer — Machining with band B and competency CNC programming at level 3",
+       "when": "it is published and linked to POS-2214 and POS-2216",
+       "then": "both positions show the profile, band B and the competency requirement"
+      },
+      {
+       "given": "HR edits the profile to require level 4 effective 2027-04-01",
+       "when": "POS-2214 is viewed as at 2027-03-31",
+       "then": "level 3 is shown"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-026",
+     "persona": "Implementation consultant",
+     "want": "profiles in use to be protected from retirement",
+     "so_that": "positions are never left pointing at a retired profile",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "profile Operator — Assembly referenced by POS-2225 and POS-2226",
+       "when": "retirement is requested",
+       "then": "it is blocked and both positions are listed"
+      },
+      {
+       "given": "both positions are moved to another profile",
+       "when": "retirement is requested again",
+       "then": "it is accepted with the end date recorded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-023",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "PPL-UC-010",
+   "name": "Maintain multiple and matrix hierarchies",
+   "process": null,
+   "capability_gap": "PPL-CG-002",
+   "source": "Authored",
+   "goal": "Hold supervisory, cost-centre, location, legal-entity, project and dotted-line hierarchies side by side, each effective-dated and usable for approval routing and data scope.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Implementation consultant",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Project leads approve project-related items without becoming line managers."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Data scope follows the right hierarchy for each role."
+    },
+    {
+     "who": "Finance",
+     "interest": "Cost-centre roll-ups follow the cost hierarchy, not the reporting line."
+    }
+   ],
+   "trigger": "An organisation needs a relationship other than the solid reporting line for routing, reporting or scope.",
+   "preconditions": [
+    "Hierarchy types are enabled by the implementation consultant."
+   ],
+   "postconditions_success": [
+    "The worker holds effective-dated relationships in each relevant hierarchy, and chains and scopes reference the chosen hierarchy type."
+   ],
+   "postconditions_failure": [
+    "No relationship is saved and existing routing is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Enables hierarchy types: supervisory, cost-centre, location, legal-entity, project and dotted-line.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Assigns a dotted-line manager to a worker for a project with start and end dates.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates there is no cycle and that the dotted-line manager is active in the period.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Implementation consultant",
+     "action": "Configures an approval chain step to resolve its approver from the project hierarchy.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Routes matching requests to the dotted-line manager while the relationship is valid.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Keeps data scope on the solid reporting line unless a role is explicitly scoped to another hierarchy.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The dotted-line relationship has ended.",
+     "steps": [
+      "Nucleus platform resolves the step to the solid-line manager instead."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The new relationship would create a cycle in that hierarchy.",
+     "handling": "The relationship is rejected and the cycle is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A dotted-line manager attempts to read compensation of a worker outside their payroll group.",
+     "handling": "Compensation fields return null as for any reader outside the payroll group.",
+     "rule": "RL-005"
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-005",
+    "RL-010",
+    "RL-020"
+   ],
+   "screens": [
+    "SCR-011"
+   ],
+   "data_objects": [
+    "hierarchy_type (R)",
+    "hierarchy_relationship (C)",
+    "approval_chain (U)"
+   ],
+   "events": [
+    "people.assignment.changed"
+   ],
+   "nfrs": [
+    "Approver resolution across any hierarchy type completes in under 100 ms at p95."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-027",
+     "persona": "HR operations",
+     "want": "to give a worker a dotted-line project manager for a fixed period",
+     "so_that": "project approvals go to the project lead without changing the reporting line",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1020 reports to E1021 and is assigned dotted-line manager E1018 for a tooling project from 2026-11-01 to 2027-01-31",
+       "when": "E1020 submits a project expense on 2026-12-05",
+       "then": "the project step routes to E1018 and the line step to E1021"
+      },
+      {
+       "given": "the same request type on 2027-02-10",
+       "when": "it is submitted",
+       "then": "the project step resolves to E1021 because the dotted line has ended"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-028",
+     "persona": "Manager / supervisor",
+     "want": "dotted-line relationships to grant no compensation visibility",
+     "so_that": "project leadership does not expose salaries",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 is dotted-line manager for E1020",
+       "when": "E1018 opens E1020's profile",
+       "then": "attendance and project data are visible and compensation fields are null"
+      },
+      {
+       "given": "E1021 is E1020's solid-line manager with compensation permission for PLANT-BLR",
+       "when": "E1021 opens the profile",
+       "then": "permitted compensation fields are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-022",
+    "SYS-038",
+    "SYS-039"
+   ]
+  },
+  {
+   "id": "PPL-UC-011",
+   "name": "Manage global and expatriate assignments",
+   "process": null,
+   "capability_gap": "PPL-CG-003",
+   "source": "Authored",
+   "goal": "Record host and home assignments with split and shadow payroll indicators, assignment allowances and visa or permit expiry tracking.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Payroll manager",
+    "Nucleus platform",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Knows which country pays what, and when a shadow calculation is needed."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Visas and permits never lapse during an assignment."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Allowances and dates of the posting are clear and correct."
+    }
+   ],
+   "trigger": "A worker is posted to another country or entity for a defined period.",
+   "preconditions": [
+    "The host entity exists in the tenant or is registered as an external host.",
+    "Assignment allowance types are configured."
+   ],
+   "postconditions_success": [
+    "A host assignment exists linked to the home employment, with payroll indicators, allowances and permit expiry tracked."
+   ],
+   "postconditions_failure": [
+    "No host assignment is created and the home assignment is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates a host assignment linked to the worker's home employment with start and planned end dates.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Sets payroll indicators: home-paid, host-paid or split, and whether shadow payroll is required.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Adds assignment allowances such as housing and cost-of-living with currency and frequency.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Uploads visa and work permit documents with their expiry dates.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Schedules permit expiry reminders and shows the expiry on the assignment.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Payroll manager",
+     "action": "Reviews the indicators and allowances and confirms payroll set-up for the posting.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The posting is extended.",
+     "steps": [
+      "HR operations changes the planned end date with a reason and effective date.",
+      "Nucleus platform checks that permits cover the new end date."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "A permit expires before the planned assignment end date.",
+     "handling": "A compliance alert is raised to HR operations and the Compliance owner immediately.",
+     "rule": "RL-062"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Split payroll is selected without the share for each country.",
+     "handling": "Save is refused until shares are entered.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-020",
+    "RL-060",
+    "RL-062"
+   ],
+   "screens": [
+    "SCR-011",
+    "SCR-014"
+   ],
+   "data_objects": [
+    "host_assignment (C)",
+    "assignment_allowance (C)",
+    "document (C)",
+    "notification (C)"
+   ],
+   "events": [
+    "people.document.expiring"
+   ],
+   "nfrs": [
+    "Permit expiry alerts fire on the configured day with no misses, verified by monthly reconciliation."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-H62"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-029",
+     "persona": "HR operations",
+     "want": "to record a host assignment with payroll indicators",
+     "so_that": "payroll knows who pays the worker during the posting",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1009 is posted abroad from 2027-04-01 to 2028-03-31 with split payroll 40% home and 60% host",
+       "when": "HR saves the host assignment",
+       "then": "it is linked to E1009's LE-01 employment and both shares are stored"
+      },
+      {
+       "given": "split payroll is selected with no shares",
+       "when": "HR saves",
+       "then": "the save is refused with 'Enter the share for each country'"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-030",
+     "persona": "Compliance owner",
+     "want": "an alert when a work permit ends before the posting",
+     "so_that": "the worker never works without a valid permit",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1009's work permit expires on 2027-12-31 and the posting ends on 2028-03-31",
+       "when": "the permit is uploaded",
+       "then": "an immediate alert is raised to HR operations and the Compliance owner"
+      },
+      {
+       "given": "a renewed permit to 2028-06-30 is uploaded",
+       "when": "it is verified",
+       "then": "the alert closes and reminders are rescheduled from the new expiry"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-007",
+    "SYS-028",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "PPL-UC-012",
+   "name": "Record dependants, nominees and emergency contacts",
+   "process": null,
+   "capability_gap": "PPL-CG-004",
+   "source": "Authored",
+   "goal": "Hold a worker's dependants, emergency contacts and nominations for PF, gratuity Form F and insurance, with shares that total exactly 100% per nomination type.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Their family receives benefits as they intend."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Gratuity Form F and PF nominations are complete and current (to be validated by Legal)."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Emergency contacts are reachable during an incident."
+    }
+   ],
+   "trigger": "A worker joins, has a family event, or chooses to update nominations.",
+   "preconditions": [
+    "Nomination types and the relationships allowed for each are configured."
+   ],
+   "postconditions_success": [
+    "Dependants and contacts are saved; each nomination type has nominees whose shares total 100%, versioned and approved."
+   ],
+   "postconditions_failure": [
+    "No nomination with shares not totalling 100% is saved; the prior nomination remains in force."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Adds dependants with name, relationship and date of birth, and at least one emergency contact.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Selects a nomination type (PF, gratuity Form F or insurance) and adds nominees from dependants.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Enters a share percentage for each nominee.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Validates that shares for the nomination type total exactly 100% and that each nominee's relationship is allowed.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Submits the nomination with supporting documents where required.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Verifies and approves the nomination through the approval chain.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Saves the nomination as a new version effective from approval and retains the prior version.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR operations captures the details on behalf of a worker without app access.",
+     "steps": [
+      "HR operations enters dependants and nominations and attaches the signed form."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "Shares for a nomination type total other than 100%.",
+     "handling": "Submit is disabled and the running total is shown against the 100% target.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "HR rejects the nomination.",
+     "handling": "The worker is notified with the reason and the previous nomination remains in force.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-020",
+    "RL-060"
+   ],
+   "screens": [
+    "SCR-010",
+    "SCR-014"
+   ],
+   "data_objects": [
+    "dependant (C)",
+    "emergency_contact (C)",
+    "nomination (C)",
+    "nominee_share (C)",
+    "document (C)"
+   ],
+   "events": [
+    "people.document.uploaded"
+   ],
+   "nfrs": [
+    "Share validation responds as the user types, within 200 ms.",
+    "Nominee identity details are masked for all roles except HR operations within scope."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-031",
+     "persona": "Employee / worker",
+     "want": "to nominate family members with shares for my PF and gratuity",
+     "so_that": "benefits go to the people I choose",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1028 adds spouse 60% and daughter 30% for gratuity Form F",
+       "when": "she tries to submit",
+       "then": "submit is disabled and the total shows 90% of 100%"
+      },
+      {
+       "given": "she changes the daughter's share to 40%",
+       "when": "she submits",
+       "then": "the nomination is accepted for HR approval"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-032",
+     "persona": "HR operations",
+     "want": "a nomination change to keep the previous version until approved",
+     "so_that": "there is never a period with no valid nomination",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1028 has an approved PF nomination and submits a new one",
+       "when": "HR has not yet decided",
+       "then": "the approved nomination remains in force"
+      },
+      {
+       "given": "HR rejects the new nomination with reason 'Signed form missing'",
+       "when": "the decision is saved",
+       "then": "E1028 is notified with the reason and the earlier nomination stays in force"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-033",
+     "persona": "Plant HR / time office",
+     "want": "to see a worker's emergency contact quickly during an incident",
+     "so_that": "family can be informed without delay",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "plant HR scoped to LOC-PLA and E1026 has an emergency contact recorded",
+       "when": "plant HR opens E1026's profile card",
+       "then": "the emergency contact name and phone are shown"
+      },
+      {
+       "given": "plant HR scoped to LOC-PLA",
+       "when": "they search for an employee at LOC-HYD",
+       "then": "no emergency contact is returned"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-022",
+    "SYS-033",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "PPL-UC-013",
+   "name": "Stage and commit a mass reorganisation",
+   "process": null,
+   "capability_gap": "PPL-CG-005",
+   "source": "Authored",
+   "goal": "Prepare moves of org units, positions and people as one effective-dated change set, preview routing and security impact, and commit it atomically.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Nucleus platform",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "On the effective date their team, inbox and data access change together."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Security impact is visible before commit, not discovered afterwards."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Attendance recompute is triggered where time policy changes."
+    }
+   ],
+   "trigger": "A restructure moving many units, positions or people is approved.",
+   "preconditions": [
+    "HR operations holds entity scope for every unit in the change set."
+   ],
+   "postconditions_success": [
+    "All changes in the set are written as effective-dated versions in one transaction, and downstream recompute and events follow."
+   ],
+   "postconditions_failure": [
+    "None of the changes in the set are applied."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates a change set with an effective date and reason.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Adds moves of org units, positions and people to the set, singly or by upload.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Previews impact: new approvers for open and future requests, scope changes per principal, and headroom changes.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews the preview and adjusts the set until the impact is as intended.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the change set with the preview attached.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Commits every change in one transaction as effective-dated versions.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Emits assignment change events and queues attendance recompute for workers whose time policy changed.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The change set must be withdrawn before its effective date.",
+     "steps": [
+      "HR operations requests withdrawal with a reason.",
+      "Nucleus platform writes closing versions so the structure on and after the effective date is restored."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Any single change fails validation during commit.",
+     "handling": "The whole set rolls back and the failing item is reported.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A move would leave an open approval without an approver.",
+     "handling": "The preview flags it and commit is blocked until a reroute target exists.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A move would place a position into a filled state conflict.",
+     "handling": "The preview flags the conflicting position and commit is blocked.",
+     "rule": "RL-034"
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-010",
+    "RL-020",
+    "RL-034",
+    "RL-042"
+   ],
+   "screens": [
+    "SCR-011",
+    "SCR-012"
+   ],
+   "data_objects": [
+    "change_set (C)",
+    "org_unit (U)",
+    "position (U)",
+    "assignment (C)",
+    "approval_instance (C)"
+   ],
+   "events": [
+    "people.assignment.changed",
+    "time.recompute.requested"
+   ],
+   "nfrs": [
+    "A change set of 2,000 moves previews in under 60 seconds and commits in under 5 minutes.",
+    "Commit is atomic: either every change is applied or none is."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-T42"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-034",
+     "persona": "HR operations",
+     "want": "to preview who will approve what after a reorganisation",
+     "so_that": "no request is stranded or misrouted on the effective date",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a change set moving OU-114 Maintenance at LOC-PLA under a new head",
+       "when": "the preview runs",
+       "then": "each open request from OU-114 workers is listed with its current and future approver"
+      },
+      {
+       "given": "an open request whose future approver cannot be resolved",
+       "when": "commit is attempted",
+       "then": "commit is blocked and the request is listed"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-035",
+     "persona": "Tenant admin",
+     "want": "to see scope changes per principal before a reorganisation commits",
+     "so_that": "no one gains or loses access unexpectedly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a change set moving 40 workers from LOC-PLA to LOC-PUN",
+       "when": "the preview runs",
+       "then": "it lists the principals who gain or lose visibility of each worker"
+      },
+      {
+       "given": "commit of 40 moves where one fails validation",
+       "when": "commit runs",
+       "then": "none of the 40 moves is applied and the failing one is reported"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-022",
+    "SYS-037",
+    "SYS-048",
+    "SYS-053",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "PPL-UC-014",
+   "name": "Explore the interactive organisation chart",
+   "process": null,
+   "capability_gap": "PPL-CG-006",
+   "source": "Authored",
+   "goal": "Show an interactive organisation chart built from reporting relationships, with drill-down, vacancies, headcount and span of control, filtered by the viewer's scope.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees their team, vacancies and spans at a glance."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Uses the chart to spot over-wide spans and long-open vacancies."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Finds who leads which team."
+    }
+   ],
+   "trigger": "A user opens the organisation chart.",
+   "preconditions": [
+    "Reporting relationships exist on assignments.",
+    "The viewer's entity and location scope are resolved."
+   ],
+   "postconditions_success": [
+    "The chart shows only nodes within the viewer's scope, with headcount, span of control and vacancies."
+   ],
+   "postconditions_failure": [
+    "No node outside the viewer's scope is shown."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Opens the organisation chart, which centres on their own node.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Builds the chart from reporting relationships on current assignments, filtered by the viewer's resolved scope.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows each node's headcount and span of control, and vacant positions as distinct vacancy nodes.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Drills down to a sub-team or up to the manager's manager.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Filters by legal entity or location, or switches to the department-wise view.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Re-renders the chart and offers an export of the visible view within scope.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The viewer selects an as-at date in the past.",
+     "steps": [
+      "Nucleus platform rebuilds the chart from relationships valid on that date."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Scope resolution fails for the viewer.",
+     "handling": "The chart shows only the viewer's own node and a message that the wider chart is unavailable.",
+     "rule": "RL-004"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The viewer selects a location outside their grant.",
+     "handling": "The location is not offered in the filter list.",
+     "rule": "RL-003"
+    }
+   ],
+   "business_rules": [
+    "RL-003",
+    "RL-004",
+    "RL-056",
+    "RL-058"
+   ],
+   "screens": [
+    "SCR-012",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "assignment (R)",
+    "position (R)",
+    "org_unit (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "A chart of 5,000 nodes renders the first level in under 2 seconds and expands any node in under 500 ms.",
+    "The chart is navigable by keyboard and screen reader to WCAG 2.2 AA."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P1",
+   "client_requirements": [
+    "R-23"
+   ],
+   "acceptance_tests": [
+    "T-37",
+    "TC-R56"
+   ],
+   "user_stories": [
+    {
+     "id": "PPL-US-036",
+     "persona": "Manager / supervisor",
+     "want": "to see my team with vacancies and span of control",
+     "so_that": "I can plan hiring and workload",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1021 Rekha Deshpande manages assembly operators at LOC-PLA",
+       "when": "she opens the chart",
+       "then": "her node shows her direct reports, the headcount and span of control"
+      },
+      {
+       "given": "a vacant position POS-2225 at LOC-PUN in OU-112",
+       "when": "HR views OU-112 at LOC-PUN",
+       "then": "POS-2225 appears as a vacancy node with last incumbent E1072"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-037",
+     "persona": "HR operations",
+     "want": "the chart to update automatically when a reporting manager changes",
+     "so_that": "there is no second hierarchy to maintain",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1022's manager changes from E1021 to E1016 effective today",
+       "when": "the chart is reopened",
+       "then": "E1022 appears under E1016"
+      },
+      {
+       "given": "the department-wise view is selected",
+       "when": "the chart renders",
+       "then": "workers are grouped by org unit with headcounts per unit"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-038",
+     "persona": "Plant HR / time office",
+     "want": "the chart to show only my site",
+     "so_that": "I do not see people outside my grant",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "plant HR scoped to LOC-CHN",
+       "when": "they open the chart",
+       "then": "only LOC-CHN workers and their reporting lines are shown"
+      },
+      {
+       "given": "the same user",
+       "when": "they open the location filter",
+       "then": "LOC-HYD is not offered"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-069"
+   ]
+  }
+ ]
+}

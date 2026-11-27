@@ -1,0 +1,743 @@
+{
+ "domain": "CMB",
+ "use_cases": [
+  {
+   "id": "CMB-UC-015",
+   "name": "Administer a retention bonus plan with vesting and clawback",
+   "process": null,
+   "capability_gap": "CMB-CG-009",
+   "source": "Authored",
+   "goal": "Award deferred and retention bonuses under a plan with vesting conditions and clawback terms, pay each vested tranche through payroll and recover unearned amounts on early exit.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Payroll manager",
+    "Finance",
+    "Employee / worker",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Knows exactly when each tranche vests, what conditions apply and what is repayable if they leave early."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves awards against a fixed plan budget and sees any clawback waiver as a named exception."
+    },
+    {
+     "who": "Finance",
+     "interest": "Accrues the deferred liability each month and sees it released when tranches are paid or forfeited."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives vested tranches as ordinary payroll inputs, never as payments outside the run."
+    }
+   ],
+   "trigger": "HR operations launches a retention plan, for example to retain skilled machinists during the Medchal Works capacity ramp-up.",
+   "preconditions": [
+    "A plan is configured with budget, eligible population, vesting schedule, vesting conditions and clawback terms.",
+    "Performance ratings and employment status are available to the eligibility service.",
+    "Payroll inputs can be raised for the employee's payroll group."
+   ],
+   "postconditions_success": [
+    "Each award has an accepted letter, a vesting schedule in the ledger and, once vested, a payroll input in a named run.",
+    "Clawback assessments on exit are approved and recovered through the final settlement."
+   ],
+   "postconditions_failure": [
+    "Awards rejected at approval create no schedule or liability.",
+    "Tranches whose conditions are not met are forfeited with the failed condition recorded."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates the plan Medchal ramp-up retention 2026: 40% vests at 12 months and 60% at 24 months, subject to service and rating of 3 or above.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Nominates employees with award amounts; the platform checks the batch total against the plan budget of ₹48,00,000.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Submits the award batch to the approval engine with plan terms and budget utilisation.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Approves the batch.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Issues award letters from the plan template; each employee accepts in self-service, recording acceptance of the clawback terms.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Creates vesting tranches in the ledger and publishes the monthly deferred-liability accrual to Finance.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "On each vesting date, the eligibility service checks active status, rating and absence of a pending resignation.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Raises a payroll input for each vested tranche into the next open run of the employee's payroll group.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Payroll manager",
+     "action": "Processes the run; the payslip shows the tranche as a separate earning with tax withheld under payroll rules.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "On exit within the clawback window, computes the recoverable amount and routes it for approval and recovery in the final settlement.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "An employee's rating for the period is 2.",
+     "steps": [
+      "The eligibility service marks the condition unmet.",
+      "The tranche is forfeited or deferred to the next vesting date as the plan specifies, and the employee is notified."
+     ],
+     "rejoin": "Returns to step 8 for the remaining employees"
+    },
+    {
+     "id": "A2",
+     "at_step": 10,
+     "condition": "The director waives clawback for an employee leaving on medical grounds.",
+     "steps": [
+      "Director records the waiver with reason; the platform names the clawback term being waived.",
+      "No recovery is raised and the waiver is kept with the award."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The nominated total exceeds the plan budget.",
+     "handling": "The batch cannot be submitted and the excess amount is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The director rejects the batch.",
+     "handling": "No awards, letters or tranches are created and HR operations is notified with the reason.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "The target payroll run is already finalised.",
+     "handling": "The input is placed in the next open run and the payroll manager is notified.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 10,
+     "condition": "The recoverable amount exceeds the net payable in the final settlement.",
+     "handling": "The shortfall is recorded as a receivable and passed to Finance for follow-up.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-010"
+   ],
+   "screens": [
+    "SCR-040",
+    "SCR-067"
+   ],
+   "data_objects": [
+    "incentive_plan (C)",
+    "incentive_award (C, U)",
+    "vesting_tranche (C, U)",
+    "payroll_input (C)",
+    "clawback_assessment (C)",
+    "approval_instance (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "payroll.input.raised",
+    "payroll.fnf.settled"
+   ],
+   "nfrs": [
+    "Vesting evaluation is idempotent: rerunning it for a date never raises a second payroll input for the same tranche.",
+    "The monthly deferred-liability report reconciles to the sum of unvested tranches to the rupee."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-038",
+     "persona": "Employee / worker",
+     "want": "to see my retention award, vesting dates and clawback terms in one place",
+     "so_that": "I understand what I will receive and what I would repay if I left",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1056 accepted a ₹2,00,000 award on 2026-12-01 vesting 40% at 12 months and 60% at 24 months",
+       "when": "she opens her rewards page",
+       "then": "she sees ₹80,000 vesting on 2027-12-01 and ₹1,20,000 on 2028-12-01 with the clawback terms"
+      },
+      {
+       "given": "E1056 has not yet accepted the award",
+       "when": "she opens the award letter",
+       "then": "she must accept the clawback terms before the award shows as active"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-039",
+     "persona": "Payroll manager",
+     "want": "vested tranches to arrive as payroll inputs in the correct run",
+     "so_that": "bonus payments follow the same controls as salary",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1056's first tranche of ₹80,000 vests on 2027-12-01 and the December run is open",
+       "when": "vesting is evaluated",
+       "then": "one payroll input of ₹80,000 appears in the December run"
+      },
+      {
+       "given": "vesting is evaluated again for the same date",
+       "when": "the job reruns",
+       "then": "no second input is raised"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-040",
+     "persona": "Finance",
+     "want": "the deferred bonus liability accrued each month",
+     "so_that": "the books reflect obligations that have been promised but not yet paid",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "₹48,00,000 of awards with 24-month vesting are active",
+       "when": "the November 2026 accrual is published",
+       "then": "the accrual equals the earned portion of unvested tranches for the month"
+      },
+      {
+       "given": "a tranche of ₹60,000 is forfeited",
+       "when": "the next accrual runs",
+       "then": "the accrued liability for that tranche is reversed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-049",
+    "SYS-050",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "CMB-UC-016",
+   "name": "Benchmark pay internally and flag outliers before a revision cycle",
+   "process": null,
+   "capability_gap": "CMB-CG-010",
+   "source": "Authored",
+   "goal": "Compare pay within role, grade, location and tenure bands using internal data and route outliers into the next compensation revision cycle.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is paid consistently with colleagues doing comparable work at the same site and tenure."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Enters the revision cycle knowing which team members sit outside their band."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Sees the cost of correcting outliers before approving the cycle budget."
+    }
+   ],
+   "trigger": "HR operations prepares for the annual revision cycle or runs an ad-hoc check after a wage settlement at a plant.",
+   "preconditions": [
+    "Compensation analytics projections are refreshed within the last 24 hours.",
+    "Grade pay ranges with midpoints exist for every grade in scope.",
+    "The user holds a compensation grant covering the selected entities and locations."
+   ],
+   "postconditions_success": [
+    "Benchmark cells, outliers and HR notes are saved as a dated benchmark run.",
+    "Outliers tagged for correction appear as pre-cycle recommendations in the revision worksheet."
+   ],
+   "postconditions_failure": [
+    "Cells below the minimum group size are suppressed and never exported.",
+    "Users without a compensation grant see headcounts only."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects role family CNC machinist, grades S2 to S4, locations Chakan, Peenya and Oragadam, and tenure bands 0–2, 2–5 and 5+ years.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads the compensation analytics projection, limited to the entities and locations in the user's grant.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes for each cell the 25th percentile, median, 75th percentile and compa-ratio to grade midpoint.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Suppresses cells with fewer than 5 employees and marks them as insufficient size.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Flags outliers: compa-ratio below 0.85 or above 1.20, and inversions where newer joiners earn more than longer-tenured peers.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Reviews each outlier, records a reason such as skill premium or legacy structure, and tags those to correct.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Adds tagged outliers with proposed correction amounts to the revision worksheet as pre-cycle recommendations.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Director / approver",
+     "action": "Reviews the total correction cost alongside the cycle budget.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Manager / supervisor",
+     "action": "Sees, during the cycle, each team member's band position without names or pay of people outside the team.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The user chooses to normalise for location.",
+     "steps": [
+      "Platform applies the configured location differential before computing compa-ratios.",
+      "Results show both raw and location-adjusted figures."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The projection was last refreshed more than 24 hours ago.",
+     "handling": "A stale-data banner appears and export is disabled until the projection refreshes.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The user lacks a compensation grant.",
+     "handling": "Amounts and ratios are hidden; only headcounts per cell are shown.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "A tagged employee already has an approved revision effective in the cycle.",
+     "handling": "The recommendation is not added and HR operations is shown the existing revision.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "compensation_projection (R)",
+    "grade_pay_range (R)",
+    "benchmark_run (C)",
+    "outlier_flag (C, U)",
+    "revision_worksheet (U)"
+   ],
+   "events": [
+    "report.exported"
+   ],
+   "nfrs": [
+    "A benchmark for 3,000 employees across 5 sites returns within 5 s at p95.",
+    "Exports carry a watermark with the user's identity and are recorded in the audit trail."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-041",
+     "persona": "HR operations",
+     "want": "to see compa-ratio by grade, site and tenure for one role family",
+     "so_that": "I can spot inconsistent pay before the revision cycle opens",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "grade S3 has a midpoint of ₹3,60,000 a year and E1034 at Peenya Works earns ₹2,88,000",
+       "when": "I run the CNC machinist benchmark",
+       "then": "E1034 is flagged with compa-ratio 0.80, below the 0.85 floor"
+      },
+      {
+       "given": "the cell S4 at Oragadam with 5+ years has 3 employees and a minimum size of 5",
+       "when": "results are produced",
+       "then": "that cell is suppressed and shown as insufficient size"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-042",
+     "persona": "HR operations",
+     "want": "to see pay inversions between new joiners and experienced staff",
+     "so_that": "I can correct compression created by recent hiring",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1068 joined Chakan Works in 2026 at ₹3,40,000 and E1021 with 6 years earns ₹3,20,000 in the same grade",
+       "when": "the benchmark runs",
+       "then": "the pair is flagged as an inversion"
+      },
+      {
+       "given": "I tag E1021 for correction with ₹30,000",
+       "when": "I save the run",
+       "then": "a pre-cycle recommendation of ₹30,000 appears for E1021 in the revision worksheet"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-043",
+     "persona": "Manager / supervisor",
+     "want": "to see where my team sits in the pay band during the cycle",
+     "so_that": "I can make fair merit proposals",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I manage 12 machinists at Peenya Works",
+       "when": "I open the revision worksheet",
+       "then": "I see each team member's band position and no data for employees outside my team"
+      },
+      {
+       "given": "one of my team has a pre-cycle recommendation",
+       "when": "I view that row",
+       "then": "the recommendation and HR's reason are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-018",
+    "SYS-028",
+    "SYS-033"
+   ]
+  },
+  {
+   "id": "CMB-UC-017",
+   "name": "Compute statutory bonus and gratuity under the published rule pack",
+   "process": null,
+   "capability_gap": "CMB-CG-011",
+   "source": "Authored",
+   "goal": "Determine statutory bonus and gratuity eligibility and amounts from a published, legally validated rule pack, pay them through payroll and provide provisions to Finance.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Compliance owner",
+    "Finance",
+    "Director / approver",
+    "HR operations",
+    "Employee / worker",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives the statutory bonus and gratuity due, with the working shown."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Maintains the registers required under the Payment of Bonus Act, 1965 and the Payment of Gratuity Act, 1972 (to be validated by Legal)."
+    },
+    {
+     "who": "Finance",
+     "interest": "Provides the allocable surplus and receives monthly provisions for both liabilities."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Declares the bonus rate within the permitted range for the accounting year."
+    }
+   ],
+   "trigger": "The accounting year closes for statutory bonus, or an employee's separation is recorded for gratuity.",
+   "preconditions": [
+    "The Compliance owner has published the bonus and gratuity rule pack version for the accounting year after Legal validation, carrying eligibility thresholds, calculation ceiling, minimum and maximum rates, minimum working days and the gratuity service threshold, formula and ceiling.",
+    "Attendance days and wage components for the year are final in the ledger.",
+    "Form F nominations are recorded for employees in service."
+   ],
+   "postconditions_success": [
+    "Bonus and gratuity amounts are paid through payroll inputs and recorded in the statutory registers with their working.",
+    "Monthly provisions are available to Finance for posting."
+   ],
+   "postconditions_failure": [
+    "Computation does not start against an unpublished or unvalidated rule pack.",
+    "Ineligible employees are listed with the failed criterion and no payment is raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Payroll manager",
+     "action": "Starts the statutory bonus computation for Vindhya Precision Industries Pvt Ltd for accounting year 2025-26.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Loads the published rule pack version and confirms it carries Legal validation.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "The eligibility service tests each employee for wage threshold, minimum working days from the attendance ledger and exclusions.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Enters the allocable surplus for the year with supporting reference.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Declares the bonus rate within the rule pack's minimum and maximum through the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Computes each bonus as rate times eligible salary capped at the calculation ceiling for the months worked, and shows the working.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Raises payroll inputs into the bonus payment run and generates the statutory bonus register.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "For each separation, computes gratuity as 15/26 of last drawn basic plus DA times completed years, capped at the configured ceiling.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Passes the gratuity amount to the final settlement, paying the Form F nominee in case of death.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Publishes monthly bonus and gratuity provisions to Finance for accrual posting.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 8,
+     "condition": "The employee has less than the service threshold but separates because of death or disablement.",
+     "steps": [
+      "The eligibility service waives the service threshold as the rule pack specifies.",
+      "Gratuity is computed on actual completed service."
+     ],
+     "rejoin": "Returns to step 9"
+    },
+    {
+     "id": "A2",
+     "at_step": 8,
+     "condition": "Completed service includes a part year above the rule pack's rounding limit.",
+     "steps": [
+      "The part year is rounded up to a full year as configured, and the rounding is shown in the working."
+     ],
+     "rejoin": "Returns to step 9"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The rule pack for the year is published but not marked Legal-validated.",
+     "handling": "The computation cannot start and the Compliance owner is alerted.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "An employee worked fewer than the minimum days in the year.",
+     "handling": "The employee is listed as ineligible with the day count; no bonus is raised.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "The declared rate lies outside the rule pack's range.",
+     "handling": "Approval cannot be submitted and the permitted range is shown.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "The director rejects the declared rate.",
+     "handling": "No bonus inputs are raised and Finance and the payroll manager are notified.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010"
+   ],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "rule_pack (R)",
+    "bonus_computation (C)",
+    "gratuity_computation (C)",
+    "payroll_input (C)",
+    "statutory_register (C)",
+    "nomination (R)"
+   ],
+   "events": [
+    "compliance.pack.published",
+    "payroll.input.raised",
+    "payroll.fnf.settled",
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "Every computed amount stores the rule pack version and inputs so it can be recomputed identically.",
+    "The annual bonus computation for 3,000 employees completes within 10 minutes."
+   ],
+   "frequency": "Annual",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMB-US-044",
+     "persona": "Payroll manager",
+     "want": "to compute statutory bonus for the whole entity in one run with eligibility shown",
+     "so_that": "I can pay bonus correctly and explain every exclusion",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the rule pack for 2025-26 is published and Legal-validated with a minimum working-day requirement of 30 days",
+       "when": "I run the bonus computation",
+       "then": "E1022, who worked 24 days after joining, is listed ineligible with 24 days shown"
+      },
+      {
+       "given": "the director has declared a rate of 8.33% within the configured range",
+       "when": "the computation completes",
+       "then": "each eligible employee's working shows rate, capped salary and months, and payroll inputs are raised in the bonus run"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-045",
+     "persona": "Employee / worker",
+     "want": "to see how my gratuity was calculated at exit",
+     "so_that": "I can trust the final settlement",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1019 separates on 2026-11-30 after 7 years 8 months with last drawn basic plus DA of ₹26,000",
+       "when": "gratuity is computed",
+       "then": "the working shows 15/26 × ₹26,000 × 8 years = ₹1,20,000 with the rounding of 8 months noted"
+      },
+      {
+       "given": "E1019 had 4 years 2 months of service and resigned",
+       "when": "gratuity eligibility is tested",
+       "then": "no gratuity is raised and the unmet service threshold is shown"
+      }
+     ]
+    },
+    {
+     "id": "CMB-US-046",
+     "persona": "Compliance owner",
+     "want": "statutory registers produced from the same computation that paid employees",
+     "so_that": "inspections reconcile without manual rework",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the 2025-26 bonus run has been paid",
+       "when": "I open the bonus register",
+       "then": "each row matches the paid payroll input to the rupee"
+      },
+      {
+       "given": "a payroll input is reversed after payment",
+       "when": "the register is viewed",
+       "then": "the reversal is shown with date and reason"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-037",
+    "SYS-045",
+    "SYS-047",
+    "SYS-086"
+   ]
+  }
+ ]
+}

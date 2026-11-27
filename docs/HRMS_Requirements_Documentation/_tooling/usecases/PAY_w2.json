@@ -1,0 +1,869 @@
+{
+ "domain": "PAY",
+ "use_cases": [
+  {
+   "id": "PAY-UC-022",
+   "name": "Run payrolls of different frequencies side by side",
+   "process": null,
+   "capability_gap": "PAY-CG-008",
+   "source": "Authored",
+   "goal": "Run monthly, semi-monthly, weekly and daily-wage payrolls for different pay groups in parallel, each with its own calendar, cut-offs and locks.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Plant HR / time office",
+    "Finance",
+    "Bank"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Daily-wage and contract workers are paid on their own cycle without waiting for the monthly run."
+    },
+    {
+     "who": "Finance",
+     "interest": "Every run posts its own journal into the correct accounting period."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Monthly statutory contributions aggregate correctly across weekly runs."
+    }
+   ],
+   "trigger": "A pay calendar reaches the cut-off date for a pay group, for example the weekly cycle for daily-wage workers at Peenya Works.",
+   "preconditions": [
+    "Each pay group has a calendar defining frequency, period dates, cut-off, lock and pay dates.",
+    "Daily-wage workers (WC-CONT) are assigned to a weekly pay group with wage type daily (RL-290)."
+   ],
+   "postconditions_success": [
+    "The run for the pay group is computed, approved and disbursed on its own calendar; locks on one group do not block another."
+   ],
+   "postconditions_failure": [
+    "The run stays open with blocking flags listed; other pay groups' runs are unaffected."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Opens the weekly run for pay group PLANT-BLR-DW for 2026-11-02 to 2026-11-08 per its calendar.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Resolves the population from assignments active in the week, including E1032 and E1033.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Plant HR / time office",
+     "action": "Confirms attendance for the week is final for the pay group.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Payroll manager",
+     "action": "Locks inputs for the weekly run only; the monthly PLANT-BLR run stays open.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Computes daily-wage earnings from paid days and the daily rate, and deductions for the week.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Accumulates statutory wage bases across the month's weekly runs so contributions are reconciled monthly.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Reviews variance and approves the run.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Prepares the bank file and the run's own journal for the week.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Bank",
+     "action": "Credits wages on the weekly pay date.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A semi-monthly group reaches its 15th-of-month cut-off.",
+     "steps": [
+      "The platform opens a semi-monthly run for the first half and processes it the same way."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "A worker moved from the weekly to the monthly group mid-period.",
+     "steps": [
+      "Each run includes only the days covered by the assignment in its group."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "A critical audit flag is open on the weekly run.",
+     "handling": "Approval is blocked until the flag is resolved or waived by an authorised role.",
+     "rule": "RL-262"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A weekly run's cumulative earnings cross the ESI threshold within the contribution period.",
+     "handling": "Contribution continues to the end of the period and the case is flagged.",
+     "rule": "RL-301"
+    }
+   ],
+   "business_rules": [
+    "RL-240",
+    "RL-241",
+    "RL-250",
+    "RL-262",
+    "RL-290",
+    "RL-301",
+    "RL-324"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-053"
+   ],
+   "data_objects": [
+    "pay_calendar (R)",
+    "payroll_run (C/U)",
+    "payroll_result (C)",
+    "journal (C)",
+    "bank_file (C)"
+   ],
+   "events": [
+    "payroll.run.created",
+    "payroll.run.approved"
+   ],
+   "nfrs": [
+    "A weekly run of 2,000 daily-wage workers computes in under 2 minutes.",
+    "Locks are scoped per run; locking one pay group never blocks input to another."
+   ],
+   "frequency": "Weekly, semi-monthly and monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PAY-US-047",
+     "persona": "Payroll manager",
+     "want": "a weekly run for daily-wage workers alongside the monthly run",
+     "so_that": "contract workers are paid every week",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "PLANT-BLR-DW has a weekly calendar and PLANT-BLR is monthly",
+       "when": "the weekly run for 2026-11-02 to 2026-11-08 is locked",
+       "then": "attendance input for the monthly run remains editable"
+      },
+      {
+       "given": "E1032 worked 6 days at a daily rate of 72,000 paise",
+       "when": "the weekly run computes",
+       "then": "gross earnings are 432,000 paise"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-048",
+     "persona": "Compliance owner",
+     "want": "monthly statutory contributions reconciled across weekly runs",
+     "so_that": "returns match what was deducted",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "four weekly runs in November 2026",
+       "when": "the month closes",
+       "then": "the PF wage base for each worker equals the sum of the four weekly bases"
+      },
+      {
+       "given": "a worker whose weekly earnings cross the ESI threshold in week 3",
+       "when": "week 4 is computed",
+       "then": "ESI continues and the case is flagged"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-049",
+     "persona": "Finance",
+     "want": "a separate journal for every run",
+     "so_that": "weekly wage cost lands in the right accounting period",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a weekly run paid on 2026-11-10",
+       "when": "the run is approved",
+       "then": "a journal for that run is emitted with posting date 2026-11-10"
+      },
+      {
+       "given": "two weekly runs in the same month",
+       "when": "I open the GL interface",
+       "then": "I see two journals with different run identifiers"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-007",
+    "SYS-026",
+    "SYS-045",
+    "SYS-047",
+    "SYS-051",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "PAY-UC-023",
+   "name": "Model take-home pay before submitting a choice",
+   "process": null,
+   "capability_gap": "PAY-CG-009",
+   "source": "Authored",
+   "goal": "Let an employee model the take-home effect of choices such as tax regime, voluntary provident fund, flexible-benefit allocation or a loan before submitting them.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Understands the real monthly and annual effect of a choice before committing."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Fewer mid-year reversals and queries after declarations are submitted."
+    }
+   ],
+   "trigger": "An employee opens the net-pay what-if from the tax declaration, benefits or loan screen.",
+   "preconditions": [
+    "The employee has a salary structure and year-to-date payroll results.",
+    "Current rule pack versions for income tax and statutory deductions are published."
+   ],
+   "postconditions_success": [
+    "The employee sees projected monthly and annual take-home for each scenario and may submit the chosen option through the normal request flow."
+   ],
+   "postconditions_failure": [
+    "No scenario is saved as a submission and live payroll inputs are unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the what-if tool and sees the current projection: regime, VPF, flexible-benefit split and any loan recovery.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Creates a scenario switching to the other tax regime and adding 5% VPF.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Runs the gross-to-net graph in simulation mode using the current rule pack versions and year-to-date results.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Projects tax to year end under the scenario and shows monthly and annual take-home against the current choice.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Adds a second scenario with a company loan EMI and compares all three.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Explains each difference line by line, naming the component and rule that changed it.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Employee / worker",
+     "action": "Chooses a scenario and submits it through the declaration or loan application flow.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "The employee decides not to change anything.",
+     "steps": [
+      "The scenarios are kept privately for 30 days and then deleted."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The loan scenario exceeds eligibility.",
+     "handling": "The scenario shows the eligibility limit and the maximum EMI allowed.",
+     "rule": "RL-430"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "A regime switch is not permitted at this point in the year.",
+     "handling": "The scenario is shown for information and the submit option is disabled with the reason.",
+     "rule": "RL-303"
+    }
+   ],
+   "business_rules": [
+    "RL-270",
+    "RL-271",
+    "RL-273",
+    "RL-303",
+    "RL-430"
+   ],
+   "screens": [
+    "SCR-053",
+    "SCR-054"
+   ],
+   "data_objects": [
+    "salary_structure (R)",
+    "payroll_result (R)",
+    "whatif_scenario (C)",
+    "tax_declaration (C)"
+   ],
+   "events": [
+    "payroll.whatif.computed"
+   ],
+   "nfrs": [
+    "A scenario result is returned in under 2 s.",
+    "Simulation never writes to payroll inputs or results."
+   ],
+   "frequency": "Seasonal, peaking at declaration windows",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PAY-US-050",
+     "persona": "Employee / worker",
+     "want": "to compare take-home under both tax regimes",
+     "so_that": "I choose the regime that leaves me better off",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am E1010 Nandita Bose with year-to-date results to October 2026",
+       "when": "I model the other regime",
+       "then": "I see projected annual tax and monthly take-home for both regimes"
+      },
+      {
+       "given": "the projected difference is ₹1,850 a month",
+       "when": "I open the explanation",
+       "then": "each line shows the component and rule that changed"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-051",
+     "persona": "Employee / worker",
+     "want": "to see the effect of VPF and a loan EMI together",
+     "so_that": "I know what I will actually receive each month",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a scenario with 5% VPF and a loan EMI of ₹6,000",
+       "when": "the scenario computes",
+       "then": "monthly take-home shows both deductions applied"
+      },
+      {
+       "given": "an EMI above my eligibility",
+       "when": "the scenario computes",
+       "then": "the maximum allowed EMI is shown"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-052",
+     "persona": "Payroll manager",
+     "want": "simulations kept separate from live inputs",
+     "so_that": "a what-if never alters a payroll run",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "500 employees ran scenarios during the November window",
+       "when": "I lock November inputs",
+       "then": "no input row originates from a scenario that was not submitted"
+      },
+      {
+       "given": "a submitted declaration",
+       "when": "I view its record",
+       "then": "it references the scenario the employee chose"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-045",
+    "SYS-047",
+    "SYS-048"
+   ]
+  },
+  {
+   "id": "PAY-UC-024",
+   "name": "Trace a payslip line to its inputs, rules and approvals",
+   "process": null,
+   "capability_gap": "PAY-CG-010",
+   "source": "Authored",
+   "goal": "Allow payroll and auditors to trace any payslip line back to its inputs, rules, rule versions and the run's approval history.",
+   "level": "User goal",
+   "primary_actor": "Auditor",
+   "secondary_actors": [
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Auditor",
+     "interest": "Can verify any figure without asking the payroll team to reconstruct it."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Answers employee and audit queries quickly from evidence."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Disputed amounts are explained precisely."
+    }
+   ],
+   "trigger": "An auditor or payroll manager selects a payslip line to investigate.",
+   "preconditions": [
+    "Every payslip line stores the node, inputs, output and rule pack version that produced it (RL-273).",
+    "The run snapshot hashes inputs, rule pack versions and configuration (RL-251)."
+   ],
+   "postconditions_success": [
+    "The investigator sees the full lineage of the line and can recompute it to the paisa; the trace is logged."
+   ],
+   "postconditions_failure": [
+    "If recomputation does not match, a critical discrepancy is raised for the payroll manager."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Auditor",
+     "action": "Opens the September 2026 PLANT-PUN payslip of E1044 Rahul Gaikwad and selects the loan recovery line.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Shows the DAG node, its inputs, output in paise and the rule pack version that produced it.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Auditor",
+     "action": "Drills from each input to its source record, such as the loan schedule and the attendance days.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the source record versions as at the run's snapshot timestamp.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Auditor",
+     "action": "Opens the run's approval history: who locked, reviewed, approved and prepared disbursement, with times.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Auditor",
+     "action": "Requests recomputation of the line from the snapshot.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Recomputes and confirms the result matches to the paisa, recording the trace in the audit ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The investigator starts from a payroll register total rather than a payslip.",
+     "steps": [
+      "The platform lists contributing payslip lines, from which one is selected."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "Recomputation differs from the stored result.",
+     "handling": "A critical discrepancy is raised to the payroll manager and the line is marked under investigation.",
+     "rule": "RL-251"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The auditor's scope excludes the payroll group.",
+     "handling": "Amounts return null and the trace shows only structure.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-251",
+    "RL-271",
+    "RL-273",
+    "RL-321",
+    "RL-351"
+   ],
+   "screens": [
+    "SCR-053",
+    "SCR-050"
+   ],
+   "data_objects": [
+    "payslip_line (R)",
+    "run_snapshot (R)",
+    "rule_pack_version (R)",
+    "approval_record (R)",
+    "audit_event (C)"
+   ],
+   "events": [
+    "payroll.trace.viewed"
+   ],
+   "nfrs": [
+    "A line trace opens in under 2 s.",
+    "Recomputation of one employee's payslip from the snapshot completes in under 5 s."
+   ],
+   "frequency": "Daily during audits",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PAY-US-053",
+     "persona": "Auditor",
+     "want": "to drill from a payslip line to its inputs and rule version",
+     "so_that": "I can verify the figure independently",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1044's September loan recovery line of ₹8,400",
+       "when": "I open its trace",
+       "then": "I see the loan schedule row, recovery node and rule pack version"
+      },
+      {
+       "given": "I request recomputation",
+       "when": "it completes",
+       "then": "the recomputed value equals ₹8,400 to the paisa"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-054",
+     "persona": "Payroll manager",
+     "want": "the run's approval history on every trace",
+     "so_that": "I can show who authorised the figures",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September PLANT-PUN run",
+       "when": "I open approval history from any of its payslips",
+       "then": "lock, review, approval and disbursement steps show actor and timestamp"
+      },
+      {
+       "given": "a recomputation mismatch",
+       "when": "it is detected",
+       "then": "I receive a critical discrepancy alert naming the line"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-055",
+     "persona": "Payroll manager",
+     "want": "to start from a register total and reach the lines behind it",
+     "so_that": "I can explain a variance quickly",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "PF employer contribution for PLANT-PUN rose 6% in September",
+       "when": "I open the register total",
+       "then": "contributing payslip lines are listed, largest first"
+      },
+      {
+       "given": "I select one line",
+       "when": "the trace opens",
+       "then": "its inputs are shown as at the snapshot timestamp"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-023",
+    "SYS-024",
+    "SYS-030",
+    "SYS-031",
+    "SYS-032"
+   ]
+  },
+  {
+   "id": "PAY-UC-025",
+   "name": "Hold and release an individual's net pay",
+   "process": null,
+   "capability_gap": "PAY-CG-011",
+   "source": "Authored",
+   "goal": "Allow payroll to hold an individual's net pay with a reason and release it in the same or a later run with full audit.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Director / approver",
+    "Finance"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is told a hold has been placed and paid promptly once it is released."
+    },
+    {
+     "who": "Finance",
+     "interest": "Held amounts sit in a liability account and are not lost."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every hold and release has a reason and an authorised approver."
+    }
+   ],
+   "trigger": "HR or payroll identifies a reason to withhold pay, for example unauthorised absence, pending bank verification or unreturned assets.",
+   "preconditions": [
+    "The employee's payroll result for the run is computed.",
+    "Hold reasons and the approver for holds are configured."
+   ],
+   "postconditions_success": [
+    "Net pay is excluded from the bank file and recorded as held; on release, it is paid in the chosen run with its original period and reason recorded."
+   ],
+   "postconditions_failure": [
+    "No hold is applied and net pay flows to disbursement as normal."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Requests a salary hold for E1022 Mohan Joseph citing unverified bank details after a change inside the payroll window.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Payroll manager",
+     "action": "Places the hold on the October run with reason code and expected review date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Routes the hold through its approval chain.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Approves the hold.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Keeps the payslip computed but excludes net pay from the bank file and posts it to a held-salary liability.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Notification service",
+     "action": "Tells the employee a hold has been placed, with the reason category and HR contact.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Releases the hold once the bank details are verified, choosing the November run or an off-cycle run.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Adds the held amount to the chosen run as a release line referencing the original period and clears the liability.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "The issue is resolved before October disbursement is prepared.",
+     "steps": [
+      "The hold is released in the same run and the net pay returns to the October bank file."
+     ],
+     "rejoin": "Returns to step 8"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The hold ends in separation.",
+     "steps": [
+      "The held amount is carried into full-and-final settlement."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Disbursement for the run is already prepared.",
+     "handling": "The hold cannot be applied to this run; payroll is told to recall the payment or hold the next run.",
+     "rule": "RL-323"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The approver rejects the hold.",
+     "handling": "The hold is removed and net pay remains in the bank file.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-250",
+    "RL-322",
+    "RL-323",
+    "RL-324",
+    "RL-341"
+   ],
+   "screens": [
+    "SCR-050",
+    "SCR-055",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "salary_hold (C/U)",
+    "payroll_result (R)",
+    "bank_file (U)",
+    "journal (C)"
+   ],
+   "events": [
+    "payroll.hold.applied",
+    "payroll.hold.released"
+   ],
+   "nfrs": [
+    "A hold applied before disbursement preparation is reflected in the bank file within 1 minute.",
+    "Every hold and release is retrievable by employee, run and reason for 8 years."
+   ],
+   "frequency": "Several times a month",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PAY-US-056",
+     "persona": "Payroll manager",
+     "want": "to hold one employee's net pay with a reason",
+     "so_that": "pay is not released while an issue is open",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1022's October net pay is ₹27,640 and a hold is approved",
+       "when": "the October bank file is prepared",
+       "then": "E1022 is excluded and ₹27,640 is posted to held-salary liability"
+      },
+      {
+       "given": "the October bank file is already prepared",
+       "when": "I try to hold E1022",
+       "then": "the hold is refused and the message says to recall or use the next run"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-057",
+     "persona": "Payroll manager",
+     "want": "to release a held amount in a later run",
+     "so_that": "the employee is paid as soon as the issue is closed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a ₹27,640 hold from October",
+       "when": "I release it into the November run",
+       "then": "November shows a release line referencing October and the liability is cleared"
+      },
+      {
+       "given": "the release is urgent",
+       "when": "I choose an off-cycle run",
+       "then": "the amount is paid in that run with the same reference"
+      }
+     ]
+    },
+    {
+     "id": "PAY-US-058",
+     "persona": "Employee / worker",
+     "want": "to be told when my pay is held and why",
+     "so_that": "I can resolve the issue quickly",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a hold is approved on my October pay",
+       "when": "the hold takes effect",
+       "then": "I receive a notification with the reason category and HR contact"
+      },
+      {
+       "given": "the hold is released",
+       "when": "the release run is approved",
+       "then": "I am notified of the pay date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-032",
+    "SYS-037",
+    "SYS-070",
+    "SYS-085"
+   ]
+  }
+ ]
+}

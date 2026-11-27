@@ -1,0 +1,201 @@
+{
+ "domain": "PLT",
+ "use_cases": [
+  {
+   "id": "PLT-UC-025",
+   "name": "Enable an additional Indian language for a tenant",
+   "process": null,
+   "capability_gap": "PLT-CG-017",
+   "source": "Authored",
+   "goal": "Make the screens, notifications, letters and Nucleus Talk voice available in the language spoken at each site, with every translation reviewed before workers see it.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Language reviewer",
+    "HR administrator"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Reads payslips, leave balances and safety notices in the language they understand best."
+    },
+    {
+     "who": "Plant HR",
+     "interest": "Fewer helpdesk visits caused by misunderstood screens or letters at Peenya Works and the Bengaluru Corporate Office."
+    },
+    {
+     "who": "Compliance officer",
+     "interest": "Statutory notices displayed in the local language where the site's rules require it (to be validated by Legal)."
+    }
+   ],
+   "trigger": "A tenant admin requests a new interface language for one or more sites, for example Kannada for the two Karnataka sites of Vindhya Precision Industries.",
+   "preconditions": [
+    "The language pack (interface strings, number and date formats, voice model, letter phrasing) is published by the platform for the requested language.",
+    "The tenant admin holds the platform configuration scope for the tenant.",
+    "At least one language reviewer is assigned for the language."
+   ],
+   "postconditions_success": [
+    "The language is enabled for the selected sites and appears in each eligible user's language selector.",
+    "Notifications, letters and Nucleus Talk respond in the user's chosen language, with English as the fallback for any untranslated string.",
+    "The enablement, the reviewer sign-off and the pack version are recorded in the audit trail."
+   ],
+   "postconditions_failure": [
+    "The language stays disabled and no user sees partially translated screens.",
+    "The admin receives the list of strings or templates that failed review."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Opens language settings, selects Kannada and chooses the sites LOC-PLA and LOC-BLR where it should be offered.",
+     "ref": ""
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the language pack coverage: interface strings, notification and letter templates, number and date formats, and voice support.",
+     "ref": ""
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Lists tenant-specific texts (custom picklist values, letter clauses, announcements) that have no Kannada version yet.",
+     "ref": ""
+    },
+    {
+     "n": 4,
+     "actor": "Tenant admin",
+     "action": "Requests machine-assisted draft translations for the missing tenant texts and assigns them to the language reviewer.",
+     "ref": ""
+    },
+    {
+     "n": 5,
+     "actor": "Language reviewer",
+     "action": "Reviews each draft in context on the preview screens, corrects wording and approves the set.",
+     "ref": ""
+    },
+    {
+     "n": 6,
+     "actor": "Tenant admin",
+     "action": "Submits the enablement for approval through the approval engine.",
+     "ref": ""
+    },
+    {
+     "n": 7,
+     "actor": "HR administrator",
+     "action": "Approves the enablement after checking the preview of payslip, leave and safety-notice screens.",
+     "ref": ""
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Enables the language for the selected sites, records the pack version and reviewer sign-off, and notifies site users that Kannada is available.",
+     "ref": ""
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Voice support for the language is not yet available in the published pack.",
+     "steps": [
+      "The platform enables text interfaces only and marks Nucleus Talk for the language as unavailable.",
+      "Users choosing the language are told that voice continues in their second preferred language."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The reviewer rejects a draft translation of a statutory or payroll term.",
+     "steps": [
+      "The reviewer records the approved glossary term.",
+      "The platform reapplies the glossary to every affected string and returns them for review."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Interface string coverage for the language is below 100%.",
+     "handling": "Enablement is blocked; the admin sees the coverage percentage and the missing string keys.",
+     "rule": ""
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "The approver rejects the enablement.",
+     "handling": "The language stays disabled and the rejection reason is sent to the tenant admin.",
+     "rule": ""
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "tenant_language_setting (C, U)",
+    "translation_string (C, U)",
+    "audit_event (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Switching the interface language takes effect on the next screen load within 1 second at p95.",
+    "No released screen in an enabled language shows an untranslated key; English fallback is logged as a defect."
+   ],
+   "frequency": "Occasional — per tenant onboarding or site addition",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-072",
+     "persona": "Employee / worker",
+     "want": "to see my payslip, leave balance and safety notices in Kannada",
+     "so_that": "I understand my pay and entitlements without asking a supervisor to explain them",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Kannada is enabled for site LOC-PLA and my language preference is Kannada",
+       "when": "I open my September 2026 payslip",
+       "then": "every label, earning and deduction name is shown in Kannada and amounts use Indian digit grouping"
+      },
+      {
+       "given": "a tenant-specific announcement has no approved Kannada version",
+       "when": "it is published",
+       "then": "I see the English text with a 'translation pending' marker and the gap is logged for the reviewer"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-073",
+     "persona": "Tenant admin",
+     "want": "to enable a new language only after every string and tenant text has been reviewed",
+     "so_that": "workers never see half-translated or wrong statutory terms",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "interface string coverage for Odia is 97%",
+       "when": "I try to enable Odia for a site",
+       "then": "enablement is blocked and the 3% missing string keys are listed"
+      },
+      {
+       "given": "all strings are covered and the reviewer has approved the tenant texts",
+       "when": "the HR administrator approves the enablement",
+       "then": "the language becomes selectable for the chosen sites and the audit trail records pack version, reviewer and approver"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-037",
+    "SYS-066",
+    "SYS-067",
+    "SYS-087"
+   ]
+  }
+ ]
+}

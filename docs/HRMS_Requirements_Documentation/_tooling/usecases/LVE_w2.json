@@ -1,0 +1,457 @@
+{
+ "domain": "LVE",
+ "use_cases": [
+  {
+   "id": "LVE-UC-014",
+   "name": "Simulate a leave policy change before publishing",
+   "process": null,
+   "capability_gap": "LVE-CG-006",
+   "source": "Authored",
+   "goal": "Let HR simulate a proposed leave policy change against historical balances and requests and see the effect on balances, liability and coverage before publishing it.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Finance",
+    "Director / approver",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Knows the change in leave encashment liability before the policy goes live."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "No balance is changed until the policy is approved and published."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Understands whether the change will reduce shop-floor coverage."
+    }
+   ],
+   "trigger": "HR drafts a change to a leave policy, for example raising earned-leave carry-forward from 30 to 45 days for band LS-STD.",
+   "preconditions": [
+    "The leave ledger holds credits, debits, lapses and encashments for at least the previous leave year (RL-230).",
+    "Accrual policies are bound to leave bands (RL-170).",
+    "A sandbox copy of the policy can be edited without affecting the live version."
+   ],
+   "postconditions_success": [
+    "A simulation report shows per-band and per-site balance change, liability change and coverage impact, and is attached to the policy change for approval."
+   ],
+   "postconditions_failure": [
+    "The simulation is discarded or fails; live balances and the live policy are untouched."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Copies the live accrual and carry-forward policy for LS-STD into a draft and edits the carry-forward cap to 45 days.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Chooses the replay window, leave year 2026, and the population: all LE-01 and LE-02 employees in band LS-STD.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Replays credits, requests and year-end lapse for the population under both live and draft policy in an isolated sandbox ledger.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Computes balance change per employee, band and site, and lapse days avoided.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Values the change in encashment liability at each employee's current daily rate, held as integer paise.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Estimates coverage impact from projected additional leave days per line and month.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Reviews the report and drills into sample employees to see their before and after ledger trail.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Attaches the simulation to the policy change and submits it for approval.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Director / approver",
+     "action": "Approves publication with the simulation as evidence.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "HR wants to try another value.",
+     "steps": [
+      "HR edits the draft to 40 days and reruns; both scenarios are kept side by side."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 9,
+     "condition": "The approver rejects the change.",
+     "steps": [
+      "The reason is recorded and the draft stays unpublished."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Ledger history is incomplete for some employees, for example mid-year joiners from migration.",
+     "handling": "Those employees are simulated from their opening balance and listed as partial-history in the report.",
+     "rule": "RL-230"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A user without compensation scope runs the simulation.",
+     "handling": "Liability values are withheld and only day counts are shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-170",
+    "RL-172",
+    "RL-191",
+    "RL-230",
+    "RL-231",
+    "RL-010"
+   ],
+   "screens": [
+    "SCR-032",
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_policy (R)",
+    "leave_policy_draft (C/U)",
+    "sandbox_ledger (C)",
+    "simulation_report (C)"
+   ],
+   "events": [
+    "leave.policy.simulated"
+   ],
+   "nfrs": [
+    "Simulating one leave year for 5,000 employees completes in under 3 minutes.",
+    "No simulation step writes to the live leave ledger."
+   ],
+   "frequency": "Several times a year",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-035",
+     "persona": "HR operations",
+     "want": "to replay last year's leave under a draft policy",
+     "so_that": "I can show the impact of a change before asking for approval",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a draft raising LS-STD carry-forward from 30 to 45 days",
+       "when": "I simulate leave year 2026 for LE-01 and LE-02",
+       "then": "the report shows lapse days avoided and balance change per site"
+      },
+      {
+       "given": "the simulation has finished",
+       "when": "I open E1043 Neha Mishra's sample",
+       "then": "I see her ledger trail under both the live and the draft policy"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-036",
+     "persona": "Finance",
+     "want": "the change in encashment liability valued in rupees",
+     "so_that": "I can provide for it before the policy goes live",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the 45-day carry-forward scenario",
+       "when": "the simulation completes",
+       "then": "incremental liability is shown per entity and cost centre"
+      },
+      {
+       "given": "I compare the 40-day and 45-day scenarios",
+       "when": "both are displayed",
+       "then": "the liability difference between them is stated"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-037",
+     "persona": "Manager / supervisor",
+     "want": "to see whether a policy change will reduce coverage on my lines",
+     "so_that": "I can plan staffing before the change takes effect",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the draft adds an average of 1.5 leave days per worker per year at Peenya Works",
+       "when": "I view coverage impact",
+       "then": "projected extra absence per line and month is shown"
+      },
+      {
+       "given": "live balances",
+       "when": "a simulation is run",
+       "then": "no employee's balance screen changes"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-028",
+    "SYS-037",
+    "SYS-048",
+    "SYS-049"
+   ]
+  },
+  {
+   "id": "LVE-UC-015",
+   "name": "Flag leave requests that breach team coverage",
+   "process": null,
+   "capability_gap": "LVE-CG-007",
+   "source": "Authored",
+   "goal": "Let managers define minimum staffing per team or line and flag leave requests that would breach it at application time.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform",
+    "Plant HR / time office",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Lines keep enough qualified people on every shift."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Knows at the time of applying whether a date is constrained and can choose another."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Fewer last-minute shortfalls that force overtime."
+    }
+   ],
+   "trigger": "A manager defines a coverage rule, or an employee applies for leave on a line governed by one.",
+   "preconditions": [
+    "Line or team membership and rostered shifts are recorded for the period.",
+    "Approved and pending leave for the team is visible to the coverage check."
+   ],
+   "postconditions_success": [
+    "Each leave request carries a coverage verdict; approvers see it, and breaching requests are approved only with a recorded reason."
+   ],
+   "postconditions_failure": [
+    "If the coverage rule cannot be evaluated, the request proceeds with a stated warning and no silent approval."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Defines minimum staffing for Peenya Machining shift A as 8 operators, with an effective date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Applies for earned leave on 2026-11-20 and 2026-11-21.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Runs leave rule validation, then counts rostered workers net of approved and pending leave for each requested date and shift.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the employee that 2026-11-21 would leave 7 operators against a minimum of 8 and suggests nearby dates with headroom.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Submits the request anyway with a reason.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Starts the approval chain with the coverage verdict attached to the request.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Manager / supervisor",
+     "action": "Approves with a recorded coverage override reason or rejects with a reason.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Updates coverage for the dates and notifies Plant HR of any approved breach.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The employee changes dates to ones with headroom.",
+     "steps": [
+      "The platform re-evaluates coverage and shows no breach."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "Several requests are pending for the same date.",
+     "steps": [
+      "Pending requests are counted in submission order and each is told its position."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The roster for the requested period is not yet published.",
+     "handling": "The verdict is 'coverage not evaluable' and the approver is told so.",
+     "rule": "RL-194"
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "The approver tries to approve a breach without a reason.",
+     "handling": "Approval is refused until a reason is entered.",
+     "rule": "RL-013"
+    }
+   ],
+   "business_rules": [
+    "RL-190",
+    "RL-194",
+    "RL-010",
+    "RL-013",
+    "RL-014"
+   ],
+   "screens": [
+    "SCR-030",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "coverage_rule (C/U)",
+    "leave_request (C/U)",
+    "roster (R)",
+    "coverage_verdict (C)"
+   ],
+   "events": [
+    "leave.coverage.breach_flagged"
+   ],
+   "nfrs": [
+    "The coverage verdict is returned to the applicant in under 1 s at p95.",
+    "Coverage counts reflect leave approved up to the second before the check."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-038",
+     "persona": "Manager / supervisor",
+     "want": "to set a minimum number of operators per shift on my line",
+     "so_that": "leave approvals never leave a line short",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I set Peenya Machining shift A minimum to 8 from 2026-11-01",
+       "when": "11 operators are rostered and 3 have approved leave on 2026-11-21",
+       "then": "a new request for that date is flagged as a breach"
+      },
+      {
+       "given": "a flagged request",
+       "when": "I try to approve it without a reason",
+       "then": "approval is refused until I enter a reason"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-039",
+     "persona": "Employee / worker",
+     "want": "to know at the time of applying whether my dates are constrained",
+     "so_that": "I can pick a date the line can spare me",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "2026-11-21 is at minimum coverage",
+       "when": "I select it in the leave form",
+       "then": "I see the coverage warning and 2026-11-24 suggested as having headroom"
+      },
+      {
+       "given": "I change my dates to 2026-11-24",
+       "when": "validation reruns",
+       "then": "no coverage warning is shown"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-040",
+     "persona": "Plant HR / time office",
+     "want": "notification of every approved coverage breach",
+     "so_that": "I can arrange cover before the shift",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a breach on Peenya Machining shift A on 2026-11-21 is approved",
+       "when": "approval is recorded",
+       "then": "I receive a notification naming the line, shift, date and shortfall of 1"
+      },
+      {
+       "given": "the roster for December is unpublished",
+       "when": "a request for December is submitted",
+       "then": "the verdict states coverage is not evaluable"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-036",
+    "SYS-037",
+    "SYS-040",
+    "SYS-070"
+   ]
+  }
+ ]
+}

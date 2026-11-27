@@ -1,0 +1,1515 @@
+{
+ "domain": "FIN",
+ "use_cases": [
+  {
+   "id": "FIN-UC-001",
+   "name": "Synchronise the employee master from the ERP system",
+   "process": "FIN-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Apply ERP employee master changes to Nucleus under an explicit field-ownership map, never silently overwriting Nucleus-owned data.",
+   "level": "User goal",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Implementation consultant",
+    "ERP system",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "HR edits to Nucleus-owned fields are never overwritten by a nightly sync."
+    },
+    {
+     "who": "Finance",
+     "interest": "Cost centre and department match the ERP for posting."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every applied, held, rejected and parked row is logged."
+    }
+   ],
+   "trigger": "A scheduled nightly batch runs or the ERP system pushes a change.",
+   "preconditions": [
+    "The tenant's master-data mode and field ownership map are configured and validated.",
+    "The integration service has valid credentials for the ERP system."
+   ],
+   "postconditions_success": [
+    "ERP-owned field changes are applied and emitted as integration.sync.applied.",
+    "Conflicts on Nucleus-owned fields are held for review; duplicates and unmatched codes are logged."
+   ],
+   "postconditions_failure": [
+    "No record is changed for failed rows; each failure appears in the sync monitor with its reason and can be replayed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Sets the tenant's master-data mode on SCR-100: Nucleus-owned, ERP-owned or co-owned.",
+     "ref": "FIN-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Defines the field ownership map and validates that no field has two owners and every mandatory field has one.",
+     "ref": "FIN-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "ERP system",
+     "action": "Pushes or exposes a batch; the integration service receives and logs it. Domain modules never call the ERP directly.",
+     "ref": "FIN-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks each row's payload hash against rows already applied; new hashes proceed.",
+     "ref": "FIN-01.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Compares ERP values with Nucleus values on Nucleus-owned fields; where none differ the row proceeds.",
+     "ref": "FIN-01.5"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Applies the upsert for ERP-owned fields and keeps those fields read-only in the Nucleus UI.",
+     "ref": "FIN-01.6"
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Checks for an unmatched external employee code; matched rows complete and are shown as applied on SCR-101.",
+     "ref": "FIN-01.7"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "An ERP value differs from the Nucleus value on a Nucleus-owned field.",
+     "steps": [
+      "Platform holds the row for review and emits integration.sync.conflict.",
+      "HR operations resolves it on SCR-101 under the configured conflict policy."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The tenant chooses ERP-owned mode.",
+     "steps": [
+      "Every master field is mapped to the ERP and is read-only in Nucleus."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A field is mapped to both owners or a mandatory field has no owner.",
+     "handling": "The map cannot be saved; the offending fields are listed.",
+     "rule": "RL-511"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The payload hash has already been applied.",
+     "handling": "The row is rejected as a duplicate and logged, keyed on the external employee code.",
+     "rule": "RL-513"
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "The external employee code does not match any person.",
+     "handling": "The row is parked for HR resolution; no person is auto-created.",
+     "rule": "RL-516"
+    },
+    {
+     "id": "E4",
+     "at_step": 3,
+     "condition": "A domain module attempts a direct ERP call.",
+     "handling": "The call is blocked by architecture; only the integration service may call the ERP.",
+     "rule": "RL-512"
+    },
+    {
+     "id": "E5",
+     "at_step": 6,
+     "condition": "A user edits an ERP-owned field in Nucleus.",
+     "handling": "The field is read-only and the edit is not possible.",
+     "rule": "RL-515"
+    }
+   ],
+   "business_rules": [
+    "RL-510",
+    "RL-511",
+    "RL-512",
+    "RL-513",
+    "RL-514",
+    "RL-515",
+    "RL-516"
+   ],
+   "screens": [
+    "SCR-100",
+    "SCR-101"
+   ],
+   "data_objects": [
+    "integration_config (C)",
+    "field_ownership_map (C)",
+    "employee_sync_log (C/U)",
+    "person (U)",
+    "assignment (U)"
+   ],
+   "events": [
+    "integration.sync.received",
+    "integration.sync.conflict",
+    "integration.sync.applied"
+   ],
+   "nfrs": [
+    "A nightly batch of 5,000 rows completes within 15 minutes.",
+    "Every row outcome is retained in the sync log for audit.",
+    "Failed rows can be replayed individually without reprocessing the batch."
+   ],
+   "frequency": "Nightly",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-15"
+   ],
+   "acceptance_tests": [
+    "TC-F510",
+    "TC-F511",
+    "TC-F512",
+    "TC-F513",
+    "TC-F514",
+    "TC-F515",
+    "TC-F516",
+    "T-28"
+   ],
+   "user_stories": [
+    {
+     "id": "FIN-US-001",
+     "persona": "Implementation consultant",
+     "want": "the ownership map validated before it is saved",
+     "so_that": "no field is ever fought over by two systems",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I map Department to both ERP and Nucleus",
+       "when": "I save the map",
+       "then": "saving is refused and Department is listed as having two owners"
+      },
+      {
+       "given": "Cost centre is mandatory and unmapped",
+       "when": "I save the map",
+       "then": "saving is refused and Cost centre is listed as having no owner"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-002",
+     "persona": "HR operations",
+     "want": "conflicts on Nucleus-owned fields held for my review",
+     "so_that": "a nightly sync never silently overwrites my edits",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "batch ERP-SYNC-2026-09-14 sends manager VPI-1039 for E1044 while Nucleus holds VPI-1040",
+       "when": "the row is processed",
+       "then": "it is held for review and E1044's manager is unchanged"
+      },
+      {
+       "given": "the same batch sends department Assembly for E1051, an ERP-owned field",
+       "when": "the row is processed",
+       "then": "E1051's department becomes Assembly and the field is read-only in Nucleus"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-003",
+     "persona": "HR operations",
+     "want": "failed and unmatched rows in a queue with reasons and a retry",
+     "so_that": "nothing fails silently",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "row SY-0006 carries external code VPI-9901 with no matching person",
+       "when": "the batch is processed",
+       "then": "the row is parked as unmatched and no person is created"
+      },
+      {
+       "given": "row SY-0007 repeats the payload hash of SY-0001",
+       "when": "the batch is processed",
+       "then": "it is rejected as a duplicate and shown on SCR-101"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-032",
+    "SYS-053",
+    "SYS-055",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "FIN-UC-002",
+   "name": "Maintain and validate the GL mapping",
+   "process": "FIN-02",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Keep every pay component mapped to a GL account with balancing legs and dimensions so no run is blocked at approval.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Implementation consultant",
+    "Nucleus platform",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Runs are not blocked by missing mappings at the last minute."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Mapping changes are versioned and approved."
+    }
+   ],
+   "trigger": "A new pay component or GL account is introduced.",
+   "preconditions": [
+    "The chart of accounts for each entity is available.",
+    "Pay components are defined per entity."
+   ],
+   "postconditions_success": [
+    "Every component in use has an effective mapping with account, debit or credit side and dimension source, and validation passes."
+   ],
+   "postconditions_failure": [
+    "Unmapped or unbalanced components are listed and any run containing them cannot reach APPROVED."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Lists components per entity with no effective mapping on SCR-102.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Finance",
+     "action": "Maps each component to an account with debit or credit side and the cost-centre source and dimensions.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates that each mapped account exists for the entity and that every debit-only provision has a matching credit leg.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Saves the mapping as a new effective-dated version.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Implementation consultant",
+     "action": "Reviews and approves the mapping version as the second approver.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Revalidates open draft runs and clears the mapping block where all components are now mapped.",
+     "ref": "RL-521"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "A component's account changes from a future date.",
+     "steps": [
+      "Finance creates a new version effective from that date; earlier periods keep the old account."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "A run still contains an unmapped component.",
+     "handling": "The run cannot reach APPROVED and the message names the component.",
+     "rule": "RL-321"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A provision is mapped with a debit leg only.",
+     "handling": "Validation fails and names the missing credit leg.",
+     "rule": "RL-522"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "The same user who saved the mapping tries to approve it.",
+     "handling": "Approval is refused; a second person is required.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-321",
+    "RL-520",
+    "RL-521",
+    "RL-522"
+   ],
+   "screens": [
+    "SCR-102"
+   ],
+   "data_objects": [
+    "gl_mapping (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Mapping history is retained so any past journal can be explained with the mapping effective at the time."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-16"
+   ],
+   "acceptance_tests": [
+    "TC-F520",
+    "TC-F521",
+    "TC-F530"
+   ],
+   "user_stories": [
+    {
+     "id": "FIN-US-004",
+     "persona": "Finance",
+     "want": "a list of unmapped components before payroll approval",
+     "so_that": "I fix mappings before they block a run",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "contractor labour charges for LE-02 have no effective mapping",
+       "when": "I open SCR-102",
+       "then": "the component is listed as unmapped for LE-02"
+      },
+      {
+       "given": "I map it to account 5010700 debit, dimensioned by cost centre and vendor, and it is approved",
+       "when": "open draft runs revalidate",
+       "then": "the mapping block is cleared"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-005",
+     "persona": "Finance",
+     "want": "validation that every provision has a credit leg",
+     "so_that": "journals always balance",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "gratuity provision GL-009 is a debit with no credit leg",
+       "when": "I validate",
+       "then": "validation fails naming the missing credit leg"
+      },
+      {
+       "given": "gratuity payable GL-024 is added as the credit leg",
+       "when": "I validate",
+       "then": "validation passes"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-022",
+    "SYS-026",
+    "SYS-037",
+    "SYS-051"
+   ]
+  },
+  {
+   "id": "FIN-UC-003",
+   "name": "Generate and post the salary journal to the ERP system",
+   "process": "FIN-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Produce one balanced, employee-level dimensioned journal per run per entity, deliver it to the ERP system and write back the document number.",
+   "level": "User goal",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "ERP system",
+    "Finance",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "No lump salary figure to allocate by hand each month."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "The run closes only when posting is confirmed."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each posting is traceable to what was sent and what came back."
+    }
+   ],
+   "trigger": "A payroll run is approved.",
+   "preconditions": [
+    "Every component in the run has a GL mapping for the entity.",
+    "The delivery mechanism for the entity is configured."
+   ],
+   "postconditions_success": [
+    "A balanced journal exists for the run and entity, is delivered and logged, and the run carries the ERP document number in POSTED_TO_GL."
+   ],
+   "postconditions_failure": [
+    "The run is not marked POSTED_TO_GL; the failure is visible in the posting log and can be retried without creating a duplicate posting."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Computes the cost split at employee level before aggregation, from each assignment as it stood in the pay period.",
+     "ref": "FIN-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Confirms every component in the run has a GL mapping for the entity.",
+     "ref": "FIN-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Builds one balanced journal for the run and entity, dimensioned, with run type as a dimension, and emits payroll.journal.ready.",
+     "ref": "FIN-03.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Delivers the journal by API, structured file, staging table or manual download, and records what was sent, when, where and the result.",
+     "ref": "FIN-03.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Writes the ERP document number back onto the payroll run and moves it to POSTED_TO_GL.",
+     "ref": "FIN-03.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The entity uses a structured file or manual download.",
+     "steps": [
+      "Finance downloads the file and imports it into the ERP system.",
+      "Finance records the ERP document number on SCR-102."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The period has more than one run (for example an off-cycle overtime run).",
+     "steps": [
+      "Platform builds a separate journal for each run with its run type as a dimension."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A component has no GL mapping.",
+     "handling": "payroll.journal.blocked is emitted and the run cannot reach APPROVED; the message names the component.",
+     "rule": "RL-521"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Debits do not equal credits.",
+     "handling": "The journal is not released and the imbalance is shown by account.",
+     "rule": "RL-522"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "The ERP system rejects the posting or times out.",
+     "handling": "The failure is logged and shown; a retry reuses the same journal ID so no duplicate is created.",
+     "rule": "RL-523"
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "No document number is returned.",
+     "handling": "The run stays short of POSTED_TO_GL and is flagged for Finance.",
+     "rule": "RL-524"
+    }
+   ],
+   "business_rules": [
+    "RL-321",
+    "RL-324",
+    "RL-520",
+    "RL-521",
+    "RL-522",
+    "RL-523",
+    "RL-524"
+   ],
+   "screens": [
+    "SCR-102",
+    "SCR-050"
+   ],
+   "data_objects": [
+    "payslip_line (R)",
+    "assignment (R)",
+    "gl_mapping (R)",
+    "gl_journal (C)",
+    "gl_journal_line (C)",
+    "gl_posting_log (C)",
+    "payroll_run (U)"
+   ],
+   "events": [
+    "payroll.journal.blocked",
+    "payroll.journal.ready",
+    "integration.journal.posted",
+    "payroll.run.posted"
+   ],
+   "nfrs": [
+    "Journal for a 600-employee run is built within 60 seconds.",
+    "Posting is idempotent on journal ID."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-16"
+   ],
+   "acceptance_tests": [
+    "TC-Y321",
+    "TC-F324",
+    "TC-F520",
+    "TC-F521",
+    "TC-F522",
+    "TC-F523",
+    "TC-F524",
+    "T-29"
+   ],
+   "user_stories": [
+    {
+     "id": "FIN-US-006",
+     "persona": "Finance",
+     "want": "journal lines dimensioned by cost centre, department and location from employee-level data",
+     "so_that": "I never allocate a lump salary figure by hand",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "run PR-2026-08-01 for LE-01 has 412 employees across 9 cost centres",
+       "when": "the journal is built",
+       "then": "each line carries cost centre, department and location and the dimension totals sum to the journal total"
+      },
+      {
+       "given": "an employee transferred cost centre on 2026-08-16",
+       "when": "the journal is built",
+       "then": "their cost is split between both cost centres for August"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-007",
+     "persona": "Payroll manager",
+     "want": "a re-run of posting not to create a duplicate entry in the ERP system",
+     "so_that": "a retry after a failure is safe",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "journal JV-2026-08-0441 was posted and returned ERP-JV-88214",
+       "when": "the posting is retried",
+       "then": "no second posting is created and the run keeps ERP-JV-88214"
+      },
+      {
+       "given": "the ERP system rejects a posting",
+       "when": "the failure is logged",
+       "then": "it appears in the posting log with the error and a retry action"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-008",
+     "persona": "Payroll manager",
+     "want": "approval blocked when a component is unmapped",
+     "so_that": "an unpostable run never gets approved",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a component in a draft run has no mapping for the entity",
+       "when": "I try to approve the run",
+       "then": "approval is refused and the component is named"
+      },
+      {
+       "given": "the component is mapped",
+       "when": "I approve",
+       "then": "the run reaches APPROVED and the journal is built"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-050",
+    "SYS-051",
+    "SYS-053",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "FIN-UC-004",
+   "name": "Reconcile payroll to the general ledger, bank and statutory payments",
+   "process": "FIN-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Prove after posting that the journal, payslips, bank file, challans, dimensions, overtime and loans all agree, with drill-down from any GL line.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Month-end disputes are settled by the screen, not by spreadsheets."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Reconciliation evidence is reproducible."
+    }
+   ],
+   "trigger": "A journal is posted for a run.",
+   "preconditions": [
+    "The run is POSTED_TO_GL and its bank file and challans exist."
+   ],
+   "postconditions_success": [
+    "A reconciliation report shows all seven assertions passing; any GL line can be drilled to employees and payslip lines."
+   ],
+   "postconditions_failure": [
+    "Failing assertions are shown with expected, actual and variance and the period cannot be marked reconciled."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Runs the assertions: gross, net versus bank file, statutory heads versus challans, dimension residue, overtime and loan movement.",
+     "ref": "FIN-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Finance",
+     "action": "Drills any GL line back to the contributing employees and payslip lines.",
+     "ref": "FIN-04.2"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Finance needs evidence for audit.",
+     "steps": [
+      "Finance exports the reconciliation report with drill-through detail."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "An assertion fails.",
+     "handling": "The check shows Fail with expected, actual and variance; the period stays open.",
+     "rule": "RL-530"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "Dimension sums leave a residue against the total.",
+     "handling": "The residue is shown by dimension and the assertion fails.",
+     "rule": "RL-530"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "A GL line cannot be drilled to payslip lines.",
+     "handling": "Treated as a failed drill-through assertion and flagged.",
+     "rule": "RL-531"
+    }
+   ],
+   "business_rules": [
+    "RL-530",
+    "RL-531"
+   ],
+   "screens": [
+    "SCR-103"
+   ],
+   "data_objects": [
+    "reconciliation_report (C)",
+    "gl_journal_line (R)",
+    "payslip_line (R)"
+   ],
+   "events": [
+    "finance.reconciliation.run"
+   ],
+   "nfrs": [
+    "Reconciliation for a 600-employee run completes within 30 seconds.",
+    "Drill-down returns within 2 seconds."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-16"
+   ],
+   "acceptance_tests": [
+    "TC-F530",
+    "TC-F531"
+   ],
+   "user_stories": [
+    {
+     "id": "FIN-US-009",
+     "persona": "Finance",
+     "want": "all reconciliation assertions shown passing on one screen",
+     "so_that": "I close the month without arguments",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 journals for both LE-01 runs are posted",
+       "when": "reconciliation runs",
+       "then": "all seven assertions pass with zero dimension residue"
+      },
+      {
+       "given": "the bank file total is 1,000 less than journal net",
+       "when": "reconciliation runs",
+       "then": "the net versus bank assertion fails with a variance of 1,000"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-010",
+     "persona": "Auditor",
+     "want": "to drill a GL line to employees and payslip lines",
+     "so_that": "I can verify any posted amount",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "line 1 of JV-2026-08-0441 debits Basic of 15,000,000",
+       "when": "I drill into it",
+       "then": "the contributing employees and their payslip lines are listed and sum to 15,000,000"
+      },
+      {
+       "given": "I export the drill-down",
+       "when": "the export completes",
+       "then": "it contains the same lines and totals"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-085",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "FIN-UC-005",
+   "name": "Generate and release the bank file under dual control",
+   "process": "FIN-05",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Produce the salary bank file for an approved run and release it only after an independent second person verifies totals out of band.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Bank",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Salary arrives on the pay date to the right account."
+    },
+    {
+     "who": "Auditor",
+     "interest": "No single person can generate and release payments."
+    }
+   ],
+   "trigger": "A payroll run is approved.",
+   "preconditions": [
+    "The run is APPROVED.",
+    "Two distinct Finance users hold maker and checker roles."
+   ],
+   "postconditions_success": [
+    "The bank file is released and acknowledged; its total equals journal net."
+   ],
+   "postconditions_failure": [
+    "The file is held with its reason and no payment instruction is sent."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Finance",
+     "action": "Generates the bank file for the run on SCR-055 in the bank's bulk payment format.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes record count, total and checksum and confirms the total equals the salary payable credit on the journal.",
+     "ref": "RL-530"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Flags any employee whose bank details changed inside the payroll window.",
+     "ref": "RL-393"
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Submits the file for release as maker.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Finance",
+     "action": "As checker, verifies the total and checksum out of band against the run summary and reviews flagged accounts.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "Releases the file to the bank.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Bank",
+     "action": "Returns an acknowledgement, and later any failed credits.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Records the acknowledgement and creates follow-up items for failed credits.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "Some credits fail (for example closed account).",
+     "steps": [
+      "Platform lists failed credits for correction.",
+      "A follow-up payment is made after details are corrected and re-verified."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The file total does not equal journal net.",
+     "handling": "The file is held and the variance shown.",
+     "rule": "RL-530"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The checker is the same user as the maker.",
+     "handling": "Release is refused.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "A settlement in the run is HELD by clearance.",
+     "handling": "That settlement is excluded from the file.",
+     "rule": "RL-402"
+    }
+   ],
+   "business_rules": [
+    "RL-530",
+    "RL-393",
+    "RL-402"
+   ],
+   "screens": [
+    "SCR-055"
+   ],
+   "data_objects": [
+    "bank_file (C/U)",
+    "bank_acknowledgement (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "The bank file is stored encrypted and its download is logged.",
+    "Checksum algorithm and format follow the bank's specification."
+   ],
+   "frequency": "Per run",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-011",
+     "persona": "Finance",
+     "want": "release to require a second person who verifies the total independently",
+     "so_that": "no single person can send a payment file",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I generated BF-2026-08-0412 for 412 records totalling 24,118,000",
+       "when": "I try to release it myself as checker",
+       "then": "release is refused"
+      },
+      {
+       "given": "a second Finance user verifies 24,118,000 and the checksum",
+       "when": "they release",
+       "then": "the file is released and the release records both names"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-012",
+     "persona": "Payroll manager",
+     "want": "accounts changed inside the payroll window flagged on the bank file",
+     "so_that": "a last-minute account change is checked before money moves",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1051's bank account changed on 2026-08-28 inside the August window",
+       "when": "the file is generated",
+       "then": "E1051 is flagged for the checker"
+      },
+      {
+       "given": "no account changed in the window",
+       "when": "the file is generated",
+       "then": "no flags are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-028",
+    "SYS-033",
+    "SYS-085",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "FIN-UC-006",
+   "name": "Allocate labour cost to projects and grants",
+   "process": null,
+   "capability_gap": "FIN-CG-001",
+   "source": "Authored",
+   "goal": "Allocate each employee's payroll cost across cost centres, projects and grants by percentage or timesheet and carry it into the journal.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Project owner",
+     "interest": "Projects carry their true labour cost."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Grant-funded cost is evidenced by timesheet."
+    }
+   ],
+   "trigger": "A payroll run is computed for employees with allocation rules.",
+   "preconditions": [
+    "Allocation rules or approved timesheets exist for the period."
+   ],
+   "postconditions_success": [
+    "Journal lines carry project and grant dimensions with no residue."
+   ],
+   "postconditions_failure": [
+    "Unallocated cost is posted to the default cost centre and flagged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Finance",
+     "action": "Defines effective-dated allocation rules per employee by percentage across cost centres, projects and grants.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Approves timesheets for employees allocated by time.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes each employee's allocation per component before aggregation.",
+     "ref": "RL-520"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Builds journal lines dimensioned by project and grant.",
+     "ref": "RL-522"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Asserts that dimension totals equal the run total with no residue.",
+     "ref": "RL-530"
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "Reviews project cost and drills to employees.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "An employee changes projects mid-period.",
+     "steps": [
+      "Platform prorates allocation by days in each rule."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Percentages do not sum to 100.",
+     "handling": "The rule cannot be saved.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "An approved timesheet is missing.",
+     "handling": "Cost goes to the default cost centre and the employee is flagged.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-520",
+    "RL-522",
+    "RL-530"
+   ],
+   "screens": [
+    "SCR-102",
+    "SCR-103"
+   ],
+   "data_objects": [
+    "allocation_rule (C/U)",
+    "timesheet (R)",
+    "gl_journal_line (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Allocation adds no more than 20% to journal build time."
+   ],
+   "frequency": "Per run",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-013",
+     "persona": "Finance",
+     "want": "to split an employee's cost 60/40 across two projects",
+     "so_that": "project budgets show real labour cost",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee's rule is 60% project A and 40% project B with monthly cost 100,000",
+       "when": "the journal is built",
+       "then": "project A carries 60,000 and project B 40,000"
+      },
+      {
+       "given": "I enter 60% and 30%",
+       "when": "I save",
+       "then": "the rule is refused because it totals 90%"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-014",
+     "persona": "Manager / supervisor",
+     "want": "timesheet-based allocation to use my approved timesheets",
+     "so_that": "grant reporting matches recorded effort",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an approved timesheet shows 120 hours on a grant and 40 on operations",
+       "when": "the journal is built",
+       "then": "cost splits 75% to the grant and 25% to operations"
+      },
+      {
+       "given": "no approved timesheet exists",
+       "when": "the journal is built",
+       "then": "cost goes to the default cost centre and the employee is flagged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-028",
+    "SYS-029",
+    "SYS-037",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "FIN-UC-007",
+   "name": "Accrue leave encashment and gratuity liabilities",
+   "process": null,
+   "capability_gap": "FIN-CG-002",
+   "source": "Authored",
+   "goal": "Compute monthly accruals for leave encashment and gratuity liabilities and post them to the GL with balancing entries.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Finance",
+    "ERP system"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Liabilities in the books match employee entitlements."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Accruals reconcile to the annual valuation (to be validated by Legal)."
+    }
+   ],
+   "trigger": "Month end after the regular payroll run is approved.",
+   "preconditions": [
+    "Leave balances and wage bases are final for the month.",
+    "Provision and payable accounts are mapped with both legs."
+   ],
+   "postconditions_success": [
+    "An accrual journal is posted with movement from the prior month and per-employee detail."
+   ],
+   "postconditions_failure": [
+    "The accrual journal is not posted and the reason is shown."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Computes leave encashment liability per employee as encashable balance times daily wage base.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes gratuity liability per employee as 15/26 of last drawn Basic plus DA times completed years (to be validated by Legal).",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes the movement against the prior month's closing liability.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Builds a balanced accrual journal debiting provisions and crediting payables.",
+     "ref": "RL-522"
+    },
+    {
+     "n": 5,
+     "actor": "Finance",
+     "action": "Reviews and approves the accrual journal.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Posts the journal to the ERP system and records the document number.",
+     "ref": "RL-523"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "An actuarial valuation figure is supplied for the year.",
+     "steps": [
+      "Finance enters the valuation and the platform posts a true-up entry."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A provision has no credit leg mapped.",
+     "handling": "The journal is not built and the missing account is named.",
+     "rule": "RL-522"
+    }
+   ],
+   "business_rules": [
+    "RL-522",
+    "RL-523"
+   ],
+   "screens": [
+    "SCR-102"
+   ],
+   "data_objects": [
+    "liability_accrual (C)",
+    "gl_journal (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Accrual for 600 employees completes within 2 minutes."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-015",
+     "persona": "Finance",
+     "want": "monthly leave encashment liability from actual balances",
+     "so_that": "the books carry the real obligation",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1068 has 9.5 encashable days and a daily wage base of 1,658.46",
+       "when": "the accrual runs",
+       "then": "his leave liability is 15,755"
+      },
+      {
+       "given": "the prior month's liability was 14,100",
+       "when": "the movement is computed",
+       "then": "a 1,655 accrual is posted"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-016",
+     "persona": "Auditor",
+     "want": "accrual journals that always balance",
+     "so_that": "provisions never post debit-only",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "gratuity provision and payable accounts are mapped",
+       "when": "the accrual journal is built",
+       "then": "total debits equal total credits"
+      },
+      {
+       "given": "the payable account is missing",
+       "when": "the journal is built",
+       "then": "the build fails naming the missing account"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-045",
+    "SYS-047",
+    "SYS-049",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "FIN-UC-008",
+   "name": "Compare workforce budget with actuals",
+   "process": null,
+   "capability_gap": "FIN-CG-003",
+   "source": "Authored",
+   "goal": "Show budgeted versus actual headcount and cost by entity, site and cost centre so Finance can act on variances.",
+   "level": "User goal",
+   "primary_actor": "Finance",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Hiring stays within sanctioned manpower."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Variances are visible early."
+    }
+   ],
+   "trigger": "Month end or a budget review.",
+   "preconditions": [
+    "Budgets by entity, site, cost centre and month are loaded.",
+    "The month's payroll is posted."
+   ],
+   "postconditions_success": [
+    "A variance view exists for the month with drill-down."
+   ],
+   "postconditions_failure": [
+    "The comparison is not produced and the missing budget or posting is named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Finance",
+     "action": "Loads or edits the monthly budget for headcount and cost by entity, site and cost centre.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes actual headcount as at month end from assignments.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes actual cost from posted journals by the same dimensions.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows variance in number and percent and highlights over-budget lines beyond a 5% threshold.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Finance",
+     "action": "Drills a variance to positions and employees.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Finance",
+     "action": "Exports the comparison for the budget review.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A revised budget is approved mid-year.",
+     "steps": [
+      "Finance loads it as a new version from its effective month."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The month's payroll is not posted.",
+     "handling": "Cost actuals are shown as provisional with the unposted run named.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-103"
+   ],
+   "data_objects": [
+    "workforce_budget (C/U)",
+    "assignment (R)",
+    "gl_journal_line (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Comparison for 2 entities and 5 sites loads within 3 seconds."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "FIN-US-017",
+     "persona": "Finance",
+     "want": "headcount and cost variance by site",
+     "so_that": "I can challenge over-budget sites early",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "LE-01 budgeted 410 for September and actual is 418",
+       "when": "I open the September view",
+       "then": "a variance of +8 (2.0%) is shown"
+      },
+      {
+       "given": "Peenya Works cost exceeds budget by 7%",
+       "when": "I open the view",
+       "then": "the line is highlighted as over the 5% threshold"
+      }
+     ]
+    },
+    {
+     "id": "FIN-US-018",
+     "persona": "HR operations",
+     "want": "to drill a headcount variance to positions",
+     "so_that": "I know which hires caused it",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a cost centre is 3 over budget",
+       "when": "I drill in",
+       "then": "the 3 positions and employees filled above budget are listed"
+      },
+      {
+       "given": "I export the drill-down",
+       "when": "the export completes",
+       "then": "it lists the same positions"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-023",
+    "SYS-028"
+   ]
+  }
+ ]
+}

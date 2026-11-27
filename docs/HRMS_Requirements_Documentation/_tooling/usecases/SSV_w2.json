@@ -1,0 +1,770 @@
+{
+ "domain": "SSV",
+ "use_cases": [
+  {
+   "id": "SSV-UC-010",
+   "name": "Converse with one HR assistant across web, mobile, kiosk, voice and messaging",
+   "process": null,
+   "capability_gap": "SSV-CG-005",
+   "source": "Authored",
+   "goal": "Let an employee start an HR conversation on any channel and continue it on another without repeating context, with every write confirmed by the employee and recorded in the action ledger.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Agent (governed)",
+    "Nucleus platform",
+    "HR operations",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets the same answer and the same pending draft whichever channel is at hand, including the canteen kiosk on the shop floor."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Receives a complete transcript when the assistant hands a question over, instead of starting the case again."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Knows every channel identity is bound to a verified principal and the assistant never exceeds the employee's own scope."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can trace each assistant-initiated transaction to the channel, conversation and confirmation that produced it."
+    }
+   ],
+   "trigger": "An employee sends a message, speaks to the kiosk or opens the assistant panel in the web or mobile app.",
+   "preconditions": [
+    "The employee holds an active assignment and a verified principal.",
+    "At least one channel binding exists: a mobile number verified at onboarding for the messaging channel, a badge and PIN for kiosks, or a single sign-on session for web and mobile.",
+    "The assistant runs as an agent principal whose tools are limited to the employee's self scope and are registered with the policy gate.",
+    "Policy sources used for answers are published in the HR knowledge base."
+   ],
+   "postconditions_success": [
+    "The conversation carries one cross-channel conversation ID and shows the same history on every bound channel.",
+    "Any transaction submitted through the assistant exists in its owning service, is routed by the approval engine and is recorded in the action ledger with channel and confirmation reference."
+   ],
+   "postconditions_failure": [
+    "Nothing is written when the employee declines or the policy gate denies the tool call; the reason is recorded.",
+    "Unanswerable or low-confidence questions become a helpdesk ticket carrying the transcript."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Asks on the messaging channel: how many earned leave days do I have, and can I take 2 days next week?",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Resolves the sender's number to the verified principal and opens or resumes the cross-channel conversation session.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Agent (governed)",
+     "action": "Reads the balance through the declared leave tool within self scope and answers with the governing policy clause cited.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Agent (governed)",
+     "action": "Drafts a 2-day earned leave request and shows a confirmation card with dates, leave type and balance after the request.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms the card on the channel.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Passes the submit call through the policy gate, creates the request in the leave service and routes it to the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Records the action in the action ledger with conversation ID, channel, confirmation timestamp and resulting request ID.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Employee / worker",
+     "action": "Opens the mobile app later and sees the same thread with the request status updated to pending approval.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Pushes the approval outcome to the channel the employee used most recently, in the employee's preferred language.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee is at the Chakan Works canteen kiosk and speaks in Marathi.",
+     "steps": [
+      "Employee taps the badge and enters a 4-digit PIN.",
+      "Platform transcribes the speech, replies in Marathi on screen and by voice, and closes the session after 60 seconds of inactivity."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The employee leaves the messaging channel before confirming and resumes on the web portal.",
+     "steps": [
+      "Platform shows the unconfirmed draft in the web thread.",
+      "Confirmation is required again on the new channel; the earlier unconfirmed card is invalidated."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The employee asks for a colleague's leave balance.",
+     "handling": "Retrieval stays within the asker's permissions and the assistant states it cannot share another person's data.",
+     "rule": "RL-420"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "No published source supports an answer.",
+     "handling": "No answer is generated; a helpdesk ticket is raised with the transcript and its number is returned.",
+     "rule": "RL-421"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The assistant's confidence is below the tenant threshold of 0.70.",
+     "handling": "A ticket is created and the employee is told a person will respond.",
+     "rule": "RL-423"
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "The employee declines the confirmation card.",
+     "handling": "Nothing is written and the cancellation is logged.",
+     "rule": "RL-422"
+    },
+    {
+     "id": "E5",
+     "at_step": 6,
+     "condition": "The same draft is confirmed from two channels within seconds.",
+     "handling": "The second confirmation is not applied; the employee sees the existing request and the channel that submitted it.",
+     "rule": "RL-411"
+    },
+    {
+     "id": "E6",
+     "at_step": 2,
+     "condition": "The sender's number is not bound to any principal.",
+     "handling": "Only public knowledge-base answers are given and the sender is told how to verify the number in the app.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-411",
+    "RL-420",
+    "RL-421",
+    "RL-422",
+    "RL-423"
+   ],
+   "screens": [
+    "SCR-041",
+    "SCR-042"
+   ],
+   "data_objects": [
+    "conversation_session (C, U)",
+    "channel_binding (R)",
+    "knowledge_article (R)",
+    "leave_request (C)",
+    "helpdesk_ticket (C)",
+    "action_ledger (C)"
+   ],
+   "events": [
+    "agent.tool.called",
+    "agent.action.executed",
+    "leave.request.created",
+    "helpdesk.ticket.created"
+   ],
+   "nfrs": [
+    "First assistant response within 3 s at p95 on web, mobile and messaging, and within 5 s at p95 on kiosk voice.",
+    "Conversation context is available on every bound channel within 2 s of the last message.",
+    "Kiosk sessions clear all personal data from the screen after 60 s of inactivity.",
+    "Answers and prompts are available in every language enabled for the tenant, including Hindi, Marathi, Tamil and Telugu."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-021",
+     "persona": "Employee / worker",
+     "want": "to continue on the mobile app a conversation I began on the messaging channel",
+     "so_that": "I do not have to repeat my question when I switch devices",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018 asked about her earned leave balance on the messaging channel at 09:10",
+       "when": "she opens the mobile app at 09:25",
+       "then": "the same thread shows her question and the answer citing the leave policy clause"
+      },
+      {
+       "given": "an unconfirmed 2-day leave draft exists in the messaging thread",
+       "when": "E1018 resumes in the mobile app",
+       "then": "the draft is shown and must be confirmed again in the app before it is submitted"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-022",
+     "persona": "Employee / worker",
+     "want": "to ask the canteen kiosk about my roster in Marathi by voice",
+     "so_that": "I can get answers on the shop floor without a smartphone",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 at Chakan Works has tapped her badge and entered her PIN",
+       "when": "she asks in Marathi for tomorrow's shift",
+       "then": "the kiosk replies in Marathi on screen and by voice with shift A 08:00–20:00"
+      },
+      {
+       "given": "the kiosk session has had no input for 60 seconds",
+       "when": "the timer expires",
+       "then": "the session ends and no personal data remains on screen"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-023",
+     "persona": "HR operations",
+     "want": "a full transcript with every question the assistant hands over",
+     "so_that": "I can resolve it without asking the employee to start again",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the assistant's confidence is 0.52 against a threshold of 0.70",
+       "when": "an employee asks about night-shift allowance eligibility",
+       "then": "a ticket is raised with the transcript attached and the employee is given the ticket number"
+      },
+      {
+       "given": "HR operations resolves that ticket",
+       "when": "the resolution is saved",
+       "then": "the reply is posted to the channel the employee used most recently"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-035",
+    "SYS-071",
+    "SYS-072",
+    "SYS-073",
+    "SYS-078",
+    "SYS-079"
+   ]
+  },
+  {
+   "id": "SSV-UC-011",
+   "name": "Handle a confidential HR case in a restricted queue",
+   "process": null,
+   "capability_gap": "SSV-CG-006",
+   "source": "Authored",
+   "goal": "Receive, investigate and close a sensitive case such as harassment, medical disclosure or disciplinary inquiry with need-to-know access and a separate case audit trail.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Director / approver",
+    "Auditor",
+    "Tenant admin",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Trusts that the concern is seen only by the people handling it and not by the person complained about or their reporting line."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Decides the outcome on a summary that names the finding without exposing unnecessary personal detail."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can verify who accessed the case and when, without reading its content."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Configures restricted queues and committee membership once per entity and does not hold case access by default."
+    }
+   ],
+   "trigger": "An employee raises a concern in a sensitive category, or HR operations reclassifies an existing ticket as confidential.",
+   "preconditions": [
+    "Restricted queues exist per legal entity for harassment, medical and disciplinary categories, each with a named case owner.",
+    "The harassment queue lists the internal committee members for the entity as required by the applicable workplace harassment statute (to be validated by Legal).",
+    "Confidential case data is encrypted with a key separate from general helpdesk data."
+   ],
+   "postconditions_success": [
+    "The case is closed with findings, approved outcome and retention date, and every access is recorded in the confidential case audit.",
+    "The complainant receives the closure notice permitted by policy."
+   ],
+   "postconditions_failure": [
+    "Unauthorised access attempts are refused, recorded and alerted to the case owner.",
+    "An open case past its tenant-configured SLA is escalated to the entity HR head without widening content access."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Raises a concern from self-service, selects the category workplace harassment and names the respondent.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Classifies the case confidential, places it in the entity's restricted harassment queue and removes it from general lists and search.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Grants access only to the case owner and committee members, automatically excluding the respondent and the respondent's reporting line.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Acknowledges the case within the configured SLA and records intake notes and evidence in the encrypted case file.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Adds an investigator with a time-bound need-to-know grant, stating the reason and expiry date.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Writes every view, download and grant change to the confidential case audit, separate from the general audit trail.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Records findings and the recommended action, and submits an outcome summary to the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Director / approver",
+     "action": "Approves the recommended action on the outcome summary, which shows the finding but not the evidence.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Closes the case, sends the complainant the permitted closure text and sets the retention date from the category policy.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR operations finds a general ticket that discloses a medical condition.",
+     "steps": [
+      "HR operations reclassifies the ticket as confidential medical.",
+      "Platform moves it to the restricted medical queue and revokes access for everyone who saw it in the general queue, recording each revocation."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The concern is raised anonymously from a plant kiosk.",
+     "steps": [
+      "Platform issues a case reference code and PIN for follow-up without storing the reporter's identity."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A configured committee member is the respondent or sits in the respondent's reporting line.",
+     "handling": "That member is excluded from the case and the case owner is prompted to nominate a replacement.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A user with general HR access opens the case by direct link.",
+     "handling": "Access is denied, the attempt is written to the confidential case audit and the case owner is alerted within 5 minutes.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "Someone tries to export the full case file.",
+     "handling": "Export requires approval by a second named case member; without it the export is blocked and logged.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 4,
+     "condition": "The acknowledgement SLA lapses.",
+     "handling": "The case is escalated to the entity HR head as an alert showing category and age only.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-041"
+   ],
+   "data_objects": [
+    "confidential_case (C, U)",
+    "case_access_grant (C, U)",
+    "case_evidence (C)",
+    "case_audit_event (C)",
+    "approval_instance (C)"
+   ],
+   "events": [
+    "helpdesk.ticket.created",
+    "platform.scope.granted",
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "Confidential cases never appear in global search, general helpdesk analytics or agent tool results.",
+    "The confidential case audit is append-only and readable only by principals holding the case-audit grant.",
+    "Time-bound grants expire automatically to the minute of their stated expiry."
+   ],
+   "frequency": "On demand",
+   "criticality": "Critical",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-024",
+     "persona": "Employee / worker",
+     "want": "to raise a harassment complaint that only the committee can see",
+     "so_that": "I can report safely without my line manager knowing",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1042 raises a complaint naming her line manager E1019",
+       "when": "the case is created",
+       "then": "neither E1019 nor E1019's manager can see, search or be notified about the case"
+      },
+      {
+       "given": "the case is under inquiry",
+       "when": "E1042 checks its status",
+       "then": "she sees the status Under inquiry and the next hearing date but not committee notes"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-025",
+     "persona": "HR operations",
+     "want": "to give an investigator access that expires on its own",
+     "so_that": "access never outlives the need",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an investigator is granted access for 14 days from 2026-11-05",
+       "when": "2026-11-19 00:00 passes",
+       "then": "the grant has expired and both the grant and the expiry appear in the case audit"
+      },
+      {
+       "given": "a payroll manager with entity-wide HR access opens the case link",
+       "when": "the request is evaluated",
+       "then": "access is denied and the case owner receives an alert within 5 minutes"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-026",
+     "persona": "Auditor",
+     "want": "to review the confidential case audit without reading case content",
+     "so_that": "I can confirm need-to-know access was respected",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I hold the case-audit grant for Vindhya Precision Industries",
+       "when": "I open the audit for a closed harassment case",
+       "then": "I see each access with principal, action and timestamp but no notes or evidence"
+      },
+      {
+       "given": "I hold only the general audit grant",
+       "when": "I search the action ledger",
+       "then": "confidential case entries are not listed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-020",
+    "SYS-033",
+    "SYS-034",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "SSV-UC-012",
+   "name": "Generate a signed standard letter on demand",
+   "process": null,
+   "capability_gap": "SSV-CG-007",
+   "source": "Authored",
+   "goal": "Let an employee obtain a digitally signed standard letter such as a salary certificate, address proof or experience letter within seconds from an approved template.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations",
+    "Bank"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a valid letter for a bank, landlord or visa office without waiting for HR."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Stops handling routine letter requests while keeping control of templates and exceptions."
+    },
+    {
+     "who": "Bank",
+     "interest": "Can verify that a presented letter is genuine and current."
+    }
+   ],
+   "trigger": "An employee selects a letter type in self-service documents.",
+   "preconditions": [
+    "The letter type is enabled for self-service for the employee's legal entity and has an approved template version.",
+    "The entity's organisation signing certificate is valid and held in the platform key store.",
+    "Source data used by the template, such as the latest finalised payroll run or the approved address, exists for the employee."
+   ],
+   "postconditions_success": [
+    "A signed PDF with a verification code is stored in the employee's document vault and delivered to the employee.",
+    "The issue is logged with template version, data snapshot date and signature reference."
+   ],
+   "postconditions_failure": [
+    "No unsigned or partially merged letter is ever released.",
+    "The employee is told why the letter could not be produced and is offered a helpdesk ticket."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens self-service documents and selects Salary certificate.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks eligibility: active assignment, letter type enabled for the entity and the limit of 3 requests per type per month.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Chooses the purpose, the addressee and the language, English or Hindi.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Merges the approved template version with data from the latest finalised payroll run and shows a preview.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms the preview.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Applies the entity's digital signature and embeds a verification QR code carrying the document ID.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Stores the letter in the document vault, records the issue and offers download or email to the personal address on record.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Bank",
+     "action": "Scans the QR code; the verification page confirms document type, holder name, issue date and status only.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The letter type needs HR review, for example a visa letter with free-text addressee details.",
+     "steps": [
+      "Platform routes the request to the HR operations queue with the preview.",
+      "HR operations approves or edits the free text within the template's editable fields."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "An address change for the employee is awaiting approval.",
+     "steps": [
+      "Platform uses the last approved address and tells the employee which address appears on the letter."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A3",
+     "at_step": 1,
+     "condition": "A separated employee requests an experience letter through alumni access.",
+     "steps": [
+      "Platform confirms the last working day is recorded and the final settlement is complete.",
+      "Template merges the service dates and last designation."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The monthly limit of 3 for this letter type is reached.",
+     "handling": "The request is refused and the next eligible date is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "A new joiner has no finalised payroll run yet.",
+     "handling": "The salary certificate is not generated; the employee is offered an employment confirmation letter or a ticket.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "The signing certificate has expired or the key store is unavailable.",
+     "handling": "Issue stops, HR operations and the tenant admin are alerted and no unsigned letter is released.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 8,
+     "condition": "HR has revoked the letter after issue.",
+     "handling": "The verification page shows status Revoked with the revocation date.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-042"
+   ],
+   "data_objects": [
+    "letter_template (R)",
+    "issued_document (C)",
+    "signature_record (C)",
+    "document_verification (R)",
+    "payroll_result (R)"
+   ],
+   "events": [
+    "experience.letter.issued"
+   ],
+   "nfrs": [
+    "Letter generated, signed and available for download within 10 s at p95.",
+    "The verification page exposes no data beyond document type, holder name, issue date and status."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-027",
+     "persona": "Employee / worker",
+     "want": "to download a signed salary certificate immediately",
+     "so_that": "I can submit my home-loan application the same day",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's September 2026 payroll run is finalised",
+       "when": "she requests a salary certificate addressed to her bank",
+       "then": "a signed PDF with a verification QR code is ready within 10 seconds showing September 2026 gross and net pay"
+      },
+      {
+       "given": "E1018 has already generated 3 salary certificates in November 2026",
+       "when": "she requests a fourth",
+       "then": "the request is refused and the next eligible date 2026-12-01 is shown"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-028",
+     "persona": "HR operations",
+     "want": "to control which template version employees can generate",
+     "so_that": "every self-issued letter uses approved wording",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "address-proof template version 3 is approved and version 2 is withdrawn",
+       "when": "any employee requests address proof",
+       "then": "only version 3 is used and the issue log records version 3"
+      },
+      {
+       "given": "a visa letter request contains free-text addressee details",
+       "when": "the employee submits it",
+       "then": "it waits in the HR operations queue and is signed only after HR approves"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-029",
+     "persona": "Employee / worker",
+     "want": "to obtain my experience letter after I have left",
+     "so_that": "I can join my next employer without chasing my old HR team",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1032's last working day was 2026-10-31 and the final settlement is complete",
+       "when": "he requests an experience letter through alumni access",
+       "then": "a signed letter is issued showing his service dates and last designation"
+      },
+      {
+       "given": "E1032's final settlement is still pending",
+       "when": "he requests the letter",
+       "then": "the request is held and he is told the letter will be available once the settlement completes"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-026",
+    "SYS-032",
+    "SYS-066"
+   ]
+  }
+ ]
+}

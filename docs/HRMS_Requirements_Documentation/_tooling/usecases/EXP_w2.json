@@ -1,0 +1,618 @@
+{
+ "domain": "EXP",
+ "use_cases": [
+  {
+   "id": "EXP-UC-007",
+   "name": "Analyse representation, pay and progression with privacy thresholds and track actions",
+   "process": null,
+   "capability_gap": "EXP-CG-004",
+   "source": "Authored",
+   "goal": "Give authorised HR users diversity, equity and inclusion metrics by permitted attributes, protected by minimum group sizes, and track the actions taken in response.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Director / approver",
+    "Manager / supervisor",
+    "Auditor",
+    "Tenant admin",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Self-declared attributes are used only for permitted aggregate analysis and never identify an individual."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Sees credible trends across sites and commits owners to measurable actions."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Controls which attributes are permitted and who may analyse them."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can verify that suppression rules were applied to every published figure."
+    }
+   ],
+   "trigger": "HR operations opens the inclusion analytics workspace or a quarterly review pack is generated.",
+   "preconditions": [
+    "Permitted attributes such as gender, age band and self-declared disability are configured by the tenant admin, with consent recorded where required under the DPDP Act 2023 (to be validated by Legal).",
+    "The minimum group size is configured, for example 10 people per reported cell.",
+    "People, compensation and promotion analytics projections are refreshed within the last 24 hours."
+   ],
+   "postconditions_success": [
+    "Published metrics show only cells meeting the minimum group size, with suppression shown explicitly.",
+    "Each action has an owner, target metric, due date and status, reviewed each quarter."
+   ],
+   "postconditions_failure": [
+    "A query that would expose a small group returns a suppression notice rather than a figure."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects representation by gender for grade bands across Chakan, Peenya, Oragadam and Medchal Works and the Pune office.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Reads the analytics projections limited to the user's grant and to permitted attributes only.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Applies the minimum group size and complementary suppression so that hidden cells cannot be derived from totals.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows representation, hiring, promotion rate and median pay gap per grade band with trend over 8 quarters.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Drills from entity to site and grade band; each drill re-applies the thresholds.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Creates an action, for example raise women's share of shift supervisors at Medchal Works from 6% to 12% by 2027-12-31.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Director / approver",
+     "action": "Approves the action with owner and budget through the approval engine.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Tracks the target metric each quarter and shows progress on the action card.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A manager opens inclusion metrics for their own team.",
+     "steps": [
+      "Platform shows only metrics where the team meets the minimum group size; otherwise it shows the site-level figure."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A cell has 7 people against a minimum of 10.",
+     "handling": "The cell is suppressed and one further cell is suppressed so the value cannot be derived from the total.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The user tries to select an attribute not permitted by the tenant.",
+     "handling": "The attribute is not offered and the attempt is recorded.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "A filter combination would identify one person.",
+     "handling": "The query returns a suppression notice and no figure.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "people_projection (R)",
+    "compensation_projection (R)",
+    "inclusion_metric (C)",
+    "inclusion_action (C, U)",
+    "suppression_log (C)"
+   ],
+   "events": [
+    "report.exported",
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "No export, chart or agent response bypasses the minimum group size.",
+    "Every figure records the projection version so a quarter's pack can be reproduced."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-014",
+     "persona": "HR operations",
+     "want": "representation and promotion rates by site and grade with small groups hidden",
+     "so_that": "I can see real patterns without exposing anyone",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the minimum group size is 10 and women in grade band M at Medchal Works number 7",
+       "when": "I view representation by site and grade",
+       "then": "that cell shows Suppressed and the derivable neighbour cell is also suppressed"
+      },
+      {
+       "given": "promotion data for Chakan Works covers 140 eligible employees",
+       "when": "I view promotion rates by gender",
+       "then": "rates are shown with group sizes and the 8-quarter trend"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-015",
+     "persona": "Director / approver",
+     "want": "each inclusion action tied to a metric with an owner and date",
+     "so_that": "commitments are tracked rather than forgotten",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an action targets 12% women shift supervisors at Medchal Works by 2027-12-31 from 6%",
+       "when": "the Q1 2027 metric is computed at 8%",
+       "then": "the action card shows 8% against the 12% target"
+      },
+      {
+       "given": "an action passes its due date unmet",
+       "when": "the quarterly review runs",
+       "then": "it is flagged overdue to its owner and to me"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-016",
+     "persona": "Auditor",
+     "want": "to confirm suppression was applied to a published pack",
+     "so_that": "I can attest that the analysis protected individuals",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the Q4 2026 pack is published",
+       "when": "I open its suppression log",
+       "then": "every suppressed cell is listed with the rule applied"
+      },
+      {
+       "given": "I re-run the pack against its recorded projection version",
+       "when": "the run completes",
+       "then": "the figures match the published pack"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-024",
+    "SYS-033",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "EXP-UC-008",
+   "name": "Recognise birthdays, work anniversaries and milestones automatically",
+   "process": null,
+   "capability_gap": "EXP-CG-005",
+   "source": "Authored",
+   "goal": "Detect celebrations each day, prompt managers and peers to send messages, and publish them only for employees who have not opted out.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "Employee / worker",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is celebrated without having to tell anyone, and can opt out of any or all celebrations."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Is reminded in time to wish team members, including those on night shifts."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Builds a culture of recognition across five sites with no manual tracking."
+    }
+   ],
+   "trigger": "The daily celebrations job runs at 06:00 IST.",
+   "preconditions": [
+    "Dates of birth, joining dates and milestone definitions such as probation confirmation and service years 1, 5, 10 and 20 are configured.",
+    "Each employee's celebration preferences are recorded, defaulting to the tenant setting."
+   ],
+   "postconditions_success": [
+    "Celebrations for opted-in employees are published to the feed and site screens, and managers have been prompted."
+   ],
+   "postconditions_failure": [
+    "No celebration is produced for an employee who has opted out."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Finds today's birthdays, service anniversaries and milestones for every active employee.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Removes employees who have opted out of that celebration type.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Sends each manager a list of team celebrations with a one-tap message option, 1 day ahead for night-shift staff.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Sends a personal message; it is delivered to the employee in the app and on the business messaging channel if opted in.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Posts a celebration card to the site feed showing name, photo if consented and the occasion, never the age or year of birth.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Peers add wishes to the card; messages pass the feed's moderation filter.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Shows the day's opted-in celebrations on the canteen display screens at each plant.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The anniversary is 10 or more years.",
+     "steps": [
+      "Platform also notifies HR to arrange the long-service award."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The employee has opted out of birthday announcements.",
+     "handling": "No birthday card or manager prompt is generated for that employee.",
+     "rule": "RL-397"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A peer message fails moderation.",
+     "handling": "It is held for HR review and not shown on the card.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "The date of birth is missing.",
+     "handling": "No birthday is generated and no date is assumed.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-397"
+   ],
+   "screens": [
+    "SCR-066"
+   ],
+   "data_objects": [
+    "celebration_preference (R)",
+    "celebration_event (C)",
+    "feed_post (C)",
+    "celebration_message (C)"
+   ],
+   "events": [
+    "experience.announcement.published"
+   ],
+   "nfrs": [
+    "The daily job completes for 3,000 employees within 2 minutes.",
+    "An opt-out takes effect from the next daily run."
+   ],
+   "frequency": "Daily",
+   "criticality": "Low",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-017",
+     "persona": "Employee / worker",
+     "want": "to opt out of birthday announcements but keep work anniversaries",
+     "so_that": "I control what is shared about me",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1032 has opted out of birthdays and kept anniversaries",
+       "when": "his birthday on 2026-11-14 arrives",
+       "then": "no card or manager prompt is generated"
+      },
+      {
+       "given": "E1032's 5-year anniversary falls on 2026-12-01",
+       "when": "the daily job runs",
+       "then": "an anniversary card is posted and his manager is prompted"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-018",
+     "persona": "Manager / supervisor",
+     "want": "to be reminded of my team's celebrations a day early for night-shift staff",
+     "so_that": "I can wish them before their shift",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1066 works shift C 22:00–06:00 and her birthday is 2026-11-20",
+       "when": "the job runs on 2026-11-19",
+       "then": "I receive the reminder that day"
+      },
+      {
+       "given": "I tap send on the suggested message",
+       "when": "it is sent",
+       "then": "E1066 receives it in the app"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-050",
+    "SYS-053",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "EXP-UC-009",
+   "name": "Run a targeted multilingual safety campaign with acknowledgement tracking",
+   "process": null,
+   "capability_gap": "EXP-CG-006",
+   "source": "Authored",
+   "goal": "Deliver a policy or safety communication to a targeted audience in their languages across channels and track acknowledgement to completion.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Agent (governed)",
+    "Manager / supervisor",
+    "Plant HR / time office",
+    "Employee / worker",
+    "Compliance owner",
+    "Nucleus platform",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives safety instructions in a language they read, on a channel they use."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Knows which workers on each shift have not yet acknowledged."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Has acknowledgement evidence for each site."
+    }
+   ],
+   "trigger": "HR operations launches a campaign, for example monsoon electrical safety for production workers.",
+   "preconditions": [
+    "The audience can be defined by site, department, shift and worker type.",
+    "Reviewers are named for each campaign language.",
+    "Channel opt-ins for the business messaging channel are recorded."
+   ],
+   "postconditions_success": [
+    "Each recipient's acknowledgement status, channel and timestamp is recorded and exportable as site evidence."
+   ],
+   "postconditions_failure": [
+    "Recipients not reached by the due date are escalated to their supervisors."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates the campaign Monsoon electrical safety for production workers at Chakan and Oragadam Works, due in 7 days.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Drafts Marathi, Tamil and Hindi versions from the English text as proposals.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Sends each version to its reviewer; only approved versions are released.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Delivers to each worker in the preferred language through the app, the business messaging channel if opted in and the kiosk.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Reads the message and acknowledges with one tap.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Sends reminders on day 3 and day 6 to those who have not acknowledged.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Plant HR / time office",
+     "action": "Records bulk acknowledgement for workers briefed in a toolbox talk, with the attendance sheet attached.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Manager / supervisor",
+     "action": "Sees unacknowledged team members per shift and follows up.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Closes the campaign on the due date and produces the acknowledgement evidence by site.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The campaign is a policy update that also needs a quiz.",
+     "steps": [
+      "Platform attaches a 3-question check and records acknowledgement only on a passing answer."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A language version is not approved by launch time.",
+     "handling": "Recipients of that language receive the Hindi version with a notice that their language follows.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "A worker has no app, no messaging opt-in and no kiosk use in 30 days.",
+     "handling": "The worker is listed for supervisor briefing.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 9,
+     "condition": "Recipients remain unacknowledged at the due date.",
+     "handling": "They are escalated to their supervisors and Plant HR with the list.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-066"
+   ],
+   "data_objects": [
+    "campaign (C)",
+    "campaign_audience (C)",
+    "campaign_translation (C, U)",
+    "acknowledgement (C)",
+    "toolbox_talk_record (C)"
+   ],
+   "events": [
+    "experience.announcement.published"
+   ],
+   "nfrs": [
+    "Delivery to 2,500 recipients across channels completes within 10 minutes.",
+    "Acknowledgement evidence is retained for the period set by the compliance retention policy."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-019",
+     "persona": "HR operations",
+     "want": "to target a safety message by site, shift and language and see acknowledgement live",
+     "so_that": "I know the instruction reached everyone on the floor",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the campaign targets 1,180 production workers at Chakan and Oragadam Works",
+       "when": "it launches",
+       "then": "each worker receives the approved version in their preferred language"
+      },
+      {
+       "given": "940 have acknowledged by day 3",
+       "when": "I open the campaign",
+       "then": "I see 79.7% acknowledged with a breakdown by site and shift"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-020",
+     "persona": "Plant HR / time office",
+     "want": "to record acknowledgement for workers briefed in a toolbox talk",
+     "so_that": "workers without phones are still covered",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "32 workers on shift B at Oragadam Works attended the toolbox talk",
+       "when": "I record bulk acknowledgement with the attendance sheet",
+       "then": "all 32 show acknowledged with channel Toolbox talk"
+      },
+      {
+       "given": "the attendance sheet lists 33 workers and one is not in the campaign audience",
+       "when": "I submit the bulk acknowledgement",
+       "then": "that worker is rejected with a reason and the other 32 are recorded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-066",
+    "SYS-070",
+    "SYS-071",
+    "SYS-074",
+    "SYS-076"
+   ]
+  }
+ ]
+}

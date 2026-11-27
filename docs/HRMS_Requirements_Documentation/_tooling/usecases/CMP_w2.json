@@ -1,0 +1,861 @@
+{
+ "domain": "CMP",
+ "use_cases": [
+  {
+   "id": "CMP-UC-012",
+   "name": "Report, investigate and close a safety incident",
+   "process": null,
+   "capability_gap": "CMP-CG-006",
+   "source": "Authored",
+   "goal": "Record incidents and near-misses at a site, investigate root cause, track corrective actions and prepare statutory accident notices within the required time (to be validated by Legal).",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Compliance owner",
+    "Nucleus platform",
+    "Statutory portal"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can report hazards and injuries easily and without fear of blame."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Notifiable accidents are notified within the statutory window with evidence retained."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Sees incident trends and closure of corrective actions per site."
+    }
+   ],
+   "trigger": "An employee or supervisor reports an injury, dangerous occurrence or near-miss.",
+   "preconditions": [
+    "Incident categories, severity levels and the notifiability criteria per state rule pack are configured.",
+    "The EHS sub-function (OU-180) is set up with an investigator role per site."
+   ],
+   "postconditions_success": [
+    "The incident is recorded with severity, root cause and corrective actions closed; any statutory notice is prepared, filed by a human and its acknowledgement retained."
+   ],
+   "postconditions_failure": [
+    "An overdue notice or open corrective action is escalated to the compliance owner and site head."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Reports an incident from the mobile app: hand injury at the Medchal Works press line on 2026-11-03 at 14:20, with photos.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Confirms the report, records first aid given and classifies severity as lost-time injury.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Evaluates notifiability against the state rule pack and, if notifiable, creates an obligation with its due time.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Plant HR / time office",
+     "action": "Links the injured person's absence days to the incident so the lost-time count is derived.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Compliance owner",
+     "action": "Reviews the prepared accident notice, assembled from the incident record.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Compliance owner",
+     "action": "Files the notice on the statutory portal and records the acknowledgement reference.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Manager / supervisor",
+     "action": "Leads the root-cause investigation and records causes and corrective actions with owners and due dates.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Tracks corrective actions, sends reminders and escalates overdue items.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Compliance owner",
+     "action": "Verifies the actions are effective and closes the incident.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The event is a near-miss with no injury.",
+     "steps": [
+      "The near-miss is recorded with hazard category; no notifiability check is needed."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The reporter chooses to remain anonymous for a hazard report.",
+     "steps": [
+      "The report is stored without reporter identity and routed to the site EHS lead."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "The statutory notice is not filed before its due time.",
+     "handling": "The obligation is escalated to the compliance owner and site head as overdue, with the delay recorded.",
+     "rule": "RL-372"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "No state rule pack version covers the site's state on the incident date.",
+     "handling": "The incident is flagged for manual notifiability assessment by the compliance owner.",
+     "rule": "RL-364"
+    }
+   ],
+   "business_rules": [
+    "RL-360",
+    "RL-364",
+    "RL-370",
+    "RL-371",
+    "RL-372",
+    "RL-383"
+   ],
+   "screens": [
+    "SCR-072",
+    "SCR-073"
+   ],
+   "data_objects": [
+    "incident (C/U)",
+    "investigation (C)",
+    "corrective_action (C/U)",
+    "statutory_obligation (C/U)",
+    "filing_acknowledgement (C)"
+   ],
+   "events": [
+    "compliance.incident.reported",
+    "compliance.incident.closed"
+   ],
+   "nfrs": [
+    "An incident report can be submitted from a mobile device on a 3G connection in under 60 s.",
+    "Incident records and filed notices are retained for the statutory retention period (to be validated by Legal)."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMP-US-030",
+     "persona": "Employee / worker",
+     "want": "to report an injury or hazard from my phone with photos",
+     "so_that": "it is recorded immediately and action starts",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am at Medchal Works line 2",
+       "when": "I report a hand injury with two photos at 14:20",
+       "then": "the incident is created with site, line and time and my supervisor is notified"
+      },
+      {
+       "given": "I report a hazard anonymously",
+       "when": "the report is saved",
+       "then": "no identity is stored and the site EHS lead receives it"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-031",
+     "persona": "Compliance owner",
+     "want": "a notice prepared from the incident record with its due time",
+     "so_that": "notifiable accidents are filed on time",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a lost-time injury classified as notifiable under the Telangana pack",
+       "when": "classification is confirmed",
+       "then": "an obligation is created with its due time and a prepared notice"
+      },
+      {
+       "given": "the notice is filed with acknowledgement reference TS-ACC-88213",
+       "when": "I record it",
+       "then": "the obligation closes and the reference is kept against the incident"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-032",
+     "persona": "Manager / supervisor",
+     "want": "corrective actions tracked to closure with reminders",
+     "so_that": "the cause is actually removed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an action 'install light curtain on press 4' due 2026-11-20",
+       "when": "the due date passes without closure",
+       "then": "the action is escalated to the site head"
+      },
+      {
+       "given": "all actions are verified",
+       "when": "the compliance owner closes the incident",
+       "then": "the incident shows closed with the verification date"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-045",
+    "SYS-053",
+    "SYS-070",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "CMP-UC-013",
+   "name": "Raise and handle a grievance or protected disclosure",
+   "process": null,
+   "capability_gap": "CMP-CG-007",
+   "source": "Authored",
+   "goal": "Let employees raise grievances and protected disclosures, anonymously if they choose, with confidential case handling, escalation timelines and outcome reporting.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Compliance owner",
+    "HR operations",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can raise a concern safely and follow its progress without revealing identity."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Serious disclosures reach the right committee without being filtered by line management."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Cases are handled within timelines and outcomes are reported."
+    }
+   ],
+   "trigger": "An employee submits a grievance or a protected disclosure through the confidential channel.",
+   "preconditions": [
+    "Case categories, handling committees and escalation timelines are configured per entity.",
+    "Case data is restricted to the assigned handlers; managers named in a case are excluded from its access."
+   ],
+   "postconditions_success": [
+    "The case is investigated and closed with an outcome; the reporter is informed through the case channel and aggregated outcomes appear in periodic reports."
+   ],
+   "postconditions_failure": [
+    "An overdue case escalates to the next level; no case is closed without a recorded outcome."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the confidential channel, chooses 'protected disclosure', selects anonymous and describes the concern.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Creates the case, issues a case key for the reporter and strips identifying metadata from the submission.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Routes the case to the handling committee for the category and excludes any person named in it from access.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Compliance owner",
+     "action": "Acknowledges the case and records an initial assessment within the configured timeline.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Compliance owner",
+     "action": "Investigates, exchanging messages with the reporter through the case key without learning their identity.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Reviews findings and decides the outcome and any action.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Closes the case, informs the reporter of the outcome category and adds it to aggregated outcome reports.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee raises a named grievance about working conditions.",
+     "steps": [
+      "The case is routed to HR operations under the grievance timeline and the employee is kept informed by name."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "The finding requires disciplinary action.",
+     "steps": [
+      "A separate disciplinary case is opened with restricted access, linked to this case."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The case is not acknowledged within the timeline.",
+     "handling": "It escalates automatically to the next committee level and the delay is recorded.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A handler is named in the case.",
+     "handling": "That handler is removed from access and the case is reassigned.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "case (C/U)",
+    "case_message (C)",
+    "case_access_list (C/U)",
+    "outcome_report (C)"
+   ],
+   "events": [
+    "compliance.case.raised",
+    "compliance.case.closed"
+   ],
+   "nfrs": [
+    "Anonymous submissions store no IP address, device identifier or account link.",
+    "Every access to a case record is logged and visible to the committee chair."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMP-US-033",
+     "persona": "Employee / worker",
+     "want": "to raise a concern anonymously and still follow its progress",
+     "so_that": "I can speak up without fear of retaliation",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I submit an anonymous disclosure about falsified inspection records at Chakan Works",
+       "when": "it is saved",
+       "then": "I receive a case key and no identity is stored"
+      },
+      {
+       "given": "the investigator posts a question",
+       "when": "I log in with my case key",
+       "then": "I can read and reply without revealing my identity"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-034",
+     "persona": "Compliance owner",
+     "want": "people named in a case excluded from its access",
+     "so_that": "the investigation is not compromised",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a disclosure naming Peenya plant head E1016",
+       "when": "the case is routed",
+       "then": "E1016 has no access to the case even though E1016 holds HR scope at the site"
+      },
+      {
+       "given": "the case is not acknowledged within 7 days",
+       "when": "the deadline passes",
+       "then": "it escalates to the committee chair"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-035",
+     "persona": "Director / approver",
+     "want": "aggregated grievance outcomes by category and site",
+     "so_that": "I can see patterns without exposing individuals",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "12 closed cases in Q3 2026",
+       "when": "I open the outcome report",
+       "then": "counts by category, site and outcome are shown with no reporter details"
+      },
+      {
+       "given": "a site with fewer than 3 cases in a category",
+       "when": "the report is shown",
+       "then": "that cell is combined into 'other' to avoid identification"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-019",
+    "SYS-020",
+    "SYS-032",
+    "SYS-033"
+   ]
+  },
+  {
+   "id": "CMP-UC-014",
+   "name": "Track and renew licences and registrations",
+   "process": null,
+   "capability_gap": "CMP-CG-008",
+   "source": "Authored",
+   "goal": "Track factory licences, establishment registrations and contractor licences with expiry alerts and a renewal workflow.",
+   "level": "User goal",
+   "primary_actor": "Compliance owner",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Director / approver",
+    "Nucleus platform",
+    "Statutory portal"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "No site operates on an expired licence."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Knows well in advance which documents are needed for renewal."
+    },
+    {
+     "who": "Finance",
+     "interest": "Renewal fees are planned and paid on time."
+    }
+   ],
+   "trigger": "A licence or registration approaches its expiry date, or a new one is issued.",
+   "preconditions": [
+    "Licences are recorded per location and entity with number, issuing authority, validity dates and owner, for example factory licence KA/FAC/2013/00891 for Peenya Works.",
+    "Contractor licences are linked to the vendor and the principal-employer location."
+   ],
+   "postconditions_success": [
+    "The renewed licence is recorded with its new validity and acknowledgement, and the old version is end-dated."
+   ],
+   "postconditions_failure": [
+    "An unrenewed licence is escalated, and dependent activities such as onboarding a contractor's workers are flagged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Detects that the Peenya Works factory licence expires within 90 days and opens a renewal obligation.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Notification service",
+     "action": "Alerts the compliance owner and Peenya plant HR with the checklist of required documents.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Plant HR / time office",
+     "action": "Uploads the required documents, such as the updated manpower statement, to the renewal case.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Prepares the renewal pack from posted records, including headcount by worker class at the site.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the renewal application and fee.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Compliance owner",
+     "action": "Files the application on the statutory portal and records the acknowledgement.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Compliance owner",
+     "action": "Records the renewed licence with its new validity when issued.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Writes the new licence version, end-dates the old one and closes the obligation.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The licence is a contractor licence held by vendor VN-01.",
+     "steps": [
+      "The vendor is asked to upload the renewed licence; the compliance owner verifies it."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "The licence expires before renewal is recorded.",
+     "handling": "The licence is shown as expired, escalated to the director and, for a contractor licence, new deployments of that contractor's workers are blocked.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "Headcount in the renewal pack exceeds the licensed capacity.",
+     "handling": "The pack is flagged and the compliance owner must address the variance before filing.",
+     "rule": "RL-371"
+    }
+   ],
+   "business_rules": [
+    "RL-370",
+    "RL-371",
+    "RL-372",
+    "RL-380",
+    "RL-383"
+   ],
+   "screens": [
+    "SCR-072"
+   ],
+   "data_objects": [
+    "licence (C/U)",
+    "statutory_obligation (C/U)",
+    "renewal_case (C/U)",
+    "filing_acknowledgement (C)"
+   ],
+   "events": [
+    "compliance.licence.expiring",
+    "compliance.licence.renewed"
+   ],
+   "nfrs": [
+    "Expiry alerts are sent at 90, 60, 30 and 7 days before expiry.",
+    "The licence register for all five sites loads in under 2 s."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMP-US-036",
+     "persona": "Compliance owner",
+     "want": "alerts well before any licence expires",
+     "so_that": "no site ever operates on an expired licence",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the Chakan Works factory licence MH/FAC/2015/03327 expires on 2026-12-31",
+       "when": "the date reaches 2026-10-02",
+       "then": "a renewal obligation is opened and I am alerted"
+      },
+      {
+       "given": "the renewed licence is recorded with validity to 2027-12-31",
+       "when": "I save it",
+       "then": "the old version is end-dated and the obligation closes"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-037",
+     "persona": "Plant HR / time office",
+     "want": "a renewal pack built from posted headcount",
+     "so_that": "the figures in the application match our records",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Peenya Works has 23 permanent, 2 trainee and 5 third-party workers posted",
+       "when": "the pack is prepared",
+       "then": "the manpower statement shows those counts"
+      },
+      {
+       "given": "headcount above the licensed capacity",
+       "when": "the pack is prepared",
+       "then": "the variance is flagged before filing"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-038",
+     "persona": "Director / approver",
+     "want": "contractor deployments blocked when the contractor's licence has expired",
+     "so_that": "we are not exposed as principal employer",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "vendor VN-01's licence expired on 2026-10-31",
+       "when": "HR tries to deploy a new VN-01 worker on 2026-11-02",
+       "then": "deployment is blocked with the expired licence named"
+      },
+      {
+       "given": "VN-01 uploads a renewed licence",
+       "when": "the compliance owner verifies it",
+       "then": "deployments are unblocked"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-037",
+    "SYS-070",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "CMP-UC-015",
+   "name": "Record inspection visits and close resulting orders",
+   "process": null,
+   "capability_gap": "CMP-CG-009",
+   "source": "Authored",
+   "goal": "Record statutory inspection visits, remarks and orders at a site and track the resulting compliance actions to closure.",
+   "level": "User goal",
+   "primary_actor": "Plant HR / time office",
+   "secondary_actors": [
+    "Compliance owner",
+    "Manager / supervisor",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Every inspector's remark and order is answered within its deadline."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Sees open inspection actions across sites."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Has a complete inspection history per site."
+    }
+   ],
+   "trigger": "An inspector visits a site, for example a factory inspection at Oragadam Works.",
+   "preconditions": [
+    "The site's statutory registers and forms are generated from posted records (RL-380).",
+    "Inspection types and response deadlines are configured."
+   ],
+   "postconditions_success": [
+    "The visit, remarks and orders are recorded; each order's actions are closed with evidence and the compliance report is filed."
+   ],
+   "postconditions_failure": [
+    "Open actions past their deadline are escalated to the compliance owner and director."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Plant HR / time office",
+     "action": "Records the visit: date, inspector designation, authority, scope and registers inspected.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Shows the registers and forms generated for the site and period so they can be produced at once.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Plant HR / time office",
+     "action": "Records the inspector's remarks and any written orders, attaching a scan of the inspection-book entry.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Compliance owner",
+     "action": "Converts each order into actions with owners and deadlines.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Completes assigned actions and uploads evidence, such as a corrected muster roll.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Compliance owner",
+     "action": "Prepares and files the compliance report and records the acknowledgement.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Closes the visit when all actions are verified and the report acknowledgement is recorded.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The inspection results in no remarks.",
+     "steps": [
+      "The visit is recorded as 'no remarks' and closed."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "An action passes its deadline.",
+     "handling": "It is escalated to the compliance owner and site head.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A register required by the inspector cannot be generated because source records are missing.",
+     "handling": "The gap is listed and an action is created to correct it.",
+     "rule": "RL-381"
+    }
+   ],
+   "business_rules": [
+    "RL-380",
+    "RL-381",
+    "RL-372",
+    "RL-383"
+   ],
+   "screens": [
+    "SCR-073",
+    "SCR-072"
+   ],
+   "data_objects": [
+    "inspection_visit (C/U)",
+    "inspection_order (C)",
+    "compliance_action (C/U)",
+    "filing_acknowledgement (C)"
+   ],
+   "events": [
+    "compliance.inspection.recorded",
+    "compliance.inspection.closed"
+   ],
+   "nfrs": [
+    "Any statutory register for a site and month is produced in under 30 s during a visit.",
+    "Inspection history is retained per site for at least the statutory retention period (to be validated by Legal)."
+   ],
+   "frequency": "Several times a year per site",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "CMP-US-039",
+     "persona": "Plant HR / time office",
+     "want": "registers for the site produced instantly during an inspection",
+     "so_that": "the inspector sees accurate records without delay",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an inspector at Oragadam Works asks for the October 2026 muster roll",
+       "when": "I request it",
+       "then": "the register for LOC-CHN and October is produced from posted records"
+      },
+      {
+       "given": "records for two workers are incomplete",
+       "when": "the register is produced",
+       "then": "the gaps are listed and an action is created"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-040",
+     "persona": "Compliance owner",
+     "want": "each order turned into tracked actions with deadlines",
+     "so_that": "nothing an inspector asks for is missed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an order to display the abstract of the Act in Tamil within 15 days",
+       "when": "I record it on 2026-11-04",
+       "then": "an action due 2026-11-19 is assigned to the site HR"
+      },
+      {
+       "given": "the action is overdue",
+       "when": "the deadline passes",
+       "then": "it is escalated to me and the site head"
+      }
+     ]
+    },
+    {
+     "id": "CMP-US-041",
+     "persona": "Director / approver",
+     "want": "open inspection actions across all sites",
+     "so_that": "I can see where we are exposed",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "3 open actions at Oragadam and 1 at Medchal",
+       "when": "I open the dashboard",
+       "then": "I see 4 open actions with sites and due dates"
+      },
+      {
+       "given": "all actions for a visit are verified and the report is filed",
+       "when": "the compliance owner closes it",
+       "then": "the visit no longer appears as open"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-023",
+    "SYS-032",
+    "SYS-086"
+   ]
+  }
+ ]
+}

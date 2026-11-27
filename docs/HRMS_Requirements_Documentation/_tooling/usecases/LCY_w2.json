@@ -1,0 +1,868 @@
+{
+ "domain": "LCY",
+ "use_cases": [
+  {
+   "id": "LCY-UC-013",
+   "name": "Automate probation reviews and outcomes",
+   "process": null,
+   "capability_gap": "LCY-CG-005",
+   "source": "Authored",
+   "goal": "Schedule probation reviews ahead of the due date, collect the manager's assessment and drive confirm, extend or separate outcomes with the right letters.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "HR operations",
+    "Employee / worker",
+    "Nucleus platform",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a timely decision and a letter, not an indefinite probation."
+    },
+    {
+     "who": "HR operations",
+     "interest": "No probation lapses unreviewed."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Confirmation-linked pay or benefit changes take effect on the right date."
+    }
+   ],
+   "trigger": "An employee's probation end date is 30 days away.",
+   "preconditions": [
+    "The assignment carries a probation end date and the policy for review lead time and allowed extensions.",
+    "Letter templates for confirmation, extension and separation exist per entity."
+   ],
+   "postconditions_success": [
+    "The outcome is recorded with an effective date, the assignment is updated and the letter is issued and acknowledged."
+   ],
+   "postconditions_failure": [
+    "An overdue review is escalated; the employee's status does not change silently."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Thirty days before probation ends for E1066 Abhinav Rastogi, opens a review task for manager E1039.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Notification service",
+     "action": "Notifies the manager and HR with the due date and the assessment form.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Completes the assessment: objectives met, conduct, attendance summary and recommendation to confirm.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Attaches attendance and leave facts for the probation period to the assessment.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Reviews the recommendation and routes it for approval.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves confirmation.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Writes the confirmation as a new assignment version effective on the probation end date and queues any benefit changes.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Generates the confirmation letter, sends it for e-signature and records acknowledgement.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The manager recommends extension.",
+     "steps": [
+      "The manager states reason and extension length within policy; the new end date is set and a fresh review is scheduled."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The manager recommends separation.",
+     "steps": [
+      "The case routes to HR and the director; on approval, a separation letter is issued and exit is initiated."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The manager has not submitted by the due date.",
+     "handling": "The task escalates to the manager's manager and HR; status remains on probation.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A requested extension exceeds the maximum allowed by policy.",
+     "handling": "The extension is refused and the manager must confirm or recommend separation.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-390"
+   ],
+   "screens": [
+    "SCR-067"
+   ],
+   "data_objects": [
+    "probation_review (C/U)",
+    "assignment (U)",
+    "letter (C)",
+    "e_signature (C)"
+   ],
+   "events": [
+    "lifecycle.probation.review_due",
+    "lifecycle.probation.decided"
+   ],
+   "nfrs": [
+    "Review tasks are created for 100% of probations ending in the next 30 days by 06:00 daily.",
+    "A letter is generated within 30 s of approval."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-029",
+     "persona": "Manager / supervisor",
+     "want": "a probation review task 30 days before it is due",
+     "so_that": "I decide in time instead of letting probation lapse",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 joined on 2026-09-01 with 6 months probation ending 2027-02-28",
+       "when": "the date reaches 2027-01-29",
+       "then": "I receive a review task due 2027-02-28"
+      },
+      {
+       "given": "I have not submitted by 2027-02-28",
+       "when": "the due date passes",
+       "then": "the task escalates to my manager and HR"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-030",
+     "persona": "HR operations",
+     "want": "the approved outcome to update the assignment and generate the letter",
+     "so_that": "confirmation is consistent across records and documents",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "confirmation is approved",
+       "when": "the outcome is recorded",
+       "then": "the assignment shows confirmed from 2027-03-01 and the letter is sent for e-signature"
+      },
+      {
+       "given": "an extension of 3 months with a 3-month policy maximum",
+       "when": "it is approved",
+       "then": "the probation end date becomes 2027-05-31 and a new review is scheduled"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-031",
+     "persona": "Employee / worker",
+     "want": "to receive my confirmation letter in self-service",
+     "so_that": "I have proof of my confirmed status",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my confirmation is approved",
+       "when": "the letter is generated",
+       "then": "it appears in my documents and asks for my acknowledgement"
+      },
+      {
+       "given": "I acknowledge the letter",
+       "when": "I sign",
+       "then": "the acknowledgement time is recorded on the letter"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-037",
+    "SYS-050",
+    "SYS-070",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "LCY-UC-014",
+   "name": "Convert a contract or trainee worker to permanent",
+   "process": null,
+   "capability_gap": "LCY-CG-006",
+   "source": "Authored",
+   "goal": "Convert a contract or trainee worker to permanent employment with service continuity rules, revised worker class and statutory re-registration.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Payroll manager",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Keeps the right service continuity for leave, gratuity and seniority."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Pay, statutory deductions and leave entitlements switch on the correct date."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Statutory registrations transfer or are re-registered correctly."
+    }
+   ],
+   "trigger": "A manager or HR proposes conversion, for example trainee E1030 Chetan Bhandary on completion of training.",
+   "preconditions": [
+    "The person exists once and keeps the same person identifier across the conversion.",
+    "A vacant permanent position exists at the site.",
+    "Service continuity rules per source worker class are configured."
+   ],
+   "postconditions_success": [
+    "A new assignment with worker class WC-PERM is effective from the conversion date; service continuity, leave entitlements and statutory registrations are updated and the letter is issued."
+   ],
+   "postconditions_failure": [
+    "The person remains in the original worker class with no partial change."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Proposes conversion of E1030 from WC-TRN to WC-PERM at Peenya Machining effective 2026-12-01.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the target permanent position is vacant and computes service continuity under the configured rule.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows the impact: new leave entitlements, statutory deductions, pay structure and continuity date.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews the impact and routes the conversion for approval.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Director / approver",
+     "action": "Approves the conversion.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Ends the trainee assignment, creates the permanent assignment on the same person and queues attendance recompute.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Opens statutory steps in the chain, such as updating the UAN record and nomination forms.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Generates the appointment letter and the revised nomination forms for signature.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The worker is a third-party employee of vendor VN-01.",
+     "steps": [
+      "Conversion is handled as a new hire into LE-01 with person adoption; contractor service is recorded but not counted as continuous service unless policy states otherwise."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "No vacant permanent position exists.",
+     "handling": "Conversion cannot proceed until a position is created within sanctioned strength.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "A statutory step is not completed within its SLA.",
+     "handling": "The step escalates to the compliance owner; the employee's pay continues under the new class.",
+     "rule": "RL-392"
+    }
+   ],
+   "business_rules": [
+    "RL-390",
+    "RL-391",
+    "RL-392",
+    "RL-382"
+   ],
+   "screens": [
+    "SCR-010",
+    "SCR-060",
+    "SCR-073"
+   ],
+   "data_objects": [
+    "person (R)",
+    "assignment (C/U)",
+    "service_continuity (C)",
+    "statutory_registration (U)",
+    "letter (C)"
+   ],
+   "events": [
+    "lifecycle.conversion.approved"
+   ],
+   "nfrs": [
+    "The impact preview is shown in under 3 s.",
+    "Conversion never creates a second person record."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-032",
+     "persona": "HR operations",
+     "want": "to see the impact of a conversion before approval",
+     "so_that": "I know how leave, pay and statutory treatment will change",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1030 is a trainee entitled only to CL",
+       "when": "I preview conversion to WC-PERM from 2026-12-01",
+       "then": "the preview shows EL, CL and SL entitlements, the permanent pay structure and the continuity date"
+      },
+      {
+       "given": "no permanent position is vacant at Peenya Machining",
+       "when": "I preview",
+       "then": "conversion is blocked with the position status named"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-033",
+     "persona": "Employee / worker",
+     "want": "my service to count from my original joining date where policy allows",
+     "so_that": "my gratuity and leave are not reset",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a continuity rule counting trainee service for WC-TRN",
+       "when": "E1030 is converted on 2026-12-01 having joined on 2026-07-01",
+       "then": "the continuity date is 2026-07-01"
+      },
+      {
+       "given": "the conversion completes",
+       "when": "I open my profile",
+       "then": "I see one employee code and worker class Permanent"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-034",
+     "persona": "Compliance owner",
+     "want": "statutory re-registration steps opened automatically",
+     "so_that": "registrations match the new worker class",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1030 is converted",
+       "when": "the chain runs",
+       "then": "steps for the UAN update and nomination forms are created with owners and SLAs"
+      },
+      {
+       "given": "a step is not done within its SLA",
+       "when": "the SLA lapses",
+       "then": "it escalates to me"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-037",
+    "SYS-048",
+    "SYS-057",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "LCY-UC-015",
+   "name": "Compute notice period, shortfall and buy-out",
+   "process": null,
+   "capability_gap": "LCY-CG-007",
+   "source": "Authored",
+   "goal": "Compute notice period, shortfall, buy-out amount and leave adjustment for a separating employee and feed the result to full-and-final settlement.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Knows exactly how much notice is owed and what a buy-out will cost."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Can agree an early release with a clear cost."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives a final, approved notice settlement amount for full and final."
+    }
+   ],
+   "trigger": "An employee submits a resignation or the employer issues a termination notice.",
+   "preconditions": [
+    "Notice period rules per worker class, band and status (probation or confirmed) are configured.",
+    "The leave ledger and salary structure are current."
+   ],
+   "postconditions_success": [
+    "Notice period, last working day, shortfall, buy-out or recovery amount and any leave adjustment are approved and passed to full-and-final settlement."
+   ],
+   "postconditions_failure": [
+    "If the computation cannot be finalised, settlement remains held with the reason recorded."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits resignation on 2026-11-02 requesting last working day 2026-11-19.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Resolves required notice from the employee's class and band, for example 30 days, ending 2026-12-01.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes the shortfall of 12 days and the buy-out amount on the configured salary basis.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows options: serve full notice, buy out the shortfall, or offset shortfall against earned leave where policy allows.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Chooses to offset 5 days against earned leave and buy out 7 days.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Approves the early release and the arrangement.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Confirms the final last working day and the computed amounts.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Debits the leave ledger and passes the notice recovery line to the full-and-final settlement.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The manager waives the shortfall.",
+     "steps": [
+      "The waiver is recorded with reason and approver; no recovery line is created."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The employer terminates with pay in lieu of notice.",
+     "steps": [
+      "The platform computes notice pay as an earning instead of a recovery."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The employee's earned-leave balance is less than the requested offset.",
+     "handling": "The offset is capped at the balance and the remainder is added to the buy-out.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "A blocking clearance item is still open on the last working day.",
+     "handling": "Settlement stays on hold until it is closed or waived.",
+     "rule": "RL-402"
+    }
+   ],
+   "business_rules": [
+    "RL-400",
+    "RL-401",
+    "RL-402",
+    "RL-403"
+   ],
+   "screens": [
+    "SCR-061",
+    "SCR-056"
+   ],
+   "data_objects": [
+    "resignation (C/U)",
+    "notice_computation (C)",
+    "leave_ledger_entry (C)",
+    "fnf_input (C)"
+   ],
+   "events": [
+    "lifecycle.notice.computed"
+   ],
+   "nfrs": [
+    "Notice computation is returned in under 2 s.",
+    "Buy-out amounts are computed in integer paise and reproduced identically in settlement."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-035",
+     "persona": "Employee / worker",
+     "want": "to see my notice shortfall and buy-out cost before I confirm",
+     "so_that": "I can choose the best option",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am E1051 at Medchal Works with 30 days notice, resigning on 2026-11-02 and requesting LWD 2026-11-19",
+       "when": "I view the computation",
+       "then": "I see a 12-day shortfall and its buy-out amount"
+      },
+      {
+       "given": "I have 5 days of earned leave",
+       "when": "I ask to offset 8 days",
+       "then": "the offset is capped at 5 and 7 days are added to the buy-out"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-036",
+     "persona": "Payroll manager",
+     "want": "the approved notice result passed to full and final",
+     "so_that": "I do not recompute it by hand",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a 7-day buy-out approved for E1051",
+       "when": "full and final is computed",
+       "then": "a notice recovery line with the approved amount appears"
+      },
+      {
+       "given": "the shortfall is waived by the manager",
+       "when": "full and final is computed",
+       "then": "no notice recovery line appears and the waiver is referenced"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-037",
+     "persona": "Manager / supervisor",
+     "want": "to approve an early release with the cost shown",
+     "so_that": "I make an informed decision",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1051 asks to leave on 2026-11-19",
+       "when": "I open the approval",
+       "then": "I see the shortfall, buy-out amount and leave offset"
+      },
+      {
+       "given": "I approve",
+       "when": "the decision is saved",
+       "then": "the last working day is set to 2026-11-19"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-037",
+    "SYS-047",
+    "SYS-049",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "LCY-UC-016",
+   "name": "Complete a knowledge-transfer plan before exit clearance",
+   "process": null,
+   "capability_gap": "LCY-CG-008",
+   "source": "Authored",
+   "goal": "Ensure an exiting employee completes a structured hand-over plan covering documents, access and responsibilities, approved by the manager before clearance closes.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Critical knowledge and responsibilities are handed over before the person leaves."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Clearance closes on time with evidence of hand-over."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Access held by the leaver is transferred or revoked."
+    }
+   ],
+   "trigger": "A resignation is accepted and the notice period starts.",
+   "preconditions": [
+    "A hand-over template exists for the employee's role family.",
+    "The clearance checklist is instantiated for the leaver (RL-400)."
+   ],
+   "postconditions_success": [
+    "The hand-over plan is completed and approved; responsibilities and documents are reassigned and the knowledge-transfer clearance item is closed."
+   ],
+   "postconditions_failure": [
+    "The clearance item remains open and, if blocking, holds settlement until completed or waived."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Creates a hand-over plan for E1068 Dinesh Vaidya from the engineering template when the resignation is accepted.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Pre-fills open approvals, owned documents, system access and recurring responsibilities held by the leaver.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Names a successor for each item and adds hand-over notes and sessions.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Reviews the plan, adjusts successors and approves it.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Records completion of each hand-over item with the successor's acknowledgement.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Reassigns pending approvals and document ownership to the named successors.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Manager / supervisor",
+     "action": "Signs off the completed plan.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Closes the knowledge-transfer clearance item.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The leaver's role has no successor yet.",
+     "steps": [
+      "The manager is named as interim owner for each item."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "The plan is not signed off by the last working day.",
+     "handling": "The clearance item stays open; if blocking, settlement is held until it is closed or waived by an authorised role.",
+     "rule": "RL-403"
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A successor declines an item.",
+     "handling": "The item returns to the manager for reassignment.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-400",
+    "RL-401",
+    "RL-402",
+    "RL-403"
+   ],
+   "screens": [
+    "SCR-061"
+   ],
+   "data_objects": [
+    "handover_plan (C/U)",
+    "handover_item (C/U)",
+    "clearance_item (U)",
+    "approval_task (U)"
+   ],
+   "events": [
+    "lifecycle.handover.completed"
+   ],
+   "nfrs": [
+    "Pre-filled hand-over items are generated within 1 minute of resignation acceptance.",
+    "No pending approval assigned to a leaver remains unrouted after the last working day."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-038",
+     "persona": "Manager / supervisor",
+     "want": "a hand-over plan pre-filled with what the leaver owns",
+     "so_that": "nothing is forgotten when they leave",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1068 owns 3 open approvals and 12 engineering documents",
+       "when": "the resignation is accepted",
+       "then": "the plan lists all 15 items for successor assignment"
+      },
+      {
+       "given": "I approve the plan with successor E1005 for documents",
+       "when": "items are completed",
+       "then": "document ownership moves to E1005"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-039",
+     "persona": "Employee / worker",
+     "want": "a clear checklist of what to hand over",
+     "so_that": "I can leave knowing my work is covered",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my plan has 15 items",
+       "when": "I record completion with successor acknowledgement",
+       "then": "each item shows completed with the date"
+      },
+      {
+       "given": "a successor declines an item",
+       "when": "the decline is recorded",
+       "then": "my manager is asked to reassign it"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-040",
+     "persona": "HR operations",
+     "want": "clearance to wait for the hand-over sign-off",
+     "so_that": "knowledge transfer is not skipped to close exit faster",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the knowledge-transfer item is configured as blocking for engineering roles",
+       "when": "the plan is unsigned on LWD 2026-09-30",
+       "then": "full and final remains on hold"
+      },
+      {
+       "given": "an authorised HR head waives the item with a reason",
+       "when": "the waiver is saved",
+       "then": "the clearance item closes and settlement can proceed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-039",
+    "SYS-051",
+    "SYS-053"
+   ]
+  }
+ ]
+}

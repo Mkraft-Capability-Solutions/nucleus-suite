@@ -1,0 +1,1286 @@
+{
+ "domain": "TAL",
+ "use_cases": [
+  {
+   "id": "TAL-UC-017",
+   "name": "Build a consented talent pool and nurture it until a role opens",
+   "process": null,
+   "capability_gap": "TAL-CG-012",
+   "source": "Authored",
+   "goal": "Keep past and prospective candidates engaged in talent pools through consent-based campaigns so that approved requisitions can be filled from warm candidates first.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Candidate",
+    "Manager / supervisor (hiring manager)",
+    "Nucleus platform",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "Hears only about relevant roles, on channels they agreed to, and can withdraw consent at any time."
+    },
+    {
+     "who": "Manager / supervisor (hiring manager)",
+     "interest": "Gets a shortlist of already-interested candidates within days of the requisition being approved."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Sees that candidate personal data is held only with valid consent under the DPDP Act 2023 (to be validated by Legal)."
+    }
+   ],
+   "trigger": "A recruiter creates a talent pool for a hard-to-fill skill or schedules a nurture campaign.",
+   "preconditions": [
+    "Candidate records carry consent with purpose, channel and expiry date.",
+    "Message templates for each campaign language are approved.",
+    "Channel opt-ins for email and the business messaging channel are recorded per candidate."
+   ],
+   "postconditions_success": [
+    "Pool members have an engagement stage and a full contact history.",
+    "Engaged members are moved into a requisition's pipeline without re-entering data."
+   ],
+   "postconditions_failure": [
+    "Candidates without valid consent are never messaged and are anonymised on expiry."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Creates the pool CNC setters – Pune and Bengaluru with criteria: 3+ years on vertical machining centres, willing to work shifts.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Suggests members from past finalists, referrals and career-site sign-ups whose consent is valid, and marks duplicates.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations (recruiter)",
+     "action": "Adds 85 suggested candidates to the pool.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations (recruiter)",
+     "action": "Builds a 6-week nurture campaign: plant tour video, Chakan Works open-house invite and a job alert, in Marathi and English.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Sends each message only on channels the candidate consented to and includes an unsubscribe option in every message.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records deliveries, opens and replies and moves responders to the stage Engaged.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Candidate",
+     "action": "Replies that she is interested and updates her current notice period in the candidate portal.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations (recruiter)",
+     "action": "Matches the pool to a newly approved requisition and moves 12 engaged candidates into its pipeline.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Twelve months after a candidate's last interaction, requests re-consent and anonymises the record if none is given within 30 days.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "A candidate has consented to email but not to the business messaging channel.",
+     "steps": [
+      "Platform sends the campaign by email only and records the channel restriction."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A suggested candidate is already active in another requisition's pipeline.",
+     "handling": "The candidate is added to the pool but flagged as in process and excluded from campaigns.",
+     "rule": "RL-470"
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "The candidate withdraws consent.",
+     "handling": "All campaigns stop at once and the record is erased or anonymised within the configured period.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "A template has no approved version for a recipient's language.",
+     "handling": "That recipient is held back and the recruiter is asked to approve a translation.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-470"
+   ],
+   "screens": [],
+   "data_objects": [
+    "talent_pool (C, U)",
+    "pool_membership (C, U)",
+    "candidate_consent (R, U)",
+    "nurture_campaign (C)",
+    "campaign_message (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Consent withdrawal stops all outbound messages within 5 minutes.",
+    "Campaign sends are throttled to the per-channel rate limit configured for the tenant."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-034",
+     "persona": "HR operations (recruiter)",
+     "want": "to fill a talent pool from past finalists who still have valid consent",
+     "so_that": "I can approach warm candidates before advertising",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "312 past candidates match the CNC setter criteria and 41 have expired consent",
+       "when": "I generate pool suggestions",
+       "then": "271 candidates are suggested and none with expired consent appears"
+      },
+      {
+       "given": "a suggested candidate is active in requisition REQ-2026-118",
+       "when": "I add her to the pool",
+       "then": "she is flagged as in process and excluded from the campaign"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-035",
+     "persona": "Candidate",
+     "want": "to choose which channels a recruiter may use and to stop all contact in one step",
+     "so_that": "I control how my data is used",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I consented to email only",
+       "when": "the Chakan Works open-house campaign runs",
+       "then": "I receive it by email and nothing on the messaging channel"
+      },
+      {
+       "given": "I select unsubscribe from any message",
+       "when": "the request is processed",
+       "then": "no further campaign message reaches me after 5 minutes"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-036",
+     "persona": "Manager / supervisor (hiring manager)",
+     "want": "engaged pool candidates offered to me as soon as my requisition is approved",
+     "so_that": "I can start interviews within the week",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my requisition for 4 CNC setters at Chakan Works is approved",
+       "when": "the recruiter matches the pool",
+       "then": "12 engaged candidates appear in my pipeline with their nurture history"
+      },
+      {
+       "given": "a matched candidate's notice period is 90 days",
+       "when": "I review the shortlist",
+       "then": "the notice period is shown on the candidate card"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-059",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "TAL-UC-018",
+   "name": "Run a bulk hiring drive from registration to batch onboarding",
+   "process": null,
+   "capability_gap": "TAL-CG-013",
+   "source": "Authored",
+   "goal": "Hire a large frontline or campus cohort through a scheduled drive with mass assessment, batch offers and batch onboarding.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Candidate",
+    "Plant HR / time office",
+    "Manager / supervisor (hiring manager)",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor (hiring manager)",
+     "interest": "Gets 120 operators on the floor at Medchal Works on the planned joining date."
+    },
+    {
+     "who": "Candidate",
+     "interest": "Registers on a phone, gets a clear slot and hears the outcome quickly."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Approves one batch of offers against the approved headcount and budget."
+    }
+   ],
+   "trigger": "A requisition for a large cohort is approved, for example 120 machine operators for the Medchal Works expansion.",
+   "preconditions": [
+    "The requisition is approved with headcount and offer budget.",
+    "Assessment templates for aptitude and trade skill are published.",
+    "Offer and onboarding templates for the grade are approved."
+   ],
+   "postconditions_success": [
+    "Accepted candidates form an onboarding cohort with a common joining date and induction plan.",
+    "Drive metrics show registrations, attendance, pass rate, offers and acceptances."
+   ],
+   "postconditions_failure": [
+    "Unfilled positions remain open on the requisition with the waitlist preserved."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Creates a drive on 2026-12-12 at Medchal Works linked to the requisition, with three slots of 40 candidates each.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Publishes a registration link and QR code; candidates register on a phone in Telugu, Hindi or English and pick a slot.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Plant HR / time office",
+     "action": "Checks candidates in at the gate by scanning their QR code and sighting an identity document.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Candidate",
+     "action": "Takes the 30-minute aptitude and trade test on a site tablet.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Scores the tests and lists candidates above the cut-off for interview.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor (hiring manager)",
+     "action": "Panels record scorecards on tablets; the platform ranks candidates by combined score.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations (recruiter)",
+     "action": "Selects the top 120 and a waitlist of 20, and generates a batch offer from the grade template.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Director / approver",
+     "action": "Approves the batch offer through the approval engine within the requisition budget.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Releases offers by SMS, the business messaging channel and email, and tracks e-signed acceptances.",
+     "ref": null
+    },
+    {
+     "n": 10,
+     "actor": "Nucleus platform",
+     "action": "Creates an onboarding cohort for accepted candidates with joining date, induction and document collection tasks.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The drive is a campus drive at an industrial training institute.",
+     "steps": [
+      "Recruiter uploads the institute's student list; students confirm registration.",
+      "Offers are issued as conditional on final results."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 9,
+     "condition": "Acceptances are 104 of 120 by the deadline.",
+     "steps": [
+      "Platform proposes the next 16 waitlisted candidates in rank order.",
+      "Recruiter confirms, and offers are released after the same approval."
+     ],
+     "rejoin": "Returns to step 10"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "A candidate registers twice with the same mobile number.",
+     "handling": "The registrations are merged and the candidate keeps the earlier slot.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The chosen slot is full.",
+     "handling": "The candidate is offered the next slot with space.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 8,
+     "condition": "The batch total exceeds the approved offer budget.",
+     "handling": "Approval cannot be submitted until the batch is reduced or the budget revised.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-090"
+   ],
+   "data_objects": [
+    "hiring_drive (C)",
+    "drive_registration (C, U)",
+    "assessment_attempt (C)",
+    "interview_scorecard (C)",
+    "offer (C)",
+    "onboarding_cohort (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "lifecycle.joining.started"
+   ],
+   "nfrs": [
+    "Registration handles 2,000 sign-ups in an hour from mobile networks.",
+    "Gate check-in completes within 5 s per candidate."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-037",
+     "persona": "HR operations (recruiter)",
+     "want": "to schedule a drive with fixed slots and phone registration",
+     "so_that": "candidates arrive in manageable waves",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a drive with three slots of 40",
+       "when": "the 41st candidate selects slot 1",
+       "then": "slot 1 is shown as full and slot 2 is offered"
+      },
+      {
+       "given": "a candidate registers again with the same mobile number",
+       "when": "the registration is submitted",
+       "then": "it is merged with the earlier registration"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-038",
+     "persona": "HR operations (recruiter)",
+     "want": "to issue one batch of offers and backfill declines from the waitlist",
+     "so_that": "the cohort reaches 120 joiners",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "120 offers are approved and 104 are accepted by 2026-12-20",
+       "when": "the deadline passes",
+       "then": "the next 16 waitlisted candidates are proposed in rank order for my confirmation"
+      },
+      {
+       "given": "I confirm the 16",
+       "when": "the approval completes",
+       "then": "16 new offers are released"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-039",
+     "persona": "Plant HR / time office",
+     "want": "accepted candidates to arrive as one onboarding cohort",
+     "so_that": "induction and document checks are planned for a single joining day",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "120 acceptances with joining date 2027-01-04",
+       "when": "the cohort is created",
+       "then": "each joiner has induction and document tasks due before 2027-01-04"
+      },
+      {
+       "given": "a joiner has not uploaded an address proof by 2027-01-02",
+       "when": "the reminder job runs",
+       "then": "the joiner and Plant HR are reminded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-053",
+    "SYS-066",
+    "SYS-078"
+   ]
+  },
+  {
+   "id": "TAL-UC-019",
+   "name": "Assign an online assessment and shortlist on score",
+   "process": null,
+   "capability_gap": "TAL-CG-014",
+   "source": "Authored",
+   "goal": "Assess candidates for aptitude, trade skill or language through online tests with appropriate proctoring and shortlist on score with recruiter confirmation.",
+   "level": "User goal",
+   "primary_actor": "HR operations (recruiter)",
+   "secondary_actors": [
+    "Candidate",
+    "Manager / supervisor (hiring manager)",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "Takes a fair test, can request reasonable accommodation and knows how proctoring data is used."
+    },
+    {
+     "who": "Manager / supervisor (hiring manager)",
+     "interest": "Interviews only candidates who meet the skill threshold."
+    }
+   ],
+   "trigger": "A recruiter assigns an assessment to candidates at a pipeline stage.",
+   "preconditions": [
+    "The assessment template is published with sections, time limits, cut-off score and proctoring mode.",
+    "Candidates have consented to the chosen proctoring mode."
+   ],
+   "postconditions_success": [
+    "Scores and section results are on the candidate record and qualifying candidates are moved forward after recruiter confirmation."
+   ],
+   "postconditions_failure": [
+    "Proctoring flags never reject a candidate automatically; they await human review."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations (recruiter)",
+     "action": "Assigns the template CNC operator screen: 20-minute aptitude, 20-minute G-code reading and 10-minute Hindi reading.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations (recruiter)",
+     "action": "Selects the proctoring mode: periodic camera snapshots with consent, locked browser, or supervised test centre.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Sends each candidate a unique link valid for 72 hours with the proctoring notice.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Candidate",
+     "action": "Takes the test on a phone or laptop; answers are saved after every question.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Scores objective sections and records proctoring events such as tab switches or a second face in a snapshot.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Proposes a shortlist of candidates at or above the cut-off of 60%.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations (recruiter)",
+     "action": "Reviews proctoring flags, clears or upholds each with a note, and confirms the shortlist.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Moves confirmed candidates to the interview stage and informs the others of the outcome.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "A candidate requests extra time for a declared disability.",
+     "steps": [
+      "Recruiter approves 25% extra time.",
+      "Platform extends that candidate's timer only."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The connection drops mid-test.",
+     "handling": "The candidate resumes from the last saved answer with the remaining time.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A candidate declines camera proctoring.",
+     "handling": "The candidate is offered a supervised test centre slot instead.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The 72-hour link expires unused.",
+     "handling": "The candidate is marked not attempted and the recruiter may reissue once.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "assessment_template (R)",
+    "assessment_attempt (C, U)",
+    "proctoring_event (C)",
+    "candidate_stage (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Answers are saved within 1 s of selection.",
+    "Proctoring snapshots are deleted 90 days after the requisition closes."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-040",
+     "persona": "HR operations (recruiter)",
+     "want": "a shortlist proposed from test scores that I confirm",
+     "so_that": "I screen hundreds of applicants quickly without losing judgement",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "40 candidates finish the CNC operator screen with cut-off 60%",
+       "when": "scoring completes",
+       "then": "the 23 candidates scoring 60% or more are proposed for my confirmation"
+      },
+      {
+       "given": "a candidate scoring 72% has a second-face proctoring flag",
+       "when": "I uphold the flag with a note",
+       "then": "the candidate is excluded and the note is kept with the attempt"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-041",
+     "persona": "Candidate",
+     "want": "to resume my test if my connection drops",
+     "so_that": "a network problem does not cost me the opportunity",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I have answered 14 questions with 11 minutes left",
+       "when": "my connection drops and I reopen the link",
+       "then": "I resume at question 15 with 11 minutes remaining"
+      },
+      {
+       "given": "I declared a disability and extra time was approved",
+       "when": "I start the test",
+       "then": "my timer shows 25% more time than standard"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-070",
+    "SYS-072",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "TAL-UC-020",
+   "name": "Engage, train and convert apprentices and trainees",
+   "process": null,
+   "capability_gap": "TAL-CG-015",
+   "source": "Authored",
+   "goal": "Manage apprentices and trainees from engagement through stipend, training milestones and statutory records to a recorded conversion outcome.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Plant HR / time office",
+    "Manager / supervisor",
+    "Payroll manager",
+    "Compliance owner",
+    "Employee / worker",
+    "Statutory portal",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "As an apprentice, receives the stipend on time, knows the training plan and gets a completion record."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Holds the apprenticeship contracts, registers and returns required under the Apprentices Act, 1961 (to be validated by Legal)."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Trains apprentices against defined milestones and assesses them fairly."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Decides conversions to permanent roles against open positions."
+    }
+   ],
+   "trigger": "HR operations engages an apprentice batch, for example 30 fitter and machinist apprentices at Chakan Works.",
+   "preconditions": [
+    "Apprentice trades, durations and stipend tables are configured for the entity (to be validated by Legal).",
+    "The establishment's apprentice engagement limits are configured in the rule pack.",
+    "An apprentice payroll group exists separate from employee payroll."
+   ],
+   "postconditions_success": [
+    "Each apprentice has a registered contract, stipend history, milestone record and a recorded outcome: converted, completed without offer or discontinued."
+   ],
+   "postconditions_failure": [
+    "Engagements beyond the configured limit are blocked.",
+    "Discontinued apprentices have the reason and date recorded and stipend stops."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates 30 apprentice engagements at Chakan Works in fitter and machinist trades, each for 12 months, with stipend from the configured table.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Checks the batch against the establishment's configured apprentice limits.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Records the contract registration reference from the statutory portal for each apprentice.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Assigns the training plan: 2 months basic training, then on-the-job rotation across turning, milling and assembly.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Manager / supervisor",
+     "action": "Assesses each apprentice at each milestone and records the result.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Raises the monthly stipend for each apprentice into the apprentice payroll group based on attendance.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "At the end of the term, generates the completion record and lists apprentices eligible for conversion.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Director / approver",
+     "action": "Approves conversion offers for selected apprentices against open operator positions.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Records each outcome and, for conversions, starts the hire into the employee population with prior apprenticeship linked.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The engagement is a graduate trainee rather than a statutory apprentice.",
+     "steps": [
+      "HR selects the trainee scheme; statutory contract registration is not required.",
+      "A trainee stipend table and 6-month plan are applied."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The batch would exceed the configured apprentice limit.",
+     "handling": "The excess engagements are blocked and the limit and current count are shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "An apprentice fails a milestone assessment twice.",
+     "handling": "The manager and HR are prompted to agree an extension or discontinuation.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "An apprentice has unexplained absence above the configured threshold.",
+     "handling": "Stipend is computed on actual attendance and Plant HR is alerted.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "apprentice_engagement (C, U)",
+    "training_milestone (C, U)",
+    "stipend_payment (C)",
+    "statutory_register (U)",
+    "conversion_outcome (C)"
+   ],
+   "events": [
+    "payroll.input.raised",
+    "people.worker.hired"
+   ],
+   "nfrs": [
+    "Apprentice records are retained for the period configured in the rule pack after completion.",
+    "Stipend inputs are raised within the same payroll cut-off as employee inputs."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-042",
+     "persona": "HR operations",
+     "want": "to engage an apprentice batch within the establishment's configured limit",
+     "so_that": "we stay within statutory engagement rules",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the configured limit allows 32 more apprentices at Chakan Works",
+       "when": "I create 30 engagements",
+       "then": "all 30 are created and the remaining capacity shows 2"
+      },
+      {
+       "given": "the configured limit allows 2 more apprentices",
+       "when": "I try to create 5",
+       "then": "3 engagements are blocked with the limit shown"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-043",
+     "persona": "Employee / worker",
+     "want": "as an apprentice, to see my milestones and stipend each month",
+     "so_that": "I know how I am progressing and what I will be paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am apprentice A-2026-014 and passed basic training on 2026-08-31",
+       "when": "I open my training plan",
+       "then": "basic training shows Passed and the milling rotation shows In progress"
+      },
+      {
+       "given": "I attended 24 of 26 working days in October 2026",
+       "when": "the stipend is computed",
+       "then": "my stipend reflects 24 attended days"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-044",
+     "persona": "Director / approver",
+     "want": "to approve conversions of completing apprentices to operator roles",
+     "so_that": "we retain trained people against open positions",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "6 apprentices complete on 2026-12-31 and 4 operator positions are open",
+       "when": "I review the list",
+       "then": "I can approve at most 4 conversions"
+      },
+      {
+       "given": "I approve the conversion of apprentice A-2026-009",
+       "when": "the approval completes",
+       "then": "a hire is started with the apprenticeship record linked"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-007",
+    "SYS-028",
+    "SYS-037",
+    "SYS-045",
+    "SYS-053",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "TAL-UC-021",
+   "name": "Match a mentee with a mentor and track outcomes",
+   "process": null,
+   "capability_gap": "TAL-CG-016",
+   "source": "Authored",
+   "goal": "Match employees with suitable mentors by skills, goals, language and site, log sessions and measure programme outcomes.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Finds a mentor who can help reach a stated goal, such as moving into a shift supervisor role."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "As a mentor, controls capacity and keeps session notes private to the pair."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Sees programme outcomes in aggregate to improve the programme."
+    }
+   ],
+   "trigger": "An employee joins a mentoring programme and states a development goal.",
+   "preconditions": [
+    "The programme is open with an opted-in mentor pool, each mentor having skills, languages and capacity.",
+    "The employee has a skills profile."
+   ],
+   "postconditions_success": [
+    "An active pairing exists with agreed goals, cadence and logged sessions, and outcomes are recorded at 3 and 6 months."
+   ],
+   "postconditions_failure": [
+    "Unmatched mentees remain on a waitlist and HR is told which skills lack mentors."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Joins the programme with the goal Become a shift supervisor within 18 months and selects Hindi and Marathi as languages.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Ranks mentors by skill overlap with the goal, language, site and free capacity, and shows the top 3 with the reasons.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Selects a mentor and sends a request.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Accepts the request as mentor.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Creates the pairing with goals, monthly cadence and a 6-month term, and schedules the first session.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Logs each session with date, duration and topics; notes stay visible only to the pair.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Prompts both at 3 and 6 months to rate progress against the goal.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Views programme metrics in aggregate: active pairs, session frequency and goal progress.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The mentor declines.",
+     "steps": [
+      "Platform frees the request and shows the mentee the next ranked mentors."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "No mentor has free capacity with the needed skills.",
+     "handling": "The mentee is waitlisted and HR sees the uncovered skill.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "A metric slice covers fewer than 5 pairs.",
+     "handling": "The slice is suppressed in HR reports.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-063"
+   ],
+   "data_objects": [
+    "mentoring_programme (R)",
+    "mentor_profile (R, U)",
+    "mentoring_pair (C, U)",
+    "mentoring_session (C)",
+    "mentoring_outcome (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Mentor suggestions appear within 3 s.",
+    "Session notes are excluded from HR reports, search and agent tools."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Low",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-045",
+     "persona": "Employee / worker",
+     "want": "to see three suitable mentors with the reasons they were suggested",
+     "so_that": "I can choose someone who fits my goal",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1021 at Peenya Works sets the goal shift supervisor with Hindi as preferred language",
+       "when": "suggestions load",
+       "then": "three mentors appear, each with matched skills, language and free capacity"
+      },
+      {
+       "given": "a suggested mentor has capacity 0",
+       "when": "suggestions are ranked",
+       "then": "that mentor is not shown"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-046",
+     "persona": "Manager / supervisor",
+     "want": "as a mentor, to keep session notes private to my mentee and me",
+     "so_that": "we can speak openly",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I have logged 4 sessions with E1021",
+       "when": "HR opens the programme report",
+       "then": "HR sees 4 sessions counted but none of the notes"
+      },
+      {
+       "given": "my capacity is 2 and I have 2 active mentees",
+       "when": "a new request is sent to me",
+       "then": "the request is not allowed and the mentee sees other suggestions"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-070",
+    "SYS-072"
+   ]
+  },
+  {
+   "id": "TAL-UC-022",
+   "name": "Author multilingual micro-learning and deliver it to plant workers offline",
+   "process": null,
+   "capability_gap": "TAL-CG-017",
+   "source": "Authored",
+   "goal": "Author short learning content, publish it in plant languages after human review of any machine translation, and deliver it through a personalised feed with offline viewing and virtual classrooms.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Agent (governed)",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Learns in their own language in short sessions, including where the plant has weak connectivity."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees team completion of mandatory safety modules."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Has completion evidence for safety training at each site."
+    }
+   ],
+   "trigger": "An L&D author in HR operations creates a module, or a mandatory module is assigned to an audience.",
+   "preconditions": [
+    "Authoring rights are granted to the author for the target sites.",
+    "Translation reviewers are named for each target language.",
+    "Workers have the mobile app or access to a site kiosk."
+   ],
+   "postconditions_success": [
+    "The module is published in every reviewed language and completions are recorded as xAPI statements on each learner's record."
+   ],
+   "postconditions_failure": [
+    "Languages without reviewer approval are not published."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Creates the module Lockout-tagout in five minutes with a 3-minute video, two cards and a 3-question quiz.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Drafts Hindi, Marathi, Tamil and Telugu translations as proposals only.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Sends each draft to the named language reviewer, who edits and approves it.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Publishes approved languages to maintenance technicians at Chakan and Oragadam Works as mandatory, due in 14 days.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Ranks each learner's feed by mandatory due date, role, skill gaps and language preference.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Downloads the module on the mobile app at the hostel and completes it offline.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Syncs progress when the device reconnects and records the completion as an xAPI statement.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Schedules a virtual classroom for supervisors with joining link, roster and attendance capture.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Manager / supervisor",
+     "action": "Views team completion and overdue learners for mandatory modules.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The worker has no smartphone.",
+     "steps": [
+      "Worker completes the module on the canteen kiosk after badge sign-in."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The Telugu reviewer has not approved by the publish date.",
+     "handling": "Telugu is withheld; learners preferring Telugu receive the Hindi version with a notice.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The feed would recommend a learning path the worker already holds.",
+     "handling": "No duplicate assignment is created.",
+     "rule": "RL-395"
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "An offline completion syncs after the due date but was completed before it.",
+     "handling": "The completion is recorded with the device timestamp and is not marked overdue.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-395"
+   ],
+   "screens": [
+    "SCR-063"
+   ],
+   "data_objects": [
+    "learning_module (C, U)",
+    "module_translation (C, U)",
+    "learning_assignment (C)",
+    "xapi_statement (C)",
+    "virtual_session (C)"
+   ],
+   "events": [
+    "learning.path.assigned"
+   ],
+   "nfrs": [
+    "Offline modules play on low-end Android devices with up to 30 days between syncs.",
+    "Module pages meet WCAG 2.2 AA."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "TAL-US-047",
+     "persona": "HR operations",
+     "want": "machine-drafted translations that I can send to reviewers before publishing",
+     "so_that": "workers get accurate safety content in their language quickly",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the module is authored in English",
+       "when": "I request translations",
+       "then": "drafts for Hindi, Marathi, Tamil and Telugu are created with status Awaiting review"
+      },
+      {
+       "given": "only Hindi and Marathi are approved on the publish date",
+       "when": "I publish",
+       "then": "only Hindi, Marathi and English are released and Tamil and Telugu stay in review"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-048",
+     "persona": "Employee / worker",
+     "want": "to download a module and complete it without network",
+     "so_that": "I can learn in the hostel where the signal is weak",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1066 downloaded Lockout-tagout in five minutes",
+       "when": "she completes it offline on 2026-11-10",
+       "then": "the app stores the completion locally with the timestamp"
+      },
+      {
+       "given": "her phone reconnects on 2026-11-12, after the due date of 2026-11-11",
+       "when": "sync runs",
+       "then": "the completion is recorded as on time with the 2026-11-10 timestamp"
+      }
+     ]
+    },
+    {
+     "id": "TAL-US-049",
+     "persona": "Manager / supervisor",
+     "want": "to see which of my technicians have not completed mandatory safety learning",
+     "so_that": "I can follow up before the due date",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "18 of 22 technicians have completed the module",
+       "when": "I open team learning",
+       "then": "4 names are listed as pending with the due date"
+      },
+      {
+       "given": "a technician completes it on the kiosk",
+       "when": "the completion is recorded",
+       "then": "the technician is removed from the pending list"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-064",
+    "SYS-066",
+    "SYS-069",
+    "SYS-074",
+    "SYS-087"
+   ]
+  }
+ ]
+}

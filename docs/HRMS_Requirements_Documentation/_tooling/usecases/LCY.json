@@ -1,0 +1,2359 @@
+{
+ "domain": "LCY",
+ "use_cases": [
+  {
+   "id": "LCY-UC-001",
+   "name": "Run pre-boarding from offer acceptance to day one",
+   "process": "LCY-01",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Complete document collection, verification, medical fitness and asset and IT requests in parallel so the joiner is ready on the date of joining.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Candidate",
+    "Nucleus platform",
+    "Admin / IT",
+    "Background verification provider"
+   ],
+   "stakeholders": [
+    {
+     "who": "Candidate",
+     "interest": "A clear list of what to submit and by when."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "The joiner is productive from day one."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Factory roles have medical fitness before joining."
+    }
+   ],
+   "trigger": "The candidate accepts the offer.",
+   "preconditions": [
+    "An approved requisition with an open position exists for the offer.",
+    "The offer records joining date, location and worker class."
+   ],
+   "postconditions_success": [
+    "All items marked Blocks joining are complete and the joining chain can start on the date of joining.",
+    "The person record exists or is ready to be created by the joining chain."
+   ],
+   "postconditions_failure": [
+    "The joining date is held or moved and the blocking items are listed on the pre-boarding tracker."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Records the offer acceptance; the platform instantiates the pre-boarding chain pinned to the current workflow version.",
+     "ref": "RL-390"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Opens parallel tracks for document collection, verification, medical fitness (factory roles) and asset and IT requests, each with owner and due date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Candidate",
+     "action": "Uploads identity, address, education, bank and previous-employment documents through the candidate portal.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Verifies documents, rejecting any illegible or mismatched item with a reason for re-upload.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Background verification provider",
+     "action": "Returns status per verification component as checks complete.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Admin / IT",
+     "action": "Prepares assets and system access for issue on the joining date.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Runs a readiness check two working days before joining and alerts owners of open blocking items.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Hands the completed record to the joining chain on the date of joining.",
+     "ref": "RL-391"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The requisition is held at sanctioned strength.",
+     "steps": [
+      "Platform holds the chain at offer acceptance and shows the requisition block.",
+      "The chain resumes when the requisition is released."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "A non-blocking item is incomplete.",
+     "steps": [
+      "Platform lets the joining proceed and carries the item into the joining chain."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "A blocking item is still open on the day before joining.",
+     "handling": "HR operations is asked to move the joining date or obtain a recorded waiver; the joining chain does not start.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The candidate withdraws.",
+     "handling": "The chain is cancelled, collected documents are retained only as the retention policy allows, and the requisition reopens.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-390",
+    "RL-391"
+   ],
+   "screens": [
+    "SCR-010"
+   ],
+   "data_objects": [
+    "workflow_instance (C)",
+    "candidate_document (C/U)",
+    "asset_request (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Candidate document upload works on a 3G mobile connection for files up to 5 MB.",
+    "Identity numbers are masked on every screen after capture."
+   ],
+   "frequency": "Per hire",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-001",
+     "persona": "HR operations",
+     "want": "pre-boarding tasks to run in parallel with owners and due dates",
+     "so_that": "a joiner is ready on day one without me chasing each department",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "candidate CN-2026-0188 accepts offer OF-2026-0066 for joining on 2026-09-01",
+       "when": "the chain is instantiated",
+       "then": "document collection, medical fitness and asset tasks are created in parallel, each with owner and due date"
+      },
+      {
+       "given": "medical fitness for a factory role is open on 2026-08-30",
+       "when": "the readiness check runs",
+       "then": "the owner and HR operations are alerted that a blocking item is open"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-002",
+     "persona": "Candidate",
+     "want": "to see exactly which documents are pending and why one was rejected",
+     "so_that": "I can complete joining formalities without repeated calls",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I uploaded a blurred PAN card",
+       "when": "HR rejects it with reason 'illegible'",
+       "then": "I see the rejection reason and a re-upload option"
+      },
+      {
+       "given": "all my documents are accepted",
+       "when": "I open the portal",
+       "then": "every document item shows Complete"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-033",
+    "SYS-041",
+    "SYS-042",
+    "SYS-070",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "LCY-UC-002",
+   "name": "Complete the joining chain",
+   "process": "LCY-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Take a new hire from the date of joining to a fully registered, payroll-ready, inducted employee with statutory forms generated inside the chain.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Employee / worker",
+    "Admin / IT",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Bank, payroll group and statutory IDs are in place before the first run."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Form F and registrations are produced in-chain, not chased later."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Induction and assets are ready from day one."
+    }
+   ],
+   "trigger": "The date of joining arrives for a hire whose pre-boarding is complete.",
+   "preconditions": [
+    "Pre-boarding blocking items are complete.",
+    "A joining workflow definition is published for the worker class and location.",
+    "Clearance templates exist so allocated assets can be tracked to exit."
+   ],
+   "postconditions_success": [
+    "Person and assignment exist with statutory registrations, bank details and payroll group.",
+    "Form F and other applicable joining forms are generated and linked to the joiner.",
+    "Policy acknowledgements, induction assignments and asset allocations are recorded; the announcement is published."
+   ],
+   "postconditions_failure": [
+    "The chain shows open steps with owners, SLAs and blockers on SCR-060; the joiner is not added to payroll until mandatory steps finish."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Starts the joining chain on the date of joining with the workflow definition version pinned to the instance.",
+     "ref": "LCY-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Creates the person and assignment, or adopts those already created at pre-boarding.",
+     "ref": "LCY-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Completes statutory registrations: PF/UAN, ESI IP number and professional tax enrolment where applicable.",
+     "ref": "LCY-02.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Generates statutory joining forms, including Form F for factory locations, inside the chain.",
+     "ref": "LCY-02.4"
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Captures bank details, assigns the payroll group, and records nominees and emergency contacts.",
+     "ref": "LCY-02.5"
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Reads and acknowledges assigned policies on SCR-062; the acknowledged policy version is retained.",
+     "ref": "LCY-02.6"
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Assigns the induction learning path and the 30/60/90-day plan through the standard assignment mechanism.",
+     "ref": "LCY-02.7"
+    },
+    {
+     "n": 8,
+     "actor": "Admin / IT",
+     "action": "Allocates assets on SCR-064; each allocation is registered as a future clearance item.",
+     "ref": "LCY-02.8"
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Publishes the new-joiner announcement to the audience defined by the audience rule.",
+     "ref": "LCY-02.9"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The workflow definition is changed while this chain is in flight.",
+     "steps": [
+      "The instance continues on its pinned version.",
+      "New chains started after the change use the new version."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The person and assignment were already created at pre-boarding.",
+     "steps": [
+      "Platform adopts the existing records instead of creating duplicates."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 4,
+     "condition": "The location is an office with no Factory Act applicability.",
+     "steps": [
+      "Platform generates only the joining forms applicable to that location; Form F is not generated."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A4",
+     "at_step": 9,
+     "condition": "HR applies an editorial override to the announcement.",
+     "steps": [
+      "HR edits or suppresses the announcement; the override is recorded with the editor's name."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A registration step breaches its SLA.",
+     "handling": "The step is escalated to the HR operations lead and shown red on SCR-060.",
+     "rule": "RL-392"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "Form F cannot be generated because a required field is missing.",
+     "handling": "The step stays open with the missing field named; the chain cannot complete.",
+     "rule": "RL-382"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "Bank details are captured or changed inside an open payroll window.",
+     "handling": "An alert is raised to the payroll manager for verification before the run.",
+     "rule": "RL-393"
+    },
+    {
+     "id": "E4",
+     "at_step": 6,
+     "condition": "The employee has not acknowledged a mandatory policy by its due date.",
+     "handling": "A reminder is sent and the open acknowledgement is carried as a blocker for confirmation.",
+     "rule": "RL-394"
+    },
+    {
+     "id": "E5",
+     "at_step": 8,
+     "condition": "An asset is not available for issue.",
+     "handling": "The step stays open with a blocker and an expected issue date.",
+     "rule": "RL-396"
+    }
+   ],
+   "business_rules": [
+    "RL-390",
+    "RL-391",
+    "RL-392",
+    "RL-382",
+    "RL-393",
+    "RL-394",
+    "RL-395",
+    "RL-396",
+    "RL-397"
+   ],
+   "screens": [
+    "SCR-060",
+    "SCR-010",
+    "SCR-073",
+    "SCR-062",
+    "SCR-063",
+    "SCR-064",
+    "SCR-066"
+   ],
+   "data_objects": [
+    "workflow_instance (C)",
+    "person (C)",
+    "assignment (C/U)",
+    "statutory_registration (C)",
+    "statutory_form_instance (C)",
+    "bank_detail (C)",
+    "policy_acknowledgement (C)",
+    "learning_assignment (C)",
+    "asset_allocation (C)",
+    "announcement (C)"
+   ],
+   "events": [
+    "lifecycle.joining.started",
+    "people.worker.hired",
+    "compliance.registration.done",
+    "compliance.form.generated",
+    "learning.path.assigned",
+    "asset.allocated",
+    "experience.announcement.published"
+   ],
+   "nfrs": [
+    "SCR-060 shows chain status for 50 concurrent joiners within 2 seconds.",
+    "Bank account numbers are stored tokenised and shown masked except the last four digits.",
+    "Each chain step records actor, timestamp and outcome in the audit trail."
+   ],
+   "frequency": "Per hire",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-24"
+   ],
+   "acceptance_tests": [
+    "TC-X390",
+    "TC-X391",
+    "TC-X392",
+    "TC-C382",
+    "TC-Y393",
+    "TC-X394",
+    "TC-X395",
+    "TC-X396",
+    "TC-X397",
+    "T-38"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-003",
+     "persona": "HR operations",
+     "want": "one joining console showing every step, owner, SLA and generated artefact per hire",
+     "so_that": "I can see and clear blockers before the joiner's first payroll",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 joins Chakan Works on 2026-09-01",
+       "when": "the joining chain starts",
+       "then": "SCR-060 lists registrations, Form F, bank capture, policy acknowledgement, induction and asset steps with owners and SLAs"
+      },
+      {
+       "given": "the ESI registration step for E1066 is 2 days past its SLA",
+       "when": "I open SCR-060",
+       "then": "the step is shown overdue and has been escalated to the HR operations lead"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-004",
+     "persona": "Compliance owner",
+     "want": "Form F produced as a step of the joining chain",
+     "so_that": "the form exists from day one for every factory joiner",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 joins at a factory location on 2026-09-01",
+       "when": "the statutory forms step runs",
+       "then": "Form F FRM-F-2026-0112 is generated and linked to E1066"
+      },
+      {
+       "given": "a joiner at LOC-BLR, an office location",
+       "when": "the statutory forms step runs",
+       "then": "no Form F is generated and the step completes as not applicable"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-005",
+     "persona": "Employee / worker",
+     "want": "to acknowledge policies on my phone with the version recorded",
+     "so_that": "there is no dispute later about which version I accepted",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the code of conduct is at version 3.2",
+       "when": "I acknowledge it on SCR-062 on 2026-09-02",
+       "then": "my acknowledgement records policy version 3.2 and timestamp 2026-09-02"
+      },
+      {
+       "given": "the policy is updated to version 3.3",
+       "when": "I open SCR-062",
+       "then": "I am asked to acknowledge version 3.3 and my 3.2 acknowledgement remains on record"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-006",
+     "persona": "Payroll manager",
+     "want": "an alert when bank details are captured inside the payroll window",
+     "so_that": "a fraudulent or mistaken account change is caught before disbursement",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 payroll window for LE-01 is open",
+       "when": "HR captures bank details for a joiner",
+       "then": "an alert is raised to me naming the employee and change time"
+      },
+      {
+       "given": "the window is closed",
+       "when": "bank details are captured",
+       "then": "no alert is raised"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-012",
+    "SYS-032",
+    "SYS-033",
+    "SYS-042",
+    "SYS-053",
+    "SYS-086"
+   ]
+  },
+  {
+   "id": "LCY-UC-003",
+   "name": "Confirm an employee at the end of probation",
+   "process": "LCY-03",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Confirm, extend or end probation on time, gated by mandatory induction completion, and issue the confirmation letter.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Employee / worker",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "A timely decision and letter."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Confirmation and dependent events (referral payout, leave credit) fall on the same date."
+    }
+   ],
+   "trigger": "The probation end date is 30 days away.",
+   "preconditions": [
+    "Date of joining and probation months are recorded on the assignment.",
+    "The confirmation letter template is published for the entity."
+   ],
+   "postconditions_success": [
+    "The assignment carries the confirmation date or a new probation end date.",
+    "A confirmation or extension letter is issued with the template version retained.",
+    "Dependent triggers such as a maturing referral award have fired."
+   ],
+   "postconditions_failure": [
+    "Confirmation stays pending with the blocker recorded; probation status continues."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Raises a confirmation task to the manager 30 days before the confirmation due date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Records the assessment and recommends confirm, extend probation or end employment.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks gates: all mandatory induction items complete and policy acknowledgements recorded.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews the recommendation and gates and actions the decision.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Updates the assignment with the confirmation date and fires dependent triggers.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Generates the confirmation letter on SCR-067 from the current template version for HR to issue.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Employee / worker",
+     "action": "Receives the letter in self-service and acknowledges receipt.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The manager recommends extending probation.",
+     "steps": [
+      "Manager states reason and extension period.",
+      "HR approves; platform sets the new probation end date and issues an extension letter."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The manager recommends ending employment.",
+     "steps": [
+      "HR operations routes the case to the Director / approver.",
+      "On approval the separation process starts."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A mandatory induction item is still open.",
+     "handling": "Confirmation cannot be actioned whatever the manager recommends; the blocker is named.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The manager does not respond within 7 days.",
+     "handling": "The task is escalated to the manager's manager and HR operations.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-067"
+   ],
+   "data_objects": [
+    "confirmation (C/U)",
+    "assignment (U)",
+    "letter_issue (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Issued letters are immutable and retain the template version used."
+   ],
+   "frequency": "Per hire",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [
+    "R-24"
+   ],
+   "acceptance_tests": [
+    "TC-E500",
+    "TC-E502",
+    "T-38"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-007",
+     "persona": "HR operations",
+     "want": "confirmation blocked while any mandatory induction item is open",
+     "so_that": "no one is confirmed without completing required training",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 has harassment-prevention awareness IND-2026-0090 in progress",
+       "when": "I try to action confirmation",
+       "then": "the action is blocked and IND-2026-0090 is named as the blocker"
+      },
+      {
+       "given": "E1058 has all induction items complete and a Confirm recommendation",
+       "when": "I action confirmation on 2026-09-01",
+       "then": "the assignment shows confirmed from 2026-09-01 and a confirmation letter is generated"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-008",
+     "persona": "Manager / supervisor",
+     "want": "a reminder 30 days before my team member's confirmation date",
+     "so_that": "I assess on time",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1060's confirmation is due 2026-10-06",
+       "when": "2026-09-06 arrives",
+       "then": "I receive a confirmation task for E1060"
+      },
+      {
+       "given": "I recommend extending probation by 3 months for below-par performance",
+       "when": "HR approves",
+       "then": "the new probation end date is 2027-01-06 and an extension letter is generated"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-026",
+    "SYS-037",
+    "SYS-051",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "LCY-UC-004",
+   "name": "Process a promotion or transfer",
+   "process": "LCY-04",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Apply an approved promotion or transfer from its effective date and re-resolve every location-dependent rule.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Manager / supervisor",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "PT, LWF and pay changes apply from the right date with correct proration."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Holidays, rest days and access match the new location."
+    }
+   ],
+   "trigger": "A promotion or transfer is approved.",
+   "preconditions": [
+    "The change is approved through its workflow.",
+    "The target position, location and grade exist."
+   ],
+   "postconditions_success": [
+    "A new effective-dated assignment row exists and the old row ends the day before.",
+    "PT, LWF, holiday calendar, rest-day pattern and location scope are re-resolved.",
+    "A letter is issued and affected roles' data scopes are updated."
+   ],
+   "postconditions_failure": [
+    "The current assignment continues unchanged and the change is held with its reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens the approved change and confirms effective date, target position, grade, location and manager.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Creates the new effective-dated assignment and ends the current one the day before.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Re-resolves professional tax, labour welfare fund, holiday calendar, rest-day pattern and location scope for the new location.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Flags the payroll period for split computation if the effective date is mid-period.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Updates manager and plant HR data scopes so the new team can see the employee and the old team cannot.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Generates and issues the promotion or transfer letter on SCR-067.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Notifies the employee, old manager and new manager.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The change is a promotion within the same location.",
+     "steps": [
+      "Platform updates grade and pay only; location-dependent rules are not re-resolved."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The effective date falls inside a locked payroll period.",
+     "handling": "The change is held and HR is asked to choose the next open date or raise an arrears instruction.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The target location has no holiday calendar or PT configuration.",
+     "handling": "The change is held and the missing configuration is named.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-010",
+    "SCR-067"
+   ],
+   "data_objects": [
+    "assignment (C/U)",
+    "letter_issue (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Effective-dated history is preserved and queryable as at any date."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-009",
+     "persona": "Payroll manager",
+     "want": "a transfer to re-resolve professional tax for the new state from the effective date",
+     "so_that": "the employee is not taxed under the old state",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1051 transfers from Peenya Works (KA) to Chakan Works (MH) effective 2026-10-01",
+       "when": "October payroll runs",
+       "then": "professional tax is computed on the Maharashtra slab"
+      },
+      {
+       "given": "the transfer is effective 2026-10-16",
+       "when": "October payroll runs",
+       "then": "the period is split and both states' rules are applied to their portions"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-010",
+     "persona": "Plant HR / time office",
+     "want": "a transferred employee to appear in my scope from the effective date",
+     "so_that": "I can manage their attendance from day one",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1051 transfers to LOC-PUN effective 2026-10-01",
+       "when": "I open the attendance screen on 2026-10-01",
+       "then": "E1051 appears in my list"
+      },
+      {
+       "given": "the Peenya plant HR opens attendance on 2026-10-01",
+       "when": "the list loads",
+       "then": "E1051 no longer appears for dates from 2026-10-01"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-007",
+    "SYS-016",
+    "SYS-022",
+    "SYS-023",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "LCY-UC-005",
+   "name": "Submit and process a resignation with notice",
+   "process": "LCY-05",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Record a resignation, fix the last working day and notice position, and start clearance in parallel.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Nucleus platform",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Notice shortfall or buyout is known for F&F."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Time for handover and backfill."
+    }
+   ],
+   "trigger": "The employee submits a resignation.",
+   "preconditions": [
+    "The employee holds an active assignment with a notice period defined by policy."
+   ],
+   "postconditions_success": [
+    "The resignation is accepted with last working day and notice served or short computed.",
+    "The clearance checklist is instantiated on acceptance."
+   ],
+   "postconditions_failure": [
+    "The resignation is withdrawn or remains pending with its status visible to the employee."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits a resignation from self-service with reason and proposed last working day.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes required notice, notice served and any shortfall from the policy and proposed date.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Reviews, records a retention conversation if any, and recommends acceptance with a last working day.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Accepts the resignation and confirms the last working day and any buyout or recovery decision.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Instantiates the clearance checklist on acceptance so clearance runs in parallel with notice.",
+     "ref": "RL-400"
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Notifies payroll of the last working day and notice position for F&F.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee withdraws before acceptance.",
+     "steps": [
+      "The resignation is cancelled and no checklist is created."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "HR agrees an early release.",
+     "steps": [
+      "HR records the waived notice days and reason.",
+      "Platform recomputes the shortfall as zero for waived days."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The manager does not act within 3 working days.",
+     "handling": "The item is escalated to HR operations.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "No clearance template matches the worker class and location.",
+     "handling": "HR operations is alerted and the checklist must be created before acceptance completes.",
+     "rule": "RL-400"
+    }
+   ],
+   "business_rules": [
+    "RL-400",
+    "RL-401"
+   ],
+   "screens": [
+    "SCR-061"
+   ],
+   "data_objects": [
+    "resignation (C/U)",
+    "clearance_item (C)"
+   ],
+   "events": [
+    "lifecycle.clearance.started"
+   ],
+   "nfrs": [
+    "The resignation and every status change are timestamped and visible to the employee."
+   ],
+   "frequency": "Per exit",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-17"
+   ],
+   "acceptance_tests": [
+    "TC-X400"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-011",
+     "persona": "Employee / worker",
+     "want": "to see my required notice and any shortfall when I propose a last working day",
+     "so_that": "I know the financial effect before I submit",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my notice period is 30 days",
+       "when": "I resign on 2026-08-19 proposing 2026-09-18",
+       "then": "the screen shows 30 days required, 30 served and no shortfall"
+      },
+      {
+       "given": "I propose 2026-09-08 instead",
+       "when": "the computation runs",
+       "then": "a 10-day shortfall is shown"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-012",
+     "persona": "HR operations",
+     "want": "clearance to start the moment I accept a resignation",
+     "so_that": "no-dues finishes by the last working day",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I accept E1042's resignation with last working day 2026-09-18",
+       "when": "acceptance is saved",
+       "then": "the clearance checklist for his worker class and location is created with all items open"
+      },
+      {
+       "given": "the employee withdraws before acceptance",
+       "when": "I open the case",
+       "then": "it shows Withdrawn and no checklist exists"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-041",
+    "SYS-053",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "LCY-UC-006",
+   "name": "Clear no-dues before full and final settlement",
+   "process": "LCY-06",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Clear every departmental no-dues item in parallel with notice so F&F can settle on the last working day, holding F&F while any blocking item is open.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Department clearance owner",
+    "Nucleus platform",
+    "Director / approver",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Leaver",
+     "interest": "Settlement on the last working day."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "No settlement is released with unrecovered dues."
+    },
+    {
+     "who": "Admin / IT",
+     "interest": "Assets are returned or recovered."
+    }
+   ],
+   "trigger": "A resignation is accepted.",
+   "preconditions": [
+    "A clearance template exists for the worker class and location.",
+    "Asset allocations for the leaver are registered."
+   ],
+   "postconditions_success": [
+    "Every blocking item is Cleared or Waived with reason; any waived value is a recovery line in F&F.",
+    "F&F moves from HELD to READY."
+   ],
+   "postconditions_failure": [
+    "F&F remains HELD with the open blocking items listed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "On resignation acceptance, instantiates the clearance checklist from the template for the worker class and location.",
+     "ref": "LCY-06.1"
+    },
+    {
+     "n": 2,
+     "actor": "Department clearance owner",
+     "action": "Works each item in parallel with the notice period, recording status, date and note within the item SLA.",
+     "ref": "LCY-06.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks whether any blocking item is still open; while one is, F&F stays HELD.",
+     "ref": "LCY-06.3"
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "Waives a remaining blocking item explicitly with a reason and a recovery amount where the item has a value.",
+     "ref": "LCY-06.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "No blocking item is open.",
+     "steps": [
+      "Platform moves F&F to READY; no waiver is needed."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "A non-blocking item (for example exit interview) is open on the last working day.",
+     "steps": [
+      "The item stays open without holding F&F."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "No template matches the worker class and location.",
+     "handling": "The checklist cannot be created; HR operations is alerted to configure the template.",
+     "rule": "RL-400"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "An item breaches its SLA.",
+     "handling": "The item is escalated to the owner's manager and highlighted on SCR-061.",
+     "rule": "RL-401"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A user tries to release F&F while a blocking item is open.",
+     "handling": "Release is refused and the open items are listed.",
+     "rule": "RL-402"
+    },
+    {
+     "id": "E4",
+     "at_step": 4,
+     "condition": "A waiver is submitted without a reason or by a role below HR head.",
+     "handling": "The waiver is refused.",
+     "rule": "RL-403"
+    }
+   ],
+   "business_rules": [
+    "RL-400",
+    "RL-401",
+    "RL-402",
+    "RL-403",
+    "BS:RL-25"
+   ],
+   "screens": [
+    "SCR-061"
+   ],
+   "data_objects": [
+    "clearance_checklist_template (R)",
+    "clearance_item (C/U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "lifecycle.clearance.started",
+    "lifecycle.clearance.item_cleared",
+    "lifecycle.clearance.waived"
+   ],
+   "nfrs": [
+    "Clearance owners can clear items from mobile.",
+    "Each status change stores actor, timestamp and note."
+   ],
+   "frequency": "Per exit",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-17"
+   ],
+   "acceptance_tests": [
+    "TC-X400",
+    "TC-X401",
+    "TC-X402",
+    "TC-X403",
+    "T-30"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-013",
+     "persona": "Payroll manager",
+     "want": "F&F held while any blocking clearance item is open",
+     "so_that": "no settlement is paid with assets or dues outstanding",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1042 has two open blocking items: tool kit and locker key, and knowledge transfer",
+       "when": "I try to release his F&F",
+       "then": "release is refused and both items are listed"
+      },
+      {
+       "given": "both items are then cleared",
+       "when": "the check runs",
+       "then": "F&F moves from HELD to READY"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-014",
+     "persona": "Department clearance owner",
+     "want": "to see only my items with SLAs on my phone",
+     "so_that": "I clear my part without waiting for others",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I own 'ID card and access revocation' for E1068",
+       "when": "I mark it cleared on 2026-09-30",
+       "then": "the item shows Cleared with my name and date"
+      },
+      {
+       "given": "my item for E1042 is 2 days past SLA",
+       "when": "the daily check runs",
+       "then": "my manager is notified"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-015",
+     "persona": "Director / approver",
+     "want": "to waive a blocking item only with a reason, turning its value into a recovery",
+     "so_that": "an unreturned asset is recovered, not silently ticked",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "tool kit AST-T-0077 with recovery value 12,000 is unreturned",
+       "when": "I waive the item with reason 'lost on site'",
+       "then": "the item shows Waived and a 12,000 recovery line is added to the F&F"
+      },
+      {
+       "given": "I submit a waiver with an empty reason",
+       "when": "I save",
+       "then": "the waiver is refused"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-032",
+    "SYS-036",
+    "SYS-041",
+    "SYS-051"
+   ]
+  },
+  {
+   "id": "LCY-UC-007",
+   "name": "Settle full and final on the last working day",
+   "process": "LCY-07",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Compute, approve and pay the full and final settlement on the last working day once clearance permits.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Finance",
+    "HR operations",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Leaver",
+     "interest": "Correct dues paid on the last day."
+    },
+    {
+     "who": "Finance",
+     "interest": "Settlement reaches the bank file only when cleared."
+    }
+   ],
+   "trigger": "All blocking clearance items are cleared or waived.",
+   "preconditions": [
+    "F&F is READY.",
+    "The last working day, notice position and leave balance are final."
+   ],
+   "postconditions_success": [
+    "F&F is SETTLED, included in its own run and bank file, and relieving documents are issued."
+   ],
+   "postconditions_failure": [
+    "F&F stays READY or HELD with reason; no payment is made."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Moves F&F to READY when no blocking item remains and opens the settlement on SCR-056.",
+     "ref": "RL-402"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Computes final salary to the last working day, leave encashment, gratuity where eligible and notice pay or recovery.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Adds loan, advance and asset recovery lines, including values from waived clearance items.",
+     "ref": "RL-403"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Computes statutory deductions and the net amount.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Payroll manager",
+     "action": "Reviews the working, line by line with its basis, and approves the settlement.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Includes the settlement in the full and final run and its bank file.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Finance",
+     "action": "Releases the payment; the platform marks F&F SETTLED and emits payroll.fnf.settled.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "HR operations",
+     "action": "Issues the relieving letter and experience certificate.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The net amount is negative.",
+     "steps": [
+      "Platform shows the amount due from the leaver and creates a recovery request.",
+      "No negative payment line enters the bank file."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A blocking item is reopened.",
+     "handling": "F&F returns to HELD and is removed from the pending bank file.",
+     "rule": "RL-402"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Saving the settlement fails.",
+     "handling": "The error is shown with its cause and no partial record is stored; the user can retry.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-402",
+    "RL-403",
+    "BS:RL-25"
+   ],
+   "screens": [
+    "SCR-056",
+    "SCR-061"
+   ],
+   "data_objects": [
+    "fnf (C/U)",
+    "payroll_input (R)",
+    "payslip_line (C)"
+   ],
+   "events": [
+    "payroll.fnf.settled"
+   ],
+   "nfrs": [
+    "The settlement working saves successfully at every state transition.",
+    "Each line shows its basis so the leaver can verify it."
+   ],
+   "frequency": "Per exit",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-17"
+   ],
+   "acceptance_tests": [
+    "TC-X402",
+    "TC-X340",
+    "T-30"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-016",
+     "persona": "Payroll manager",
+     "want": "each settlement line with its basis",
+     "so_that": "I can approve quickly and answer the leaver's questions",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1068 has 7 completed years and Basic plus DA of 43,120",
+       "when": "the settlement is computed",
+       "then": "gratuity shows 174,138 with basis 15/26 x 43,120 x 7"
+      },
+      {
+       "given": "E1068 served 30 of 30 notice days",
+       "when": "the settlement is computed",
+       "then": "notice pay shows 0 with the basis stated"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-017",
+     "persona": "Finance",
+     "want": "a held settlement excluded from the bank file",
+     "so_that": "payment is never released before no-dues",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "run PR-2026-09-03 has settlements for E1068 and E1042 and E1042 is HELD",
+       "when": "the bank file is generated",
+       "then": "it contains only E1068's settlement"
+      },
+      {
+       "given": "E1042's items are cleared later",
+       "when": "the file is regenerated",
+       "then": "E1042 is included"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-018",
+     "persona": "HR operations",
+     "want": "the F&F record to save without error at every step",
+     "so_that": "the reported save defect cannot recur",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an F&F with one clearance line Pending",
+       "when": "I save the record",
+       "then": "it saves and release remains blocked"
+      },
+      {
+       "given": "the line is Cleared",
+       "when": "I save again",
+       "then": "it saves and release is permitted"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-030",
+    "SYS-045",
+    "SYS-047",
+    "SYS-051",
+    "SYS-085"
+   ]
+  },
+  {
+   "id": "LCY-UC-008",
+   "name": "Allocate and recover company assets",
+   "process": "LCY-08",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Maintain an asset register where every allocation is tracked to return and surfaces automatically as a clearance item at exit.",
+   "level": "User goal",
+   "primary_actor": "Admin / IT",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Employee / worker",
+    "HR operations",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Unreturned assets are recovered at their value."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "A clear record of what was issued and returned."
+    }
+   ],
+   "trigger": "An employee joins, needs an asset, or exits.",
+   "preconditions": [
+    "Asset types carry a blocking flag and recovery value."
+   ],
+   "postconditions_success": [
+    "Allocation and return are recorded with dates and condition; unreturned assets become recovery lines."
+   ],
+   "postconditions_failure": [
+    "The asset remains allocated and the clearance item stays open."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Admin / IT",
+     "action": "Selects an available asset on SCR-064 and allocates it to the employee with issue date and condition.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Acknowledges receipt of the asset in self-service.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Registers the allocation as a future clearance item, blocking for high-value assets.",
+     "ref": "RL-396"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "At exit, adds each open allocation to the leaver's clearance checklist.",
+     "ref": "RL-396"
+    },
+    {
+     "n": 5,
+     "actor": "Admin / IT",
+     "action": "Records the return with date and condition, clearing the item.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Updates the asset to Available or Under repair based on condition.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The asset is not returned.",
+     "steps": [
+      "Director / approver waives the item with reason.",
+      "Platform creates a recovery line at the asset's recovery value."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "The asset is worn beyond use.",
+     "steps": [
+      "Admin / IT writes it off with reason; no recovery is charged."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The asset is already allocated.",
+     "handling": "Allocation is refused and the current holder is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "A return is recorded by someone other than the asset owner role.",
+     "handling": "The update is refused.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-396",
+    "RL-403"
+   ],
+   "screens": [
+    "SCR-064",
+    "SCR-061"
+   ],
+   "data_objects": [
+    "asset (U)",
+    "asset_allocation (C/U)",
+    "clearance_item (C)"
+   ],
+   "events": [
+    "asset.allocated"
+   ],
+   "nfrs": [
+    "Register searchable by asset code or serial within 1 second."
+   ],
+   "frequency": "Per hire and exit",
+   "criticality": "Medium",
+   "phase": "P1",
+   "client_requirements": [
+    "R-24"
+   ],
+   "acceptance_tests": [
+    "TC-X396",
+    "T-38"
+   ],
+   "user_stories": [
+    {
+     "id": "LCY-US-019",
+     "persona": "Admin / IT",
+     "want": "every issued asset to appear automatically on the leaver's clearance list",
+     "so_that": "nothing is forgotten at exit",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 holds laptop AST-L-0412, handset AST-M-0908 and access card AST-A-1155",
+       "when": "his resignation is accepted",
+       "then": "three asset items appear on his clearance checklist with recovery values 58,000, 14,000 and 500"
+      },
+      {
+       "given": "laptop AST-L-0298 is returned by E1068 on 2026-09-24 in good condition",
+       "when": "I record the return",
+       "then": "the clearance item is cleared and the asset becomes Available"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-020",
+     "persona": "Payroll manager",
+     "want": "unreturned assets to flow into F&F as recovery lines",
+     "so_that": "we recover their value",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "locker key AST-K-0231 for E1042 is waived as not returned",
+       "when": "F&F is computed",
+       "then": "a 500 asset recovery deduction appears"
+      },
+      {
+       "given": "PPE set AST-P-0512 was written off as worn",
+       "when": "F&F is computed",
+       "then": "no recovery line appears for it"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-032",
+    "SYS-051",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "LCY-UC-009",
+   "name": "Orchestrate background verification before joining",
+   "process": null,
+   "capability_gap": "LCY-CG-001",
+   "source": "Authored",
+   "goal": "Initiate background checks with providers, track each component and gate joining on configurable mandatory checks.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Candidate",
+    "Background verification provider",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Compliance owner",
+     "interest": "Checks run with consent and within purpose."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "No delay where checks are not mandatory."
+    }
+   ],
+   "trigger": "An offer is accepted for a role whose check package is configured.",
+   "preconditions": [
+    "Check packages are configured per worker class and location, with each component marked mandatory or not.",
+    "The candidate has given consent for verification."
+   ],
+   "postconditions_success": [
+    "Each component has a final status; all mandatory components are Clear and the joining gate is open."
+   ],
+   "postconditions_failure": [
+    "A mandatory component is Discrepant or Pending and joining is held."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Selects the check package for the worker class and location and records the candidate's consent.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Sends the check request to the provider through the integration service.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Background verification provider",
+     "action": "Returns status updates per component (identity, address, education, previous employment).",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows component status on the pre-boarding tracker.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Reviews any discrepancy with the candidate's explanation and records a decision.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Opens the joining gate when all mandatory components are Clear or decided.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "HR accepts a minor discrepancy.",
+     "steps": [
+      "HR records the reason; the component is marked Accepted with exception."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The candidate has not given consent.",
+     "handling": "No request is sent and the candidate is asked for consent.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The provider exceeds its turnaround SLA.",
+     "handling": "HR operations is alerted; joining remains held if the component is mandatory.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-060"
+   ],
+   "data_objects": [
+    "verification_request (C/U)",
+    "verification_component (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Provider reports are stored encrypted and access is logged.",
+    "Verification data is erased per retention policy when a candidate does not join."
+   ],
+   "frequency": "Per hire",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-021",
+     "persona": "HR operations",
+     "want": "joining held until mandatory checks clear",
+     "so_that": "we never onboard someone whose mandatory check failed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Basanti Naik's package marks identity and previous employment as mandatory",
+       "when": "previous employment is Pending on 2026-10-04",
+       "then": "her joining on 2026-10-05 is held"
+      },
+      {
+       "given": "both mandatory components are Clear",
+       "when": "the check runs",
+       "then": "the joining gate opens"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-022",
+     "persona": "Candidate",
+     "want": "to give explicit consent before checks start",
+     "so_that": "my data is used only for the purpose I agreed to",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I have not consented",
+       "when": "HR attempts to start checks",
+       "then": "no request is sent"
+      },
+      {
+       "given": "I consent on 2026-09-21",
+       "when": "checks start",
+       "then": "the consent timestamp is recorded with the request"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-033",
+    "SYS-051",
+    "SYS-084"
+   ]
+  },
+  {
+   "id": "LCY-UC-010",
+   "name": "Apply for internal roles and run inter-entity transfers",
+   "process": null,
+   "capability_gap": "LCY-CG-002",
+   "source": "Authored",
+   "goal": "Let employees apply for internal roles and let HR move people between entities with continuity of service, leave and statutory accounts.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Manager / supervisor",
+    "Nucleus platform",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Career growth without losing service or balances."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Clean cut-over between entity payrolls."
+    }
+   ],
+   "trigger": "An internal role is published, or an inter-entity transfer is approved.",
+   "preconditions": [
+    "Internal eligibility rules (minimum tenure, performance band) are configured.",
+    "Both entities are set up with payroll groups and statutory registrations."
+   ],
+   "postconditions_success": [
+    "The employee holds an assignment in the target entity with original service date, carried leave balances and continuous UAN.",
+    "No exit or F&F is triggered for an inter-entity transfer."
+   ],
+   "postconditions_failure": [
+    "The application is closed with reason or the transfer is held; the current assignment continues."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Views internal openings for which they are eligible and applies with a short statement.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Notifies the current manager and routes the application to the hiring manager.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Records a release decision and agreed release date.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Approves the move and, for a different entity, initiates the inter-entity transfer.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Ends the source assignment and creates the target assignment, preserving the continuous service date.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Carries leave balances and keeps the same UAN; re-resolves ESI, PT and LWF for the new entity and location.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Confirms the cut-over date in both entity payrolls.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR initiates the transfer without an application.",
+     "steps": [
+      "HR selects employee, target entity and date."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The employee does not meet eligibility.",
+     "handling": "The apply action is not offered and the unmet criterion is shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A leave type does not exist in the target entity.",
+     "handling": "HR is shown the balance and must map or encash it before the transfer completes.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-010"
+   ],
+   "data_objects": [
+    "internal_application (C/U)",
+    "assignment (C/U)",
+    "leave_balance (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Service continuity is preserved for gratuity and leave accrual purposes (to be validated by Legal)."
+   ],
+   "frequency": "Monthly",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-023",
+     "persona": "Employee / worker",
+     "want": "to apply for an internal role from self-service",
+     "so_that": "I can grow without leaving the company",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I have 14 months' tenure and the rule requires 12",
+       "when": "I open an internal opening",
+       "then": "the Apply action is available"
+      },
+      {
+       "given": "a colleague has 8 months' tenure",
+       "when": "they open the same opening",
+       "then": "Apply is unavailable and the tenure rule is shown"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-024",
+     "persona": "HR operations",
+     "want": "an inter-entity transfer that keeps service date and leave balances",
+     "so_that": "the employee loses nothing by moving",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee moves from LE-01 to LE-02 on 2026-11-01 with 9.5 earned leave days",
+       "when": "the transfer completes",
+       "then": "the LE-02 assignment shows the original service date and 9.5 days earned leave"
+      },
+      {
+       "given": "the transfer completes",
+       "when": "payroll looks for an exit",
+       "then": "no F&F is created for the employee"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-022",
+    "SYS-037",
+    "SYS-045",
+    "SYS-049"
+   ]
+  },
+  {
+   "id": "LCY-UC-011",
+   "name": "Record rehire eligibility and maintain alumni",
+   "process": null,
+   "capability_gap": "LCY-CG-003",
+   "source": "Authored",
+   "goal": "Record whether a leaver may be rehired and keep a consented alumni record for future hiring.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Talent acquisition",
+     "interest": "Former good performers are easy to find."
+    },
+    {
+     "who": "Leaver",
+     "interest": "Alumni contact only with consent."
+    }
+   ],
+   "trigger": "A leaver's exit is processed.",
+   "preconditions": [
+    "Rehire eligibility reason codes are configured."
+   ],
+   "postconditions_success": [
+    "Rehire eligibility is recorded and an alumni record exists if consent was given."
+   ],
+   "postconditions_failure": [
+    "No alumni record exists and the rehire flag defaults to Review required."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Records rehire eligibility (Eligible, Not eligible, Review required) with a reason code at exit.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Asks the leaver for alumni consent in the exit flow.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Gives or declines consent for alumni contact.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Creates an alumni record holding only consented contact data, linked to the past employment record.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Shows a returning-employee flag when the same person applies again.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Rehires by adopting the existing person record rather than creating a new one.",
+     "ref": "RL-391"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The leaver declines consent.",
+     "steps": [
+      "No alumni record is created; rehire eligibility is still recorded."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The applicant is marked Not eligible.",
+     "handling": "Recruiters see the flag and must obtain HR approval to proceed.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The alumnus withdraws consent.",
+     "handling": "Alumni contact data is removed and the record leaves the alumni list.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-391"
+   ],
+   "screens": [],
+   "data_objects": [
+    "rehire_eligibility (C)",
+    "alumni_record (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "The rehire reason is visible only to HR roles."
+   ],
+   "frequency": "Per exit",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-025",
+     "persona": "HR operations",
+     "want": "to record rehire eligibility at exit",
+     "so_that": "future hiring decisions use what we knew at exit",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1068 exits on 2026-09-30",
+       "when": "I record Eligible with reason 'voluntary, good standing'",
+       "then": "the record shows Eligible and the reason is visible only to HR"
+      },
+      {
+       "given": "E1068 applies again in 2027",
+       "when": "a recruiter opens the application",
+       "then": "a returning-employee flag links to his past record"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-026",
+     "persona": "Employee / worker",
+     "want": "to choose whether to join the alumni network",
+     "so_that": "I control how the company contacts me after I leave",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I decline consent",
+       "when": "my exit completes",
+       "then": "no alumni record exists for me"
+      },
+      {
+       "given": "I consent and later withdraw",
+       "when": "the withdrawal is saved",
+       "then": "my contact data is removed from the alumni list"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-027",
+    "SYS-032"
+   ]
+  },
+  {
+   "id": "LCY-UC-012",
+   "name": "Capture exit interviews and attrition reasons",
+   "process": null,
+   "capability_gap": "LCY-CG-004",
+   "source": "Authored",
+   "goal": "Capture structured exit reasons and interview responses and report attrition patterns without identifying individuals.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Manager / supervisor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR head",
+     "interest": "Reliable attrition drivers by site and department."
+    },
+    {
+     "who": "Leaver",
+     "interest": "Candid feedback does not reach their manager attributably."
+    }
+   ],
+   "trigger": "A resignation is accepted.",
+   "preconditions": [
+    "An exit questionnaire and reason code taxonomy are configured.",
+    "The exit interview is a non-blocking clearance item."
+   ],
+   "postconditions_success": [
+    "Responses and primary and secondary reasons are stored; reports aggregate them anonymously."
+   ],
+   "postconditions_failure": [
+    "The interview remains open; the leaver's exit proceeds unaffected."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Adds the exit interview as a non-blocking item to the clearance checklist.",
+     "ref": "RL-400"
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Completes the structured questionnaire in self-service.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Holds the interview and records primary and secondary reason codes.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Manager / supervisor",
+     "action": "Records the manager's view of the reason separately.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Stores responses with access restricted to HR roles.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Produces attrition reports by reason, site, department and tenure band with small cohorts suppressed.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The leaver declines the interview.",
+     "steps": [
+      "HR records 'declined' and the item is closed."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "A report cell would contain fewer than 5 leavers.",
+     "handling": "The cell is suppressed and merged into 'Other'.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-400"
+   ],
+   "screens": [
+    "SCR-061"
+   ],
+   "data_objects": [
+    "exit_interview (C/U)",
+    "attrition_reason (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Free-text answers are excluded from reports viewable by managers."
+   ],
+   "frequency": "Per exit",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LCY-US-027",
+     "persona": "HR operations",
+     "want": "structured primary and secondary exit reasons",
+     "so_that": "attrition reports show real drivers",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I interview E1068",
+       "when": "I record primary reason 'career growth' and secondary 'commute'",
+       "then": "both codes are stored against his exit"
+      },
+      {
+       "given": "the exit interview for E1042 is still open on his last working day",
+       "when": "F&F release is checked",
+       "then": "the open interview does not hold F&F"
+      }
+     ]
+    },
+    {
+     "id": "LCY-US-028",
+     "persona": "Manager / supervisor",
+     "want": "attrition reports that do not identify individuals",
+     "so_that": "I can act on patterns without breaching confidence",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "3 people left the Assembly department at LOC-PLA in Q3",
+       "when": "I open the Q3 attrition report",
+       "then": "the department cell is suppressed and counted under Other"
+      },
+      {
+       "given": "12 people left LOC-PLA in Q3",
+       "when": "I open the report",
+       "then": "reason counts for LOC-PLA are shown without names"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-066"
+   ]
+  }
+ ]
+}

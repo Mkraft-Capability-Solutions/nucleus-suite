@@ -1,0 +1,880 @@
+{
+ "domain": "PPL",
+ "use_cases": [
+  {
+   "id": "PPL-UC-015",
+   "name": "Hold concurrent assignments for one person",
+   "process": null,
+   "capability_gap": "PPL-CG-007",
+   "source": "Authored",
+   "goal": "Let one person hold more than one concurrent assignment in a different entity, position or worker class, each with its own pay, time and security treatment.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Plant HR / time office",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Is paid correctly for each role and sees each assignment separately in self-service."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Each assignment lands in the right payroll group with no double counting of statutory ceilings."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Statutory identifiers such as UAN stay unique to the person across assignments."
+    }
+   ],
+   "trigger": "HR needs a person already employed in one entity to take an additional concurrent role, for example a quality engineer at Peenya Works also serving as part-time trainer for LE-02.",
+   "preconditions": [
+    "The person exists once with a primary assignment (RL-032).",
+    "A vacant, non-frozen position exists for the additional assignment (RL-034).",
+    "Concurrent employment is enabled for the tenant and the combination of worker classes is permitted."
+   ],
+   "postconditions_success": [
+    "The person holds two active assignments with distinct payroll group, shift group, worker class defaults and approver chains; one is marked primary."
+   ],
+   "postconditions_failure": [
+    "No second assignment is created and the person's existing assignment is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Searches for the person and opens the record of E1069 Meera Prabhu.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Chooses to add a concurrent assignment and selects entity LE-02, position and worker class.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Checks that the position is vacant and that the worker-class combination is allowed for concurrent employment.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Applies worker-class defaults for the new assignment and shows fields HR may override with a reason.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Sets effective date, working-hours share, pay basis and which assignment is primary.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Routes the change through the approval chain for both entities.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Director / approver",
+     "action": "Approves the additional assignment.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Writes the new assignment version, links it to the same person and payroll groups, and queues attendance recompute.",
+     "ref": null
+    },
+    {
+     "n": 9,
+     "actor": "Nucleus platform",
+     "action": "Notifies payroll of both groups that statutory ceilings must be shared across assignments.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The additional role is within the same entity.",
+     "steps": [
+      "The platform keeps one payroll group and splits cost centres by working-hours share."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The approver rejects the change.",
+     "steps": [
+      "The rejection reason is recorded and HR is notified; no assignment is written."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The target position is filled or frozen.",
+     "handling": "The assignment cannot be created and the position status is shown.",
+     "rule": "RL-034"
+    },
+    {
+     "id": "E2",
+     "at_step": 8,
+     "condition": "The two assignments' scheduled hours overlap on the same day.",
+     "handling": "The platform warns HR and requires a shift arrangement before activation.",
+     "rule": "RL-042"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "A user in one payroll group opens the record.",
+     "handling": "Compensation fields of the other assignment return null.",
+     "rule": "RL-005"
+    }
+   ],
+   "business_rules": [
+    "RL-005",
+    "RL-010",
+    "RL-032",
+    "RL-034",
+    "RL-037",
+    "RL-042"
+   ],
+   "screens": [
+    "SCR-010",
+    "SCR-011"
+   ],
+   "data_objects": [
+    "person (R)",
+    "assignment (C)",
+    "position (U)",
+    "recompute_queue (C)"
+   ],
+   "events": [
+    "people.assignment.created"
+   ],
+   "nfrs": [
+    "A person record with up to five concurrent assignments opens in under 1.5 s.",
+    "Statutory identifiers remain unique per person regardless of assignment count."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-039",
+     "persona": "HR operations",
+     "want": "to add a second concurrent assignment to an existing person",
+     "so_that": "I don't create a duplicate person for a second role",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1069 holds a permanent assignment at LOC-PLA",
+       "when": "I add a trainer assignment in LE-02 at LOC-HYD effective 2026-11-01",
+       "then": "E1069 shows two active assignments and one person identifier"
+      },
+      {
+       "given": "the selected position is frozen",
+       "when": "I try to add the assignment",
+       "then": "creation is blocked with the frozen status named"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-040",
+     "persona": "Payroll manager",
+     "want": "each assignment paid in its own payroll group",
+     "so_that": "pay and statutory contributions are processed by the right entity",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1069 has assignments in PLANT-BLR and PLANT-HYD",
+       "when": "the November runs are created",
+       "then": "E1069 appears in both run populations with the assignment identifier on each payslip"
+      },
+      {
+       "given": "the PF wage ceiling applies to the person",
+       "when": "both assignments are computed",
+       "then": "the payroll exception list shows the shared-ceiling check for E1069"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-041",
+     "persona": "Employee / worker",
+     "want": "to see each of my assignments separately in self-service",
+     "so_that": "I can track pay and attendance for each role",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I hold two assignments",
+       "when": "I open my payslips for November 2026",
+       "then": "I see one payslip per assignment, each labelled with its entity"
+      },
+      {
+       "given": "I apply for leave",
+       "when": "I choose the assignment",
+       "then": "the request routes to that assignment's manager only"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-006",
+    "SYS-007",
+    "SYS-037",
+    "SYS-045",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "PPL-UC-016",
+   "name": "Plan headcount and positions against sanctioned strength",
+   "process": null,
+   "capability_gap": "PPL-CG-008",
+   "source": "Authored",
+   "goal": "Allow HR and finance to plan positions and headcount by period, site and cost centre against sanctioned strength, with approval and variance tracking.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Finance",
+    "Nucleus platform",
+    "Director / approver",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Director / approver",
+     "interest": "Headcount growth stays within an approved plan and budget."
+    },
+    {
+     "who": "Finance",
+     "interest": "Planned cost per cost centre is visible before positions are opened."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Can request the people needed for production volumes."
+    }
+   ],
+   "trigger": "The annual operating plan cycle opens, or a manager proposes a mid-year change to the plan.",
+   "preconditions": [
+    "Sanctioned strength is recorded by org unit, designation and location with effective dates (RL-055).",
+    "Filled and open counts are derived from assignments and requisitions (RL-056).",
+    "Average cost per designation band is available for planning."
+   ],
+   "postconditions_success": [
+    "An approved headcount plan exists per period, site and cost centre; approved additions update sanctioned strength from their effective dates."
+   ],
+   "postconditions_failure": [
+    "The plan stays in draft and sanctioned strength is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Opens a headcount plan for FY 2027-28 and seeds it with current sanctioned, filled and open counts.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Proposes changes per quarter, for example +6 machinists for Chakan Works Machining from Q2.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Computes planned headcount, headroom and planned cost per site and cost centre.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Finance",
+     "action": "Reviews planned cost against budget and adjusts or comments.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Submits the consolidated plan for approval.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves the plan, or approves with adjustments.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Writes approved additions as new sanctioned-strength versions effective from their planned dates.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Tracks monthly variance of actual filled and open counts against the plan.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "A position is proposed as a replacement.",
+     "steps": [
+      "The proposal names the vacated position code and consumes no new sanctioned strength."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "The approver returns the plan.",
+     "steps": [
+      "Comments are attached and the plan returns to HR in draft."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 7,
+     "condition": "A requisition would exceed approved sanctioned strength.",
+     "handling": "The requisition is blocked at approval and the variance is shown.",
+     "rule": "RL-462"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "No cost rate exists for a designation band.",
+     "handling": "The line is flagged as unpriced and the plan cannot be submitted until a rate is set.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-055",
+    "RL-056",
+    "RL-057",
+    "RL-461",
+    "RL-462"
+   ],
+   "screens": [
+    "SCR-012",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "headcount_plan (C/U)",
+    "sanctioned_strength (C)",
+    "position (R)",
+    "requisition (R)",
+    "variance_snapshot (C)"
+   ],
+   "events": [
+    "people.headcount_plan.approved"
+   ],
+   "nfrs": [
+    "A plan for 5 sites and 200 org-unit and designation lines recalculates in under 3 s after each edit.",
+    "Variance figures are derived on read and never stored as editable values."
+   ],
+   "frequency": "Annual with monthly tracking",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-042",
+     "persona": "HR operations",
+     "want": "a plan seeded with today's sanctioned, filled and open counts",
+     "so_that": "I start from facts, not a blank sheet",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Chakan Works Machining has 20 sanctioned, 17 filled and 1 open requisition",
+       "when": "I create the FY 2027-28 plan",
+       "then": "the line shows headroom of 2"
+      },
+      {
+       "given": "a manager proposes +6 machinists from Q2",
+       "when": "the proposal is saved",
+       "then": "planned Q2 headcount is 26 and planned cost updates"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-043",
+     "persona": "Finance",
+     "want": "planned cost by cost centre before approval",
+     "so_that": "headcount growth fits the operating budget",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a plan adding 6 band-B positions at Chakan",
+       "when": "I open the cost view",
+       "then": "the incremental annual cost per cost centre is shown"
+      },
+      {
+       "given": "a designation band with no cost rate",
+       "when": "the plan is submitted",
+       "then": "submission is blocked with the unpriced line named"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-044",
+     "persona": "Director / approver",
+     "want": "monthly variance of actual headcount against the approved plan",
+     "so_that": "I can act early on over- or under-hiring",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the approved plan for Peenya Assembly in October 2026 is 30",
+       "when": "29 are filled and 2 requisitions are open",
+       "then": "the variance view shows +1 against plan"
+      },
+      {
+       "given": "a requisition that would exceed sanctioned strength",
+       "when": "it reaches approval",
+       "then": "it is blocked and the excess is stated"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-022",
+    "SYS-028",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "PPL-UC-017",
+   "name": "Present a digital ID and download verifiable employment letters",
+   "process": null,
+   "capability_gap": "PPL-CG-009",
+   "source": "Authored",
+   "goal": "Give employees a digital ID card and on-demand employment and salary certificates that third parties can verify.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a certificate for a bank loan or visa without waiting for HR."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Fewer manual letter requests and no forged letters in circulation."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Gate staff can check a digital ID quickly."
+    }
+   ],
+   "trigger": "An employee opens the digital ID or requests an employment or salary certificate.",
+   "preconditions": [
+    "The employee has an active assignment and a verified photograph on record.",
+    "Certificate templates and signing keys are configured per legal entity."
+   ],
+   "postconditions_success": [
+    "The employee holds a signed certificate with a verification code; any verifier can confirm authenticity without seeing more than the certificate states."
+   ],
+   "postconditions_failure": [
+    "No certificate is issued and the reason is shown to the employee."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens the digital ID card in the mobile app, showing photo, name, employee code, entity and site.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Requests a salary certificate for the last 3 months for a bank loan application.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Reads assignment and posted payroll results for the period from the record.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Generates the certificate from the entity template, signs it with the entity key and adds a verification code.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Downloads the certificate or shares its verification link with the bank.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "On verification, confirms authenticity, issue date and certificate contents only.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Logs issue and every verification against the employee's record.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The certificate needs custom wording, such as a visa-purpose letter.",
+     "steps": [
+      "The request routes to HR operations, who approve the wording before generation."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 6,
+     "condition": "The employee has since separated.",
+     "steps": [
+      "Verification confirms the certificate was valid on issue and states the separation date."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A requested month has no posted payroll result.",
+     "handling": "That month is excluded and the employee is told which months are included.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The assignment is suspended or ended.",
+     "handling": "The digital ID is shown as inactive and cannot be presented as valid.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-005",
+    "RL-032"
+   ],
+   "screens": [
+    "SCR-010"
+   ],
+   "data_objects": [
+    "person (R)",
+    "assignment (R)",
+    "payroll_result (R)",
+    "certificate (C)",
+    "verification_log (C)"
+   ],
+   "events": [
+    "people.certificate.issued",
+    "people.certificate.verified"
+   ],
+   "nfrs": [
+    "A certificate is generated in under 10 s.",
+    "Verification works without the verifier holding an account and reveals nothing beyond the certificate."
+   ],
+   "frequency": "Daily",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-045",
+     "persona": "Employee / worker",
+     "want": "to download a salary certificate myself",
+     "so_that": "I can apply for a loan the same day",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am E1044 with posted payroll for July to September 2026",
+       "when": "I request a 3-month salary certificate",
+       "then": "a signed PDF with a verification code is ready within 10 s"
+      },
+      {
+       "given": "September payroll is not yet posted",
+       "when": "I request July to September",
+       "then": "the certificate covers July and August and says so"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-046",
+     "persona": "HR operations",
+     "want": "certificates to be verifiable by third parties",
+     "so_that": "forged letters cannot pass as ours",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a bank enters the verification code of a genuine certificate",
+       "when": "verification runs",
+       "then": "it confirms LE-01 issued it on the stated date with the stated contents"
+      },
+      {
+       "given": "a tampered certificate with an altered amount",
+       "when": "the bank verifies it",
+       "then": "verification reports a mismatch"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-047",
+     "persona": "Employee / worker",
+     "want": "a digital ID on my phone",
+     "so_that": "I can identify myself at another Vindhya site without a plastic card",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am an active employee at Chakan Works",
+       "when": "I open the digital ID",
+       "then": "it shows my photo, code, entity LE-01 and a code that refreshes every 60 s"
+      },
+      {
+       "given": "my assignment ended on 2026-09-30",
+       "when": "I open the digital ID on 2026-10-01",
+       "then": "it is marked inactive"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-032",
+    "SYS-033",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "PPL-UC-018",
+   "name": "Monitor organisation health metrics by unit",
+   "process": null,
+   "capability_gap": "PPL-CG-010",
+   "source": "Authored",
+   "goal": "Show managers and HR span of control, layers, vacancy age, tenure mix and flight-risk concentration per organisation unit.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Can spot structural problems such as very wide spans or long-open vacancies early."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Flight-risk signals are never shown for identifiable individuals below the aggregation threshold."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Can compare site organisation health on consistent definitions."
+    }
+   ],
+   "trigger": "A manager or HR user opens the organisation health view for a unit.",
+   "preconditions": [
+    "Assignments, positions and the reporting hierarchy are current.",
+    "Metric definitions and the minimum group size for risk aggregation are configured."
+   ],
+   "postconditions_success": [
+    "The user sees metrics for units within their scope, with definitions, trend and drill-down limited to their grants."
+   ],
+   "postconditions_failure": [
+    "Metrics for units outside scope or below the group-size threshold are suppressed with a stated reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Opens organisation health for their unit, for example Peenya Works Assembly.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Resolves the reporting subtree within the user's scope at query time.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Derives span of control, layers, vacancy age, tenure mix and headcount from positions and assignments.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Agent (governed)",
+     "action": "Computes flight-risk concentration per unit from approved signals and returns only aggregated bands.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Displays each metric with its definition, 12-month trend and a threshold indicator.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Drills into a long-open vacancy or a manager with a wide span.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Compares the same metrics across all five sites and records an action, such as splitting a team.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "HR exports the comparison.",
+     "steps": [
+      "The export contains aggregated metrics only and is logged."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A unit has fewer people than the minimum group size.",
+     "handling": "Flight-risk concentration is suppressed for that unit and marked as below threshold.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The user requests a unit outside their reporting line.",
+     "handling": "The unit is not returned and the view states it is outside scope.",
+     "rule": "RL-004"
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-056",
+    "RL-057",
+    "RL-058"
+   ],
+   "screens": [
+    "SCR-012",
+    "SCR-013"
+   ],
+   "data_objects": [
+    "position (R)",
+    "assignment (R)",
+    "org_unit (R)",
+    "org_health_snapshot (C)"
+   ],
+   "events": [
+    "people.org_health.viewed"
+   ],
+   "nfrs": [
+    "Metrics for a 1,000-person subtree load in under 3 s.",
+    "No flight-risk value is shown for any group smaller than the configured minimum size."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PPL-US-048",
+     "persona": "Manager / supervisor",
+     "want": "span, layers and vacancy age for my unit",
+     "so_that": "I can see where my structure needs attention",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I am E1021 managing Peenya Assembly with 9 direct reports and one position vacant since 2026-07-15",
+       "when": "I open organisation health on 2026-11-05",
+       "then": "I see span 9, vacancy age 113 days and my layer count"
+      },
+      {
+       "given": "I request Chakan Works Machining",
+       "when": "the view loads",
+       "then": "the unit is refused as outside my reporting line"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-049",
+     "persona": "HR operations",
+     "want": "the same metrics compared across all five sites",
+     "so_that": "I can prioritise interventions where structure is weakest",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my grant covers LE-01 and LE-02",
+       "when": "I open the site comparison",
+       "then": "five sites are listed with span, layers, vacancy age and tenure mix"
+      },
+      {
+       "given": "a manager at Oragadam Works with span 22 and the threshold set at 15",
+       "when": "the comparison loads",
+       "then": "that manager's unit is flagged above threshold"
+      }
+     ]
+    },
+    {
+     "id": "PPL-US-050",
+     "persona": "Employee / worker",
+     "want": "my individual flight-risk score never to be shown to managers",
+     "so_that": "I am not singled out on an inference",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a unit of 4 people and a minimum group size of 5",
+       "when": "a manager opens organisation health",
+       "then": "flight-risk concentration is suppressed for that unit"
+      },
+      {
+       "given": "a unit of 30 people",
+       "when": "the metric shows",
+       "then": "it appears only as a band for the unit with no individual names"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-016",
+    "SYS-017",
+    "SYS-077"
+   ]
+  }
+ ]
+}

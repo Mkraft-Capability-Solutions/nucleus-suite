@@ -1,0 +1,3845 @@
+{
+ "domain": "PLT",
+ "use_cases": [
+  {
+   "id": "PLT-UC-001",
+   "name": "Provision a new client tenant",
+   "process": "PLT-01",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Stand up an isolated, fully seeded and health-checked tenant for a signed client or approved demo request in under 30 minutes without manual database work.",
+   "level": "Summary",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Receives a working tenant with a first administrator account and safe default roles on day one."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can prove when, by whom and with what baseline configuration the tenant was created."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Starts configuration immediately instead of waiting on infrastructure tickets."
+    }
+   ],
+   "trigger": "A signed client order or an approved demo request is assigned to the implementation consultant.",
+   "preconditions": [
+    "The implementation consultant is authenticated and holds the tenant-provisioning permission.",
+    "The client's legal name, intended tenant code, edition and data-residency choice (cloud region in India by default) are recorded on the order."
+   ],
+   "postconditions_success": [
+    "A tenant exists with its own isolation key, and every table query is filtered by that key.",
+    "Baseline reference data, default role templates and a tenant default approval chain are seeded.",
+    "A first tenant admin principal exists in Pending activation state and an activation link has been issued.",
+    "The provisioning run is recorded in the audit ledger with duration and health-check results."
+   ],
+   "postconditions_failure": [
+    "No partially created tenant remains; every artefact of the failed run is rolled back.",
+    "The provisioning request shows status Failed with the failing check named, and the consultant is notified."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Opens a provisioning request with client legal name, tenant code, edition, data-residency region and planned go-live date.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates that the tenant code is unique and well-formed, then allocates an isolated tenant partition keyed on tenant_id.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Seeds baseline data: statutory picklists, role templates, notification templates and a tenant default approval chain.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Implementation consultant",
+     "action": "Records the client's legal entities and locations with state codes, for example LE-01 with LOC-BLR and LOC-PLA.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Creates the first tenant admin principal with the tenant-admin role template and issues a time-limited activation link.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Runs the post-provisioning health check: cross-tenant isolation probe, default chain resolvable, audit write and event relay round trip.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Marks the tenant Ready, records elapsed time and check results in the audit ledger and notifies the consultant.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Tenant admin",
+     "action": "Activates the account through the link, enrols multi-factor authentication and confirms first sign-in.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The request is a demo request rather than a signed order.",
+     "steps": [
+      "Nucleus platform seeds the synthetic Vindhya Precision Industries Pvt Ltd dataset in place of an empty tenant.",
+      "Nucleus platform sets an expiry date on the demo tenant and labels every screen as demonstration data."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "The consultant chooses to start from a previously approved configuration package.",
+     "steps": [
+      "Implementation consultant selects the package and reviews the list of objects it will create.",
+      "Nucleus platform applies the package as effective-dated configuration versions."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The requested tenant code already exists or contains disallowed characters.",
+     "handling": "Nucleus platform rejects the request with the reason and suggests an available code; nothing is allocated.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "Any health check fails, including a query that returns rows from another tenant.",
+     "handling": "Nucleus platform rolls back the whole run, sets status Failed with the failing check named and raises an operations alert.",
+     "rule": "RL-004"
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "Elapsed provisioning time exceeds 30 minutes.",
+     "handling": "The tenant is still completed if checks pass, but the run is flagged as an NFR breach and counted on the operations dashboard.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-004"
+   ],
+   "screens": [],
+   "data_objects": [
+    "tenant (C)",
+    "legal_entity (C)",
+    "location (C)",
+    "role_template (C)",
+    "approval_chain (C)",
+    "principal (C)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.principal.created"
+   ],
+   "nfrs": [
+    "A tenant is fully provisioned, seeded and health-checked in under 30 minutes, end to end, with no manual step.",
+    "The isolation probe in the health check runs against every tenant-scoped table and must return zero foreign rows."
+   ],
+   "frequency": "Per client",
+   "criticality": "High",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-PR09"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-001",
+     "persona": "Implementation consultant",
+     "want": "to provision a client tenant from a single request form with automated seeding and checks",
+     "so_that": "configuration work can begin the same day the order is signed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a signed order for Vindhya Precision Industries Pvt Ltd with tenant code vindhya and region set to a cloud region in India",
+       "when": "the consultant submits the provisioning request",
+       "then": "the tenant reaches status Ready in under 30 minutes and the audit ledger shows the run with its elapsed time"
+      },
+      {
+       "given": "a tenant named vindhya already exists",
+       "when": "the consultant submits another request with tenant code vindhya",
+       "then": "the request is rejected with the message that the code is in use and no partition is allocated"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-002",
+     "persona": "Tenant admin",
+     "want": "to receive an activation link for the first administrator account of my new tenant",
+     "so_that": "I can take ownership of users and scope without asking the vendor for access",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the tenant vindhya has just reached status Ready",
+       "when": "the tenant admin opens the activation link within 72 hours",
+       "then": "the account is activated, multi-factor enrolment is required before the first screen loads, and the event platform.principal.created is recorded"
+      },
+      {
+       "given": "the activation link is older than 72 hours",
+       "when": "the tenant admin opens it",
+       "then": "activation is refused and the consultant can reissue a new link from the provisioning request"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-003",
+     "persona": "Auditor",
+     "want": "evidence that a newly provisioned tenant cannot read another tenant's rows",
+     "so_that": "tenant isolation is proven at creation rather than assumed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "tenants vindhya and a second demo tenant both hold employee records",
+       "when": "the provisioning health check runs its isolation probe as a vindhya principal",
+       "then": "zero rows from the second tenant are returned and the probe result is stored with the run"
+      },
+      {
+       "given": "the isolation probe returns any foreign row",
+       "when": "the health check completes",
+       "then": "the run is marked Failed, the tenant is rolled back and an operations alert is raised"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-001",
+    "SYS-003",
+    "SYS-004",
+    "SYS-005",
+    "SYS-006",
+    "SYS-009"
+   ]
+  },
+  {
+   "id": "PLT-UC-002",
+   "name": "Grant identity, role and data scope",
+   "process": "PLT-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Create a user or agent principal and grant it the narrowest entity, location and payroll-group scope its job needs, enforced on every request.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Plant HR / time office",
+    "Agent principal"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Salary and rate structure of head-office-payrolled staff stay invisible to plant users."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Sees and edits attendance for every worker at the site, including head-office-payrolled staff."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every grant names who granted it and from when it applies."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Personal data access follows least privilege as expected under the DPDP Act 2023 (to be validated by Legal)."
+    }
+   ],
+   "trigger": "A user is created or moves role, entity or location, or a new agent is registered.",
+   "preconditions": [
+    "The tenant admin is authenticated with a recent step-up and holds the principal-administration permission.",
+    "The legal entities, locations and payroll groups to be granted exist in the tenant."
+   ],
+   "postconditions_success": [
+    "The principal exists with a role template, entity grants and location grants, each with granted_by and effective_from.",
+    "Every subsequent request by the principal is filtered by the intersection of tenant, entity, location, reporting line and payroll group.",
+    "Compensation fields of records outside the principal's payroll group are returned as null on every surface."
+   ],
+   "postconditions_failure": [
+    "No principal or grant is persisted when a validation fails.",
+    "A principal whose scope cannot be resolved receives an empty result set, never a full one."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Creates the principal (user, agent or service) on the scope grant screen and attaches a role template.",
+     "ref": "PLT-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Tenant admin",
+     "action": "Grants entity scope by selecting one or more legal entity codes with an effective-from date.",
+     "ref": "PLT-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Tenant admin",
+     "action": "Grants location scope by selecting one or more location codes and setting can_edit_time to Y or N.",
+     "ref": "PLT-02.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "On every request, resolves effective scope as tenant ∩ entity ∩ location ∩ reporting subtree ∩ payroll group.",
+     "ref": "PLT-02.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Checks whether each requested field is a compensation field and whether the reader is outside the record's payroll group.",
+     "ref": "PLT-02.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The field is not a compensation field, or the reader belongs to the record's payroll group.",
+     "steps": [
+      "Nucleus platform returns the field value unchanged within the resolved scope."
+     ],
+     "rejoin": "Ends the use case"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The principal needs entity-wide time visibility and has no location grant.",
+     "steps": [
+      "Tenant admin sets the explicit entity-wide time visibility flag with a reason.",
+      "Nucleus platform records the flag as a grant with granted_by and effective_from."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "An agent principal is submitted without a named human owner.",
+     "handling": "Creation fails with the reason that an accountable owner is mandatory; nothing is persisted.",
+     "rule": "RL-001"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A principal has no location grant and no entity-wide time flag.",
+     "handling": "The principal sees no time data for any location until a location grant is added.",
+     "rule": "RL-003"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "Scope resolution fails because a grant, reporting line or payroll group cannot be read.",
+     "handling": "Nucleus platform returns an empty set and logs the failure; it never falls back to a wider scope.",
+     "rule": "RL-004"
+    },
+    {
+     "id": "E4",
+     "at_step": 5,
+     "condition": "The reader is outside the record's payroll group and the field is basic, da, hra, daily_rate, gross or ctc.",
+     "handling": "The field is returned as null on screens, reports, exports and the API while attendance fields stay populated; the check runs in every build.",
+     "rule": "RL-005"
+    }
+   ],
+   "business_rules": [
+    "RL-001",
+    "RL-002",
+    "RL-003",
+    "RL-004",
+    "RL-005",
+    "BS:RL-24"
+   ],
+   "screens": [
+    "SCR-005",
+    "SCR-022"
+   ],
+   "data_objects": [
+    "principal (C)",
+    "role (R)",
+    "entity_grant (C)",
+    "location_grant (C)",
+    "scope_resolution (R)",
+    "salary_structure (R)"
+   ],
+   "events": [
+    "platform.principal.created",
+    "platform.scope.granted"
+   ],
+   "nfrs": [
+    "Scope resolution adds no more than 20 ms at p95 to any read request.",
+    "The compensation-nulling golden test runs on every build and blocks release on failure."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [
+    "R-09"
+   ],
+   "acceptance_tests": [
+    "TC-P01",
+    "TC-P02",
+    "TC-P03",
+    "TC-P04",
+    "TC-P05",
+    "TC-PR09",
+    "T-18"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-004",
+     "persona": "Tenant admin",
+     "want": "to register an agent principal only together with a named accountable human owner",
+     "so_that": "every automated action can be traced to a person who answers for it",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the tenant admin is creating a principal of type agent",
+       "when": "they save it with owner_principal_id empty",
+       "then": "the save fails with the message that an accountable human owner is required and no principal is created"
+      },
+      {
+       "given": "the same agent with owner_principal_id set to HR operations user E1006",
+       "when": "the tenant admin saves it",
+       "then": "the principal is created and platform.principal.created is emitted with the owner recorded"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-005",
+     "persona": "Tenant admin",
+     "want": "to grant a plant HR user location scope for one site with time-edit rights",
+     "so_that": "the user can run the site's time office without seeing other sites",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a plant HR user with entity grant LE-02 and location grant LOC-CHN with can_edit_time Y",
+       "when": "the user opens attendance for LOC-HYD",
+       "then": "no LOC-HYD records are returned"
+      },
+      {
+       "given": "the same user",
+       "when": "the user opens attendance for LOC-CHN",
+       "then": "attendance for every LOC-CHN worker is listed and editable, including head-office-payrolled staff"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-006",
+     "persona": "Plant HR / time office",
+     "want": "to see attendance but never salary or rate data for head-office-payrolled employees at my site",
+     "so_that": "I can run the time office without exposure to compensation outside my payroll group",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a plant HR user scoped to LOC-CHN and payroll group PLANT-CHN, and employee E1056 Anand Krishnan at LOC-CHN in payroll group HO",
+       "when": "the user opens E1056's record, the salary register, an export and the API",
+       "then": "attendance fields are populated and basic, da, hra, daily_rate, gross and ctc are null on all four surfaces"
+      },
+      {
+       "given": "a payroll manager scoped to payroll group HO",
+       "when": "they open E1056's salary structure",
+       "then": "all compensation fields are shown with their values"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-007",
+     "persona": "Auditor",
+     "want": "assurance that a failure in scope resolution never widens access",
+     "so_that": "a defect cannot silently expose an entire tenant",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a principal whose payroll group lookup fails during a request",
+       "when": "the request lists employees",
+       "then": "an empty list is returned and a scope-resolution failure is logged with the principal ID"
+      },
+      {
+       "given": "a query issued with a defect that omits the tenant filter",
+       "when": "it executes",
+       "then": "row-level isolation still blocks every row from other tenants"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-002",
+    "SYS-009",
+    "SYS-015",
+    "SYS-016",
+    "SYS-018",
+    "SYS-019"
+   ]
+  },
+  {
+   "id": "PLT-UC-003",
+   "name": "Author and effective-date configuration",
+   "process": "PLT-03",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Change a client policy as a versioned, effective-dated, simulated and approved configuration object rather than as code.",
+   "level": "User goal",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Director / approver",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Policy changes take effect on the agreed date and old periods keep the old rules."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "A rerun of a past period uses the configuration that applied then."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every configuration version shows who changed it, why and when it applies."
+    }
+   ],
+   "trigger": "A client policy changes or an implementation requires a new rule set.",
+   "preconditions": [
+    "The implementation consultant holds the implementation role for the tenant.",
+    "The configuration object type (for example a leave policy) exists in the tenant."
+   ],
+   "postconditions_success": [
+    "A new configuration version exists with valid_from, change reason and approver, and the prior version is end-dated, not deleted.",
+    "Computations dated before valid_from continue to read the prior version."
+   ],
+   "postconditions_failure": [
+    "The draft remains unpublished and the active version is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Opens the configuration object, for example a leave policy on the leave policy configuration screen, and creates a draft version.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Edits the parameters and enters the effective-from date and a change reason.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates the draft against its schema and dependent objects, such as leave types referenced by accrual rules.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Implementation consultant",
+     "action": "Runs a simulation on a sample population and reviews per-employee before-and-after results.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Implementation consultant",
+     "action": "Submits the draft for approval with the simulation summary attached.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Director / approver",
+     "action": "Approves the configuration change through the shared approval engine.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Publishes the draft as a new version from the effective date and end-dates the superseded version without deleting it.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Writes an audit entry and emits a versioning event for downstream caches and consumers.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The effective date falls in a past period.",
+     "steps": [
+      "Nucleus platform lists the closed payroll and attendance periods the change would touch.",
+      "Implementation consultant confirms the retro change explicitly before the draft can be submitted."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The client rule cannot be expressed with the available configuration parameters.",
+     "steps": [
+      "Implementation consultant records the rule as a product gap with the client's worked example.",
+      "The draft is saved but not submitted until the gap is resolved."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Another published or pending version already starts on the same effective date.",
+     "handling": "Validation fails and names the conflicting version; the consultant must change the date or withdraw the other draft.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The simulation reports errors such as a negative leave balance for any employee.",
+     "handling": "Submission is disabled until the errors are resolved or each is acknowledged with a reason.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "The approver rejects the change.",
+     "handling": "The draft returns to the consultant with the reason; the active version is unchanged.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-020",
+    "RL-021"
+   ],
+   "screens": [
+    "SCR-032"
+   ],
+   "data_objects": [
+    "configuration_version (C)",
+    "configuration_version (U)",
+    "simulation_run (C)",
+    "approval_instance (C)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.record.versioned"
+   ],
+   "nfrs": [
+    "A simulation over 5,000 employees completes in under 60 seconds.",
+    "Configuration version history is retained for the life of the tenant."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P20",
+    "TC-P21"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-008",
+     "persona": "Implementation consultant",
+     "want": "to publish a leave policy change that applies only from a future date",
+     "so_that": "current-year balances are untouched while next year's rules are ready in advance",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the active casual leave policy grants 6 days a year",
+       "when": "the consultant publishes a version granting 8 days effective 2027-01-01",
+       "then": "a request dated 2026-12-15 reads the 6-day version and a request dated 2027-01-10 reads the 8-day version"
+      },
+      {
+       "given": "the 8-day version is published",
+       "when": "the version history is opened",
+       "then": "the 6-day version is still listed with recorded_to set and no row has been deleted"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-009",
+     "persona": "Implementation consultant",
+     "want": "to simulate a configuration change against real employees before submitting it",
+     "so_that": "I catch side effects before they reach payslips or balances",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a draft accrual rule and a sample of 70 employees from LE-01",
+       "when": "the consultant runs the simulation",
+       "then": "a per-employee before-and-after table is shown with differences highlighted"
+      },
+      {
+       "given": "the simulation shows employee E1028 with a negative balance",
+       "when": "the consultant tries to submit",
+       "then": "the submit action is disabled until the error is fixed or acknowledged with a reason"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-010",
+     "persona": "Auditor",
+     "want": "to read the configuration that applied on a given date",
+     "so_that": "I can verify a past computation against the rules in force at that time",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "two versions of a policy effective 2026-04-01 and 2026-10-01",
+       "when": "the auditor requests the policy as at 2026-07-15",
+       "then": "the 2026-04-01 version is returned with its approver and change reason"
+      },
+      {
+       "given": "the same request with recorded_at set to 2026-05-01",
+       "when": "the auditor runs it",
+       "then": "only versions recorded on or before 2026-05-01 are considered"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-032",
+    "SYS-037",
+    "SYS-048",
+    "SYS-053",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "PLT-UC-004",
+   "name": "Define and version an approval workflow",
+   "process": "PLT-04",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Publish a new or changed approval chain definition as a version so that new requests use it while in-flight requests finish on the version they started under.",
+   "level": "User goal",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Pending items in the inbox do not change approver or step count midway."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "A request submitted yesterday is decided under the rules that applied when it was submitted."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Chains can change when the organisation changes, without a code release."
+    }
+   ],
+   "trigger": "A new approvable process is introduced or an existing chain must change.",
+   "preconditions": [
+    "The request type exists and is wired to the shared approval engine.",
+    "A tenant default chain exists for fallback routing."
+   ],
+   "postconditions_success": [
+    "A new chain version exists with effective_from, keys (request type, worker class, location, amount band), steps and SLA hours.",
+    "Instances started before publication continue on their original version; new submissions bind to the new version."
+   ],
+   "postconditions_failure": [
+    "The previous chain version remains in force and the draft stays unpublished."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Selects a request type, for example leave application, and creates a draft chain version.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Sets the resolution keys the chain applies to: worker class, location and amount band.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Implementation consultant",
+     "action": "Adds ordered steps, each with approver resolution mode (role, position or named person) and SLA hours.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Implementation consultant",
+     "action": "Sets the reroute policy for departed approvers and the escalation target for SLA breach on each step.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Validates that every step can resolve an approver and that the keys do not overlap another active chain.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Implementation consultant",
+     "action": "Simulates sample requests and reviews the approver resolved at each step.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Implementation consultant",
+     "action": "Publishes the version with an effective-from date and a change reason.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Binds new submissions to the new version and leaves in-flight instances pinned to their starting version.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "The consultant schedules the version for a future date.",
+     "steps": [
+      "Nucleus platform keeps the current version active until the effective date.",
+      "At the effective date, new submissions start binding to the new version."
+     ],
+     "rejoin": "Returns to step 8"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "A step's role or position has no current holder in some location covered by the keys.",
+     "handling": "Validation fails and lists the uncovered locations; publication is blocked.",
+     "rule": "RL-011"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "No reroute policy is set for a step resolved by named person.",
+     "handling": "Validation fails because a departed approver would leave items orphaned.",
+     "rule": "RL-012"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "Two active chains match the same request type, worker class, location and amount band.",
+     "handling": "Validation fails and names the overlapping chain, since each request must resolve to exactly one chain.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-011",
+    "RL-012"
+   ],
+   "screens": [],
+   "data_objects": [
+    "approval_chain (C)",
+    "approval_chain_step (C)",
+    "approval_instance (R)",
+    "audit_entry (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Publishing a chain version never alters the step count or approvers of an in-flight instance.",
+    "Chain resolution for a submitted request completes in under 100 ms at p95."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-P11",
+    "TC-P12"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-011",
+     "persona": "Implementation consultant",
+     "want": "to publish a new chain version without disturbing requests already in progress",
+     "so_that": "approvers and requesters never see a request change its route midway",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a two-step leave chain v1 and a leave request from E1018 pending at step 1",
+       "when": "a three-step v2 is published",
+       "then": "E1018's request still shows two steps and completes on v1"
+      },
+      {
+       "given": "v2 is published",
+       "when": "employee E1019 submits a new leave request",
+       "then": "the new instance binds to v2 and shows three steps"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-012",
+     "persona": "Implementation consultant",
+     "want": "to simulate which approver each step would resolve to for a sample request",
+     "so_that": "I can confirm routing before the chain goes live",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a draft chain for leave at LOC-PLA with step 1 resolved by reporting manager",
+       "when": "the consultant simulates a request from E1018",
+       "then": "step 1 resolves to E1017 Nikhil Iyer"
+      },
+      {
+       "given": "a draft step resolved by a position with no incumbent at LOC-PUN",
+       "when": "validation runs",
+       "then": "publication is blocked and LOC-PUN is listed as uncovered"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-013",
+     "persona": "Tenant admin",
+     "want": "every chain version to record who published it, when and why",
+     "so_that": "routing changes can be reviewed after a dispute",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a chain version published on 2026-11-05 by the implementation consultant",
+       "when": "the tenant admin opens the chain history",
+       "then": "the version shows publisher, timestamp, effective_from and change reason"
+      },
+      {
+       "given": "the consultant tries to publish without a change reason",
+       "when": "they click publish",
+       "then": "publication is refused with a message asking for the reason"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-038",
+    "SYS-039",
+    "SYS-041",
+    "SYS-042",
+    "SYS-043"
+   ]
+  },
+  {
+   "id": "PLT-UC-005",
+   "name": "Execute an approval chain",
+   "process": "PLT-05",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Route any approvable request through its configured chain to a recorded final decision, with SLA tracking, rerouting and auditable HR override.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor",
+    "Director / approver",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a timely decision and the reason for any rejection."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees every pending item from every module in one inbox with the rule context."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Can correct or close a request at any stage with the change on record."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each decision records actor, time, channel and reason."
+    }
+   ],
+   "trigger": "A requester submits any approvable request: leave, gate pass, loan, requisition, overtime, regularisation or letter.",
+   "preconditions": [
+    "The requester is authenticated and the request has passed its own form validation.",
+    "A chain is configured for the request or a tenant default chain exists."
+   ],
+   "postconditions_success": [
+    "The approval instance is closed with final state, closed_at and every step decision recorded.",
+    "The domain-specific approved event is emitted and control returns to the calling process."
+   ],
+   "postconditions_failure": [
+    "On rejection the instance ends, the requester is notified with the reason, and the calling process receives the rejection.",
+    "No item is left without an active approver."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits an approvable request; the engine reads the chain for tenant, request type, worker class and location and opens an instance.",
+     "ref": "PLT-05.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Materialises the current step, resolves the approver by role, position or named person, and starts the SLA clock.",
+     "ref": "PLT-05.2"
+    },
+    {
+     "n": 3,
+     "actor": "Manager / supervisor",
+     "action": "Approves, rejects or returns the item from the unified approval inbox; actor, timestamp, channel and reason are captured.",
+     "ref": "PLT-05.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Checks whether any mandatory steps remain in the chain.",
+     "ref": "PLT-05.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Closes the instance, emits the domain-specific approved event and hands control back to the calling process.",
+     "ref": "PLT-05.5"
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Overrides or edits the request at any stage when needed, recording actor and reason.",
+     "ref": "PLT-05.6"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "One or more mandatory steps remain.",
+     "steps": [
+      "Nucleus platform opens the next step sequentially and resolves its approver.",
+      "The next approver receives the item in the unified approval inbox."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The approver returns the request for correction instead of deciding.",
+     "steps": [
+      "Nucleus platform sends the request back to the requester with the return reason.",
+      "Employee / worker amends and resubmits; the instance resumes at the same step."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 3,
+     "condition": "The approver decides from the business messaging channel or mobile app while offline.",
+     "steps": [
+      "The decision is queued on the device and synchronised when connectivity returns.",
+      "Nucleus platform records the channel and the original decision time."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "No chain is configured for the request's type, worker class and location.",
+     "handling": "The request routes to the tenant default chain and a configuration warning is raised to the implementation consultant.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The resolved approver is inactive or has left.",
+     "handling": "The step reroutes to the successor, then to the role holder; the item is never left orphaned.",
+     "rule": "RL-012"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "The resolved approver is the requester.",
+     "handling": "Self-approval is not permitted; the step resolves to the next approver in the reporting line.",
+     "rule": "RL-011"
+    },
+    {
+     "id": "E4",
+     "at_step": 3,
+     "condition": "The approver rejects or returns without entering a reason.",
+     "handling": "The decision is refused until a reason is entered; on rejection the instance ends and the requester is notified with the reason text.",
+     "rule": "RL-013"
+    },
+    {
+     "id": "E5",
+     "at_step": 5,
+     "condition": "A step's SLA expires before a decision.",
+     "handling": "The item escalates per the step configuration and the breach is counted; the SLA is never silently extended.",
+     "rule": "RL-014"
+    },
+    {
+     "id": "E6",
+     "at_step": 6,
+     "condition": "HR submits an override without a reason.",
+     "handling": "The service rejects the override; the request state is unchanged.",
+     "rule": "RL-015"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-011",
+    "RL-012",
+    "RL-013",
+    "RL-014",
+    "RL-015"
+   ],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "approval_chain (R)",
+    "approval_instance (C)",
+    "approval_instance (U)",
+    "approval_step (C)",
+    "approval_step (U)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.approval.started",
+    "platform.approval.step_opened",
+    "platform.approval.step_decided",
+    "platform.approval.completed",
+    "platform.approval.overridden"
+   ],
+   "nfrs": [
+    "A decision recorded in the inbox is reflected in the calling module within 5 seconds at p95.",
+    "Decisions queued offline are synchronised within 60 seconds of reconnection without duplication."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-P11",
+    "TC-P12",
+    "TC-P13",
+    "TC-L15"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-014",
+     "persona": "Manager / supervisor",
+     "want": "to decide every pending request from one inbox with the rule context shown",
+     "so_that": "I do not have to visit each module to clear approvals",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "manager E1021 Rekha Deshpande has a leave request from E1022 and an overtime request from E1020 pending",
+       "when": "she opens the unified approval inbox",
+       "then": "both items are listed with request type, requester, SLA due time and the rule being applied"
+      },
+      {
+       "given": "she chooses Reject on the leave request with the reason field empty",
+       "when": "she submits",
+       "then": "the decision is refused with a message that a reason is required"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-015",
+     "persona": "Employee / worker",
+     "want": "to be told the reason when my request is rejected",
+     "so_that": "I can correct and resubmit without chasing my manager",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1022's leave request is rejected at step 1 with reason 'Line audit on 12 Nov'",
+       "when": "the decision is saved",
+       "then": "the instance ends and E1022 receives a notification containing the reason text"
+      },
+      {
+       "given": "a request returned for correction",
+       "when": "the employee amends and resubmits it",
+       "then": "the instance resumes at the same step and the earlier return is visible in its history"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-016",
+     "persona": "HR operations",
+     "want": "to edit or close a request at any stage with my reason on record",
+     "so_that": "operational corrections are possible without losing accountability",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "leave request LV-2026-0774 is approved",
+       "when": "HR closes it on 14 Sep with reason 'Early return confirmed by supervisor'",
+       "then": "the audit entry records HR's identity, timestamp, previous state and reason, and platform.approval.overridden is emitted"
+      },
+      {
+       "given": "HR attempts an override with an empty reason",
+       "when": "they submit",
+       "then": "the service rejects the override and the request state is unchanged"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-017",
+     "persona": "Director / approver",
+     "want": "items queued against a departed approver to reach me as the successor",
+     "so_that": "no request is stranded when someone leaves",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a loan request pending at a step resolved to an approver whose exit was processed on 30 Sep",
+       "when": "the exit becomes effective",
+       "then": "the step reroutes to the named successor and appears in the successor's inbox"
+      },
+      {
+       "given": "no successor is named",
+       "when": "the reroute runs",
+       "then": "the step resolves to the current role holder and the reroute is logged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-036",
+    "SYS-037",
+    "SYS-038",
+    "SYS-039",
+    "SYS-040",
+    "SYS-064"
+   ]
+  },
+  {
+   "id": "PLT-UC-006",
+   "name": "Write the audit and action ledger",
+   "process": "PLT-06",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Record every write and every sensitive read in one append-only ledger that names the real actor, including agent identity and its human owner.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Auditor",
+    "Agent principal",
+    "Compliance owner"
+   ],
+   "stakeholders": [
+    {
+     "who": "Auditor",
+     "interest": "Can reconstruct who did what, on whose behalf and through which channel."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Access to PAN, Aadhaar, bank and salary data is evidenced for privacy obligations (to be validated by Legal)."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Agent actions are traceable to their accountable owner."
+    }
+   ],
+   "trigger": "Any service commits a write or serves a read of a field classified as sensitive.",
+   "preconditions": [
+    "The acting principal has been authenticated and its scope resolved.",
+    "Field security classifications are configured for sensitive fields."
+   ],
+   "postconditions_success": [
+    "An immutable ledger entry exists with tenant, actor, on-behalf-of, agent owner where applicable, action, object, change digest, channel, IP and timestamp.",
+    "The entry is linked to the previous entry so tampering is detectable."
+   ],
+   "postconditions_failure": [
+    "If the ledger entry cannot be written, the business write is rolled back; no unaudited write persists."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Intercepts a committed write or a read that returns a field classified as sensitive.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Builds the entry: tenant, actor principal, real actor if delegated or act-as, agent owner, action and object reference.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Adds a before-and-after digest for writes, or the sensitive field classes revealed for reads, plus channel and source IP.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Appends the entry in the same transaction as the business write, chained to the previous entry's hash.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Auditor",
+     "action": "Queries the ledger read-only by object, actor, agent or date range within the auditor's scope.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Verifies hash-chain integrity nightly and reports the result to the auditor dashboard.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The actor is an agent principal.",
+     "steps": [
+      "Nucleus platform records the agent principal as actor and its owner_principal_id as accountable owner on the same entry.",
+      "The entry is stored in the same ledger, with agent identity as a dimension."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The ledger append fails.",
+     "handling": "The business transaction is rolled back and the caller receives a retriable error.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Any principal attempts to update or delete a ledger entry.",
+     "handling": "The operation is refused and the attempt is itself recorded as a ledger entry.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "The nightly integrity check finds a broken hash link.",
+     "handling": "A security incident is raised to the tenant admin and auditor with the first broken entry identified.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 2,
+     "condition": "An HR override arrives without a reason.",
+     "handling": "The override is rejected before reaching the ledger, so no unexplained override is recorded as accepted.",
+     "rule": "RL-015"
+    }
+   ],
+   "business_rules": [
+    "RL-001",
+    "RL-015"
+   ],
+   "screens": [
+    "SCR-110"
+   ],
+   "data_objects": [
+    "audit_entry (C)",
+    "audit_entry (R)",
+    "access_event (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Ledger append adds no more than 10 ms at p95 to a write transaction.",
+    "Ledger entries are retained for at least 8 years and cannot be altered by any role, including tenant admin."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-L15"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-018",
+     "persona": "Auditor",
+     "want": "to see agent actions in the same ledger as human actions with the owner named",
+     "so_that": "automated changes are reviewed with the same rigour as manual ones",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an agent principal owned by E1006 drafts a letter for E1043",
+       "when": "the auditor filters the ledger by object E1043",
+       "then": "the entry shows the agent as actor and E1006 as accountable owner"
+      },
+      {
+       "given": "the auditor filters by actor type agent for October 2026",
+       "when": "the query runs",
+       "then": "only agent-originated entries are returned, from the same ledger as human entries"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-019",
+     "persona": "Compliance owner",
+     "want": "every view of an unmasked PAN or bank account to be logged",
+     "so_that": "access to sensitive identifiers can be evidenced on request",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a payroll manager unmasks E1056's PAN on the employee record",
+       "when": "the field is returned",
+       "then": "a ledger entry records the reader, field class PAN, object E1056, channel and source IP"
+      },
+      {
+       "given": "the same payroll manager views the masked value only",
+       "when": "the record loads",
+       "then": "no sensitive-read entry is written for PAN"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-020",
+     "persona": "Tenant admin",
+     "want": "the ledger to be impossible to edit even with my privileges",
+     "so_that": "the audit trail is credible to external auditors",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the tenant admin calls the delete operation on a ledger entry",
+       "when": "the request is processed",
+       "then": "it is refused and a new entry records the attempted deletion"
+      },
+      {
+       "given": "the nightly integrity check",
+       "when": "all entries are intact",
+       "then": "the auditor dashboard shows the check as passed with the entry count verified"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-014",
+    "SYS-032",
+    "SYS-033",
+    "SYS-034",
+    "SYS-035"
+   ]
+  },
+  {
+   "id": "PLT-UC-007",
+   "name": "Publish domain events through the outbox relay",
+   "process": "PLT-07",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Guarantee that every committed domain write publishes its event exactly once to consumers, and that no event is published for a write that rolled back.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "ERP system",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Finance",
+     "interest": "Payroll and journal events reach the ERP system once, never twice and never lost."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Event transport can change without modifying producing services."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Events can be replayed for dispute investigation."
+    }
+   ],
+   "trigger": "Any domain service commits a write that produces an event.",
+   "preconditions": [
+    "The producing service writes its outbox row through the shared outbox library.",
+    "Each event type has a declared idempotency key."
+   ],
+   "postconditions_success": [
+    "The outbox row is marked published with a timestamp, and every subscribed consumer has processed the event once."
+   ],
+   "postconditions_failure": [
+    "Unpublished rows remain in the outbox and are retried; repeatedly failing rows are moved to a dead-letter store and an alert is raised."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Writes the business change and an outbox row in the same database transaction.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Populates the outbox row with a CloudEvents envelope: id, type, source, tenant, subject, time and idempotency key.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Relay reads unpublished outbox rows per tenant in commit order.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Relay publishes each event to the configured transport and waits for acknowledgement.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Marks the outbox row published with the acknowledgement timestamp.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "ERP system",
+     "action": "Receives the event, checks the idempotency key and processes it once.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The operations team switches the event transport.",
+     "steps": [
+      "The relay is reconfigured to the new transport adapter.",
+      "Producers continue writing outbox rows unchanged; the relay resumes from the oldest unpublished row."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The business transaction rolls back.",
+     "handling": "The outbox row rolls back with it, so no event is ever published for an uncommitted change.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The transport is unavailable.",
+     "handling": "Rows stay unpublished and are retried with exponential backoff; none is dropped.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "An event fails 8 consecutive publish attempts.",
+     "handling": "The row is moved to the dead-letter store, later events for other subjects continue, and an operations alert is raised.",
+     "rule": null
+    },
+    {
+     "id": "E4",
+     "at_step": 6,
+     "condition": "A consumer receives an event whose idempotency key it has already processed.",
+     "handling": "The consumer acknowledges and discards the duplicate without side effects.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "outbox_message (C)",
+    "outbox_message (U)",
+    "dead_letter_message (C)"
+   ],
+   "events": [
+    "platform.principal.created",
+    "platform.approval.completed",
+    "platform.record.versioned"
+   ],
+   "nfrs": [
+    "An event is published within 5 seconds of commit at p95 under 1,000 writes per second per tenant.",
+    "Zero event loss across relay restarts, verified by commit-count to publish-count reconciliation."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-021",
+     "persona": "Finance",
+     "want": "each approved payroll or approval event to reach the ERP system exactly once",
+     "so_that": "journals are never duplicated or missing",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an approval instance completes and platform.approval.completed is written to the outbox",
+       "when": "the relay publishes it twice after a restart",
+       "then": "the consumer processes it once and discards the second delivery by idempotency key"
+      },
+      {
+       "given": "the transport is down for 20 minutes",
+       "when": "it recovers",
+       "then": "all events committed during the outage are published in commit order with none missing"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-022",
+     "persona": "Implementation consultant",
+     "want": "to change the event transport without touching producing services",
+     "so_that": "a client's integration preference does not require code changes in every module",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "producers write outbox rows through the shared library",
+       "when": "the relay is pointed at a different transport adapter",
+       "then": "no producer code or configuration changes and publishing resumes from the oldest unpublished row"
+      },
+      {
+       "given": "a configuration switch completed",
+       "when": "the reconciliation report runs",
+       "then": "committed and published counts match for the switch window"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-023",
+     "persona": "Auditor",
+     "want": "a write that rolled back to leave no published event",
+     "so_that": "downstream systems never act on changes that did not happen",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a principal creation that fails validation after the outbox insert",
+       "when": "the transaction rolls back",
+       "then": "no platform.principal.created event is published"
+      },
+      {
+       "given": "an event that fails 8 publish attempts",
+       "when": "the eighth attempt fails",
+       "then": "it is in the dead-letter store with its error and an alert is visible to operations"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-053",
+    "SYS-054",
+    "SYS-055",
+    "SYS-058"
+   ]
+  },
+  {
+   "id": "PLT-UC-008",
+   "name": "Write bi-temporal versions and read as at a point in time",
+   "process": "PLT-08",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Keep every temporal fact as non-destructive versions on valid and recorded time so that any past state can be reproduced exactly.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Payroll manager",
+    "Plant HR / time office",
+    "Auditor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Rerunning a past period reproduces the same result from the same snapshot."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Attendance recompute uses the facts known at the recompute snapshot."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Can see both what was true and what was known at any moment."
+    }
+   ],
+   "trigger": "Any change to a temporal fact such as an assignment, salary structure or policy attribute, or any as-at read request.",
+   "preconditions": [
+    "The table is declared temporal with valid_from, valid_to, recorded_from and recorded_to columns."
+   ],
+   "postconditions_success": [
+    "A new version row exists; the superseded version carries recorded_to; no row has been deleted or updated in place.",
+    "As-at reads return the version valid at valid_at as known at recorded_at."
+   ],
+   "postconditions_failure": [
+    "The write is rejected and the existing versions are unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Opens a new version for the temporal fact with valid_from, valid_to, recorded_from, changed_by and change_reason.",
+     "ref": "PLT-08.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "End-dates the superseded version by setting recorded_to; the row is never deleted.",
+     "ref": "PLT-08.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Serves as-at reads using caller-supplied valid_at and recorded_at, defaulting recorded_at to now.",
+     "ref": "PLT-08.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The change corrects a past fact rather than recording a future change.",
+     "steps": [
+      "Nucleus platform writes a version with the original valid_from and a new recorded_from.",
+      "Reads with recorded_at before the correction still return the uncorrected value."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A service attempts to update a temporal row in place.",
+     "handling": "The data layer rejects the update; only versioned writes are accepted.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A payroll run or attendance recompute calls the as-at read without its snapshot timestamp.",
+     "handling": "The read is rejected for derived work; the caller must pass the run or recompute snapshot timestamp.",
+     "rule": "RL-021"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "A delete is requested on a temporal row.",
+     "handling": "The delete is refused; a closing version is written instead.",
+     "rule": "RL-020"
+    }
+   ],
+   "business_rules": [
+    "RL-020",
+    "RL-021"
+   ],
+   "screens": [],
+   "data_objects": [
+    "temporal_record (C)",
+    "temporal_record (U)",
+    "temporal_record (R)"
+   ],
+   "events": [
+    "platform.record.versioned"
+   ],
+   "nfrs": [
+    "An as-at read for a single record returns in under 50 ms at p95.",
+    "A payroll rerun with the same snapshot timestamp produces byte-identical results."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P20",
+    "TC-P21"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-024",
+     "persona": "Payroll manager",
+     "want": "a rerun of a closed period to read data as known at that run's snapshot",
+     "so_that": "later corrections do not silently change a result already paid",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 run used snapshot 2026-09-28T18:00 and E1044's basic was corrected on 2026-10-05 with valid_from 2026-09-01",
+       "when": "the September run is reproduced with the same snapshot",
+       "then": "the original basic is used and the result matches the paid run"
+      },
+      {
+       "given": "the recompute service calls the as-at read without a snapshot timestamp",
+       "when": "the call executes",
+       "then": "it is rejected with an error naming the missing snapshot"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-025",
+     "persona": "HR operations",
+     "want": "corrections to be stored as new versions rather than overwrites",
+     "so_that": "the earlier value and the reason for the change stay visible",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's cost centre CC-2100 is corrected to CC-2200 effective 2026-10-01 with reason 'Moved to Assembly'",
+       "when": "the change is saved",
+       "then": "a new version exists with valid_from 2026-10-01 and the prior version has recorded_to set"
+      },
+      {
+       "given": "any service issues an in-place update on the assignment table",
+       "when": "it executes",
+       "then": "the update is rejected and no row changes"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-026",
+     "persona": "Auditor",
+     "want": "to query what the system believed about a record on a past date",
+     "so_that": "I can verify decisions against the information available at the time",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1018's cost centre corrected on 2026-10-15 back-dated to 2026-10-01",
+       "when": "the auditor reads valid_at 2026-10-05 with recorded_at 2026-10-10",
+       "then": "CC-2100 is returned"
+      },
+      {
+       "given": "the same read with recorded_at 2026-10-20",
+       "when": "it runs",
+       "then": "CC-2200 is returned"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-021",
+    "SYS-022",
+    "SYS-023",
+    "SYS-024"
+   ]
+  },
+  {
+   "id": "PLT-UC-009",
+   "name": "Enforce adaptive MFA and step-up authentication",
+   "process": null,
+   "capability_gap": "PLT-CG-001",
+   "source": "Authored",
+   "goal": "Require multi-factor authentication for privileged roles and fresh re-authentication before high-risk actions.",
+   "level": "User goal",
+   "primary_actor": "Payroll manager",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Identity provider",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Privileged accounts cannot be used with a stolen password alone."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Bank details cannot be changed by someone holding a session left open."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each high-risk action records the authentication strength used."
+    }
+   ],
+   "trigger": "A privileged user signs in, or any user starts a protected action: unmask an identifier, change bank details, approve payroll or grant a role.",
+   "preconditions": [
+    "The tenant admin has configured the MFA policy, the list of privileged roles and the step-up window.",
+    "The user has at least one enrolled factor: TOTP, push approval or FIDO2 passkey."
+   ],
+   "postconditions_success": [
+    "The protected action executes and the audit entry records the factor type and time of the last strong authentication."
+   ],
+   "postconditions_failure": [
+    "The protected action is not executed; repeated failures lock the factor and alert the tenant admin."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Configures the MFA policy: privileged roles, allowed factors (TOTP, push, FIDO2 passkey) and a step-up window of 5 minutes.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Payroll manager",
+     "action": "Signs in through the identity provider using OIDC or SAML 2.0, or with local credentials.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Detects a privileged role and evaluates risk signals such as a new device or unusual location.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Payroll manager",
+     "action": "Completes the requested second factor.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Payroll manager",
+     "action": "Starts a protected action, for example approving the October 2026 payroll for payroll group HO.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Checks the time since the last strong authentication and requests step-up when it exceeds the configured window.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Re-authenticates with an enrolled factor.",
+     "ref": null
+    },
+    {
+     "n": 8,
+     "actor": "Nucleus platform",
+     "action": "Executes the action and records factor type and authentication time in the audit ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "The last strong authentication is within the step-up window.",
+     "steps": [
+      "Nucleus platform proceeds without a new challenge."
+     ],
+     "rejoin": "Returns to step 8"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The identity provider asserts that MFA was already completed with an accepted method.",
+     "steps": [
+      "Nucleus platform accepts the assertion and records the asserted method."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The user fails the factor 5 times in a row.",
+     "handling": "The factor is locked for 15 minutes, the session is ended and the tenant admin is alerted.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "A privileged user has no enrolled factor.",
+     "handling": "Privileged functions are blocked and the user is taken to factor enrolment before continuing.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 7,
+     "condition": "The user cancels the step-up challenge.",
+     "handling": "The protected action is abandoned and nothing is changed.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-005"
+   ],
+   "data_objects": [
+    "mfa_policy (C)",
+    "authenticator_enrolment (R)",
+    "auth_session (U)",
+    "audit_entry (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Step-up challenge and verification complete in under 3 seconds at p95 excluding user think time.",
+    "Authentication flows conform to OWASP ASVS level 2 controls for authentication and session management."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P0",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-027",
+     "persona": "Payroll manager",
+     "want": "to confirm my identity again before approving a payroll",
+     "so_that": "an unattended session cannot be used to release salaries",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the payroll manager last completed MFA 40 minutes ago and the step-up window is 5 minutes",
+       "when": "they click Approve on the October 2026 run for payroll group HO",
+       "then": "a step-up challenge is shown and approval proceeds only after it succeeds"
+      },
+      {
+       "given": "the payroll manager completed step-up 2 minutes ago",
+       "when": "they approve a second run",
+       "then": "no new challenge is shown and the audit entry records the earlier authentication time"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-028",
+     "persona": "Tenant admin",
+     "want": "to require MFA for all privileged roles",
+     "so_that": "a leaked password alone cannot open payroll or role administration",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the payroll manager role is marked privileged and the user has no enrolled factor",
+       "when": "the user signs in",
+       "then": "payroll screens are blocked and factor enrolment is presented first"
+      },
+      {
+       "given": "a user fails TOTP 5 times",
+       "when": "the fifth failure occurs",
+       "then": "the factor is locked for 15 minutes and the tenant admin receives an alert"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-029",
+     "persona": "Employee / worker",
+     "want": "a fresh verification before my bank account can be changed",
+     "so_that": "my salary cannot be redirected by someone using my open session",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "employee E1022 is signed in on the mobile app",
+       "when": "he submits a new bank account number",
+       "then": "a step-up challenge is required before the change is accepted for approval"
+      },
+      {
+       "given": "he cancels the challenge",
+       "when": "the screen closes",
+       "then": "the bank account is unchanged and no approval request is created"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-011",
+    "SYS-015",
+    "SYS-032",
+    "SYS-083"
+   ]
+  },
+  {
+   "id": "PLT-UC-010",
+   "name": "Deliver notifications through a channel matrix and preference centre",
+   "process": null,
+   "capability_gap": "PLT-CG-002",
+   "source": "Authored",
+   "goal": "Deliver each workflow and system notification on the right channels, in the recipient's language and time preferences, with an auditable delivery log.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Employee / worker",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Manager / supervisor",
+     "interest": "Receives approval prompts promptly without a flood of low-value alerts."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Hears from the system in their language and not during rest hours."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Can prove that a mandatory notice was delivered."
+    }
+   ],
+   "trigger": "A domain event occurs that the notification matrix maps to one or more recipients.",
+   "preconditions": [
+    "The notification matrix maps event types to recipient roles, channels and a mandatory flag.",
+    "Templates exist for each mapped event in each enabled language."
+   ],
+   "postconditions_success": [
+    "Each recipient receives the notification on the resolved channels, and each attempt is in the delivery log with status."
+   ],
+   "postconditions_failure": [
+    "Undeliverable notifications are retried on the fallback channel and remain visible in-app; failures are logged with reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Configures the matrix: event type × recipient role × channels (in-app, email, push, SMS, business messaging) and a mandatory flag.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Sets personal preferences in the preference centre: language, quiet hours and daily digest for non-urgent items.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Receives a domain event, for example an approval step opened, and resolves recipients from the matrix.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Applies quiet hours and digest preferences unless the notification is flagged mandatory.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Renders the template in the recipient's language with the event's data.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Dispatches on each resolved channel and records each attempt with status in the delivery log.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Compliance owner",
+     "action": "Searches the delivery log by recipient, event or date to evidence delivery.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The notification falls in the recipient's quiet hours and is not mandatory.",
+     "steps": [
+      "Nucleus platform holds the notification and adds it to the next digest or releases it when quiet hours end."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "No template exists in the recipient's language.",
+     "steps": [
+      "Nucleus platform renders the tenant default language and records the fallback in the delivery log."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "The primary channel reports a delivery failure.",
+     "handling": "The notification is retried once, then sent on the configured fallback channel; the in-app copy always remains.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "An employee tries to opt out of a mandatory notification type.",
+     "handling": "The opt-out is refused with an explanation that the notice is mandatory.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "notification_matrix (C)",
+    "notification_preference (U)",
+    "notification (C)",
+    "delivery_log (C)"
+   ],
+   "events": [
+    "platform.approval.step_opened",
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "Urgent notifications are dispatched within 30 seconds of the triggering event at p95.",
+    "Delivery log entries are retained for 3 years and searchable within 5 seconds."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-030",
+     "persona": "Employee / worker",
+     "want": "to set quiet hours and my preferred language",
+     "so_that": "I am not disturbed after my shift and I can read every message",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1033 has set quiet hours 21:00–07:00 and language Kannada",
+       "when": "a non-mandatory announcement is published at 22:30",
+       "then": "it is held until 07:00 and delivered in Kannada"
+      },
+      {
+       "given": "the same employee",
+       "when": "a mandatory shift-change notice is issued at 22:30",
+       "then": "it is delivered immediately despite quiet hours"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-031",
+     "persona": "Manager / supervisor",
+     "want": "a single daily digest for informational updates while approvals arrive immediately",
+     "so_that": "urgent items stand out from routine updates",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1021 has enabled a 09:00 digest",
+       "when": "six team birthday and document-uploaded notices arrive on one day",
+       "then": "they appear as one digest at 09:00 the next morning"
+      },
+      {
+       "given": "the same day a leave approval step opens for E1021",
+       "when": "the event is processed",
+       "then": "the approval notification is sent immediately on push and in-app"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-032",
+     "persona": "Compliance owner",
+     "want": "a searchable delivery log for every notification",
+     "so_that": "I can evidence that a mandatory notice reached each worker",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a mandatory policy notice sent to all 71 employees of the tenant",
+       "when": "the compliance owner searches the log by that notice",
+       "then": "71 entries are listed with channel, delivery status and timestamp"
+      },
+      {
+       "given": "an SMS failed for E1061",
+       "when": "the log is opened",
+       "then": "the failure reason and the fallback channel attempt are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-055",
+    "SYS-066",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "PLT-UC-011",
+   "name": "Design approval processes without code",
+   "process": null,
+   "capability_gap": "PLT-CG-003",
+   "source": "Authored",
+   "goal": "Let tenant administrators author, simulate, publish and revert approval chains, conditions and SLAs on the shared approval engine without a code release.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Process changes after a reorganisation take days, not a release cycle."
+    },
+    {
+     "who": "Director / approver",
+     "interest": "Amount-based thresholds route only material items to directors."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every published version is effective-dated and reversible with history."
+    }
+   ],
+   "trigger": "The client needs a new approval process or a change to conditions, steps or SLAs.",
+   "preconditions": [
+    "The tenant admin holds the process-designer permission.",
+    "The request type is registered with the shared approval engine and exposes its condition fields (for example amount and worker class)."
+   ],
+   "postconditions_success": [
+    "A new effective-dated chain version is live and the previous version is retained for reversal."
+   ],
+   "postconditions_failure": [
+    "The draft is unpublished and the active version is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Opens the visual designer for a request type and starts a draft from the active chain version.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Tenant admin",
+     "action": "Adds or reorders steps and sets each step's approver resolution mode and SLA hours.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Tenant admin",
+     "action": "Adds conditions, for example a director step only when loan amount exceeds ₹2,00,000.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Validates that every path resolves an approver, has a reroute policy and ends in a terminal state.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Tenant admin",
+     "action": "Runs a simulation with sample requests and reviews the path and approvers each one would take.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Tenant admin",
+     "action": "Publishes the draft with an effective-from date and change reason.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Activates the version for new submissions from the effective date; in-flight instances stay on their starting version.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 6,
+     "condition": "A published version needs to be reverted.",
+     "steps": [
+      "Tenant admin selects the prior version and publishes it as a new version with a reversal reason.",
+      "Nucleus platform applies it to new submissions from the chosen date."
+     ],
+     "rejoin": "Returns to step 7"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A condition branch has no approver or no terminal state.",
+     "handling": "Validation fails and highlights the incomplete branch on the canvas.",
+     "rule": "RL-011"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "A step is resolved by named person without a reroute policy.",
+     "handling": "Validation fails until a successor or role fallback is set.",
+     "rule": "RL-012"
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "The new version overlaps the keys of another active chain.",
+     "handling": "Publication is blocked and the overlapping chain is named.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-011",
+    "RL-012"
+   ],
+   "screens": [],
+   "data_objects": [
+    "approval_chain (C)",
+    "approval_chain (U)",
+    "simulation_run (C)",
+    "audit_entry (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "The designer canvas remains responsive with up to 25 steps and 10 condition branches.",
+    "The designer meets WCAG 2.2 AA, including keyboard-only editing of steps."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-P11",
+    "TC-P12"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-033",
+     "persona": "Tenant admin",
+     "want": "to add an amount-based director step to the loan chain myself",
+     "so_that": "large loans get director sanction without waiting for a release",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the loan chain has HR and Finance steps",
+       "when": "the tenant admin adds a director step for amounts above ₹2,00,000 and simulates a ₹3,00,000 request from E1044",
+       "then": "the simulation shows three steps ending with the director"
+      },
+      {
+       "given": "the same chain",
+       "when": "a ₹50,000 request is simulated",
+       "then": "the director step is skipped and two steps are shown"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-034",
+     "persona": "Tenant admin",
+     "want": "to revert to the previous chain version in one action",
+     "so_that": "a faulty change can be undone quickly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "version 3 of the leave chain went live on 2026-11-01",
+       "when": "the tenant admin reverts to version 2 with reason 'Approver list incomplete'",
+       "then": "version 4, identical to version 2, applies to new submissions and versions 2 and 3 remain in history"
+      },
+      {
+       "given": "requests submitted under version 3",
+       "when": "the reversal is published",
+       "then": "they continue on version 3 until closed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-039",
+    "SYS-042",
+    "SYS-044",
+    "SYS-048",
+    "SYS-069"
+   ]
+  },
+  {
+   "id": "PLT-UC-012",
+   "name": "Promote configuration from sandbox to production",
+   "process": null,
+   "capability_gap": "PLT-CG-004",
+   "source": "Authored",
+   "goal": "Build and test configuration in a sandbox tenant and promote it to production as a reviewed, approved and reversible package.",
+   "level": "User goal",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Tenant admin",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Nothing reaches production without a visible diff and approval."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Rule changes are tested on realistic data before a live run."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each promotion is traceable to its package, approver and rollback point."
+    }
+   ],
+   "trigger": "A configuration change is ready for testing or for promotion to production.",
+   "preconditions": [
+    "A sandbox tenant is linked to the production tenant.",
+    "Sandbox data containing personal information is masked or synthetic."
+   ],
+   "postconditions_success": [
+    "Production holds the promoted configuration as new effective-dated versions, with a recorded rollback point."
+   ],
+   "postconditions_failure": [
+    "Production configuration is unchanged, or restored to the rollback point."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Refreshes the sandbox from production configuration with personal data masked.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Authors and tests changes to rules, picklists, workflows and rule packs in the sandbox.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Implementation consultant",
+     "action": "Assembles the changed objects into a configuration package with a description.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Produces an object-by-object diff of the package against the production tenant and flags dependency gaps.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Tenant admin",
+     "action": "Reviews the diff and approves or rejects the promotion.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Records a rollback point and applies the package to production as new configuration versions.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Runs post-promotion smoke checks and records the result against the package.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "Smoke checks pass but the client later asks to undo the promotion.",
+     "steps": [
+      "Tenant admin selects the package and requests rollback with a reason.",
+      "Nucleus platform writes new versions restoring the rollback-point configuration."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The package references an object missing in production, such as a picklist value.",
+     "handling": "Promotion is blocked until the dependency is added to the package.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "A smoke check fails.",
+     "handling": "The platform restores the rollback point automatically and marks the promotion Failed.",
+     "rule": "RL-020"
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "Production changed the same object after the diff was produced.",
+     "handling": "Promotion stops and a fresh diff is required.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "config_package (C)",
+    "config_diff (C)",
+    "configuration_version (C)",
+    "rollback_point (C)"
+   ],
+   "events": [
+    "platform.record.versioned"
+   ],
+   "nfrs": [
+    "A package of 200 objects is diffed in under 30 seconds and applied in under 2 minutes.",
+    "Sandbox refresh never copies unmasked Aadhaar, PAN or bank values."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-035",
+     "persona": "Implementation consultant",
+     "want": "to see an exact diff before promoting a package",
+     "so_that": "only intended changes reach production",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a package changing the overtime rule pack and one picklist",
+       "when": "the diff is generated against production",
+       "then": "exactly two objects are listed with field-level before-and-after values"
+      },
+      {
+       "given": "the package references a new shift-group picklist value that does not exist in production",
+       "when": "promotion is requested",
+       "then": "it is blocked with the missing dependency named"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-036",
+     "persona": "Tenant admin",
+     "want": "to roll back a promotion to its recorded rollback point",
+     "so_that": "a bad configuration can be withdrawn without manual edits",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "package promoted on 2026-11-05 at 10:00",
+       "when": "the tenant admin requests rollback with a reason",
+       "then": "new versions restore the earlier configuration and the package shows status Rolled back"
+      },
+      {
+       "given": "a post-promotion smoke check fails",
+       "when": "the failure is detected",
+       "then": "the rollback point is restored automatically and the tenant admin is alerted"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-008",
+    "SYS-022",
+    "SYS-026",
+    "SYS-037"
+   ]
+  },
+  {
+   "id": "PLT-UC-013",
+   "name": "Delegate approval authority and act as a user",
+   "process": null,
+   "capability_gap": "PLT-CG-005",
+   "source": "Authored",
+   "goal": "Allow time-boxed, reason-coded delegation of approvals and audited act-as sessions, with the real actor always recorded.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Tenant admin",
+    "Director / approver"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Requests are decided while the usual approver is away."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Support staff can diagnose issues as the user without sharing passwords."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Delegated and act-as actions name the real person who acted."
+    }
+   ],
+   "trigger": "An approver plans an absence, or a support engineer needs to reproduce a user's problem.",
+   "preconditions": [
+    "The delegate holds a role that can view the delegated request types within the delegator's scope.",
+    "Act-as is enabled by the tenant admin for named support principals only."
+   ],
+   "postconditions_success": [
+    "During the window, items route to the delegate, and every action records both delegate and delegator.",
+    "The delegation or act-as session ends automatically at its end time."
+   ],
+   "postconditions_failure": [
+    "No delegation is created and items continue to route to the original approver."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Creates a delegation naming the delegate, request types, start and end dates and a reason code.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Validates that the delegate is active, is not the requester on any delegated item, and has the scope to see the items.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "From the start date, resolves steps owned by the delegator to the delegate and moves open items to the delegate's inbox.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Director / approver",
+     "action": "As delegate, approves or rejects items; the decision records the delegate as actor and the delegator as on-behalf-of.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Ends the delegation at the end date and returns open items to the delegator's inbox.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "A support engineer needs to act as a user to diagnose a problem.",
+     "steps": [
+      "A support engineer requests an act-as session for a user with a ticket reference and a duration up to 60 minutes.",
+      "Tenant admin approves the session; Nucleus platform shows a persistent act-as banner and records every action with the real actor.",
+      "The session ends automatically at expiry."
+     ],
+     "rejoin": "Ends the use case"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The delegator returns early.",
+     "steps": [
+      "Manager / supervisor ends the delegation before its end date.",
+      "Nucleus platform returns open items to the delegator immediately."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The delegate has left or is inactive during the window.",
+     "handling": "The delegation is suspended and items reroute to the successor or role holder.",
+     "rule": "RL-012"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The delegated item was raised by the delegate.",
+     "handling": "The item skips the delegate and resolves to the next approver in the line.",
+     "rule": "RL-011"
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "An act-as session attempts to approve payroll or grant roles.",
+     "handling": "The action is blocked in act-as sessions and the attempt is logged.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-011",
+    "RL-012",
+    "RL-013"
+   ],
+   "screens": [
+    "SCR-040",
+    "SCR-005"
+   ],
+   "data_objects": [
+    "delegation (C)",
+    "delegation (U)",
+    "act_as_session (C)",
+    "approval_step (U)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.approval.step_decided"
+   ],
+   "nfrs": [
+    "Open items move to the delegate's inbox within 1 minute of the delegation start time.",
+    "Act-as sessions cannot exceed 60 minutes and cannot be extended without a new approval."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-P12",
+    "TC-P13"
+   ],
+   "user_stories": [
+    {
+     "id": "PLT-US-037",
+     "persona": "Manager / supervisor",
+     "want": "to delegate my approvals to a colleague for my leave dates",
+     "so_that": "my team's requests are not delayed while I am away",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1021 delegates leave and overtime approvals to E1016 from 2026-11-10 to 2026-11-20 with reason Annual leave",
+       "when": "E1022 submits leave on 2026-11-12",
+       "then": "the item appears in E1016's inbox and the decision records E1016 as actor on behalf of E1021"
+      },
+      {
+       "given": "the delegation ends on 2026-11-20",
+       "when": "the date passes",
+       "then": "any open items return to E1021's inbox automatically"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-038",
+     "persona": "Tenant admin",
+     "want": "support engineers to act as a user only for a short, approved window",
+     "so_that": "diagnosis is possible without password sharing or unchecked access",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a support engineer requests a 30-minute act-as session for E1043 with a support ticket reference",
+       "when": "the tenant admin approves it",
+       "then": "a banner shows the act-as state and every action records the engineer as real actor"
+      },
+      {
+       "given": "the act-as session is active",
+       "when": "the engineer attempts to grant a role",
+       "then": "the action is blocked and the attempt is logged"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-039",
+     "persona": "Auditor",
+     "want": "to distinguish delegated decisions from direct ones",
+     "so_that": "I can check that delegations were used within their dates and scope",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "approvals in November 2026",
+       "when": "the auditor filters by on-behalf-of not empty",
+       "then": "only delegated decisions are listed with delegate, delegator and delegation dates"
+      },
+      {
+       "given": "a delegated decision dated outside the delegation window",
+       "when": "the query runs",
+       "then": "no such decision exists because the platform routes to the delegate only inside the window"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-014",
+    "SYS-020",
+    "SYS-032",
+    "SYS-039"
+   ]
+  },
+  {
+   "id": "PLT-UC-014",
+   "name": "Load data in bulk with validation and rollback",
+   "process": null,
+   "capability_gap": "PLT-CG-006",
+   "source": "Authored",
+   "goal": "Import master or transaction records in bulk, validated row by row with the same rules as the forms, with dry-run, partial-commit control and batch rollback.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Large changes such as annual increments load in minutes, not days of manual entry."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Bad rows never reach payroll inputs."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each load batch is identifiable and reversible."
+    }
+   ],
+   "trigger": "HR operations needs to create or update many records of one object type from a spreadsheet, CSV file or API call.",
+   "preconditions": [
+    "The user holds create or update permission for the object within the target entity and location scope.",
+    "A load template exists for the object."
+   ],
+   "postconditions_success": [
+    "Valid rows are committed under one batch ID, each as a versioned write, and a load report is stored."
+   ],
+   "postconditions_failure": [
+    "No rows are committed in all-or-nothing mode; in partial mode only valid rows are committed and rejected rows are reported."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects the object type, for example assignment changes, and downloads the load template.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Uploads the completed file or submits the API payload and chooses dry-run.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Validates every row with the same rules as the form, including scope checks, and builds a row-level report.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews the dry-run report and corrects rejected rows or accepts them as excluded.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Chooses all-or-nothing or partial commit and confirms the load.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Commits rows as versioned writes tagged with the batch ID and stores the final load report.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Notifies HR operations with counts of committed, rejected and skipped rows.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "HR operations discovers after commit that the batch was wrong.",
+     "steps": [
+      "HR operations requests rollback of the batch with a reason.",
+      "Nucleus platform writes reversing versions for every row in the batch and marks the batch Rolled back."
+     ],
+     "rejoin": "Ends the use case"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A row targets a record outside the user's entity or location scope.",
+     "handling": "The row is rejected with a scope error; the user never learns whether the record exists.",
+     "rule": "RL-004"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The file's column headers do not match the template.",
+     "handling": "The whole file is rejected before row validation with the mismatched columns listed.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "All-or-nothing mode and any row fails at commit time.",
+     "handling": "The whole batch is rolled back and the failing row is reported.",
+     "rule": "RL-020"
+    }
+   ],
+   "business_rules": [
+    "RL-004",
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "load_batch (C)",
+    "load_row_result (C)",
+    "temporal_record (C)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.record.versioned"
+   ],
+   "nfrs": [
+    "A dry-run of 10,000 rows completes in under 2 minutes.",
+    "Rollback of a 10,000-row batch completes in under 5 minutes and leaves no partial state."
+   ],
+   "frequency": "Weekly",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-040",
+     "persona": "HR operations",
+     "want": "a dry-run report before anything is saved",
+     "so_that": "I can fix errors without polluting live records",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a file of 500 assignment changes where 3 rows have no effective date",
+       "when": "dry-run is executed",
+       "then": "497 rows show Valid and 3 show the error 'Effective date is required', and nothing is saved"
+      },
+      {
+       "given": "a file with a column named DOJ instead of the template's date_of_joining",
+       "when": "it is uploaded",
+       "then": "the file is rejected with the mismatched column named"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-041",
+     "persona": "HR operations",
+     "want": "to roll back a whole load batch",
+     "so_that": "a wrong file can be undone in one step",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "batch B-20261105-01 committed 497 rows",
+       "when": "HR operations requests rollback with reason 'Wrong increment file'",
+       "then": "all 497 records return to their prior values as new versions and the batch shows Rolled back"
+      },
+      {
+       "given": "the batch has been rolled back",
+       "when": "the version history of any affected record is opened",
+       "then": "both the loaded and the reversing versions are visible"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-042",
+     "persona": "Implementation consultant",
+     "want": "bulk loads to respect the loader's data scope",
+     "so_that": "bulk import cannot be used to bypass access controls",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a loader scoped to LOC-PLA uploads rows for LOC-PLA and LOC-HYD employees",
+       "when": "dry-run runs",
+       "then": "LOC-HYD rows are rejected with a scope error and LOC-PLA rows validate"
+      },
+      {
+       "given": "partial commit is selected",
+       "when": "the load is confirmed",
+       "then": "only LOC-PLA rows are committed"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-022",
+    "SYS-032",
+    "SYS-061",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "PLT-UC-015",
+   "name": "Add custom fields and custom objects",
+   "process": null,
+   "capability_gap": "PLT-CG-007",
+   "source": "Authored",
+   "goal": "Let tenant administrators extend core objects with typed, validated, security-classified fields and objects without a schema release.",
+   "level": "User goal",
+   "primary_actor": "Tenant admin",
+   "secondary_actors": [
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Can capture client-specific data such as safety induction batch on the record."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "A custom field classified as compensation is protected like other salary fields."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Custom field definitions are versioned and their changes audited."
+    }
+   ],
+   "trigger": "The client needs to capture data that the standard object model does not hold.",
+   "preconditions": [
+    "The tenant admin holds the extension-administration permission.",
+    "The target core object supports extensions."
+   ],
+   "postconditions_success": [
+    "The custom field or object is available on forms, in reports and through the API according to its security classification."
+   ],
+   "postconditions_failure": [
+    "No definition is published and existing forms are unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Tenant admin",
+     "action": "Selects the core object, for example assignment, and adds a field with name, type and validation.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Tenant admin",
+     "action": "Sets the security classification: general, personal, sensitive personal or compensation.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Tenant admin",
+     "action": "Chooses reporting and API exposure and the forms on which the field appears.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Validates name uniqueness, type and that compensation fields follow payroll-group visibility.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Tenant admin",
+     "action": "Publishes the definition with an effective-from date.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Renders the field on the chosen forms and applies the classification on every read path.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The data needs its own record type, such as a safety training register.",
+     "steps": [
+      "Tenant admin defines a custom object with fields and a relationship to person or assignment.",
+      "Nucleus platform creates list and detail views for the object within entity and location scope."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The field name collides with a standard or existing custom field.",
+     "handling": "Publication is blocked with the conflicting name shown.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 6,
+     "condition": "A reader outside the record's payroll group requests a field classified as compensation.",
+     "handling": "The field is returned as null, exactly as standard compensation fields are.",
+     "rule": "RL-005"
+    }
+   ],
+   "business_rules": [
+    "RL-005"
+   ],
+   "screens": [],
+   "data_objects": [
+    "custom_field_definition (C)",
+    "custom_object_definition (C)",
+    "custom_field_value (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Adding up to 50 custom fields to an object adds no more than 10% to form load time.",
+    "Custom fields are available in reports within 5 minutes of publication."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-043",
+     "persona": "Tenant admin",
+     "want": "to add a date field for safety induction to the assignment",
+     "so_that": "plant HR can record induction without a spreadsheet",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the tenant admin adds field safety_induction_on of type date, classification general, on the assignment form",
+       "when": "it is published",
+       "then": "plant HR at LOC-PLA can enter 2026-11-03 for E1032 and the value appears in the attendance-site report"
+      },
+      {
+       "given": "a field named location_id is added",
+       "when": "publication is attempted",
+       "then": "it is blocked because the name collides with a standard field"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-044",
+     "persona": "Payroll manager",
+     "want": "a custom allowance field classified as compensation to be hidden from plant users",
+     "so_that": "extensions cannot become a leak of salary data",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "custom field site_hardship_allowance classified compensation",
+       "when": "a plant HR user scoped to payroll group PLANT-CHN reads E1056 in payroll group HO",
+       "then": "the field returns null"
+      },
+      {
+       "given": "a payroll manager scoped to HO",
+       "when": "they read E1056",
+       "then": "the field value is shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-018",
+    "SYS-026",
+    "SYS-060"
+   ]
+  },
+  {
+   "id": "PLT-UC-016",
+   "name": "Migrate data from a legacy HRMS and payroll system",
+   "process": null,
+   "capability_gap": "PLT-CG-008",
+   "source": "Authored",
+   "goal": "Move master data, balances and year-to-date values from a legacy HRMS or payroll system with mapping, sequenced loads and reconciliation sign-off.",
+   "level": "Summary",
+   "primary_actor": "Implementation consultant",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Payroll manager",
+    "Finance",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Payroll manager",
+     "interest": "Year-to-date earnings and deductions carry over exactly so the first live run is correct."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Leave balances and service history are preserved for every employee."
+    },
+    {
+     "who": "Finance",
+     "interest": "Migrated totals reconcile to the legacy system's closing figures."
+    }
+   ],
+   "trigger": "A client goes live and its history must be moved from the legacy system.",
+   "preconditions": [
+    "The tenant is provisioned and core configuration (entities, locations, worker classes, pay components) is published.",
+    "Legacy extracts for the cut-over date are available."
+   ],
+   "postconditions_success": [
+    "All in-scope records are loaded, reconciliation reports match within agreed tolerances, and the payroll manager has signed off."
+   ],
+   "postconditions_failure": [
+    "Loaded batches are rolled back and the tenant returns to its pre-migration state."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Selects the mapping template for the legacy source and maps each source field to a Nucleus field.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Implementation consultant",
+     "action": "Defines transformation rules, such as legacy grade codes to designation and band.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Orders loads by dependency: org units, positions, persons, employments, assignments, salary, balances, then YTD values.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Runs each load as a dry-run batch with row-level validation and reports errors.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Implementation consultant",
+     "action": "Corrects errors and commits each batch in sequence.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Produces reconciliation reports: record counts, leave balances and YTD earnings and deductions per employee and in total.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Payroll manager",
+     "action": "Reviews reconciliation against legacy closing figures and signs off or raises discrepancies.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "Discrepancies exceed tolerance for some employees.",
+     "steps": [
+      "Payroll manager lists the discrepant employees with expected values.",
+      "Implementation consultant corrects the mapping or source and reloads only the affected batch."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "A load references a parent that has not been loaded, such as an assignment for a missing position.",
+     "handling": "The batch is held until its dependency loads successfully.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 7,
+     "condition": "Sign-off is refused at cut-over.",
+     "handling": "All migration batches are rolled back in reverse order and go-live is postponed.",
+     "rule": "RL-020"
+    }
+   ],
+   "business_rules": [
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "migration_mapping (C)",
+    "load_batch (C)",
+    "reconciliation_report (C)",
+    "person (C)",
+    "assignment (C)",
+    "leave_balance (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "A 10,000-employee migration with 3 years of history completes all loads within an 8-hour cut-over window.",
+    "Total YTD gross and statutory deductions reconcile to the legacy figures with zero variance."
+   ],
+   "frequency": "Per client",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-045",
+     "persona": "Payroll manager",
+     "want": "a reconciliation of YTD values against the legacy system before go-live",
+     "so_that": "the first live payroll's tax and statutory figures are right",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "legacy YTD gross for LE-01 from April to September 2026 is supplied",
+       "when": "the reconciliation report runs after migration",
+       "then": "per-employee and total YTD gross, PF and TDS show zero variance or list each variance by employee"
+      },
+      {
+       "given": "variances exist for 4 employees",
+       "when": "sign-off is attempted",
+       "then": "sign-off is blocked until each variance is resolved or accepted with a reason"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-046",
+     "persona": "Implementation consultant",
+     "want": "loads sequenced automatically by dependency",
+     "so_that": "I do not have to hand-order dozens of files",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "files for persons, positions and assignments are uploaded together",
+       "when": "the migration starts",
+       "then": "positions load before assignments and persons load before employments"
+      },
+      {
+       "given": "the positions batch fails",
+       "when": "the assignments batch is due",
+       "then": "it is held with the message that its dependency has not loaded"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-047",
+     "persona": "HR operations",
+     "want": "leave balances migrated and reconciled per employee",
+     "so_that": "no one loses earned leave at go-live",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "legacy closing EL balance for E1028 is 14.5 days",
+       "when": "the balance reconciliation runs",
+       "then": "E1028's opening EL in Nucleus is 14.5 days"
+      },
+      {
+       "given": "a balance in the file for an employee not loaded",
+       "when": "the balances batch is validated",
+       "then": "the row is rejected with 'Employee not found'"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-028",
+    "SYS-049",
+    "SYS-061"
+   ]
+  },
+  {
+   "id": "PLT-UC-017",
+   "name": "Handle a data-principal rights request",
+   "process": null,
+   "capability_gap": "PLT-CG-009",
+   "source": "Authored",
+   "goal": "Receive, verify, track and fulfil access, correction, erasure and grievance requests from data principals, anonymising personal data while retaining statutory payroll records.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Compliance owner",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can see, correct or remove their personal data and complain if unhappy."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Requests are handled within the configured timeline and evidenced for the DPDP Act 2023 (to be validated by Legal)."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Statutory payroll records needed for tax and audit survive erasure in anonymised form."
+    }
+   ],
+   "trigger": "A current or former employee, or a candidate, submits a data-principal request.",
+   "preconditions": [
+    "The requester can be identified from an active account or through offline verification.",
+    "Retention periods per record class are configured by the Compliance owner."
+   ],
+   "postconditions_success": [
+    "The request is fulfilled and closed with a response to the requester, and every step is in the audit ledger."
+   ],
+   "postconditions_failure": [
+    "The request is closed as refused or partly fulfilled with the reason and the grievance route communicated."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Submits a request choosing access, correction, erasure or grievance, with details.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Verifies identity with a step-up challenge, or routes to HR operations for offline verification for former employees.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Registers the request, starts the configured SLA clock and assigns it to the Compliance owner.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Compliance owner",
+     "action": "Triages the request and confirms the records and systems in scope.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "For access, compiles the requester's personal data into a downloadable export.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Compliance owner",
+     "action": "Approves fulfilment and sends the response through the requester's channel.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Closes the request and records outcome and timeline in the audit ledger.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The request is a correction.",
+     "steps": [
+      "Nucleus platform routes the correction through the approval chain for that field.",
+      "On approval, the correction is written as a new version with the request reference as reason."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The request is an erasure.",
+     "steps": [
+      "Nucleus platform identifies records under a retention obligation, such as payroll registers and tax deductions.",
+      "It anonymises personal identifiers in all other records and replaces identity in retained payroll records with a pseudonymous key.",
+      "Compliance owner reviews the erasure report listing retained records and the reason for each."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "Identity verification fails.",
+     "handling": "The request is held as Unverified and no data is disclosed or changed.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The SLA is about to expire.",
+     "handling": "The request escalates to the Compliance owner's manager at 80% of the SLA and the breach is counted if it expires.",
+     "rule": "RL-014"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-014",
+    "RL-020"
+   ],
+   "screens": [],
+   "data_objects": [
+    "data_principal_request (C)",
+    "data_principal_request (U)",
+    "personal_data_export (C)",
+    "erasure_report (C)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.approval.completed"
+   ],
+   "nfrs": [
+    "An access export for one person is generated within 10 minutes.",
+    "Erasure leaves no personal identifier in searchable indexes, caches or analytics stores, verified by an automated scan."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-048",
+     "persona": "Employee / worker",
+     "want": "to request a copy of my personal data from the self-service app",
+     "so_that": "I know what the employer holds about me",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1043 submits an access request and passes the step-up challenge",
+       "when": "the compliance owner approves fulfilment",
+       "then": "E1043 receives a download of her personal data and the request closes with the date recorded"
+      },
+      {
+       "given": "the step-up challenge fails",
+       "when": "the request is submitted",
+       "then": "it is held as Unverified and no data is compiled"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-049",
+     "persona": "Compliance owner",
+     "want": "erasure to anonymise personal data while retaining statutory payroll records",
+     "so_that": "the request is honoured without breaking tax and audit obligations",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a former employee whose exit was in 2025 requests erasure",
+       "when": "erasure runs",
+       "then": "name, mobile, address and documents are anonymised and payroll register rows remain under a pseudonymous key"
+      },
+      {
+       "given": "erasure completes",
+       "when": "the compliance owner opens the erasure report",
+       "then": "each retained record class is listed with its retention reason"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-050",
+     "persona": "Compliance owner",
+     "want": "every request to carry an SLA clock with escalation",
+     "so_that": "no request is forgotten",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a configured SLA of 15 days for access requests",
+       "when": "a request reaches 12 days without closure",
+       "then": "it escalates to the compliance owner's manager"
+      },
+      {
+       "given": "the SLA expires",
+       "when": "the request is still open",
+       "then": "the breach is counted on the compliance dashboard"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-027",
+    "SYS-032",
+    "SYS-033",
+    "SYS-039",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "PLT-UC-018",
+   "name": "Provision identities to the enterprise directory",
+   "process": null,
+   "capability_gap": "PLT-CG-010",
+   "source": "Authored",
+   "goal": "Create, update and disable user identities in downstream directories through SCIM 2.0 within 15 minutes of hire, transfer and exit events.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Enterprise directory",
+    "Tenant admin",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Has working accounts on the first day."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Leavers lose access promptly and nobody keeps orphaned accounts."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every provisioning call and result is logged."
+    }
+   ],
+   "trigger": "A hire, transfer or exit becomes effective in People Core.",
+   "preconditions": [
+    "The tenant admin has configured a SCIM 2.0 connection to the enterprise directory and the attribute mapping.",
+    "The worker's assignment carries the attributes the directory needs, such as department and manager."
+   ],
+   "postconditions_success": [
+    "The directory account matches the worker's current state, and the call result is logged within 15 minutes of the effective event."
+   ],
+   "postconditions_failure": [
+    "The provisioning item is retried and, if still failing, raised to the tenant admin with the directory's error."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Consumes a hire, assignment-change or exit event when it becomes effective.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Maps worker attributes to directory attributes: user name, display name, department, manager, location and active flag.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Sends the SCIM 2.0 create, update or deactivate request to the enterprise directory.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Enterprise directory",
+     "action": "Applies the change and returns the result with the directory's identifier.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Stores the directory identifier and logs the call, payload digest and result.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Tenant admin",
+     "action": "Monitors the provisioning dashboard for pending, failed and completed items.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The event is an exit.",
+     "steps": [
+      "Nucleus platform sends a deactivate request at the end of the last working day.",
+      "It also revokes Nucleus grants for the principal so access ends in both systems."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "A hire is effective in the future.",
+     "steps": [
+      "Nucleus platform schedules the create request for the start of the joining date, or earlier if pre-boarding access is configured."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The directory returns a conflict because the user name exists.",
+     "handling": "The item is held and raised to the tenant admin to confirm a link or a new user name.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The directory is unreachable.",
+     "handling": "The request is retried with backoff; if not completed within 15 minutes the item is flagged as an SLA breach.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-004"
+   ],
+   "screens": [
+    "SCR-005"
+   ],
+   "data_objects": [
+    "directory_link (C)",
+    "provisioning_item (C)",
+    "provisioning_item (U)",
+    "audit_entry (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "95% of provisioning changes complete within 15 minutes of the effective event, measured monthly.",
+    "Deactivation on exit completes within 15 minutes of the end of the last working day."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "PLT-US-051",
+     "persona": "Tenant admin",
+     "want": "leavers' directory accounts to be disabled automatically",
+     "so_that": "no former employee keeps access to company systems",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1068's last working day is 2026-09-30",
+       "when": "the exit becomes effective at the end of that day",
+       "then": "a SCIM deactivate request is sent and confirmed within 15 minutes and logged"
+      },
+      {
+       "given": "the directory is unreachable for 20 minutes",
+       "when": "the deactivation is pending",
+       "then": "the item is retried and flagged as an SLA breach on the dashboard"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-052",
+     "persona": "Employee / worker",
+     "want": "my company account to exist on my joining day",
+     "so_that": "I can sign in to systems from the first hour",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1066 has a joining date of 2026-09-01 recorded on 2026-08-20",
+       "when": "2026-09-01 begins",
+       "then": "a SCIM create request is sent and the account exists within 15 minutes"
+      },
+      {
+       "given": "the user name is already taken in the directory",
+       "when": "the create request returns a conflict",
+       "then": "the item is held and the tenant admin is asked to resolve it"
+      }
+     ]
+    },
+    {
+     "id": "PLT-US-053",
+     "persona": "HR operations",
+     "want": "manager and department changes to flow to the directory",
+     "so_that": "directory groups and approvals elsewhere stay accurate",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "E1018 moves from OU-111 to OU-112 effective 2026-10-01",
+       "when": "the assignment change becomes effective",
+       "then": "the directory record shows the new department within 15 minutes"
+      },
+      {
+       "given": "the update succeeds",
+       "when": "the provisioning dashboard is opened",
+       "then": "the item shows Completed with the directory's response timestamp"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-012",
+    "SYS-032",
+    "SYS-055",
+    "SYS-083"
+   ]
+  }
+ ]
+}

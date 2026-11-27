@@ -1,0 +1,1602 @@
+{
+ "domain": "SSV",
+ "use_cases": [
+  {
+   "id": "SSV-UC-001",
+   "name": "Complete a self-service action in three taps",
+   "process": "SSV-01",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Let an employee punch, view a payslip, apply for leave or a gate pass, or raise a ticket in three taps or fewer, with attendance and payslip available offline.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Fewer walk-in queries about attendance and pay."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Requests arrive complete and in one queue."
+    }
+   ],
+   "trigger": "The employee opens the app with an intent (punch, payslip, leave, gate pass, ticket).",
+   "preconditions": [
+    "The employee has an active assignment and an enrolled device.",
+    "Self-service actions are enabled for the employee's worker class."
+   ],
+   "postconditions_success": [
+    "The requested information is shown or the request is submitted and visible in the employee's history.",
+    "Any request requiring approval is in the approver's unified inbox."
+   ],
+   "postconditions_failure": [
+    "Nothing is submitted; the employee sees why and can retry, or the action is queued offline."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens SCR-042 and unlocks it with the device's biometric or PIN.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Shows the home tiles for punch, payslip, leave, gate pass, tickets and announcements permitted to the employee.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Selects an action, for example 'My attendance'.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows the result, such as the day-by-day status on SCR-021 with net hours, late allowance left and the rule applied.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Raises a follow-up such as a regularisation for a specific day, filling only the fields the rule needs.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Validates and submits the request, confirms it on screen and routes it to the approver's unified inbox.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The device is offline.",
+     "steps": [
+      "Platform shows cached attendance for the last 60 days and cached payslips, labelled with the last sync time.",
+      "Write actions are queued and submitted on reconnection."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The employee asks for a payslip.",
+     "steps": [
+      "Platform shows the latest payslip with a run selector where the period has more than one run."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "A queued offline request conflicts with a change made meanwhile (for example the day was already regularised).",
+     "handling": "The queued request is rejected on sync and the employee is told why.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The employee selects an action outside their permissions.",
+     "handling": "The tile is not shown; a deep link to it returns 'not available for your role'.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-042",
+    "SCR-021"
+   ],
+   "data_objects": [
+    "attendance_day (R)",
+    "payslip (R)",
+    "regularisation_request (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Home loads within 2 seconds at p95 on a mid-range phone over 4G.",
+    "Any listed action is reachable in three taps or fewer from home.",
+    "Offline cache is encrypted on the device."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-001",
+     "persona": "Employee / worker",
+     "want": "to see which rule marked my day as a half day",
+     "so_that": "I understand my attendance without raising a ticket",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1019 was marked half day on 2026-09-10 for a fourth late arrival beyond the 15-minute grace",
+       "when": "she opens My attendance for 10 September",
+       "then": "the day shows half day with the rule and the three earlier late days listed"
+      },
+      {
+       "given": "the half day is shown",
+       "when": "she taps 'Raise regularisation'",
+       "then": "a request form opens pre-filled with the date and needs only a reason"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-002",
+     "persona": "Employee / worker",
+     "want": "to read my attendance and payslip with no network",
+     "so_that": "I can check them on the shop floor where signal is poor",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my phone is offline and last synced at 07:42",
+       "when": "I open My attendance",
+       "then": "the last 60 days are shown with 'last synced 07:42'"
+      },
+      {
+       "given": "I submit a leave request offline",
+       "when": "the phone reconnects",
+       "then": "the request is submitted and appears in my history"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-013",
+    "SYS-037",
+    "SYS-069",
+    "SYS-071",
+    "SYS-077"
+   ]
+  },
+  {
+   "id": "SSV-UC-002",
+   "name": "Act on pending approvals from one unified inbox",
+   "process": "SSV-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Give each approver one queue for every pending item across modules, actionable in place on any channel with the rule context needed to decide.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Employee / worker",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Requests are decided quickly and with reasons."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Fewer disputes from surprise deductions."
+    }
+   ],
+   "trigger": "Any item awaits the approver's decision.",
+   "preconditions": [
+    "The approver is authenticated and holds a reporting line or role that routes items to them."
+   ],
+   "postconditions_success": [
+    "The approval step is decided with decision, reason where required, and channel recorded; platform.approval.step_decided is emitted."
+   ],
+   "postconditions_failure": [
+    "The item stays pending with its SLA running and remains in the queue."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Aggregates every pending item for the approver across leave, gate pass, overtime, regularisation, loan, requisition, letters and claims into one queue.",
+     "ref": "SSV-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Manager / supervisor",
+     "action": "Approves or rejects in place from the notification or the queue, on web, mobile or the business messaging channel.",
+     "ref": "SSV-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Shows with each item the rule context that bears on the decision, such as late allowance left, gate-pass hours left or leave expiring.",
+     "ref": "SSV-02.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The approver delegates the item.",
+     "steps": [
+      "Approver selects a delegate within scope and a validity period.",
+      "The item moves to the delegate's queue with the delegation recorded."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The approver is offline.",
+     "steps": [
+      "The decision is queued on the device.",
+      "On reconnection it is submitted with the original decision time."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The item was already decided on another channel.",
+     "handling": "The second action is not applied; the approver sees the current decision and who made it.",
+     "rule": "RL-411"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A rejection is submitted without a reason.",
+     "handling": "The rejection is refused until a reason is entered.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The context source is unavailable.",
+     "handling": "The item shows that context could not be loaded rather than hiding the gap.",
+     "rule": "RL-412"
+    },
+    {
+     "id": "E4",
+     "at_step": 1,
+     "condition": "The approver is also the requester.",
+     "handling": "The item is routed to the next approver and never appears in the requester's own queue.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-410",
+    "RL-411",
+    "RL-412"
+   ],
+   "screens": [
+    "SCR-040"
+   ],
+   "data_objects": [
+    "approval_step (R/U)"
+   ],
+   "events": [
+    "platform.approval.step_decided"
+   ],
+   "nfrs": [
+    "Queue loads 200 items within 2 seconds at p95.",
+    "A decision made on any channel is reflected on all others within 5 seconds."
+   ],
+   "frequency": "Daily",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-S410",
+    "TC-S411",
+    "TC-S412"
+   ],
+   "user_stories": [
+    {
+     "id": "SSV-US-003",
+     "persona": "Manager / supervisor",
+     "want": "all my pending items across modules in one queue",
+     "so_that": "I do not check a separate inbox per module",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I have 3 leave requests, 2 gate passes, 1 overtime request and 1 expense claim pending",
+       "when": "I open SCR-040",
+       "then": "all 7 items appear in one list sorted by SLA due"
+      },
+      {
+       "given": "a new regularisation request arrives",
+       "when": "the queue refreshes",
+       "then": "it appears in the same list"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-004",
+     "persona": "Manager / supervisor",
+     "want": "to see the rule context with each request",
+     "so_that": "I avoid approving something that causes a surprise deduction",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Kavya Venkatesh requests a third gate pass with 4 hours and 2 instances used in September",
+       "when": "I open the request",
+       "then": "the item shows 0 hours and 0 instances remaining"
+      },
+      {
+       "given": "a leave request is for a day with 3 earned leave days expiring on 2026-12-31",
+       "when": "I open it",
+       "then": "the expiring balance is shown"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-005",
+     "persona": "Manager / supervisor",
+     "want": "to approve directly from the business messaging channel",
+     "so_that": "I can decide while away from my desk",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a leave request notification arrives on the business messaging channel",
+       "when": "I reply Approve",
+       "then": "the leave is approved and the channel is recorded as the decision source"
+      },
+      {
+       "given": "I already rejected the same request on web",
+       "when": "I reply Approve on the messaging channel",
+       "then": "the approval is not applied and I am told it was rejected on web"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-037",
+    "SYS-040",
+    "SYS-071"
+   ]
+  },
+  {
+   "id": "SSV-UC-003",
+   "name": "Transact through the business messaging channel",
+   "process": "SSV-03",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Let employees apply, approve, check in and fetch payslips through the business messaging channel as a first-class channel with the same rules as the app.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Business messaging channel",
+    "Nucleus platform",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Plant HR / time office",
+     "interest": "Workers without the app still reach self-service."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Identity is verified before any data is shared."
+    }
+   ],
+   "trigger": "A message arrives from an employee's registered mobile number.",
+   "preconditions": [
+    "The employee's mobile number is registered and verified.",
+    "The tenant's business messaging account is active."
+   ],
+   "postconditions_success": [
+    "The requested information is returned or the transaction completes through the same domain services as the app, with an audit entry."
+   ],
+   "postconditions_failure": [
+    "No data is shared and no write happens; the employee is told why."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Business messaging channel",
+     "action": "Delivers the employee's message to the integration service.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Matches the number to a principal and verifies the session by one-time code if none is active.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Interprets the intent, such as apply leave, check in, fetch payslip or approve an item.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "For a write, replies with a summary and asks for explicit confirmation.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms the action.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Executes it through the same domain service as the app and replies with the outcome and reference.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Records the transaction in the audit trail with the channel as source.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The intent is a read such as 'payslip September'.",
+     "steps": [
+      "Platform returns the payslip as a password-protected document after verification."
+     ],
+     "rejoin": "Returns to step 7"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The message is a reply to a lifecycle announcement.",
+     "steps": [
+      "Platform records the reaction against the announcement."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The number is not registered.",
+     "handling": "No data is shared and the sender is told to contact HR.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The employee does not confirm within 10 minutes.",
+     "handling": "The pending action expires and nothing is written.",
+     "rule": null
+    },
+    {
+     "id": "E3",
+     "at_step": 6,
+     "condition": "The domain rule rejects the request (for example insufficient leave balance).",
+     "handling": "The reason from the rule is returned in the reply.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-397"
+   ],
+   "screens": [],
+   "data_objects": [
+    "conversation (C)",
+    "audit_event (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Replies are sent within 5 seconds at p95.",
+    "No personal data is sent before verification."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-X397",
+    "TC-E492"
+   ],
+   "user_stories": [
+    {
+     "id": "SSV-US-006",
+     "persona": "Employee / worker",
+     "want": "to apply for leave by messaging",
+     "so_that": "I can do it without installing the app",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I am verified and have 6 casual leave days",
+       "when": "I send 'leave 15 Oct casual' and confirm",
+       "then": "a 1-day casual leave request is submitted and I receive its reference"
+      },
+      {
+       "given": "I do not confirm within 10 minutes",
+       "when": "the timer expires",
+       "then": "no request is created"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-007",
+     "persona": "Employee / worker",
+     "want": "my payslip only after my identity is verified",
+     "so_that": "no one else can get it by using my phone number",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my session has expired",
+       "when": "I ask for my September payslip",
+       "then": "I am asked for a one-time code before the payslip is sent"
+      },
+      {
+       "given": "a message comes from an unregistered number asking for E1019's payslip",
+       "when": "it is processed",
+       "then": "no data is returned"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-013",
+    "SYS-032",
+    "SYS-070",
+    "SYS-071",
+    "SYS-079"
+   ]
+  },
+  {
+   "id": "SSV-UC-004",
+   "name": "Raise and resolve a helpdesk ticket",
+   "process": "SSV-04",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Route an employee question to the right resolver, resolve it within SLA using the employee's own record, and measure deflection.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Manager / supervisor",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Workload by category and SLA performance are visible."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Answers grounded in their own data."
+    }
+   ],
+   "trigger": "An employee has a question or issue the assistant could not resolve, or chooses to raise a ticket.",
+   "preconditions": [
+    "Categories, routing rules and SLAs by priority are configured per location."
+   ],
+   "postconditions_success": [
+    "The ticket is resolved with a resolution note referencing the employee's records and confirmed or auto-closed."
+   ],
+   "postconditions_failure": [
+    "The ticket is escalated and remains open with the breach recorded."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Raises a ticket on SCR-041 choosing a category and describing the issue.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Routes it to the resolver group for the category and location and sets the SLA from priority.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Investigates using the employee's records and records a resolution with the evidence shown.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Notifies the employee and asks for confirmation.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Confirms resolution or reopens the ticket with a reason.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Closes the ticket and records whether it could have been deflected by the assistant.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The employee does not respond within 3 working days.",
+     "steps": [
+      "The ticket auto-closes as resolved."
+     ],
+     "rejoin": "Returns to step 6"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The issue needs a manager's input.",
+     "steps": [
+      "Resolver assigns a sub-task to the manager and the SLA pauses while awaiting employee or manager input."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The SLA is breached.",
+     "handling": "The ticket escalates to the resolver group lead and is flagged on the dashboard.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The ticket concerns harassment.",
+     "handling": "The employee is directed to the confidential case channel and the ticket holds no details.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-041"
+   ],
+   "data_objects": [
+    "ticket (C/U)"
+   ],
+   "events": [
+    "helpdesk.ticket.created"
+   ],
+   "nfrs": [
+    "Resolvers see only the records within their own data scope."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-008",
+     "persona": "Employee / worker",
+     "want": "my ticket answered with evidence from my own record",
+     "so_that": "I understand the outcome instead of just being told it is correct",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "Rahul Gaikwad raises 'comp-off credit from 31 May has disappeared'",
+       "when": "the resolver resolves it",
+       "then": "the resolution shows the credit lapsed on 30 July, 60 days after crediting, with the ledger movement"
+      },
+      {
+       "given": "I reopen the ticket with a reason",
+       "when": "the reopen is saved",
+       "then": "the ticket returns to the resolver with its SLA restarted"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-009",
+     "persona": "HR operations",
+     "want": "tickets routed by category and location with SLA timers",
+     "so_that": "each query reaches the right person and nothing is forgotten",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a High priority payroll ticket is raised on 2026-09-09",
+       "when": "routing runs",
+       "then": "it is assigned to the payroll resolver group with SLA due 2026-09-10"
+      },
+      {
+       "given": "the SLA passes unresolved",
+       "when": "the check runs",
+       "then": "the ticket escalates to the group lead"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-039",
+    "SYS-043",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "SSV-UC-005",
+   "name": "Answer a policy question with grounded sources",
+   "process": "SSV-05",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Answer an employee's question only from retrieved policy and the employee's own data, execute simple actions on confirmation, and raise a ticket when unsure.",
+   "level": "User goal",
+   "primary_actor": "Agent (governed)",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform",
+    "HR operations"
+   ],
+   "stakeholders": [
+    {
+     "who": "HR operations",
+     "interest": "Routine questions are answered correctly without a ticket."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "No answer is invented and no write happens without consent."
+    }
+   ],
+   "trigger": "An employee asks a question on any supported channel.",
+   "preconditions": [
+    "Policy documents are published and indexed.",
+    "The agent principal is scoped narrower than the asking employee."
+   ],
+   "postconditions_success": [
+    "The employee receives a cited answer, or a confirmed action is executed and logged in the action ledger."
+   ],
+   "postconditions_failure": [
+    "A ticket is created and the employee is told so; no guessed answer is given."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Asks a question in the app, on the web, on the business messaging channel or in the collaboration workspace.",
+     "ref": "SSV-05.1"
+    },
+    {
+     "n": 2,
+     "actor": "Agent (governed)",
+     "action": "Retrieves policy clauses and the employee's own data under the employee's own permissions.",
+     "ref": "SSV-05.2"
+    },
+    {
+     "n": 3,
+     "actor": "Agent (governed)",
+     "action": "Answers with citations, or performs a simple action such as applying leave after the employee confirms it.",
+     "ref": "SSV-05.3"
+    },
+    {
+     "n": 4,
+     "actor": "Agent (governed)",
+     "action": "Checks that a confident, grounded answer exists before closing the conversation.",
+     "ref": "SSV-05.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The request is a write (apply leave, request gate pass).",
+     "steps": [
+      "Agent shows a dry-run summary of the change.",
+      "Employee confirms; agent executes and logs the action in the action ledger."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "No confident, grounded answer is available.",
+     "steps": [
+      "Agent creates a ticket with the question and retrieved context.",
+      "Agent tells the employee a ticket was raised and gives its number."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The question asks about another person's data.",
+     "handling": "Retrieval is limited to the asker's permissions and the agent says it cannot share that data.",
+     "rule": "RL-420"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "No source is retrieved.",
+     "handling": "No answer is generated; the flow moves to ticket creation.",
+     "rule": "RL-421"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The employee declines the confirmation.",
+     "handling": "Nothing is written and the cancellation is logged.",
+     "rule": "RL-422"
+    },
+    {
+     "id": "E4",
+     "at_step": 4,
+     "condition": "The agent's confidence is below threshold.",
+     "handling": "A ticket is created and the employee is told so.",
+     "rule": "RL-423"
+    }
+   ],
+   "business_rules": [
+    "RL-420",
+    "RL-421",
+    "RL-422",
+    "RL-423"
+   ],
+   "screens": [
+    "SCR-041"
+   ],
+   "data_objects": [
+    "conversation (C)",
+    "policy_document (R)",
+    "action_ledger (C)",
+    "ticket (C)"
+   ],
+   "events": [
+    "agent.tool.called",
+    "agent.action.executed",
+    "helpdesk.ticket.created"
+   ],
+   "nfrs": [
+    "First answer token within 3 seconds at p95.",
+    "Every answer shows at least one citation that opens the source clause."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [
+    "TC-A420",
+    "TC-A421",
+    "TC-A422",
+    "TC-A423"
+   ],
+   "user_stories": [
+    {
+     "id": "SSV-US-010",
+     "persona": "Employee / worker",
+     "want": "answers that cite the policy clause they come from",
+     "so_that": "I can trust and check the answer",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the leave policy says casual leave cannot be carried forward",
+       "when": "I ask 'can I carry forward casual leave?'",
+       "then": "the answer says no and links to that clause"
+      },
+      {
+       "given": "no indexed policy covers sabbaticals",
+       "when": "I ask about sabbatical leave",
+       "then": "no answer is given, a ticket is raised and I receive its number"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-011",
+     "persona": "Employee / worker",
+     "want": "the assistant to act only after I confirm",
+     "so_that": "nothing changes on my record without my consent",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I ask the assistant to apply 1 day casual leave on 2026-10-15",
+       "when": "it shows the dry-run summary",
+       "then": "no request exists until I confirm"
+      },
+      {
+       "given": "I confirm",
+       "when": "the action runs",
+       "then": "the leave request is created and the action ledger records tool, inputs and my confirmation"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-012",
+     "persona": "HR operations",
+     "want": "the assistant never to reveal another employee's data",
+     "so_that": "privacy is preserved even for curious questions",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1019 asks 'what is Rahul's leave balance?'",
+       "when": "the agent retrieves data",
+       "then": "no data about Rahul is returned and the answer says it cannot share it"
+      },
+      {
+       "given": "the same question is asked by Rahul's manager",
+       "when": "the agent retrieves data",
+       "then": "the balance is returned because it is within the manager's scope"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-035",
+    "SYS-072",
+    "SYS-073",
+    "SYS-087"
+   ]
+  },
+  {
+   "id": "SSV-UC-006",
+   "name": "Publish and find answers in the HR service catalogue and knowledge base",
+   "process": null,
+   "capability_gap": "SSV-CG-001",
+   "source": "Authored",
+   "goal": "Provide a searchable catalogue of HR services and a versioned, owned, multilingual knowledge base.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform",
+    "Agent (governed)"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Find the right service or article in their language."
+    },
+    {
+     "who": "Agent principal",
+     "interest": "Grounds answers in current articles only."
+    }
+   ],
+   "trigger": "HR publishes or updates an article or service, or an employee searches.",
+   "preconditions": [
+    "Article owners and review cycles are configured."
+   ],
+   "postconditions_success": [
+    "The article is published with owner, version, review date and language variants and is searchable and citable."
+   ],
+   "postconditions_failure": [
+    "The article stays in draft or is withdrawn from search and grounding."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Drafts an article or catalogue entry with owner, audience, review date and linked service form.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Adds language variants, each marked with its translator and status.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "HR operations",
+     "action": "Submits for review; the reviewer approves and the platform publishes a new version.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Indexes the version for search and assistant grounding and retires the prior version from grounding.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Searches the catalogue in their language and opens the article or service.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Reminds the owner 14 days before the review date.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "No variant exists in the employee's language.",
+     "steps": [
+      "Platform shows the English version with a note that a translation is not available."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "The review date passes without review.",
+     "handling": "The article is flagged stale and excluded from assistant grounding until reviewed.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-041"
+   ],
+   "data_objects": [
+    "kb_article (C/U)",
+    "service_catalogue_item (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Search returns results within 1 second at p95.",
+    "Supports the 11 configured interface languages."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-013",
+     "persona": "HR operations",
+     "want": "articles to expire from assistant grounding when their review date passes",
+     "so_that": "the assistant never cites stale policy",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an article's review date is 2026-10-01",
+       "when": "the date passes without review",
+       "then": "it is flagged stale and excluded from grounding"
+      },
+      {
+       "given": "I review and republish it",
+       "when": "the new version is indexed",
+       "then": "the assistant cites the new version"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-014",
+     "persona": "Employee / worker",
+     "want": "to search HR articles in Marathi",
+     "so_that": "I can understand policy in my own language",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the gate pass article has a published Marathi variant",
+       "when": "I search in Marathi",
+       "then": "the Marathi article is returned"
+      },
+      {
+       "given": "the overtime article has no Marathi variant",
+       "when": "I open it",
+       "then": "the English version is shown with a note that a translation is not available"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-037",
+    "SYS-066",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "SSV-UC-007",
+   "name": "Compose and run a guided employee journey",
+   "process": null,
+   "capability_gap": "SSV-CG-002",
+   "source": "Authored",
+   "goal": "Let HR compose journeys of tasks, content and nudges for life events and deliver them to the right employees at the right time.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Clear guidance at key life moments."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Knows what the employee needs from them."
+    }
+   ],
+   "trigger": "A life event occurs (for example maternity leave approved, relocation, first-time manager promotion).",
+   "preconditions": [
+    "A journey template is published with trigger, steps and audience."
+   ],
+   "postconditions_success": [
+    "The employee completes or is guided through all journey steps; completion is tracked."
+   ],
+   "postconditions_failure": [
+    "The journey is paused or cancelled with reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Composes a journey with trigger, ordered tasks, content items and nudges with timing.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Publishes the journey for a target audience.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Starts the journey for an employee when the trigger event occurs.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Delivers each task and nudge at its scheduled time on the employee's preferred channel.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Completes tasks; the platform records progress.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Completes manager tasks within the journey, such as a return-to-work conversation.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Nucleus platform",
+     "action": "Closes the journey and asks the employee for feedback.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The trigger is reversed (for example leave cancelled).",
+     "steps": [
+      "Platform cancels the journey and withdraws pending nudges."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A task links to a retired form or article.",
+     "handling": "The step is skipped and HR is alerted to fix the journey.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-042"
+   ],
+   "data_objects": [
+    "journey_template (C/U)",
+    "journey_instance (C/U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Journey steps respect the employee's quiet hours for nudges."
+   ],
+   "frequency": "Per event",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-015",
+     "persona": "HR operations",
+     "want": "to build a new-parent journey once and have it start automatically",
+     "so_that": "every new parent gets the same support",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a new-parent journey triggers on maternity leave approval",
+       "when": "an employee's maternity leave from 2026-11-01 is approved",
+       "then": "the journey starts with the benefits checklist task"
+      },
+      {
+       "given": "the leave is cancelled",
+       "when": "the cancellation is saved",
+       "then": "the journey is cancelled and pending nudges withdrawn"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-016",
+     "persona": "Manager / supervisor",
+     "want": "to see my tasks within a team member's journey",
+     "so_that": "I play my part at the right moment",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "a return-to-work task is due on 2027-05-02",
+       "when": "the date arrives",
+       "then": "the task appears in my unified inbox"
+      },
+      {
+       "given": "I complete it",
+       "when": "the journey refreshes",
+       "then": "the step shows Complete with my name"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-053",
+    "SYS-056",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "SSV-UC-008",
+   "name": "Use self-service with assistive technology",
+   "process": null,
+   "capability_gap": "SSV-CG-003",
+   "source": "Authored",
+   "goal": "Ensure every self-service surface conforms to WCAG 2.2 AA and works with screen readers, keyboard-only use and high-contrast themes.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker with a disability",
+     "interest": "Equal access to all self-service actions."
+    },
+    {
+     "who": "Compliance owner",
+     "interest": "Accessibility conformance is evidenced."
+    }
+   ],
+   "trigger": "An employee using assistive technology opens a self-service screen.",
+   "preconditions": [
+    "Screens have passed automated and manual accessibility checks before release."
+   ],
+   "postconditions_success": [
+    "The employee completes the action using only assistive technology."
+   ],
+   "postconditions_failure": [
+    "A defect is logged against the screen with the failed success criterion."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Opens SCR-042 with a screen reader active.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Announces the page title, landmarks and the tile names in a logical order.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Moves through the leave form using only the keyboard.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Shows a visible focus indicator and keeps focus order matching the visual order.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Submits the form with a missing field.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Announces the error, moves focus to the first invalid field and describes how to fix it.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Employee / worker",
+     "action": "Corrects the field and submits successfully; the confirmation is announced.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee selects the high-contrast theme.",
+     "steps": [
+      "Platform applies the theme across all screens with a contrast ratio of at least 4.5:1 for text."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "A control is not reachable by keyboard.",
+     "handling": "Treated as a release-blocking defect.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-042",
+    "SCR-021"
+   ],
+   "data_objects": [],
+   "events": [],
+   "nfrs": [
+    "Conforms to WCAG 2.2 level AA.",
+    "Interactive targets are at least 24 by 24 CSS pixels."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-017",
+     "persona": "Employee / worker",
+     "want": "to apply for leave using only a keyboard and screen reader",
+     "so_that": "I can use self-service independently",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a screen reader is active",
+       "when": "I tab through the leave form",
+       "then": "every field announces its label and required state"
+      },
+      {
+       "given": "I submit with the end date empty",
+       "when": "validation runs",
+       "then": "the error is announced and focus moves to the end date field"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-018",
+     "persona": "Employee / worker",
+     "want": "a high-contrast theme",
+     "so_that": "I can read screens in bright shop-floor light",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I select high contrast",
+       "when": "I open My attendance",
+       "then": "all text meets a contrast ratio of at least 4.5:1"
+      },
+      {
+       "given": "I sign in on another device",
+       "when": "the app loads",
+       "then": "my theme choice is kept"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-066",
+    "SYS-069"
+   ]
+  },
+  {
+   "id": "SSV-UC-009",
+   "name": "Use the native mobile app with offline access and biometric unlock",
+   "process": null,
+   "capability_gap": "SSV-CG-004",
+   "source": "Authored",
+   "goal": "Give employees a native mobile app with biometric unlock and offline read of payslips, balances and documents.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Identity provider",
+    "Tenant admin"
+   ],
+   "stakeholders": [
+    {
+     "who": "Tenant admin",
+     "interest": "Lost or exited devices can be wiped."
+    },
+    {
+     "who": "Employee / worker",
+     "interest": "Fast access without passwords."
+    }
+   ],
+   "trigger": "The employee installs and signs in to the app.",
+   "preconditions": [
+    "The tenant has enabled mobile access and single sign-on via OIDC."
+   ],
+   "postconditions_success": [
+    "The device is enrolled, biometric unlock is active and offline data is cached encrypted."
+   ],
+   "postconditions_failure": [
+    "The device is not enrolled and no data is cached."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Installs the app and signs in through the tenant's identity provider.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Identity provider",
+     "action": "Authenticates the employee and returns tokens to the app.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Enrols the device and offers biometric unlock.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Enables biometric unlock.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Syncs payslips for the last 12 months, leave balances and personal documents into an encrypted cache.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Opens a payslip while offline; the app shows it with the last sync time.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "The device has no biometric hardware.",
+     "steps": [
+      "The employee sets a 6-digit app PIN instead."
+     ],
+     "rejoin": "Returns to step 5"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "The employee exits or the device is reported lost.",
+     "handling": "Tenant admin revokes the device; the cache is wiped on next launch and tokens are invalidated.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "The device is rooted or jailbroken.",
+     "handling": "Enrolment is refused and the reason is shown.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [
+    "SCR-042",
+    "SCR-021"
+   ],
+   "data_objects": [
+    "device_enrolment (C/U)",
+    "offline_cache (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Cold start under 3 seconds on a mid-range phone.",
+    "Offline cache encrypted with a device-bound key."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "SSV-US-019",
+     "persona": "Employee / worker",
+     "want": "to unlock the app with my fingerprint",
+     "so_that": "I get in quickly at the punch gate",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "biometric unlock is enabled",
+       "when": "I open the app",
+       "then": "it unlocks after a fingerprint match without a password"
+      },
+      {
+       "given": "five failed fingerprint attempts occur",
+       "when": "the sixth attempt starts",
+       "then": "the app asks for my PIN"
+      }
+     ]
+    },
+    {
+     "id": "SSV-US-020",
+     "persona": "Tenant admin",
+     "want": "to revoke a lost device",
+     "so_that": "cached payslips cannot be read by whoever finds it",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1023 reports her phone lost on 2026-10-03",
+       "when": "I revoke the device",
+       "then": "the tokens are invalidated immediately"
+      },
+      {
+       "given": "the lost phone is opened later",
+       "when": "the app launches",
+       "then": "the cache is wiped and sign-in is required"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-011",
+    "SYS-013",
+    "SYS-064",
+    "SYS-081"
+   ]
+  }
+ ]
+}

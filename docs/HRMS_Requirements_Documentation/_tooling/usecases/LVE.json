@@ -1,0 +1,2656 @@
+{
+ "domain": "LVE",
+ "use_cases": [
+  {
+   "id": "LVE-UC-001",
+   "name": "Run the leave accrual job",
+   "process": "LVE-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Credit every eligible employee's leave entitlement for the period exactly once, as defined by the accrual policy bound to the employee's leave band.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Implementation consultant",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Sees the correct entitlement on the day it falls due, without raising a ticket."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Avoids manual credits and the year-end clean-up that double credits cause."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Encashment, loss-of-pay and F&F figures depend on balances that are never overstated."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Every credit traces to a policy version, a run and an idempotency key."
+    }
+   ],
+   "trigger": "Nightly scheduler; the 1 January annual credit date; an employee reaching the end of the EL eligibility wait.",
+   "preconditions": [
+    "An accrual policy (client set LP-01 to LP-12) is published and bound to each leave band (RL-170).",
+    "Each active assignment carries a leave band, a worker class and an employment start date.",
+    "The leave ledger enforces a unique index on the idempotency key (person, leave type, period, transaction type)."
+   ],
+   "postconditions_success": [
+    "Exactly one credit row exists per person, leave type and period, carrying source_ref to the policy and the run.",
+    "leave.credit.posted has been emitted for each new row and the projected balance reflects it.",
+    "The run log records counts of tuples selected, credited, skipped as not eligible and skipped as already posted."
+   ],
+   "postconditions_failure": [
+    "No partial credit for a person and period is committed; the failed tuples are listed in the run log.",
+    "A re-run of the same period creates only the missing rows and never a second credit."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Select eligible (person, leave type, period) tuples from the accrual policy bound to each employee's leave band.",
+     "ref": "LVE-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Check whether the band's EL eligibility wait has been served (standard band: no EL in the first six months of service).",
+     "ref": "LVE-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Write one credit row per person, type and period with a unique idempotency key and emit leave.credit.posted.",
+     "ref": "LVE-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Apply band values: AGM and above get 18 EL, 6 CL and 6 SL on 1 January; others 1.5 EL monthly plus 6 CL and 6 SL in January.",
+     "ref": "LVE-01.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The employee is in the standard band and has not completed six months of service.",
+     "steps": [
+      "The platform posts no EL credit for the tuple and records the reason 'eligibility wait not served'.",
+      "CL and SL tuples for the same person continue to be processed."
+     ],
+     "rejoin": "Returns to step 3 for the remaining tuples"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The employee completes six months of service on the run date.",
+     "steps": [
+      "The platform posts a single 9-day EL catch-up credit instead of six monthly accruals (RL-171).",
+      "From the next monthly run the employee receives the standard 1.5 EL accrual."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A3",
+     "at_step": 4,
+     "condition": "The employee is a trainee.",
+     "steps": [
+      "The platform reads the trainee type from the employee record.",
+      "DET and GET trainees receive CL on the trainee scheme; other trainee types receive no CL unless the scheme states otherwise (BS:RL-13)."
+     ],
+     "rejoin": "Returns to step 4 for the remaining leave types"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The job is re-run for a period already credited (restart or manual re-trigger).",
+     "handling": "The unique idempotency key rejects the duplicate insert; the tuple is logged as already posted and no second credit is written.",
+     "rule": "RL-172"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "An active employee has no leave band or the band has no bound accrual policy.",
+     "handling": "The tuple is skipped, no default credit is posted, and an HR operations task is raised naming the employee and the missing binding.",
+     "rule": "RL-170"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "A storage failure interrupts the batch.",
+     "handling": "The per-person transaction rolls back; the next run resumes from the failed tuple and the idempotency key prevents duplicates.",
+     "rule": "RL-172"
+    }
+   ],
+   "business_rules": [
+    "RL-170",
+    "RL-171",
+    "RL-172",
+    "RL-173",
+    "BS:RL-07",
+    "BS:RL-08",
+    "BS:RL-09",
+    "BS:RL-13"
+   ],
+   "screens": [
+    "SCR-032"
+   ],
+   "data_objects": [
+    "leave_accrual_policy (R)",
+    "assignment (R)",
+    "employment (R)",
+    "leave_ledger (C)"
+   ],
+   "events": [
+    "leave.credit.posted"
+   ],
+   "nfrs": [
+    "The nightly accrual for 10,000 active employees completes within 15 minutes.",
+    "Three consecutive re-runs of the same period leave the ledger row count unchanged (property test TC-PR08).",
+    "Every credit row is attributable to a policy version and run identifier, retained for the life of the employment record plus the statutory retention period."
+   ],
+   "frequency": "Nightly, plus the 1 January annual credit",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-08"
+   ],
+   "acceptance_tests": [
+    "TC-L170",
+    "TC-L171",
+    "TC-L172",
+    "TC-L173",
+    "TC-PR08",
+    "T-11",
+    "T-12",
+    "T-13"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-001",
+     "persona": "HR operations",
+     "want": "senior-grade employees to receive their full annual entitlement automatically on 1 January",
+     "so_that": "they can plan the year without HR keying credits by hand",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1004 is in the AGM band and active on 1 January 2027",
+       "when": "the accrual run executes on 1 January 2027",
+       "then": "18 EL, 6 CL and 6 SL are credited in one movement with source_ref naming the band policy"
+      },
+      {
+       "given": "E1019 is in the standard band with more than six months of service",
+       "when": "the monthly run executes on 1 February 2027",
+       "then": "1.5 EL is credited and no further CL or SL is posted because both were credited in January"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-002",
+     "persona": "Employee / worker",
+     "want": "my earned leave to start with a single catch-up credit when I complete six months",
+     "so_that": "I am not short-changed by the eligibility wait",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee joined on 1 March 2026 in the standard band",
+       "when": "monthly runs execute from March to August 2026",
+       "then": "no EL credit is posted in any of those months"
+      },
+      {
+       "given": "E1067 Ankita Bhargava completes six months on 16 September 2026",
+       "when": "the nightly run executes on 16 September 2026",
+       "then": "a single credit of 9 EL is posted and the October run posts 1.5 EL"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-003",
+     "persona": "Auditor",
+     "want": "accrual re-runs to be provably incapable of double-crediting",
+     "so_that": "balances can be trusted without reconciliation spreadsheets",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 run has posted 1.5 EL for E1019",
+       "when": "the September run is triggered again",
+       "then": "the ledger still holds exactly one September EL credit for E1019 and the run log marks the tuple as already posted"
+      },
+      {
+       "given": "a run stopped after crediting 4,000 of 9,000 tuples",
+       "when": "the run is restarted",
+       "then": "the remaining 5,000 tuples are credited and the first 4,000 rows are unchanged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-049",
+    "SYS-050",
+    "SYS-053",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "LVE-UC-002",
+   "name": "Prorate casual and sick leave for a new joiner",
+   "process": "LVE-02",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Give each leave-eligible new joiner CL and SL credits proportional to the joining month, posted to the ledger with the proration rule as the source.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Implementation consultant"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Has usable CL and SL from the first week of employment."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Does not compute proration by hand for every hire."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Maintains the proration table as data rather than code."
+    }
+   ],
+   "trigger": "A hire is completed and the employee's assignment becomes active.",
+   "preconditions": [
+    "The proration table (dataset sheet 16_Leave_Proration) is configured on the leave scheme.",
+    "The hire record carries the joining date and the worker class."
+   ],
+   "postconditions_success": [
+    "Prorated CL and SL credits are posted with source_ref citing the proration rule (RL-181).",
+    "leave.credit.posted is emitted and the joiner's projected balance shows the credits."
+   ],
+   "postconditions_failure": [
+    "No credit is committed for an ineligible worker class or a joining date without a proration row.",
+    "An HR operations task explains why no credit was posted."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "On activation of the new joiner's assignment, look up the CL and SL proration band for the joining month.",
+     "ref": "LVE-02.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Prepare the prorated CL and SL credits with the proration rule as source_ref, for posting with leave.credit.posted.",
+     "ref": "LVE-02.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Confirm the worker class is leave-eligible before commit; contract, third-party, consultant and gig classes receive no credit.",
+     "ref": "LVE-02.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The worker class is not leave-eligible.",
+     "steps": [
+      "The platform discards the prepared credits; nothing is written to the ledger.",
+      "The hire record shows 'Not leave-eligible by worker class' on the leave tab."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "The joiner is a trainee.",
+     "steps": [
+      "The platform applies the trainee band's policy; DET and GET trainees receive CL, other trainee types do not unless the scheme says so (BS:RL-13)."
+     ],
+     "rejoin": "Use case ends with the trainee credits committed"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The joining date is after 4 December, for which the proration table holds no row.",
+     "handling": "No CL or SL credit is posted; an HR operations task cites the missing row. The entitlement follows the client's answer to the open question recorded against T-14 and is loaded as a table row before go-live.",
+     "rule": "RL-180"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The hire activation event is delivered twice.",
+     "handling": "The idempotency key on (person, type, period, transaction type) rejects the second credit.",
+     "rule": "RL-181"
+    }
+   ],
+   "business_rules": [
+    "RL-180",
+    "RL-181",
+    "RL-182",
+    "BS:RL-10",
+    "BS:RL-13"
+   ],
+   "screens": [
+    "SCR-032"
+   ],
+   "data_objects": [
+    "leave_proration_rule (R)",
+    "worker_class (R)",
+    "leave_ledger (C)"
+   ],
+   "events": [
+    "leave.credit.posted"
+   ],
+   "nfrs": [
+    "Proration credits are visible to the joiner within 5 minutes of assignment activation.",
+    "Proration values are held only in configuration; a table change needs no code release."
+   ],
+   "frequency": "Per hire",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-08"
+   ],
+   "acceptance_tests": [
+    "TC-L180",
+    "TC-L181",
+    "TC-L182",
+    "T-14"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-004",
+     "persona": "HR operations",
+     "want": "CL and SL for new joiners to be prorated from the joining-month table automatically",
+     "so_that": "every joiner gets the same treatment without manual calculation",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1060 Jayanthi Elangovan joined on 06 April 2026 in a leave-eligible class",
+       "when": "her assignment is activated",
+       "then": "4 CL and 4 SL are credited with source_ref citing the proration rule"
+      },
+      {
+       "given": "employees join on 15 January and 2 December 2026",
+       "when": "their assignments are activated",
+       "then": "they receive 6 CL and 6 SL, and 1 CL and 1 SL, respectively"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-005",
+     "persona": "HR operations",
+     "want": "workers in non-eligible classes to receive no leave credit at all",
+     "so_that": "contract and gig workers are not shown balances they cannot use",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a worker joins on 10 June 2026 under the contract worker class",
+       "when": "the assignment is activated",
+       "then": "no CL or SL credit is written and the leave tab shows 'Not leave-eligible by worker class'"
+      },
+      {
+       "given": "a GET trainee joins on 10 June 2026",
+       "when": "the assignment is activated",
+       "then": "3 CL is credited on the trainee scheme"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-006",
+     "persona": "Implementation consultant",
+     "want": "joining dates without a proration row to raise a task instead of guessing",
+     "so_that": "no entitlement is granted that the client has not confirmed",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the proration table has no row after 4 December",
+       "when": "an employee joins on 10 December 2026",
+       "then": "no CL or SL credit is posted and an HR operations task names the missing table row"
+      },
+      {
+       "given": "the client's answer has been loaded as a row for 5 to 31 December",
+       "when": "the task is re-processed",
+       "then": "the credit from that row is posted once"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-049",
+    "SYS-053",
+    "SYS-056",
+    "SYS-059"
+   ]
+  },
+  {
+   "id": "LVE-UC-003",
+   "name": "Apply for leave with rule validation",
+   "process": "LVE-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Let an employee apply for leave and receive an immediate, rule-named decision on whether the request can enter the approval chain.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Learns at the time of applying, not days later, whether the request breaks a rule."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Receives only requests that already satisfy balance, combination and cap rules."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Policy is enforced consistently and the blocking rule is named in every rejection."
+    }
+   ],
+   "trigger": "The employee opens Apply for leave (SCR-030) on mobile, web or the business messaging channel and submits a request.",
+   "preconditions": [
+    "The employee holds an active assignment with a leave-eligible worker class.",
+    "Leave types, combination rules and monthly caps are configured on the leave scheme."
+   ],
+   "postconditions_success": [
+    "The leave_request is in VALIDATED state and is handed to the approval chain (LVE-04).",
+    "leave.request.created has been emitted."
+   ],
+   "postconditions_failure": [
+    "The request is in REJECTED_BY_RULE with leave.request.rejected_by_rule emitted and the blocking rule named to the employee.",
+    "No approval instance is created and no ledger row is written."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Enter leave type, from and to dates, half-day flags, reason and contact during leave, then submit.",
+     "ref": "LVE-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Project the balance from the ledger as at the leave start date, honouring per-credit expiry, and show it with expiry warnings.",
+     "ref": "LVE-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Check the combination rule: is CL being taken with, or merged into, EL or SL across the contiguous absence?",
+     "ref": "LVE-03.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Check monthly caps: would the request exceed 2 CL or 10 EL in a calendar month, counting days already approved?",
+     "ref": "LVE-03.4"
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Check conflicts with team calendar, holidays, rest days and existing attendance, then set the request to VALIDATED.",
+     "ref": "LVE-03.5"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The employee applies without connectivity on mobile.",
+     "steps": [
+      "The app queues the request locally and shows it as 'Queued'.",
+      "On reconnection the request is submitted and validation runs against the ledger at that moment."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 5,
+     "condition": "The conflict check finds a biometric Present status on a requested date.",
+     "steps": [
+      "The platform shows the conflicting attendance record rather than resolving it silently.",
+      "The employee amends the dates, or proceeds and the conflict is carried to the approver as a visible flag."
+     ],
+     "rejoin": "Returns to step 5 or proceeds to the approval chain"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The projected balance at the start date is lower than the days requested.",
+     "handling": "Submission is blocked with the projected balance and any credits expiring before the start date shown.",
+     "rule": "RL-191"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "CL is contiguous with EL or SL, including where they were applied for separately.",
+     "handling": "The request moves to REJECTED_BY_RULE before the chain starts; the message names the combination rule.",
+     "rule": "RL-192"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "The request would exceed the monthly cap of 2 CL or 10 EL.",
+     "handling": "The request moves to REJECTED_BY_RULE; the message names the cap and the days already counted in that month.",
+     "rule": "RL-193"
+    }
+   ],
+   "business_rules": [
+    "RL-190",
+    "RL-191",
+    "RL-192",
+    "RL-193",
+    "RL-194",
+    "BS:RL-11",
+    "BS:RL-12"
+   ],
+   "screens": [
+    "SCR-030"
+   ],
+   "data_objects": [
+    "leave_request (C)",
+    "leave_ledger (R)",
+    "leave_combination_rule (R)",
+    "leave_type (R)",
+    "attendance_day (R)",
+    "work_calendar (R)"
+   ],
+   "events": [
+    "leave.request.created",
+    "leave.request.rejected_by_rule"
+   ],
+   "nfrs": [
+    "Validation result is returned within 1.5 s at p95 on mobile and web.",
+    "Rejection messages name the rule in the employee's selected language."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-08"
+   ],
+   "acceptance_tests": [
+    "TC-L190",
+    "TC-L191",
+    "TC-L192",
+    "TC-L193",
+    "TC-L194",
+    "T-15",
+    "T-16"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-007",
+     "persona": "Employee / worker",
+     "want": "to see my balance as it will stand on my leave start date, including credits that will expire first",
+     "so_that": "I do not apply for days I will not have",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I hold 4 comp-off days of which 2 expire on 20 October 2026",
+       "when": "I start an application for comp-off from 25 October 2026",
+       "then": "the screen shows a projected balance of 2 days and flags the 2 expiring days"
+      },
+      {
+       "given": "my projected EL on 1 November 2026 is 3 days",
+       "when": "I apply for 4 EL days from 1 November",
+       "then": "submission is blocked and the projected balance of 3 days is shown"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-008",
+     "persona": "Employee / worker",
+     "want": "a request that breaks the CL combination rule to be refused at once with the rule named",
+     "so_that": "I can re-plan instead of waiting for an approver to reject it",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "2 CL for 10 and 11 June 2026 are approved for E1019",
+       "when": "E1019 applies for 3 EL from 12 to 14 June 2026",
+       "then": "the request is set to REJECTED_BY_RULE and the message names the CL combination rule"
+      },
+      {
+       "given": "LV-2026-0802 for E1019 combines CL and EL",
+       "when": "it is validated",
+       "then": "no approval instance is created"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-009",
+     "persona": "Employee / worker",
+     "want": "monthly caps to be enforced at validation with the counted days shown",
+     "so_that": "I understand exactly why the request failed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "2 CL are already approved in June 2026",
+       "when": "I apply for 1 more CL day in June",
+       "then": "the request is blocked at the third CL day and the message names the cap of 2 CL a month"
+      },
+      {
+       "given": "10 EL are already approved in July 2026",
+       "when": "I apply for 1 more EL day in July",
+       "then": "the request is blocked at the eleventh EL day"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-023",
+    "SYS-049",
+    "SYS-059",
+    "SYS-066",
+    "SYS-071"
+   ]
+  },
+  {
+   "id": "LVE-UC-004",
+   "name": "Approve leave through the three-level chain",
+   "process": "LVE-04",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Route a validated leave request through Supervisor, HOD and HR Head in strict order and, on approval, debit the ledger against the specific credits consumed.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "Director / approver",
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets a timely decision and sees who approved at each level."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Acts only on requests in their own subtree, in turn."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives a payroll input for approved leave that affects pay."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each step is recorded with actor, decision and timestamp."
+    }
+   ],
+   "trigger": "A leave request reaches VALIDATED state.",
+   "preconditions": [
+    "A chain definition for leave exists, resolved by request type, worker class and location (RL-010).",
+    "Supervisor, HOD and HR Head are resolvable for the applicant's reporting line."
+   ],
+   "postconditions_success": [
+    "The request is APPROVED; the ledger debit references the credits consumed (RL-195).",
+    "Attendance and team calendar show the leave and a payroll input is raised; leave.request.approved is emitted."
+   ],
+   "postconditions_failure": [
+    "On rejection the request is REJECTED with no ledger movement and the employee is notified with the approver's comment."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Start the sequential chain Supervisor, HOD, HR Head, each with its SLA, and set the request to PENDING_APPROVAL.",
+     "ref": "LVE-04.1"
+    },
+    {
+     "n": 2,
+     "actor": "Approvers (Supervisor, HOD, HR Head)",
+     "action": "Each approver decides in turn on the approvals inbox; a rejection at any step ends the request.",
+     "ref": "LVE-04.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "On final approval, debit the ledger against the credits consumed, update calendar and attendance, and raise the payroll input.",
+     "ref": "LVE-04.3"
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Where needed, edit or close the request at any stage with a mandatory reason; the change is logged with actor and time.",
+     "ref": "LVE-04.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "An approver rejects the request.",
+     "steps": [
+      "The platform sets the request to REJECTED and closes the remaining steps.",
+      "The employee is notified with the approver's comment; no ledger row is written."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "A step's SLA elapses without a decision.",
+     "steps": [
+      "The platform reminds the approver and escalates as defined in the chain definition.",
+      "The request stays at the same step; later steps do not open early."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A3",
+     "at_step": 2,
+     "condition": "The employee cancels while the request is pending.",
+     "steps": [
+      "The platform sets the request to CANCELLED and withdraws open approval tasks."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The HR Head or HOD attempts to approve before the preceding step has decided.",
+     "handling": "The action is blocked; the inbox shows which step is pending.",
+     "rule": "RL-014"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "The resolved approver is the applicant.",
+     "handling": "The step is not offered to the applicant; it is routed to the next authority in the chain definition.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The credits referenced at validation were consumed or lapsed before final approval.",
+     "handling": "The balance is re-projected; if insufficient, the debit is not written and the request returns to HR operations with the shortfall shown.",
+     "rule": "RL-195"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-013",
+    "RL-014",
+    "RL-015",
+    "RL-195"
+   ],
+   "screens": [
+    "SCR-040",
+    "SCR-030"
+   ],
+   "data_objects": [
+    "approval_instance (C)",
+    "approval_step (U)",
+    "leave_ledger (C)",
+    "attendance_day (U)",
+    "leave_request (U)",
+    "audit_entry (C)"
+   ],
+   "events": [
+    "platform.approval.started",
+    "platform.approval.step_decided",
+    "leave.request.approved",
+    "leave.request.edited"
+   ],
+   "nfrs": [
+    "An approval decision is reflected in the next approver's inbox within 5 s.",
+    "Approval history for a request is retained and viewable for at least the statutory retention period."
+   ],
+   "frequency": "Continuous",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-06"
+   ],
+   "acceptance_tests": [
+    "TC-P10",
+    "TC-L14",
+    "TC-L15",
+    "TC-L195",
+    "T-09"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-010",
+     "persona": "Director / approver",
+     "want": "the chain to stop me approving before the Supervisor and HOD have acted",
+     "so_that": "the client's three-level policy cannot be bypassed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a leave request is pending at the Supervisor step",
+       "when": "the HR Head opens it and selects Approve",
+       "then": "the action is blocked with the message 'Pending at Supervisor'"
+      },
+      {
+       "given": "Supervisor and HOD have approved",
+       "when": "the HR Head approves",
+       "then": "the request is APPROVED and the history shows three entries, each with actor and timestamp"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-011",
+     "persona": "Manager / supervisor",
+     "want": "to approve or reject a team member's leave from my inbox with a comment",
+     "so_that": "my decision and reason reach the employee immediately",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a 3-day EL request from my direct report is at my step",
+       "when": "I reject it with the comment 'Audit week'",
+       "then": "the request becomes REJECTED, the employee is notified with the comment and no ledger debit exists"
+      },
+      {
+       "given": "the same request is approved at all three steps",
+       "when": "the final approval completes",
+       "then": "the ledger shows a debit of 3 EL referencing the credits consumed"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-012",
+     "persona": "HR operations",
+     "want": "to edit or close a request at any stage with a recorded reason",
+     "so_that": "exceptions can be handled without losing the audit trail",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "LV-2026-0774 for E1043 Neha Mishra is approved",
+       "when": "HR closes it on 14 September with the reason 'Returned early, recorded by HR'",
+       "then": "the audit entry records the HR actor, timestamp and reason and leave.request.edited is emitted"
+      },
+      {
+       "given": "an HR edit is attempted without a reason",
+       "when": "HR selects Save",
+       "then": "the save is refused and the reason field is marked required"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-036",
+    "SYS-037",
+    "SYS-039",
+    "SYS-040",
+    "SYS-041"
+   ]
+  },
+  {
+   "id": "LVE-UC-005",
+   "name": "Record early return and re-credit unused leave",
+   "process": "LVE-05",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Release the unused days of an approved leave when the employee returns early, crediting the balance and correcting attendance in one atomic change.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Nucleus platform",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Gets unused days back and is paid for the days actually worked."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "The payslip, attendance and leave ledger agree; closed runs are not rewritten."
+    },
+    {
+     "who": "Auditor",
+     "interest": "The reversal references the original debit."
+    }
+   ],
+   "trigger": "An employee on approved leave reports back for work before the approved end date.",
+   "preconditions": [
+    "The leave request is APPROVED and the ledger debit references the credits consumed (RL-195).",
+    "The actual return date lies within the approved span."
+   ],
+   "postconditions_success": [
+    "The request is in EARLY_RETURN; a reversal row references the original debit and leave.credit.reversed is emitted.",
+    "Released days are recomputed to Present or their punch-derived status.",
+    "Where a released date sits in a locked payroll period, an arrears request exists for the next open run."
+   ],
+   "postconditions_failure": [
+    "Neither the reversal nor the recompute is committed; the request remains APPROVED and the user sees the failure."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker or HR operations",
+     "action": "Record the actual return date inside the approved leave span on Apply for leave and emit leave.early_return.recorded.",
+     "ref": "LVE-05.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "In one transaction, write a reversal row referencing the original debit and queue attendance recompute for the released dates.",
+     "ref": "LVE-05.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Recompute the released dates so they become Present or their punch-derived status; emit time.attendance_day.recomputed.",
+     "ref": "LVE-05.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Check whether any released date falls inside a locked payroll period.",
+     "ref": "LVE-05.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 4,
+     "condition": "A released date lies in a payroll period whose inputs are locked or whose run has closed.",
+     "steps": [
+      "The platform raises payroll.arrears.requested for the next open run with the person, period and reason.",
+      "The closed run is left unchanged."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 3,
+     "condition": "A released date has no punch and is not a rest day.",
+     "steps": [
+      "The day takes its punch-derived status (for example Absent) rather than Present, and the employee is notified to regularise it."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "The entered return date is before the leave start or after the approved end date.",
+     "handling": "The entry is refused with the approved span shown.",
+     "rule": "RL-200"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Either the reversal write or the recompute enqueue fails.",
+     "handling": "Both are rolled back; no reversal exists without its recompute, and the user is asked to retry.",
+     "rule": "RL-201"
+    },
+    {
+     "id": "E3",
+     "at_step": 1,
+     "condition": "The request is still pending approval.",
+     "handling": "Early return is not offered; the user is directed to amend or cancel the pending request.",
+     "rule": "RL-200"
+    }
+   ],
+   "business_rules": [
+    "RL-200",
+    "RL-201",
+    "RL-202",
+    "RL-203",
+    "RL-195",
+    "BS:RL-15"
+   ],
+   "screens": [
+    "SCR-030"
+   ],
+   "data_objects": [
+    "leave_request (U)",
+    "leave_ledger (C)",
+    "recompute_queue (C)",
+    "attendance_day (U)",
+    "payroll_run (R)"
+   ],
+   "events": [
+    "leave.early_return.recorded",
+    "leave.credit.reversed",
+    "time.attendance_day.recomputed",
+    "payroll.arrears.requested"
+   ],
+   "nfrs": [
+    "Reversal and recompute complete within 60 s of recording the return for a 30-day span.",
+    "The reversal and recompute enqueue are atomic; fault-injection tests show no state where one exists without the other."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-06"
+   ],
+   "acceptance_tests": [
+    "TC-L200",
+    "TC-L201",
+    "TC-L202",
+    "TC-Y203",
+    "T-08"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-013",
+     "persona": "HR operations",
+     "want": "to record an early return and have the unused days credited back and marked present together",
+     "so_that": "the balance and the attendance never disagree on the payslip",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "10 days of EL from 1 to 10 October 2026 are approved",
+       "when": "a return on 7 October is recorded",
+       "then": "a reversal of 4 EL referencing the original debit is written and 7 to 10 October are marked Present"
+      },
+      {
+       "given": "the recompute enqueue fails during the same transaction",
+       "when": "the return is saved",
+       "then": "no reversal row exists and the request remains APPROVED"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-014",
+     "persona": "Payroll manager",
+     "want": "an early return touching a closed payroll period to arrive as arrears",
+     "so_that": "a run that has been paid is never reopened",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the September 2026 run is closed and an early return releases 28 to 30 September",
+       "when": "the return is recorded on 2 October",
+       "then": "payroll.arrears.requested is raised for the October run and the September run totals are unchanged"
+      },
+      {
+       "given": "no released date falls in a locked period",
+       "when": "the return is recorded",
+       "then": "no arrears request is raised"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-015",
+     "persona": "Employee / worker",
+     "want": "to see the reversal in my leave ledger next to the original debit",
+     "so_that": "I can confirm the days came back",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "LV-2026-0774 for E1043 Neha Mishra has an early return recorded",
+       "when": "she opens the leave balance and ledger",
+       "then": "the original debit and the reversal credit appear as linked entries"
+      },
+      {
+       "given": "the reversal is posted",
+       "when": "the projected EL balance is read",
+       "then": "it has increased by exactly the released days"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-025",
+    "SYS-049",
+    "SYS-052",
+    "SYS-053",
+    "SYS-057"
+   ]
+  },
+  {
+   "id": "LVE-UC-006",
+   "name": "Credit, consume and lapse compensatory off",
+   "process": "LVE-06",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Grant comp-off for approved rest-day or holiday working with its own 60-day clock, consume it earliest-expiring first and lapse whatever remains on its own expiry date.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Plant HR / time office"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Knows exactly when each comp-off day expires and loses none early."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Comp-off liability is accurate per credit, not estimated at balance level."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Each lapse row names the run that wrote it."
+    }
+   ],
+   "trigger": "Approval of rest-day or holiday working; a comp-off availing; the nightly lapse job.",
+   "preconditions": [
+    "The comp-off leave type carries expiry_days (client value 60), with any employee-level lapse window held on the employee or scheme (BS:RL-06).",
+    "Rest-day or holiday working has been approved through the time module."
+   ],
+   "postconditions_success": [
+    "Each credit carries expires_on = credit date + lapse days; consumption references the earliest-expiring open credit.",
+    "Unconsumed days are lapsed by one Lapse row per credit on its own expiry date, with leave.compoff.lapsed emitted."
+   ],
+   "postconditions_failure": [
+    "A failed lapse run writes nothing for the affected credit; the next nightly run lapses it with the original expiry date."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "On approved rest-day or holiday working, credit comp-off with expires_on = credit date + 60 days; emit leave.compoff.credited.",
+     "ref": "LVE-06.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "When comp-off is availed, draw from the earliest-expiring open credit first; emit leave.compoff.consumed.",
+     "ref": "LVE-06.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Nightly, write a Lapse row for each credit past expires_on with days remaining; emit leave.compoff.lapsed.",
+     "ref": "LVE-06.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Keep each credit's clock running across the leave-year boundary; the year end never truncates it.",
+     "ref": "LVE-06.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "The days availed exceed the earliest open credit.",
+     "steps": [
+      "The platform consumes that credit fully and takes the remainder from the next-earliest credit, writing one consumption row per credit."
+     ],
+     "rejoin": "Returns to step 3"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The employee record holds its own lapse window.",
+     "steps": [
+      "The platform uses the employee-level lapse days instead of the leave-type default when setting expires_on."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The lapse job runs twice for the same date.",
+     "handling": "The idempotency key per person, credit and date prevents a second Lapse row.",
+     "rule": "RL-172"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "A comp-off request exceeds the open credits projected at its start date.",
+     "handling": "Validation blocks the request with the expiring credits listed.",
+     "rule": "RL-211"
+    },
+    {
+     "id": "E3",
+     "at_step": 4,
+     "condition": "Year-end processing attempts to lapse open comp-off credits.",
+     "handling": "Comp-off is excluded from year-end lapse; each credit lapses only on its own date.",
+     "rule": "RL-213"
+    }
+   ],
+   "business_rules": [
+    "RL-172",
+    "RL-210",
+    "RL-211",
+    "RL-212",
+    "RL-213",
+    "BS:RL-06"
+   ],
+   "screens": [
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_ledger (C)",
+    "leave_type (R)",
+    "employee (R)"
+   ],
+   "events": [
+    "leave.compoff.credited",
+    "leave.compoff.consumed",
+    "leave.compoff.lapsed"
+   ],
+   "nfrs": [
+    "The nightly lapse job processes 50,000 open credits within 10 minutes.",
+    "An employee notice is sent 7 days before any comp-off credit lapses."
+   ],
+   "frequency": "Nightly lapse; per event for credit and consumption",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-07"
+   ],
+   "acceptance_tests": [
+    "TC-L210",
+    "TC-L211",
+    "TC-L212",
+    "TC-L213",
+    "TC-PR08",
+    "T-10"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-016",
+     "persona": "Employee / worker",
+     "want": "each comp-off day to carry its own 60-day expiry",
+     "so_that": "a later credit is not lost because an earlier one expired",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1028 holds CO-2026-0231 from July and CO-2026-0288 credited on 06 September 2026",
+       "when": "the lapse job runs on 10 September and on 05 November",
+       "then": "the July credit lapses on 10 September and the September credit runs until 05 November"
+      },
+      {
+       "given": "a comp-off is earned on 10 March 2026 with a 60-day window",
+       "when": "the system date passes 9 May 2026",
+       "then": "the credit moves to Lapsed on 9 May with a ledger entry naming the lapse run"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-017",
+     "persona": "Employee / worker",
+     "want": "comp-off I take to use my earliest-expiring day first",
+     "so_that": "I lose as little as possible to expiry",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I hold one credit expiring 20 November and one expiring 15 December 2026",
+       "when": "I avail 1 comp-off day on 12 November",
+       "then": "the consumption row references the credit expiring 20 November"
+      },
+      {
+       "given": "I hold 1 day expiring 20 November and 1 expiring 15 December",
+       "when": "I avail 2 days on 12 and 13 November",
+       "then": "two consumption rows are written, one against each credit"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-018",
+     "persona": "Plant HR / time office",
+     "want": "comp-off clocks to run past 31 December",
+     "so_that": "December holiday working is not cut short by the year end",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "comp-off is credited on 15 December 2026",
+       "when": "year-end processing runs on 31 December",
+       "then": "the credit remains open with expires_on 13 February 2027"
+      },
+      {
+       "given": "E1044 Rahul Gaikwad holds an unconsumed credit",
+       "when": "its expiry date arrives",
+       "then": "a Lapse row is written on that date and leave.compoff.lapsed is emitted"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-049",
+    "SYS-050",
+    "SYS-059",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "LVE-UC-007",
+   "name": "Process leave year end and birthday leave",
+   "process": "LVE-07",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "At year end carry forward, encash or lapse each leave type as the scheme defines, raise encashment as a payroll input, and credit birthday leave in its own window.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "HR operations",
+    "Payroll manager"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives the correct encashment and understands which days lapsed."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Receives encashment as an input computed on the statutory wage base."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Can preview year-end figures before they are written."
+    }
+   ],
+   "trigger": "31 December year-end schedule; an employee's birthday eligibility window opening.",
+   "preconditions": [
+    "Year-end treatment per leave type is configured (EL carry-forward cap; CL and SL lapse).",
+    "The target payroll run for encashment exists for the period (PAY-01)."
+   ],
+   "postconditions_success": [
+    "EL within the cap is carried forward, the excess encashed; CL and SL closing balances are lapsed; leave.yearend.processed is emitted.",
+    "An encashment payroll input exists in the named run; birthday leave credits are posted with their own window."
+   ],
+   "postconditions_failure": [
+    "A failed commit writes no year-end rows for the affected employee; a re-run produces the same figures as the preview."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "At year end, carry EL forward up to the carry-forward cap, encash the excess, and lapse CL and SL; emit leave.yearend.processed.",
+     "ref": "LVE-07.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Raise the encashment as a payroll input in the named run, valued on the statutory wage base; emit payroll.input.raised.",
+     "ref": "LVE-07.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Credit birthday leave within its own eligibility window; emit leave.credit.posted.",
+     "ref": "LVE-07.3"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR operations runs year end in Preview mode first.",
+     "steps": [
+      "The platform computes carry-forward, encashment and lapse per employee without writing.",
+      "HR operations reviews the preview and selects Commit; the committed figures equal the preview."
+     ],
+     "rejoin": "Returns to step 1 in commit mode"
+    },
+    {
+     "id": "A2",
+     "at_step": 1,
+     "condition": "The scheme's EL carry-forward cap is configured as 0, as in the client's acceptance test.",
+     "steps": [
+      "All closing EL is encashed; nothing is carried forward."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The named payroll run has already locked its inputs.",
+     "handling": "The input is not added to the locked run; it is raised to the next open regular run and HR operations is notified.",
+     "rule": "RL-221"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The year-end job is re-run after a partial failure.",
+     "handling": "Idempotency keys prevent a second encashment or lapse row for any employee already processed.",
+     "rule": "RL-172"
+    },
+    {
+     "id": "E3",
+     "at_step": 3,
+     "condition": "The employee's separation date falls before the birthday window opens.",
+     "handling": "No birthday credit is posted.",
+     "rule": "RL-222"
+    }
+   ],
+   "business_rules": [
+    "RL-220",
+    "RL-221",
+    "RL-222",
+    "RL-172",
+    "BS:RL-14"
+   ],
+   "screens": [
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_ledger (C)",
+    "leave_type (R)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "leave.yearend.processed",
+    "payroll.input.raised",
+    "leave.credit.posted"
+   ],
+   "nfrs": [
+    "Preview and Commit for 10,000 employees each complete within 20 minutes.",
+    "Preview and Commit figures match to the half day and to the paisa for every employee."
+   ],
+   "frequency": "Annual; birthday credit per employee",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [
+    "R-08"
+   ],
+   "acceptance_tests": [
+    "TC-L220",
+    "TC-Y221",
+    "TC-L222",
+    "T-17"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-019",
+     "persona": "HR operations",
+     "want": "to preview year-end results before committing them",
+     "so_that": "errors are caught before any balance or payroll input is written",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee closes the year with 7 EL, 2 CL and 3 SL and the EL cap is 0",
+       "when": "year end is run in Preview and then Commit",
+       "then": "both report 7 EL encashed and 5 days lapsed, and only Commit writes ledger rows"
+      },
+      {
+       "given": "a preview has been produced",
+       "when": "no Commit is made",
+       "then": "the ledger holds no year-end rows for that year"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-020",
+     "persona": "Payroll manager",
+     "want": "EL encashment to arrive as a payroll input valued on the statutory wage base",
+     "so_that": "the encashment line is computed consistently with PF and gratuity",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an employee with 50 EL closing and a 45-day cap",
+       "when": "year end is committed",
+       "then": "45 EL carry forward and a payroll input for 5 days is raised in the named run"
+      },
+      {
+       "given": "the January 2027 regular run has locked inputs",
+       "when": "the encashment input is raised",
+       "then": "it is placed in the next open regular run and HR operations is notified"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-021",
+     "persona": "Employee / worker",
+     "want": "my birthday leave credited in its own window",
+     "so_that": "I can take it without using my EL",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my birthday is 14 March and the client's window is configured on the leave type",
+       "when": "the window opens",
+       "then": "one birthday leave day is credited with leave.credit.posted emitted"
+      },
+      {
+       "given": "the window has closed without use",
+       "when": "the balance is read the next day",
+       "then": "the birthday leave day is no longer available"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-028",
+    "SYS-045",
+    "SYS-048",
+    "SYS-049",
+    "SYS-050"
+   ]
+  },
+  {
+   "id": "LVE-UC-008",
+   "name": "View projected leave balance and its ledger trail",
+   "process": "LVE-08",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Give employees and HR a balance computed from the ledger as at any date, together with the transactions that produced it.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform",
+    "Agent principal"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can answer 'why is my balance 6.5' without raising a ticket."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Uses one projection for the apply screen, the assistant, the payslip and the F&F."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Balance is reproducible from ledger rows alone."
+    }
+   ],
+   "trigger": "Any read of a leave balance: the balance screen, the apply screen, the assistant, the payslip or the F&F.",
+   "preconditions": [
+    "The requester is the employee, or HR within scope, or an agent with a declared balance tool."
+   ],
+   "postconditions_success": [
+    "The balance as at the requested date is returned with the contributing ledger rows."
+   ],
+   "postconditions_failure": [
+    "Out-of-scope requests are refused and logged; no partial data is returned."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Project balance = credits − debits − lapses − encashments + reversals, as at the requested date.",
+     "ref": "LVE-08.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Show on the balance and ledger screen the transactions behind the balance, each with date, type, days and source reference.",
+     "ref": "LVE-08.2"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The requested date is in the future.",
+     "steps": [
+      "The projection excludes credits whose expires_on falls before that date and includes scheduled accruals already posted."
+     ],
+     "rejoin": "Returns to step 2"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "HR operations exports the ledger for an employee in scope.",
+     "steps": [
+      "The platform produces the export with the same rows shown on screen and logs the export."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A3",
+     "at_step": 2,
+     "condition": "The mobile app is offline.",
+     "steps": [
+      "The last synchronised balance and ledger are shown read-only with the sync time."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "A user requests the balance of an employee outside their scope.",
+     "handling": "The request is refused and an access event is recorded.",
+     "rule": "RL-231"
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "A component attempts to read a stored balance column.",
+     "handling": "No such column exists; all reads go through the single projection function.",
+     "rule": "RL-230"
+    }
+   ],
+   "business_rules": [
+    "RL-191",
+    "RL-230",
+    "RL-231"
+   ],
+   "screens": [
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_ledger (R)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Balance projection returns within 300 ms at p95 for a ledger of 500 rows.",
+    "The same projection function serves all consumers; a consistency test compares apply-screen, payslip and F&F values for 1,000 employees."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Critical",
+   "phase": "P1",
+   "client_requirements": [
+    "R-07"
+   ],
+   "acceptance_tests": [
+    "TC-L191",
+    "TC-L230",
+    "TC-L231"
+   ],
+   "user_stories": [
+    {
+     "id": "LVE-US-022",
+     "persona": "Employee / worker",
+     "want": "to see every transaction that makes up my balance",
+     "so_that": "I can verify it myself",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my EL ledger has credits of 13.5, a debit of 6 and a reversal of 2 for 2026",
+       "when": "I open the leave balance and ledger",
+       "then": "the balance shows 9.5 and each of the three entries with its date and source"
+      },
+      {
+       "given": "I select one debit",
+       "when": "I open its detail",
+       "then": "the leave request it came from is shown"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-023",
+     "persona": "HR operations",
+     "want": "to read an employee's balance as at a past date",
+     "so_that": "I can answer disputes about what was available when leave was applied",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an employee in my entity disputes a rejection on 3 August 2026",
+       "when": "I project the balance as at 3 August 2026",
+       "then": "only ledger rows effective on or before that date are counted"
+      },
+      {
+       "given": "an employee outside my entity grant",
+       "when": "I request the balance",
+       "then": "the request is refused and an access event is logged"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-023",
+    "SYS-049",
+    "SYS-071"
+   ]
+  },
+  {
+   "id": "LVE-UC-009",
+   "name": "Manage maternity and paternity leave",
+   "process": null,
+   "capability_gap": "LVE-CG-001",
+   "source": "Authored",
+   "goal": "Administer statutory maternity benefit and paternity leave end to end, including medical evidence, nursing breaks and return-to-work milestones (entitlements to be validated by Legal).",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Manager / supervisor",
+    "Payroll manager",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives the full statutory entitlement and a planned return without chasing HR."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Holds documentary evidence and dates needed for statutory registers."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Knows which days are paid by the employer and which are covered by a statutory scheme."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Plans cover for the absence period."
+    }
+   ],
+   "trigger": "An employee applies for maternity or paternity leave, or HR records a notified pregnancy or birth.",
+   "preconditions": [
+    "Maternity and paternity leave types are configured with entitlement, eligibility service and evidence requirements from the effective rule pack (to be validated by Legal).",
+    "The employee holds an active assignment."
+   ],
+   "postconditions_success": [
+    "The leave is APPROVED with evidence attached, ledger debits posted and a payroll input raised for paid days.",
+    "Nursing-break allowance and return-to-work milestones are scheduled on the employee's calendar."
+   ],
+   "postconditions_failure": [
+    "The request remains pending with the missing evidence or eligibility condition named."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Apply for maternity or paternity leave on Apply for leave, entering expected date of delivery or birth date and planned start.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Upload the medical certificate or birth evidence required by the leave type.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Check eligibility service and entitlement from the leave type and project the balance as at the start date.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Verify the evidence and confirm the dates; the request then enters the leave approval chain.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "On approval, debit the ledger, mark attendance as maternity or paternity leave and raise payroll inputs for paid days.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Schedule return-to-work milestones and notify the employee and manager 14 days before the return date.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "Employee / worker",
+     "action": "On return, confirm the return date; nursing-break minutes are applied to the attendance shift for the configured period.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The delivery occurs before the planned start date.",
+     "steps": [
+      "HR operations updates the start date to the actual date; the platform re-projects the span and adjusts attendance and payroll inputs."
+     ],
+     "rejoin": "Returns to step 5"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The employee requests an extension using EL or unpaid leave.",
+     "steps": [
+      "A separate leave request is raised and validated under LVE-03; it is contiguous with the maternity span."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The employee does not meet the eligibility service condition.",
+     "handling": "The request is held for HR operations with the condition named; HR may record a policy exception with reason.",
+     "rule": "RL-191"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "Evidence is missing or illegible.",
+     "handling": "HR operations returns the request to the employee with the reason; the approval chain does not start.",
+     "rule": "RL-190"
+    },
+    {
+     "id": "E3",
+     "at_step": 5,
+     "condition": "A paid day falls inside a locked payroll period.",
+     "handling": "The payroll effect is raised as arrears in the next open run.",
+     "rule": "RL-203"
+    }
+   ],
+   "business_rules": [
+    "RL-190",
+    "RL-191",
+    "RL-195",
+    "RL-203"
+   ],
+   "screens": [
+    "SCR-030",
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_request (C)",
+    "leave_ledger (C)",
+    "document (C)",
+    "attendance_day (U)",
+    "payroll_input (C)"
+   ],
+   "events": [
+    "leave.request.created",
+    "leave.request.approved",
+    "payroll.input.raised"
+   ],
+   "nfrs": [
+    "Medical evidence is stored encrypted and visible only to the employee and HR operations within scope.",
+    "Return-to-work reminders are delivered at least 14 days before the return date."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-024",
+     "persona": "Employee / worker",
+     "want": "to apply for maternity leave with my medical certificate in one step",
+     "so_that": "I do not have to visit HR in person",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "I attach a medical certificate and an expected delivery date of 20 January 2027",
+       "when": "I submit the application",
+       "then": "the request is created with the document linked and HR operations receives a verification task"
+      },
+      {
+       "given": "I submit without the required certificate",
+       "when": "validation runs",
+       "then": "submission is blocked with the message naming the missing evidence"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-025",
+     "persona": "HR operations",
+     "want": "the span to move when the actual delivery date differs from the planned one",
+     "so_that": "attendance and payroll match what actually happened",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "approved maternity leave starts on 10 January 2027",
+       "when": "HR records the actual delivery on 2 January 2027",
+       "then": "the span starts on 2 January and attendance from 2 January shows maternity leave"
+      },
+      {
+       "given": "the change touches a locked December run",
+       "when": "it is saved",
+       "then": "an arrears request is raised for the next open run"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-026",
+     "persona": "Manager / supervisor",
+     "want": "a reminder before my team member returns",
+     "so_that": "I can plan the handover and nursing-break schedule",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "the return date is 15 July 2027",
+       "when": "1 July 2027 arrives",
+       "then": "the manager and employee receive a return-to-work reminder"
+      },
+      {
+       "given": "the employee confirms return on 15 July",
+       "when": "the shift for July is read",
+       "then": "the configured nursing-break minutes appear on her attendance days"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-033",
+    "SYS-037",
+    "SYS-045",
+    "SYS-049",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "LVE-UC-010",
+   "name": "Grant and close a leave of absence",
+   "process": null,
+   "capability_gap": "LVE-CG-002",
+   "source": "Authored",
+   "goal": "Approve a long unpaid leave or sabbatical with its effects on service continuity, benefits eligibility and payroll defined in advance, and manage the return.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Manager / supervisor",
+    "HR operations",
+    "Payroll manager",
+    "Director / approver",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Knows before leaving how the absence affects service, benefits and pay."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Stops and restarts pay on the right dates without manual holds."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Keeps service-continuity records correct for gratuity and seniority."
+    }
+   ],
+   "trigger": "An employee requests an unpaid leave of absence or sabbatical longer than the leave type's minimum duration.",
+   "preconditions": [
+    "Leave-of-absence types are configured with service-continuity, benefits and payroll treatment."
+   ],
+   "postconditions_success": [
+    "The absence is approved, payroll inputs suspend pay for the span, and service and benefit flags reflect the configured treatment.",
+    "A return task is scheduled for the planned return date."
+   ],
+   "postconditions_failure": [
+    "The request is rejected or withdrawn; no payroll or service change is made."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Request a leave of absence, selecting type (unpaid or sabbatical), dates and reason.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Show the configured effect on service continuity, benefits eligibility and pay before submission.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Route the request through the chain definition resolved for the leave-of-absence type and duration.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Approvers (Supervisor, HOD, HR Head)",
+     "action": "Approve or reject the request in sequence with comments.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "On approval, raise payroll inputs suspending pay for the span and set service and benefit flags as configured.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Create a return-from-leave task for HR operations due 7 days before the planned return date.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Confirm the actual return date; the platform restores pay and benefits from that date.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 7,
+     "condition": "The employee returns earlier than planned.",
+     "steps": [
+      "HR operations records the actual return date; unused absence days are released and pay resumes from that date."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 7,
+     "condition": "The employee does not return and resigns.",
+     "steps": [
+      "HR operations closes the absence on the resignation date and starts the exit process."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The duration exceeds the limit the chain allows at HR Head level.",
+     "handling": "The chain definition adds the Director / approver step before approval completes.",
+     "rule": "RL-010"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "The span overlaps a locked payroll period.",
+     "handling": "The pay suspension for locked dates is raised as arrears (recovery) in the next open run.",
+     "rule": "RL-203"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-014",
+    "RL-203"
+   ],
+   "screens": [
+    "SCR-030",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "leave_request (C)",
+    "approval_instance (C)",
+    "payroll_input (C)",
+    "employment (U)"
+   ],
+   "events": [
+    "leave.request.created",
+    "platform.approval.started",
+    "leave.request.approved",
+    "payroll.input.raised"
+   ],
+   "nfrs": [
+    "The pay-suspension input is created within 1 minute of final approval."
+   ],
+   "frequency": "Occasional",
+   "criticality": "High",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-027",
+     "persona": "Employee / worker",
+     "want": "to see how a sabbatical affects my service and benefits before I submit",
+     "so_that": "I can decide with full information",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the sabbatical type is configured as service-continuous with benefits suspended",
+       "when": "I select it with dates 1 February to 31 May 2027",
+       "then": "the form states service continues, benefits are suspended and pay stops for 120 days"
+      },
+      {
+       "given": "I change the type to unpaid leave",
+       "when": "the dates stay the same",
+       "then": "the stated effects update to the unpaid leave configuration"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-028",
+     "persona": "Payroll manager",
+     "want": "pay to stop and restart automatically on the approved and actual return dates",
+     "so_that": "no manual hold is needed",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a leave of absence from 1 February to 31 May 2027 is approved",
+       "when": "the February run is calculated",
+       "then": "the employee has zero earnings for February with the absence named as the reason"
+      },
+      {
+       "given": "HR confirms the actual return on 20 May 2027",
+       "when": "the May run is calculated",
+       "then": "pay is computed from 20 May"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-022",
+    "SYS-037",
+    "SYS-038",
+    "SYS-041",
+    "SYS-053"
+   ]
+  },
+  {
+   "id": "LVE-UC-011",
+   "name": "Donate earned leave to a colleague or shared bank",
+   "process": null,
+   "capability_gap": "LVE-CG-003",
+   "source": "Authored",
+   "goal": "Allow an employee to transfer earned leave to a named colleague or to a pooled leave bank within policy limits and with HR approval.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Can support a colleague facing a long illness or emergency."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Keeps donations within policy and auditable."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Donated days do not distort encashment liability."
+    }
+   ],
+   "trigger": "An employee chooses Donate leave from the balance screen.",
+   "preconditions": [
+    "The leave scheme enables donation with per-donor annual limit and minimum retained balance."
+   ],
+   "postconditions_success": [
+    "A donor debit and recipient (or bank) credit are written in one transaction, each referencing the other."
+   ],
+   "postconditions_failure": [
+    "No ledger row is written for either party."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Choose Donate leave, select a named colleague or the shared bank, and enter the number of EL days.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Check the donor's projected EL balance, the annual donation limit and the minimum balance the donor must keep.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Create a donation request and route it to HR operations for approval.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Approve or reject the donation with a comment.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "On approval, write the donor debit and recipient credit in one transaction, each referencing the other.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Nucleus platform",
+     "action": "Notify donor and recipient; the recipient's projected balance shows the credit as donated leave.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "The donor gives to the shared bank.",
+     "steps": [
+      "The credit goes to the bank; HR operations later allocates bank days to an approved recipient with a reason."
+     ],
+     "rejoin": "Returns to step 2"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 2,
+     "condition": "The donation would breach the annual limit or the minimum retained balance.",
+     "handling": "The request is blocked with the limit and the maximum permitted days shown.",
+     "rule": "RL-191"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Either ledger write fails.",
+     "handling": "Both writes roll back and the donation stays approved but unposted, with a retry offered.",
+     "rule": "RL-195"
+    }
+   ],
+   "business_rules": [
+    "RL-191",
+    "RL-195",
+    "RL-230"
+   ],
+   "screens": [
+    "SCR-031"
+   ],
+   "data_objects": [
+    "leave_ledger (C)",
+    "leave_request (C)"
+   ],
+   "events": [
+    "leave.credit.posted"
+   ],
+   "nfrs": [
+    "The donor's identity is shown to the recipient only if the donor opts in."
+   ],
+   "frequency": "Occasional",
+   "criticality": "Low",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-029",
+     "persona": "Employee / worker",
+     "want": "to donate EL to a colleague within policy limits",
+     "so_that": "I can help them without breaching my own minimum balance",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "my projected EL is 12, the minimum retained is 5 and the annual limit is 5",
+       "when": "I offer 5 days to a colleague",
+       "then": "the request is created and routed to HR operations"
+      },
+      {
+       "given": "the same balances",
+       "when": "I offer 8 days",
+       "then": "the request is blocked and 5 days is shown as the maximum"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-030",
+     "persona": "HR operations",
+     "want": "donor and recipient entries to be written together and linked",
+     "so_that": "the ledgers always balance",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a 3-day donation is approved",
+       "when": "posting completes",
+       "then": "the donor shows a 3-day debit and the recipient a 3-day credit, each referencing the other"
+      },
+      {
+       "given": "the recipient write fails",
+       "when": "posting is attempted",
+       "then": "neither entry exists"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-037",
+    "SYS-049",
+    "SYS-059",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "LVE-UC-012",
+   "name": "Publish approved leave to the corporate calendar",
+   "process": null,
+   "capability_gap": "LVE-CG-004",
+   "source": "Authored",
+   "goal": "Show approved leave as out-of-office entries on the employee's and team's corporate calendars and keep them in step with later changes.",
+   "level": "Subfunction",
+   "primary_actor": "Nucleus platform",
+   "secondary_actors": [
+    "Corporate calendar",
+    "Employee / worker",
+    "Manager / supervisor"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Does not have to create out-of-office entries by hand."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Sees team absence where meetings are planned."
+    },
+    {
+     "who": "Tenant admin",
+     "interest": "Controls whether and how leave details leave the platform."
+    }
+   ],
+   "trigger": "leave.request.approved, a cancellation, an HR edit or leave.early_return.recorded.",
+   "preconditions": [
+    "The tenant has connected a corporate calendar and enabled leave publishing.",
+    "The employee's calendar identity is linked through the enterprise directory."
+   ],
+   "postconditions_success": [
+    "The calendar entry matches the approved span; it carries no leave type or reason."
+   ],
+   "postconditions_failure": [
+    "The leave stays approved; the failed publish is retried and shown on the employee's leave record."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Receive leave.request.approved for an employee whose calendar is linked.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Build an out-of-office entry with dates and half-day flags only, without leave type or reason.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Corporate calendar",
+     "action": "Create the entry on the employee's calendar and return its reference.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Store the reference on the leave request and add the entry to the team calendar view.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "On cancellation, HR edit or early return, update or delete the entry using the stored reference.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 5,
+     "condition": "The employee returns early.",
+     "steps": [
+      "The entry's end date is shortened to the day before the actual return date."
+     ],
+     "rejoin": "Use case ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "The corporate calendar is unavailable.",
+     "handling": "The publish is retried with backoff for 24 hours; the employee is then notified to add the entry manually.",
+     "rule": null
+    },
+    {
+     "id": "E2",
+     "at_step": 1,
+     "condition": "The employee has no linked calendar identity.",
+     "handling": "No publish is attempted; the leave record shows 'Calendar not linked'.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-195"
+   ],
+   "screens": [
+    "SCR-030"
+   ],
+   "data_objects": [
+    "leave_request (U)"
+   ],
+   "events": [
+    "leave.request.approved",
+    "leave.early_return.recorded"
+   ],
+   "nfrs": [
+    "Calendar entry appears within 2 minutes of approval at p95.",
+    "No leave type, reason or medical detail is sent to the corporate calendar."
+   ],
+   "frequency": "Continuous",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-031",
+     "persona": "Employee / worker",
+     "want": "approved leave to appear as out-of-office on my calendar",
+     "so_that": "colleagues do not book me while I am away",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my 2 to 4 December 2026 EL is approved and my calendar is linked",
+       "when": "approval completes",
+       "then": "an out-of-office entry for 2 to 4 December appears without the leave type"
+      },
+      {
+       "given": "I cancel the leave on 28 November",
+       "when": "cancellation completes",
+       "then": "the entry is removed from my calendar"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-032",
+     "persona": "Manager / supervisor",
+     "want": "early returns to shorten the calendar entry",
+     "so_that": "the team calendar shows when the person is actually back",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an entry runs 1 to 10 October 2026",
+       "when": "an early return on 7 October is recorded",
+       "then": "the entry now ends on 6 October"
+      },
+      {
+       "given": "the corporate calendar is unavailable during the update",
+       "when": "the retry window is still open",
+       "then": "the update is retried and succeeds when the calendar recovers"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-053",
+    "SYS-055",
+    "SYS-056",
+    "SYS-088"
+   ]
+  },
+  {
+   "id": "LVE-UC-013",
+   "name": "Choose optional and restricted holidays",
+   "process": null,
+   "capability_gap": "LVE-CG-005",
+   "source": "Authored",
+   "goal": "Let employees pick optional or restricted holidays from a location-specific, religion-neutral list within the configured quota.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "Implementation consultant",
+    "Plant HR / time office",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Chooses holidays that matter to them without disclosing reasons."
+    },
+    {
+     "who": "Plant HR / time office",
+     "interest": "Knows in advance who will be absent on each optional holiday."
+    },
+    {
+     "who": "Implementation consultant",
+     "interest": "Configures the list and quota per location and year."
+    }
+   ],
+   "trigger": "The optional-holiday window opens for the year, or an employee selects an optional holiday later in the year.",
+   "preconditions": [
+    "The optional holiday list and quota (for example 2 per year) are configured per location for the year."
+   ],
+   "postconditions_success": [
+    "The chosen holidays are recorded, the quota is reduced and attendance shows the day as optional holiday."
+   ],
+   "postconditions_failure": [
+    "No selection is recorded; quota is unchanged."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Implementation consultant",
+     "action": "Publish the optional holiday list and annual quota for each location.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Show each employee the list for their work location with the remaining quota.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Select one or more optional holidays from the list.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Check the remaining quota and conflicts with rest days and approved leave.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Record the selection and mark the date as optional holiday on the work calendar for the employee.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Plant HR / time office",
+     "action": "View expected absence per optional holiday at the site.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "The employee withdraws a selection before the date.",
+     "steps": [
+      "The selection is removed and the quota is restored."
+     ],
+     "rejoin": "Use case ends"
+    },
+    {
+     "id": "A2",
+     "at_step": 2,
+     "condition": "The employee transfers location mid-year.",
+     "steps": [
+      "The new location's list applies from the transfer date; holidays already taken count against the annual quota."
+     ],
+     "rejoin": "Returns to step 3"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 4,
+     "condition": "The quota is already used.",
+     "handling": "The selection is refused with the quota and the holidays already chosen shown.",
+     "rule": "RL-191"
+    },
+    {
+     "id": "E2",
+     "at_step": 4,
+     "condition": "The date is already a rest day or covered by approved leave.",
+     "handling": "The selection is refused with the conflicting record named.",
+     "rule": "RL-194"
+    }
+   ],
+   "business_rules": [
+    "RL-191",
+    "RL-194"
+   ],
+   "screens": [
+    "SCR-030",
+    "SCR-032"
+   ],
+   "data_objects": [
+    "work_calendar (U)",
+    "attendance_day (U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "The list labels holidays by name and date only; no religion field is captured or shown."
+   ],
+   "frequency": "Annual window; occasional changes",
+   "criticality": "High",
+   "phase": "P1",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "LVE-US-033",
+     "persona": "Employee / worker",
+     "want": "to choose my optional holidays from my location's list",
+     "so_that": "I take the days that matter to me",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "my site list has 6 optional holidays and a quota of 2",
+       "when": "I select two of them",
+       "then": "both are recorded and my remaining quota shows 0"
+      },
+      {
+       "given": "my quota is 0",
+       "when": "I try to select a third",
+       "then": "the selection is refused with the two chosen holidays listed"
+      }
+     ]
+    },
+    {
+     "id": "LVE-US-034",
+     "persona": "Plant HR / time office",
+     "want": "to see how many people will be off on each optional holiday",
+     "so_that": "I can plan shift cover",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "14 employees at my site selected 12 November 2026",
+       "when": "I open the site's optional holiday view",
+       "then": "12 November shows 14 expected absences"
+      },
+      {
+       "given": "one of them withdraws the selection",
+       "when": "I refresh the view",
+       "then": "12 November shows 13"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-059",
+    "SYS-068"
+   ]
+  }
+ ]
+}

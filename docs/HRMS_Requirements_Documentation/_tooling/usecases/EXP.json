@@ -1,0 +1,1045 @@
+{
+ "domain": "EXP",
+ "use_cases": [
+  {
+   "id": "EXP-UC-001",
+   "name": "Nominate, approve and pay a recognition award",
+   "process": "EXP-01",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Nominate an employee under a recognition programme, approve the award, pay any monetary part through payroll and announce it.",
+   "level": "User goal",
+   "primary_actor": "Manager / supervisor",
+   "secondary_actors": [
+    "HR operations",
+    "Director / approver",
+    "Nucleus platform",
+    "Payroll manager",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Recognition is visible and any cash award is paid correctly."
+    },
+    {
+     "who": "Payroll manager",
+     "interest": "Monetary awards arrive as payroll inputs, never side payments."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Star employee selection flows into the announcement without retyping."
+    }
+   ],
+   "trigger": "A recognition programme cycle opens, such as star employee of the month.",
+   "preconditions": [
+    "Recognition programme with period, criteria and optional award amount is configured.",
+    "Approval chain for recognition is configured."
+   ],
+   "postconditions_success": [
+    "Award is approved with citation and period.",
+    "Monetary part is a payroll input in a named run.",
+    "Announcement referencing the award is published."
+   ],
+   "postconditions_failure": [
+    "Rejected nomination creates no payroll input and no announcement."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Manager / supervisor",
+     "action": "Nominates an employee against a recognition programme with citation, period and award amount on the recognition screen.",
+     "ref": "EXP-01.1"
+    },
+    {
+     "n": 2,
+     "actor": "Director / approver",
+     "action": "Approves the award in the approvals inbox.",
+     "ref": "EXP-01.2"
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Raises the monetary component as a recognition award payroll input in a named run.",
+     "ref": "EXP-01.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Publishes an announcement that references the award to the programme's audience.",
+     "ref": "EXP-01.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Award has no monetary component.",
+     "steps": [
+      "No payroll input is raised."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "HR applies an editorial override before publish.",
+     "steps": [
+      "HR edits the announcement text or withholds publication with a reason."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Nomination lacks citation or period.",
+     "handling": "Nomination cannot be submitted.",
+     "rule": "RL-490"
+    },
+    {
+     "id": "E2",
+     "at_step": 3,
+     "condition": "Someone attempts to record the cash award as a payment outside payroll.",
+     "handling": "No such path exists; the award is payable only via a payroll input.",
+     "rule": "RL-491"
+    },
+    {
+     "id": "E3",
+     "at_step": 2,
+     "condition": "Approver rejects the nomination.",
+     "handling": "Nominator is informed with the comment; no input or announcement is produced.",
+     "rule": "RL-010"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-472",
+    "RL-490",
+    "RL-491",
+    "RL-492"
+   ],
+   "screens": [
+    "SCR-065",
+    "SCR-040",
+    "SCR-066"
+   ],
+   "data_objects": [
+    "recognition_award (C, U)",
+    "payroll_input (C)",
+    "announcement (C)"
+   ],
+   "events": [
+    "experience.recognition.nominated",
+    "platform.approval.completed",
+    "payroll.input.raised",
+    "experience.announcement.published"
+   ],
+   "nfrs": [
+    "Announcement published within 5 minutes of approval.",
+    "Award certificate shows period and criteria."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [
+    "R-19"
+   ],
+   "acceptance_tests": [
+    "TC-E490",
+    "TC-E491",
+    "TC-E492",
+    "TC-R472",
+    "T-33"
+   ],
+   "user_stories": [
+    {
+     "id": "EXP-US-001",
+     "persona": "Manager / supervisor",
+     "want": "to nominate a star employee with a citation",
+     "so_that": "good work is recognised formally",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "the star employee programme for June with a 5,000 award",
+       "when": "I nominate E1018 with a citation",
+       "then": "the nomination is created with period June"
+      },
+      {
+       "given": "I leave the citation empty",
+       "when": "I submit",
+       "then": "submission is blocked"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-002",
+     "persona": "Payroll manager",
+     "want": "recognition cash awards as payroll inputs",
+     "so_that": "they are taxed and paid properly",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an approved award of 5,000 for E1018",
+       "when": "the July run is computed",
+       "then": "a recognition award input of 5,000 appears"
+      },
+      {
+       "given": "an approved award with no cash",
+       "when": "the run is computed",
+       "then": "no input appears"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-003",
+     "persona": "Employee / worker",
+     "want": "my award announced to colleagues automatically",
+     "so_that": "my recognition is visible",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "my award is approved",
+       "when": "approval completes",
+       "then": "an announcement referencing my award appears to the programme audience"
+      },
+      {
+       "given": "HR withholds the announcement with a reason",
+       "when": "approval completes",
+       "then": "no announcement is published and the reason is recorded"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-020",
+    "SYS-028",
+    "SYS-037",
+    "SYS-053",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "EXP-UC-002",
+   "name": "Generate and publish announcements",
+   "process": "EXP-02",
+   "capability_gap": null,
+   "source": "Authored",
+   "goal": "Generate announcements from lifecycle and recognition events or manual input, apply audience rules and channels, and allow editorial override before publish.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Employee / worker",
+    "Business messaging channel"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives relevant announcements in their language and channel."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Routine announcements raise themselves."
+    }
+   ],
+   "trigger": "A lifecycle event (birthday, new joiner, award, referral) occurs or HR creates a manual message.",
+   "preconditions": [
+    "Announcement types with audience rules and channels are configured."
+   ],
+   "postconditions_success": [
+    "Announcement is published to the resolved audience on chosen channels."
+   ],
+   "postconditions_failure": [
+    "Withheld announcements are recorded with reason."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Nucleus platform",
+     "action": "Detects a qualifying event such as a birthday today or a joiner dated today.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Drafts the announcement from the type's template, referencing the source event.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Resolves the audience rule, for example same site or same department.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "HR operations",
+     "action": "Reviews the draft and may edit or withhold it before the publish time.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Publishes to in-app feed, mobile and business messaging channel per configuration.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Reads the announcement within their audience.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 1,
+     "condition": "HR creates a manual management message.",
+     "steps": [
+      "HR writes the message and selects audience and channels."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Employee has opted out of birthday announcements.",
+     "handling": "No birthday announcement is generated for that employee.",
+     "rule": "RL-397"
+    },
+    {
+     "id": "E2",
+     "at_step": 5,
+     "condition": "Delivery to a channel fails.",
+     "handling": "Failure is logged and retried; in-app delivery is unaffected.",
+     "rule": null
+    }
+   ],
+   "business_rules": [
+    "RL-397",
+    "RL-492"
+   ],
+   "screens": [
+    "SCR-066"
+   ],
+   "data_objects": [
+    "announcement (C, U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Announcements visible only within the resolved audience."
+   ],
+   "frequency": "Daily",
+   "criticality": "Low",
+   "phase": "P2",
+   "client_requirements": [
+    "R-21"
+   ],
+   "acceptance_tests": [
+    "TC-X397",
+    "TC-E492",
+    "T-35"
+   ],
+   "user_stories": [
+    {
+     "id": "EXP-US-004",
+     "persona": "HR operations",
+     "want": "birthday and new joiner announcements raised automatically",
+     "so_that": "no one has to type them daily",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "E1018's birthday is today and a joiner is dated today",
+       "when": "the daily run executes",
+       "then": "both announcements are drafted for the configured audience"
+      },
+      {
+       "given": "I withhold one with a reason",
+       "when": "publish time arrives",
+       "then": "it is not published and the reason is recorded"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-005",
+     "persona": "Employee / worker",
+     "want": "to see only announcements meant for my site",
+     "so_that": "my feed stays relevant",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "an announcement targeted to the Pune site",
+       "when": "I work at Peenya",
+       "then": "I do not see it"
+      },
+      {
+       "given": "an entity-wide announcement",
+       "when": "I open my feed",
+       "then": "I see it"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-053",
+    "SYS-066",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "EXP-UC-003",
+   "name": "Generate, approve and issue HR letters",
+   "process": "EXP-03",
+   "capability_gap": null,
+   "source": "Source workbook",
+   "goal": "Produce HR letters from versioned templates, ensure human review, approve where required and issue with the template version retained.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Nucleus platform",
+    "Director / approver",
+    "Agent (governed)",
+    "Employee / worker"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Receives correct letters."
+    },
+    {
+     "who": "Auditor",
+     "interest": "Any reprint reproduces exactly what was issued."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Letters are produced quickly without retyping."
+    }
+   ],
+   "trigger": "A lifecycle event needs a letter, such as appointment, confirmation or revision.",
+   "preconditions": [
+    "Templates are versioned and validated."
+   ],
+   "postconditions_success": [
+    "Issued letter is stored with template version, issuer and file reference."
+   ],
+   "postconditions_failure": [
+    "Unreviewed drafts are never issued."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Selects a letter template; merge fields populate from the employee record.",
+     "ref": "EXP-03.1"
+    },
+    {
+     "n": 2,
+     "actor": "Nucleus platform",
+     "action": "Renders the draft, marking whether the system or an agent drafted it, for human review.",
+     "ref": "EXP-03.2"
+    },
+    {
+     "n": 3,
+     "actor": "Director / approver",
+     "action": "Approves the draft where the template requires approval.",
+     "ref": "EXP-03.3"
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Issues the letter and retains it against the person with the template version that produced it.",
+     "ref": "EXP-03.4"
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Template does not require approval.",
+     "steps": [
+      "Draft proceeds to issue after HR review."
+     ],
+     "rejoin": "Returns to step 4"
+    },
+    {
+     "id": "A2",
+     "at_step": 4,
+     "condition": "HR reprints a previously issued letter.",
+     "steps": [
+      "Platform reproduces the letter from the retained version."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 1,
+     "condition": "Template references a non-existent merge field.",
+     "handling": "Template fails validation on save, not at issue.",
+     "rule": "RL-500"
+    },
+    {
+     "id": "E2",
+     "at_step": 2,
+     "condition": "Attempt to issue an agent-drafted letter without human review.",
+     "handling": "Issue is refused until a human reviews it.",
+     "rule": "RL-501"
+    }
+   ],
+   "business_rules": [
+    "RL-010",
+    "RL-500",
+    "RL-501",
+    "RL-502"
+   ],
+   "screens": [
+    "SCR-067",
+    "SCR-040"
+   ],
+   "data_objects": [
+    "letter_template (R)",
+    "letter_draft (C, U)",
+    "letter_issued (C)"
+   ],
+   "events": [
+    "platform.approval.completed",
+    "experience.letter.issued"
+   ],
+   "nfrs": [
+    "Reprint reproduces byte-identical content to the original issue."
+   ],
+   "frequency": "Weekly",
+   "criticality": "Medium",
+   "phase": "P2",
+   "client_requirements": [
+    "R-22"
+   ],
+   "acceptance_tests": [
+    "TC-E500",
+    "TC-E501",
+    "TC-E502",
+    "T-36"
+   ],
+   "user_stories": [
+    {
+     "id": "EXP-US-006",
+     "persona": "HR operations",
+     "want": "letters drafted from templates with merge fields filled",
+     "so_that": "I issue letters quickly and accurately",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an appointment template and employee E1066",
+       "when": "I generate the letter",
+       "then": "the draft shows E1066's name, designation and joining date"
+      },
+      {
+       "given": "a template referencing a missing field",
+       "when": "I save it",
+       "then": "save fails naming the field"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-007",
+     "persona": "Auditor",
+     "want": "reprints to reproduce the original version",
+     "so_that": "issued letters remain defensible",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "an appointment letter issued to E1066 from an earlier template version",
+       "when": "I reprint two years later after the template changed",
+       "then": "the reprint matches the original"
+      },
+      {
+       "given": "I open the issue record",
+       "when": "I view details",
+       "then": "template version, issuer and date are shown"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-026",
+    "SYS-032",
+    "SYS-035",
+    "SYS-037",
+    "SYS-074"
+   ]
+  },
+  {
+   "id": "EXP-UC-004",
+   "name": "Run pulse and engagement surveys",
+   "process": null,
+   "capability_gap": "EXP-CG-001",
+   "source": "Authored",
+   "goal": "Run pulse and engagement surveys including eNPS with anonymity thresholds, multilingual delivery and action planning.",
+   "level": "User goal",
+   "primary_actor": "HR operations",
+   "secondary_actors": [
+    "Employee / worker",
+    "Manager / supervisor",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Answers are anonymous."
+    },
+    {
+     "who": "Manager / supervisor",
+     "interest": "Gets actionable team results."
+    }
+   ],
+   "trigger": "HR schedules a survey.",
+   "preconditions": [
+    "Anonymity threshold is configured."
+   ],
+   "postconditions_success": [
+    "Results are available above the threshold and action plans are tracked."
+   ],
+   "postconditions_failure": [
+    "Results below the threshold are suppressed."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Builds a survey with questions including eNPS.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "HR operations",
+     "action": "Selects audience, languages and schedule.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Delivers the survey in each employee's preferred language.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Employee / worker",
+     "action": "Responds anonymously.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Nucleus platform",
+     "action": "Aggregates results and suppresses groups below the anonymity threshold.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Manager / supervisor",
+     "action": "Reviews team results and creates an action plan.",
+     "ref": null
+    },
+    {
+     "n": 7,
+     "actor": "HR operations",
+     "action": "Tracks action plan progress.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Employee lacks app access.",
+     "steps": [
+      "Survey link is sent through the business messaging channel."
+     ],
+     "rejoin": "Returns to step 4"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 5,
+     "condition": "Team has fewer respondents than the threshold.",
+     "handling": "Results are rolled up to the next level.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "survey (C)",
+    "survey_response (C)",
+    "action_plan (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Responses are not linkable to respondents by any role."
+   ],
+   "frequency": "Quarterly",
+   "criticality": "High",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-008",
+     "persona": "Employee / worker",
+     "want": "to answer surveys knowing I cannot be identified",
+     "so_that": "I give honest feedback",
+     "priority": "Must",
+     "acceptance": [
+      {
+       "given": "a threshold of 5",
+       "when": "my team has 4 respondents",
+       "then": "my manager sees results only at the next level"
+      },
+      {
+       "given": "I answer in Hindi",
+       "when": "results are viewed",
+       "then": "responses are aggregated with others"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-009",
+     "persona": "Manager / supervisor",
+     "want": "team eNPS and an action plan",
+     "so_that": "I can improve engagement",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "12 respondents in my team",
+       "when": "results release",
+       "then": "eNPS and question scores are shown"
+      },
+      {
+       "given": "I create an action plan",
+       "when": "HR views progress",
+       "then": "the plan appears with status"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-066",
+    "SYS-069",
+    "SYS-070"
+   ]
+  },
+  {
+   "id": "EXP-UC-005",
+   "name": "Manage wellbeing programmes with consent",
+   "process": null,
+   "capability_gap": "EXP-CG-002",
+   "source": "Authored",
+   "goal": "Manage wellbeing programmes, EAP access and opt-in challenges without storing health data beyond explicit consent.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Health data stays private."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Programme participation is measurable in aggregate."
+    }
+   ],
+   "trigger": "HR launches a programme or an employee seeks support.",
+   "preconditions": [
+    "Programmes and consent text are configured."
+   ],
+   "postconditions_success": [
+    "Participation recorded with consent."
+   ],
+   "postconditions_failure": [
+    "No data stored without consent."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "HR operations",
+     "action": "Publishes a wellbeing programme or challenge.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Browses programmes and EAP contact options.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Employee / worker",
+     "action": "Opts in to a challenge and gives explicit consent for the data collected.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Records only the consented data.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "HR operations",
+     "action": "Views aggregate participation only.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "Employee / worker",
+     "action": "Withdraws consent at any time; data is deleted.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 2,
+     "condition": "Employee accesses EAP.",
+     "steps": [
+      "Contact details are shown; no access record is stored."
+     ],
+     "rejoin": "Ends"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 3,
+     "condition": "Consent not given.",
+     "handling": "Employee cannot join the challenge.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "wellbeing_participation (C, D)",
+    "consent_record (C)"
+   ],
+   "events": [],
+   "nfrs": [
+    "No individual wellbeing signal is visible to managers."
+   ],
+   "frequency": "Monthly",
+   "criticality": "Medium",
+   "phase": "P3",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-010",
+     "persona": "Employee / worker",
+     "want": "to withdraw consent and have my data deleted",
+     "so_that": "I stay in control",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "I joined a step challenge",
+       "when": "I withdraw consent",
+       "then": "my step data is deleted"
+      },
+      {
+       "given": "I open EAP contacts",
+       "when": "I view them",
+       "then": "no access record is stored"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-011",
+     "persona": "HR operations",
+     "want": "aggregate participation only",
+     "so_that": "programmes are measured without intruding",
+     "priority": "Should",
+     "acceptance": [
+      {
+       "given": "80 participants",
+       "when": "I open the report",
+       "then": "only totals are shown"
+      },
+      {
+       "given": "a manager requests individual data",
+       "when": "the request is made",
+       "then": "it is refused"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-019",
+    "SYS-027",
+    "SYS-032"
+   ]
+  },
+  {
+   "id": "EXP-UC-006",
+   "name": "Moderate communities and the social feed",
+   "process": null,
+   "capability_gap": "EXP-CG-003",
+   "source": "Authored",
+   "goal": "Provide moderated communities and a social feed for announcements, recognition and interest groups.",
+   "level": "User goal",
+   "primary_actor": "Employee / worker",
+   "secondary_actors": [
+    "HR operations",
+    "Nucleus platform"
+   ],
+   "stakeholders": [
+    {
+     "who": "Employee / worker",
+     "interest": "Connects with colleagues."
+    },
+    {
+     "who": "HR operations",
+     "interest": "Content stays appropriate."
+    }
+   ],
+   "trigger": "Employee posts or joins a community.",
+   "preconditions": [
+    "Moderation policy is configured."
+   ],
+   "postconditions_success": [
+    "Approved posts are visible to the community."
+   ],
+   "postconditions_failure": [
+    "Removed posts are hidden with reason recorded."
+   ],
+   "main_flow": [
+    {
+     "n": 1,
+     "actor": "Employee / worker",
+     "action": "Joins an interest community.",
+     "ref": null
+    },
+    {
+     "n": 2,
+     "actor": "Employee / worker",
+     "action": "Posts content.",
+     "ref": null
+    },
+    {
+     "n": 3,
+     "actor": "Nucleus platform",
+     "action": "Screens content against moderation policy.",
+     "ref": null
+    },
+    {
+     "n": 4,
+     "actor": "Nucleus platform",
+     "action": "Publishes the post to community members.",
+     "ref": null
+    },
+    {
+     "n": 5,
+     "actor": "Employee / worker",
+     "action": "Reports an inappropriate post.",
+     "ref": null
+    },
+    {
+     "n": 6,
+     "actor": "HR operations",
+     "action": "Reviews reports and removes or keeps the post with reason.",
+     "ref": null
+    }
+   ],
+   "alternate_flows": [
+    {
+     "id": "A1",
+     "at_step": 3,
+     "condition": "Content is flagged by screening.",
+     "steps": [
+      "Post is held for moderator review."
+     ],
+     "rejoin": "Returns to step 6"
+    }
+   ],
+   "exception_flows": [
+    {
+     "id": "E1",
+     "at_step": 6,
+     "condition": "Post violates policy.",
+     "handling": "Post is removed and the author notified with reason.",
+     "rule": null
+    }
+   ],
+   "business_rules": [],
+   "screens": [],
+   "data_objects": [
+    "community (C)",
+    "post (C, U)"
+   ],
+   "events": [],
+   "nfrs": [
+    "Reported posts reviewed within 24 hours."
+   ],
+   "frequency": "Daily",
+   "criticality": "Low",
+   "phase": "P4",
+   "client_requirements": [],
+   "acceptance_tests": [],
+   "user_stories": [
+    {
+     "id": "EXP-US-012",
+     "persona": "Employee / worker",
+     "want": "to join an interest community",
+     "so_that": "I connect beyond my team",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a cricket community",
+       "when": "I join",
+       "then": "I see its posts"
+      },
+      {
+       "given": "I post a match update",
+       "when": "it passes screening",
+       "then": "members see it"
+      }
+     ]
+    },
+    {
+     "id": "EXP-US-013",
+     "persona": "HR operations",
+     "want": "to remove posts violating policy with reason",
+     "so_that": "the feed stays respectful",
+     "priority": "Could",
+     "acceptance": [
+      {
+       "given": "a reported post",
+       "when": "I remove it with reason",
+       "then": "it is hidden and the author is notified"
+      },
+      {
+       "given": "I keep a reported post",
+       "when": "I record the decision",
+       "then": "the report closes"
+      }
+     ]
+    }
+   ],
+   "system_requirements": [
+    "SYS-017",
+    "SYS-032",
+    "SYS-036",
+    "SYS-070"
+   ]
+  }
+ ]
+}
