@@ -10,7 +10,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
 # Ensure common Node/NPM paths are in PATH
-export PATH="/usr/local/bin:/opt/homebrew/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin:$PATH"
+# Load nvm if available and respect .nvmrc / active Node version
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+    \. "$NVM_DIR/nvm.sh"
+    [ -f .nvmrc ] && nvm use --silent >/dev/null 2>&1 || true
+fi
+
+# Fallback paths only if node is still not found
+if ! command -v node >/dev/null 2>&1; then
+    LATEST_NVM_NODE="$(ls -v "$HOME/.nvm/versions/node" 2>/dev/null | tail -n 1)"
+    export PATH="$HOME/.nvm/versions/node/${LATEST_NVM_NODE}/bin:/usr/local/bin:/opt/homebrew/bin:$PATH"
+fi
 
 # Color constants
 CYAN='\033[0;36m'
